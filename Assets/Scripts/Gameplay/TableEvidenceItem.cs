@@ -82,10 +82,13 @@ namespace CaseClosed.Gameplay
         {
             if (evidenceData == null) return;
 
+            Debug.Log($"[Gameplay:TableEvidence] Clicked '{evidenceData.evidenceName}' (ID: {evidenceData.id}, Button: {eventData.button}, ClickCount: {eventData.clickCount})");
+
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
             if (eventData.clickCount >= 2 || eventData.button == PointerEventData.InputButton.Right)
             {
+                Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
                 EvidenceManager.Instance?.OpenInspectModal(evidenceData);
             }
             else

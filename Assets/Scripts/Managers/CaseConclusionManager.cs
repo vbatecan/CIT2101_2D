@@ -45,11 +45,17 @@ namespace CaseClosed.Managers
         public CaseEvaluationResult EvaluateCase(List<int> playerSelectedOptionIndices)
         {
             CaseSO activeCase = CaseManager.Instance?.activeCase;
-            if (activeCase == null) return null;
+            if (activeCase == null)
+            {
+                Debug.LogWarning("[CaseConclusion] Cannot evaluate case: activeCase is null");
+                return null;
+            }
 
             int evidenceFoundCount = CaseManager.Instance.discoveredEvidenceIds.Count;
             int contradictionsCaughtCount = CaseManager.Instance.exposedContradictionIds.Count;
             float elapsedTime = CaseManager.Instance.ElapsedTime;
+
+            Debug.Log($"[CaseConclusion] Evaluating case '{activeCase.caseTitle}' (DiscoveredEv: {evidenceFoundCount}, Contradictions: {contradictionsCaughtCount}, ElapsedTime: {elapsedTime:F1}s)");
 
             // Business logic calculation delegated to pure Service
             CaseEvaluationResult result = evaluationService.EvaluateCase(
@@ -62,6 +68,8 @@ namespace CaseClosed.Managers
 
             if (result != null)
             {
+                Debug.Log($"[CaseConclusion] Evaluation complete: Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}, CorrectQuiz={result.correctQuizAnswers}/{result.totalQuizQuestions}");
+
                 // Play audio cues based on result
                 if (result.isCaseSolved)
                 {

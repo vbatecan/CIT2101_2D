@@ -22,6 +22,8 @@ namespace CaseClosed.Prototype
         /// </summary>
         private void Awake()
         {
+            Debug.Log("[Prototype:Bootstrap] GameBootstrap initializing core managers and systems...");
+
             SetupFixedCamera();
             EnsureManager<AudioManager>();
             EnsureManager<CaseManager>();
@@ -39,6 +41,8 @@ namespace CaseClosed.Prototype
 
             level3 = gameObject.GetComponent<Case03Initializer>();
             if (level3 == null) level3 = gameObject.AddComponent<Case03Initializer>();
+
+            Debug.Log("[Prototype:Bootstrap] All managers initialized. Ready for level loading.");
         }
 
         /// <summary>
@@ -57,6 +61,8 @@ namespace CaseClosed.Prototype
         /// <param name="levelIndex">The 1-based level index (1, 2, or 3).</param>
         public void LoadLevel(int levelIndex)
         {
+            Debug.Log($"[Prototype:Bootstrap] Shortcut triggered: Loading Level {levelIndex}...");
+
             CaseClosed.Data.CaseSO caseData = null;
 
             switch (levelIndex)
@@ -80,6 +86,10 @@ namespace CaseClosed.Prototype
                     InterrogationManager.Instance.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
                 }
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
+            }
+            else
+            {
+                Debug.LogWarning($"[Prototype:Bootstrap] Failed to generate case data for level {levelIndex}");
             }
         }
 

@@ -59,6 +59,8 @@ namespace CaseClosed.UI
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             if (activeCase == null) return;
 
+            Debug.Log($"[UI:Notebook] Switched to tab '{tab}' for case '{activeCase.caseTitle}'");
+
             string contentText = string.Empty;
 
             switch (tab)
@@ -95,6 +97,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnCloseClicked()
         {
+            Debug.Log("[UI:Notebook] Close notebook button clicked");
             UIManager.Instance?.ToggleNotebookPanel();
         }
     }

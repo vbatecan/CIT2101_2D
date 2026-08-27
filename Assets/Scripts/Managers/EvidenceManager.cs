@@ -57,6 +57,7 @@ namespace CaseClosed.Managers
         public void SelectEvidence(EvidenceSO evidence)
         {
             currentlySelectedEvidence = evidence;
+            Debug.Log($"[EvidenceManager] Selected evidence item: '{(evidence != null ? evidence.evidenceName : "NULL")}' (ID: {evidence?.id})");
             OnEvidenceSelected?.Invoke(evidence);
         }
 
@@ -72,9 +73,12 @@ namespace CaseClosed.Managers
             currentlySelectedEvidence = evidence;
             isInspectingModalOpen = true;
 
+            Debug.Log($"[EvidenceManager] Opened inspect modal for: '{evidence.evidenceName}' (ID: {evidence.id})");
+
             // Inspection and clue extraction processed via Service
             if (evidenceService.InspectEvidence(evidence, out string baseClueId, out string baseClueText))
             {
+                Debug.Log($"[EvidenceManager] Extracted base clue from '{evidence.evidenceName}': '[{baseClueId}]' - \"{baseClueText}\"");
                 CaseManager.Instance?.UnlockClue(baseClueId, baseClueText);
             }
 
@@ -87,6 +91,7 @@ namespace CaseClosed.Managers
         /// </summary>
         public void CloseInspectModal()
         {
+            Debug.Log("[EvidenceManager] Closed inspect modal");
             isInspectingModalOpen = false;
             OnInspectModalClosed?.Invoke();
         }
@@ -99,11 +104,14 @@ namespace CaseClosed.Managers
         {
             if (hotspot == null || hotspot.isDiscovered) return;
 
+            Debug.Log($"[EvidenceManager] Discovering hotspot: '{hotspot.hotspotTitle}' (ID: {hotspot.hotspotId})");
+
             // Hotspot validation and clue derivation processed via Service
             if (evidenceService.DiscoverHotspot(hotspot, out string clueId, out string clueText))
             {
                 if (!string.IsNullOrEmpty(clueId))
                 {
+                    Debug.Log($"[EvidenceManager] Hotspot unlocked clue: '[{clueId}]' - \"{clueText}\"");
                     CaseManager.Instance?.UnlockClue(clueId, clueText);
                 }
             }
@@ -117,7 +125,8 @@ namespace CaseClosed.Managers
         /// <param name="evidence">The evidence item to toggle.</param>
         public void ToggleEvidenceOnTable(EvidenceSO evidence)
         {
-            evidenceService.ToggleTablePresence(evidence);
+            bool newState = evidenceService.ToggleTablePresence(evidence);
+            Debug.Log($"[EvidenceManager] Toggled table presence for '{(evidence != null ? evidence.evidenceName : "NULL")}': {newState}");
         }
     }
 }

@@ -72,6 +72,7 @@ namespace CaseClosed.Managers
             if (clip == null || (bgmSource != null && bgmSource.clip == clip && bgmSource.isPlaying)) return;
             if (bgmSource != null)
             {
+                Debug.Log($"[Audio] Playing BGM track: '{clip.name}'");
                 bgmSource.clip = clip;
                 bgmSource.Play();
             }

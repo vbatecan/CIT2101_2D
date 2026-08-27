@@ -79,6 +79,8 @@ namespace CaseClosed.Managers
             exposedContradictionIds.Clear();
             investigationStartTime = Time.time;
 
+            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (ID: {newCase?.caseId})");
+
             if (activeCase != null && activeCase.evidenceItems != null)
             {
                 foreach (var ev in activeCase.evidenceItems)
@@ -108,6 +110,7 @@ namespace CaseClosed.Managers
             {
                 discoveredEvidenceIds.Add(evidence.id);
                 evidence.isToggledOnTable = true;
+                Debug.Log($"[CaseManager] Registered new evidence discovery: '{evidence.evidenceName}' (ID: {evidence.id}). Total discovered: {discoveredEvidenceIds.Count}");
                 OnEvidenceDiscovered?.Invoke(evidence);
                 AudioManager.Instance?.PlayClueDiscovered();
             }
@@ -126,6 +129,7 @@ namespace CaseClosed.Managers
             {
                 unlockedClueIds.Add(clueId);
                 unlockedCluesText[clueId] = clueText;
+                Debug.Log($"[CaseManager] Unlocked new clue: '[{clueId}]' - \"{clueText}\". Total clues: {unlockedClueIds.Count}");
                 OnClueUnlocked?.Invoke(clueId, clueText);
                 AudioManager.Instance?.PlayClueDiscovered();
             }
@@ -142,6 +146,7 @@ namespace CaseClosed.Managers
             if (!exposedContradictionIds.Contains(rule.ruleId))
             {
                 exposedContradictionIds.Add(rule.ruleId);
+                Debug.Log($"[CaseManager] Registered contradiction exposed: '{rule.ruleTitle}' (ID: {rule.ruleId}). Total contradictions caught: {exposedContradictionIds.Count}");
 
                 if (!string.IsNullOrEmpty(rule.unlockedClueId))
                 {

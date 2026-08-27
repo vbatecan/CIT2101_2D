@@ -58,6 +58,8 @@ namespace CaseClosed.UI
         {
             if (node == null) return;
 
+            Debug.Log($"[UI:Dialogue] Displaying node '{node.nodeId}' (Speaker: '{node.speakerName}', Challengeable: {node.isChallengeable})");
+
             if (speakerNameText != null) speakerNameText.text = node.speakerName;
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
@@ -109,6 +111,8 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnNextButtonClicked()
         {
+            Debug.Log($"[UI:Dialogue] Next button clicked (IsTyping: {isTyping})");
+
             if (isTyping)
             {
                 CompleteTypingInstantly();
@@ -125,7 +129,9 @@ namespace CaseClosed.UI
         private void OnChallengeButtonClicked()
         {
             bool currentState = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
-            InterrogationManager.Instance?.ToggleChallengeMode(!currentState);
+            bool newState = !currentState;
+            Debug.Log($"[UI:Dialogue] Challenge button clicked (Switching to: {newState})");
+            InterrogationManager.Instance?.ToggleChallengeMode(newState);
         }
 
         /// <summary>
@@ -173,6 +179,7 @@ namespace CaseClosed.UI
                     EvidenceSO currentEv = ev;
                     btnObj.GetComponent<Button>().onClick.AddListener(() =>
                     {
+                        Debug.Log($"[UI:Dialogue] Evidence picker selected item '{currentEv.evidenceName}' (ID: {currentEv.id}) to present");
                         InterrogationManager.Instance?.PresentEvidenceToChallenge(currentEv);
                     });
                 }
@@ -186,6 +193,8 @@ namespace CaseClosed.UI
         /// <param name="reactionMessage">The reaction dialogue text returned from the challenge.</param>
         private void HandleChallengeResult(bool success, string reactionMessage)
         {
+            Debug.Log($"[UI:Dialogue] Received challenge result (Success: {success}, MessageLength: {reactionMessage?.Length ?? 0})");
+
             if (speakerNameText != null)
             {
                 CharacterProfileSO suspect = InterrogationManager.Instance?.currentSuspect;

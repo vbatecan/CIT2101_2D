@@ -55,17 +55,20 @@ namespace CaseClosed.Managers
             if (string.IsNullOrEmpty(selectedClueA))
             {
                 selectedClueA = clueId;
+                Debug.Log($"[DeductionBoard] Selected first clue for pairing: '{selectedClueA}'");
                 OnClueSelectedForConnection?.Invoke(selectedClueA);
             }
             else if (selectedClueA == clueId)
             {
                 // Deselect if clicking the already selected clue
+                Debug.Log($"[DeductionBoard] Deselected clue: '{selectedClueA}'");
                 selectedClueA = null;
                 OnClueSelectedForConnection?.Invoke(null);
             }
             else
             {
                 selectedClueB = clueId;
+                Debug.Log($"[DeductionBoard] Selected second clue for pairing: '{selectedClueB}'. Attempting deduction connection...");
                 AttemptConnection(selectedClueA, selectedClueB);
             }
         }
@@ -75,6 +78,7 @@ namespace CaseClosed.Managers
         /// </summary>
         public void ClearSelection()
         {
+            Debug.Log("[DeductionBoard] Selection cleared");
             selectedClueA = null;
             selectedClueB = null;
             OnClueSelectedForConnection?.Invoke(null);
@@ -88,19 +92,25 @@ namespace CaseClosed.Managers
         private void AttemptConnection(string clueA, string clueB)
         {
             CaseSO activeCase = CaseManager.Instance?.activeCase;
-            if (activeCase == null) return;
+            if (activeCase == null)
+            {
+                Debug.LogWarning("[DeductionBoard] Cannot attempt connection: activeCase is null");
+                return;
+            }
 
             // Connection matching logic delegated to Service
             ClueConnectionSO matchedRule = deductionService.FindMatchingConnection(activeCase, clueA, clueB);
 
             if (matchedRule != null)
             {
+                Debug.Log($"[DeductionBoard] Successful deduction! Matched '{matchedRule.connectionTitle}' -> Unlocks '{matchedRule.resultClueTitle}' (ID: {matchedRule.resultClueId})");
                 CaseManager.Instance?.UnlockClue(matchedRule.resultClueId, matchedRule.deductionText);
                 AudioManager.Instance?.PlayDeductionLinked();
                 OnConnectionResult?.Invoke(true, matchedRule);
             }
             else
             {
+                Debug.Log($"[DeductionBoard] No deduction found connecting '{clueA}' and '{clueB}'");
                 OnConnectionResult?.Invoke(false, null);
             }
 

@@ -72,6 +72,8 @@ namespace CaseClosed.Managers
             currentDialogueTree = dialogueTree;
             isChallengeModeActive = false;
 
+            Debug.Log($"[Interrogation] Set interrogation target: '{suspect?.fullName}' (Tree: '{dialogueTree?.treeId}')");
+
             OnSuspectChanged?.Invoke(currentSuspect);
 
             if (currentDialogueTree != null && !string.IsNullOrEmpty(currentDialogueTree.startNodeId))
@@ -86,13 +88,23 @@ namespace CaseClosed.Managers
         /// <param name="nodeId">The target node ID to navigate to.</param>
         public void JumpToNode(string nodeId)
         {
-            if (currentDialogueTree == null) return;
+            if (currentDialogueTree == null)
+            {
+                Debug.LogWarning("[Interrogation] Cannot jump to node: currentDialogueTree is null");
+                return;
+            }
+
             DialogueNode targetNode = currentDialogueTree.GetNodeById(nodeId);
             if (targetNode != null)
             {
                 currentNode = targetNode;
+                Debug.Log($"[Interrogation] Jumped to node '{nodeId}' (Speaker: '{targetNode.speakerName}', Expr: {targetNode.expression}, Challengeable: {targetNode.isChallengeable})");
                 OnDialogueNodeDisplayed?.Invoke(currentNode);
                 OnExpressionChanged?.Invoke(currentNode.expression);
+            }
+            else
+            {
+                Debug.LogWarning($"[Interrogation] Dialogue node '{nodeId}' not found in tree '{currentDialogueTree.treeId}'");
             }
         }
 
@@ -111,7 +123,12 @@ namespace CaseClosed.Managers
 
             if (!string.IsNullOrEmpty(currentNode.defaultNextNodeId))
             {
+                Debug.Log($"[Interrogation] Advancing dialogue from '{currentNode.nodeId}' to default next '{currentNode.defaultNextNodeId}'");
                 JumpToNode(currentNode.defaultNextNodeId);
+            }
+            else
+            {
+                Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{currentNode.nodeId}'");
             }
         }
 
@@ -123,11 +140,13 @@ namespace CaseClosed.Managers
         {
             if (currentNode == null || !currentNode.isChallengeable)
             {
+                Debug.Log($"[Interrogation] Current node '{(currentNode != null ? currentNode.nodeId : "NULL")}' is not challengeable.");
                 OnChallengeModeToggled?.Invoke(false);
                 return;
             }
 
             isChallengeModeActive = enable;
+            Debug.Log($"[Interrogation] Challenge mode toggled: {isChallengeModeActive} for node '{currentNode.nodeId}'");
             OnChallengeModeToggled?.Invoke(isChallengeModeActive);
         }
 
@@ -142,6 +161,8 @@ namespace CaseClosed.Managers
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             if (activeCase == null) return;
 
+            Debug.Log($"[Interrogation] Presenting evidence '{presentedEvidence.evidenceName}' (ID: {presentedEvidence.id}) against statement node '{currentNode.nodeId}'");
+
             // Contradiction verification delegated to Service
             ContradictionRuleSO matchingRule = interrogationService.FindMatchingContradiction(
                 activeCase,
@@ -152,6 +173,7 @@ namespace CaseClosed.Managers
             if (matchingRule != null)
             {
                 // Contradiction successfully exposed
+                Debug.Log($"[Interrogation] Contradiction exposed! Rule: '{matchingRule.ruleTitle}' (Reaction: {matchingRule.reactionExpression})");
                 CaseManager.Instance?.RegisterContradictionExposed(matchingRule);
                 OnExpressionChanged?.Invoke(matchingRule.reactionExpression);
                 OnChallengeResult?.Invoke(true, matchingRule.reactionDialogue);
@@ -168,9 +190,11 @@ namespace CaseClosed.Managers
             {
                 // Challenge failed / No contradiction with this evidence
                 CharacterExpression failExpression = interrogationService.GetFailureExpression(currentSuspect);
-                OnExpressionChanged?.Invoke(failExpression);
-
                 string responseText = interrogationService.GetFailureResponseText(currentSuspect, presentedEvidence);
+
+                Debug.Log($"[Interrogation] Challenge failed. Suspect reaction expression: {failExpression}. Response: \"{responseText}\"");
+
+                OnExpressionChanged?.Invoke(failExpression);
                 OnChallengeResult?.Invoke(false, responseText);
             }
         }

@@ -57,6 +57,8 @@ namespace CaseClosed.UI
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             if (activeCase == null || activeCase.conclusionQuestions == null) return;
 
+            Debug.Log($"[UI:Conclusion] Setting up conclusion quiz for '{activeCase.caseTitle}' with {activeCase.conclusionQuestions.Count} questions");
+
             if (quizContainer != null) quizContainer.SetActive(true);
             if (resultsContainer != null) resultsContainer.SetActive(false);
 
@@ -110,6 +112,7 @@ namespace CaseClosed.UI
 
                     optObj.GetComponent<Button>().onClick.AddListener(() =>
                     {
+                        Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
                         playerAnswers[questionIndex] = optionIndex;
                         optText.text = $"   [X] {q.options[optionIndex]}";
                         AudioManager.Instance?.PlayButtonClick();
@@ -123,6 +126,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnSubmitClicked()
         {
+            Debug.Log($"[UI:Conclusion] Submit conclusion button clicked. Answers count: {playerAnswers.Count}");
             if (CaseConclusionManager.Instance == null) return;
 
             CaseEvaluationResult result = CaseConclusionManager.Instance.EvaluateCase(playerAnswers);
@@ -136,6 +140,8 @@ namespace CaseClosed.UI
         private void DisplayResultsCard(CaseEvaluationResult result)
         {
             if (result == null) return;
+
+            Debug.Log($"[UI:Conclusion] Displaying results scorecard: Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}");
 
             if (quizContainer != null) quizContainer.SetActive(false);
             if (resultsContainer != null) resultsContainer.SetActive(true);
@@ -174,6 +180,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnContinueClicked()
         {
+            Debug.Log("[UI:Conclusion] Continue button clicked, navigating back to InvestigationTable");
             UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
         }
     }

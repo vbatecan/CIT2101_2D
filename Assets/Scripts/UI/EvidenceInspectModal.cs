@@ -50,6 +50,8 @@ namespace CaseClosed.UI
             currentEvidence = evidence;
             if (evidence == null) return;
 
+            Debug.Log($"[UI:InspectModal] Displaying evidence '{evidence.evidenceName}' (ID: {evidence.id}, Hotspots: {evidence.hotspots?.Count ?? 0})");
+
             if (evidenceTitleText != null) evidenceTitleText.text = evidence.evidenceName;
 
             if (evidenceZoomImage != null)
@@ -101,6 +103,7 @@ namespace CaseClosed.UI
                 EvidenceHotspot currentSpot = spot;
                 spotObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
+                    Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
                     EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
                 });
             }
@@ -112,6 +115,8 @@ namespace CaseClosed.UI
         /// <param name="hotspot">The hotspot that was discovered.</param>
         private void HandleHotspotDiscovered(EvidenceHotspot hotspot)
         {
+            Debug.Log($"[UI:InspectModal] Hotspot discovered notification shown for '{hotspot.hotspotTitle}'");
+
             if (clueUnlockedNotificationText != null)
             {
                 clueUnlockedNotificationText.gameObject.SetActive(true);
@@ -130,6 +135,7 @@ namespace CaseClosed.UI
         /// <param name="angle">Rotation delta in degrees (e.g. 90f or -90f).</param>
         private void RotateSprite(float angle)
         {
+            Debug.Log($"[UI:InspectModal] Rotate button clicked (Angle delta: {angle}°)");
             if (evidenceZoomImage != null)
             {
                 evidenceZoomImage.rectTransform.Rotate(0, 0, angle);
@@ -141,6 +147,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnCloseClicked()
         {
+            Debug.Log("[UI:InspectModal] Close inspect modal button clicked");
             EvidenceManager.Instance?.CloseInspectModal();
         }
     }

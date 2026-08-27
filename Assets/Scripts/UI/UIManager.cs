@@ -70,6 +70,7 @@ namespace CaseClosed.UI
         /// <param name="panelType">The target <see cref="UIPanelType"/> to activate.</param>
         public void ShowPanel(UIPanelType panelType)
         {
+            Debug.Log($"[UI:Manager] Transitioning panel from '{currentPanel}' to '{panelType}'");
             currentPanel = panelType;
 
             if (mainTablePanel != null) mainTablePanel.SetActive(panelType == UIPanelType.InvestigationTable || panelType == UIPanelType.InspectModal);
@@ -87,6 +88,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void ToggleNotebookPanel()
         {
+            Debug.Log("[UI:Manager] Toggle notebook panel clicked");
             if (currentPanel == UIPanelType.CaseFileNotebook)
                 ShowPanel(UIPanelType.InvestigationTable);
             else
@@ -98,6 +100,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void ToggleDeductionBoardPanel()
         {
+            Debug.Log("[UI:Manager] Toggle deduction board panel clicked");
             if (currentPanel == UIPanelType.DeductionBoard)
                 ShowPanel(UIPanelType.InvestigationTable);
             else
@@ -109,6 +112,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void OpenConclusionQuiz()
         {
+            Debug.Log("[UI:Manager] Open conclusion quiz button clicked");
             ShowPanel(UIPanelType.ConclusionQuiz);
         }
     }
