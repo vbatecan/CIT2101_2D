@@ -5,6 +5,10 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
+    /// <summary>
+    /// UI View MonoBehaviour managing the zoomed evidence inspection modal, sprite rotation, and interactive hotspot buttons.
+    /// Can be dragged directly onto the InspectModal GameObject in the Unity Inspector.
+    /// </summary>
     public class EvidenceInspectModal : MonoBehaviour
     {
         [Header("UI Controls")]
@@ -21,6 +25,9 @@ namespace CaseClosed.UI
 
         private EvidenceSO currentEvidence;
 
+        /// <summary>
+        /// Binds UI button click listeners and subscribes to evidence manager events.
+        /// </summary>
         private void Start()
         {
             if (closeButton != null) closeButton.onClick.AddListener(OnCloseClicked);
@@ -34,6 +41,10 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Populates the inspect modal with zoomed sprite, title, observation descriptions, and hotspot overlays.
+        /// </summary>
+        /// <param name="evidence">The evidence item being inspected.</param>
         public void DisplayEvidence(EvidenceSO evidence)
         {
             currentEvidence = evidence;
@@ -59,6 +70,10 @@ namespace CaseClosed.UI
             PopulateHotspots(evidence);
         }
 
+        /// <summary>
+        /// Dynamically creates interactive hotspot buttons positioned over normalized coordinates of the evidence sprite.
+        /// </summary>
+        /// <param name="evidence">The evidence item containing hotspot data.</param>
         private void PopulateHotspots(EvidenceSO evidence)
         {
             if (hotspotsContainer == null) return;
@@ -69,8 +84,6 @@ namespace CaseClosed.UI
             }
 
             if (evidence.hotspots == null || evidence.hotspots.Count == 0) return;
-
-            Vector2 containerSize = hotspotsContainer.rect.size;
 
             foreach (var spot in evidence.hotspots)
             {
@@ -93,6 +106,10 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Updates the notification banner and re-renders hotspot markers when a hotspot is discovered.
+        /// </summary>
+        /// <param name="hotspot">The hotspot that was discovered.</param>
         private void HandleHotspotDiscovered(EvidenceHotspot hotspot)
         {
             if (clueUnlockedNotificationText != null)
@@ -107,6 +124,10 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Rotates the zoomed evidence sprite by a specified angle in degrees.
+        /// </summary>
+        /// <param name="angle">Rotation delta in degrees (e.g. 90f or -90f).</param>
         private void RotateSprite(float angle)
         {
             if (evidenceZoomImage != null)
@@ -115,6 +136,9 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Handles close button click, closing the inspect modal via <see cref="EvidenceManager"/>.
+        /// </summary>
         private void OnCloseClicked()
         {
             EvidenceManager.Instance?.CloseInspectModal();

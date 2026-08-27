@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace CaseClosed.Data
 {
+    /// <summary>
+    /// Represents a multiple-choice question presented in the case conclusion quiz.
+    /// </summary>
     [Serializable]
     public class ConclusionQuestion
     {
@@ -14,6 +17,9 @@ namespace CaseClosed.Data
         public int pointValue = 250;
     }
 
+    /// <summary>
+    /// ScriptableObject defining an entire detective case file, including suspects, evidence, dialogue trees, and conclusion quiz.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewCase", menuName = "Case Closed/Case File")]
     public class CaseSO : ScriptableObject
     {

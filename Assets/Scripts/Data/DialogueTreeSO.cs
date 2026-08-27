@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
+    /// <summary>
+    /// Represents a branching dialogue choice that redirects conversation or requires unlocked clues.
+    /// </summary>
     [Serializable]
     public class DialogueNodeChoice
     {
@@ -12,6 +16,9 @@ namespace CaseClosed.Data
         public string requiredClueId; // Optional lock
     }
 
+    /// <summary>
+    /// Represents an individual dialogue statement with speaker info, challengeable flag, and branching options.
+    /// </summary>
     [Serializable]
     public class DialogueNode
     {
@@ -32,6 +39,9 @@ namespace CaseClosed.Data
         public string defaultNextNodeId;
     }
 
+    /// <summary>
+    /// ScriptableObject defining an interrogation dialogue tree for a character.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewDialogueTree", menuName = "Case Closed/Dialogue Tree")]
     public class DialogueTreeSO : ScriptableObject
     {
@@ -40,11 +50,19 @@ namespace CaseClosed.Data
         public string startNodeId;
         public List<DialogueNode> nodes = new List<DialogueNode>();
 
+        /// <summary>
+        /// Retrieves a specific dialogue node by its identifier.
+        /// </summary>
+        /// <param name="nodeId">The unique node identifier.</param>
+        /// <returns>The matching <see cref="DialogueNode"/> if found; otherwise, null.</returns>
         public DialogueNode GetNodeById(string nodeId)
         {
-            foreach (var node in nodes)
+            if (nodes != null)
             {
-                if (node.nodeId == nodeId) return node;
+                foreach (var node in nodes)
+                {
+                    if (node != null && node.nodeId == nodeId) return node;
+                }
             }
             return null;
         }

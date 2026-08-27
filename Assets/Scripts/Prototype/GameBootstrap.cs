@@ -1,16 +1,25 @@
 using UnityEngine;
+using CaseClosed.Enums;
 using CaseClosed.Gameplay;
 using CaseClosed.Managers;
 using CaseClosed.UI;
 
 namespace CaseClosed.Prototype
 {
+    /// <summary>
+    /// Entrypoint bootstrapping MonoBehaviour that initializes all managers, attaches required camera scripts,
+    /// and handles keyboard shortcuts (Keys 1, 2, 3) for quick level switching during prototyping.
+    /// Can be dragged directly onto a GameBootstrap GameObject in the Unity Inspector.
+    /// </summary>
     public class GameBootstrap : MonoBehaviour
     {
         private Case01Initializer level1;
         private Case02Initializer level2;
         private Case03Initializer level3;
 
+        /// <summary>
+        /// Ensures all singleton managers exist, sets up fixed camera, and registers level initializers.
+        /// </summary>
         private void Awake()
         {
             SetupFixedCamera();
@@ -32,14 +41,20 @@ namespace CaseClosed.Prototype
             if (level3 == null) level3 = gameObject.AddComponent<Case03Initializer>();
         }
 
+        /// <summary>
+        /// Listens for number key presses (1, 2, 3) to dynamically switch active cases.
+        /// </summary>
         private void Update()
         {
-            // Level selection shortcuts for testing / prototype navigation
             if (Input.GetKeyDown(KeyCode.Alpha1)) LoadLevel(1);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) LoadLevel(2);
             else if (Input.GetKeyDown(KeyCode.Alpha3)) LoadLevel(3);
         }
 
+        /// <summary>
+        /// Loads the data corresponding to a specified case index and initializes managers.
+        /// </summary>
+        /// <param name="levelIndex">The 1-based level index (1, 2, or 3).</param>
         public void LoadLevel(int levelIndex)
         {
             CaseClosed.Data.CaseSO caseData = null;
@@ -68,6 +83,9 @@ namespace CaseClosed.Prototype
             }
         }
 
+        /// <summary>
+        /// Locates or instantiates the Main Camera and ensures the <see cref="FixedInvestigationCamera"/> script is attached.
+        /// </summary>
         private void SetupFixedCamera()
         {
             Camera mainCam = Camera.main;
@@ -84,6 +102,11 @@ namespace CaseClosed.Prototype
             }
         }
 
+        /// <summary>
+        /// Locates an existing manager MonoBehaviour in the scene or creates a new GameObject with the component.
+        /// </summary>
+        /// <typeparam name="T">The MonoBehaviour manager type to ensure.</typeparam>
+        /// <returns>The existing or newly instantiated manager component.</returns>
         private T EnsureManager<T>() where T : MonoBehaviour
         {
             T manager = FindFirstObjectByType<T>();

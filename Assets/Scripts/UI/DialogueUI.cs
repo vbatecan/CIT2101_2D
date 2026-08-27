@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CaseClosed.Data;
@@ -7,6 +6,11 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
+    /// <summary>
+    /// UI View MonoBehaviour managing dialogue presentation, typewriter text rendering,
+    /// and evidence challenge selection grids.
+    /// Can be dragged directly onto the DialoguePanel GameObject in the Unity Inspector.
+    /// </summary>
     public class DialogueUI : MonoBehaviour
     {
         [Header("UI Elements")]
@@ -28,6 +32,9 @@ namespace CaseClosed.UI
         private bool isTyping = false;
         private string currentFullText = "";
 
+        /// <summary>
+        /// Binds UI button click listeners and subscribes to interrogation manager events.
+        /// </summary>
         private void Start()
         {
             if (nextButton != null) nextButton.onClick.AddListener(OnNextButtonClicked);
@@ -43,6 +50,10 @@ namespace CaseClosed.UI
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
         }
 
+        /// <summary>
+        /// Displays a dialogue node statement with typewriter effect and adjusts challenge button visibility.
+        /// </summary>
+        /// <param name="node">The dialogue node being presented.</param>
         public void DisplayNode(DialogueNode node)
         {
             if (node == null) return;
@@ -58,16 +69,21 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Coroutine that animates text character by character with optional typewriter audio clicks.
+        /// </summary>
+        /// <param name="text">The full statement text to animate.</param>
+        /// <returns>IEnumerator for coroutine execution.</returns>
         private IEnumerator TypeText(string text)
         {
             isTyping = true;
             currentFullText = text;
-            dialogueBodyText.text = "";
+            if (dialogueBodyText != null) dialogueBodyText.text = "";
 
-            float delay = 1f / charactersPerSecond;
+            float delay = 1f / Mathf.Max(1f, charactersPerSecond);
             for (int i = 0; i < text.Length; i++)
             {
-                dialogueBodyText.text += text[i];
+                if (dialogueBodyText != null) dialogueBodyText.text += text[i];
                 if (i % 3 == 0) AudioManager.Instance?.PlayTypewriterKey();
                 yield return new WaitForSeconds(delay);
             }
@@ -75,16 +91,22 @@ namespace CaseClosed.UI
             isTyping = false;
         }
 
+        /// <summary>
+        /// Instantly finishes the current typewriter animation, displaying the full dialogue string.
+        /// </summary>
         public void CompleteTypingInstantly()
         {
             if (isTyping)
             {
                 if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
-                dialogueBodyText.text = currentFullText;
+                if (dialogueBodyText != null) dialogueBodyText.text = currentFullText;
                 isTyping = false;
             }
         }
 
+        /// <summary>
+        /// Handles next button click: completes text immediately if typing, or advances dialogue node if finished.
+        /// </summary>
         private void OnNextButtonClicked()
         {
             if (isTyping)
@@ -97,12 +119,19 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Handles challenge button click, toggling challenge mode in the interrogation controller.
+        /// </summary>
         private void OnChallengeButtonClicked()
         {
             bool currentState = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
             InterrogationManager.Instance?.ToggleChallengeMode(!currentState);
         }
 
+        /// <summary>
+        /// Updates the visual challenge state highlight and toggles the evidence picker grid.
+        /// </summary>
+        /// <param name="isActive">Whether challenge mode is currently enabled.</param>
         private void UpdateChallengeState(bool isActive)
         {
             if (challengeHighlight != null) challengeHighlight.SetActive(isActive);
@@ -114,6 +143,9 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Populates the evidence picker grid with clickable buttons representing all discovered evidence items.
+        /// </summary>
         private void PopulateEvidencePicker()
         {
             if (evidencePickerGrid == null) return;
@@ -130,7 +162,7 @@ namespace CaseClosed.UI
 
             foreach (var ev in activeCase.evidenceItems)
             {
-                if (discoveredIds.Contains(ev.id))
+                if (ev != null && discoveredIds.Contains(ev.id))
                 {
                     GameObject btnObj = new GameObject($"Present_{ev.id}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
                     btnObj.transform.SetParent(evidencePickerGrid, false);
@@ -147,6 +179,11 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Displays the reaction dialogue and updates the speaker name following a challenge attempt.
+        /// </summary>
+        /// <param name="success">Whether the challenge exposed a contradiction.</param>
+        /// <param name="reactionMessage">The reaction dialogue text returned from the challenge.</param>
         private void HandleChallengeResult(bool success, string reactionMessage)
         {
             if (speakerNameText != null)
