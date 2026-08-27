@@ -8,10 +8,18 @@ namespace CaseClosed.Gameplay
 {
     /// <summary>
     /// Gameplay MonoBehaviour managing character portraits/sprites and subtle breathing idle animations across table views.
-    /// Can be dragged directly onto the SuspectPortrait or Character GameObject in the Unity Inspector.
+    /// Supports multi-character setups (Primary and Secondary suspects) sitting side-by-side across the interrogation table.
+    /// Can be dragged directly onto character GameObjects in the Unity Inspector.
     /// </summary>
     public class CharacterDisplay : MonoBehaviour
     {
+        [Header("Character Slot Assignment")]
+        [Tooltip("Designates whether this GameObject renders the primary suspect, a secondary suspect/witness, or auto-syncs.")]
+        public CharacterSlot characterSlot = CharacterSlot.AutoDetect;
+
+        [Tooltip("Optional explicit character ID filter (e.g. 'CHAR_VINCE_BATECAN' or 'CHAR_PAUL_CAMACHO').")]
+        public string explicitCharacterId;
+
         [Header("Visual Components")]
         public Image characterPortraitImage;
         public SpriteRenderer characterSpriteRenderer;
@@ -25,7 +33,7 @@ namespace CaseClosed.Gameplay
         private Vector3 initialScale;
 
         /// <summary>
-        /// Stores initial visual transform scales and subscribes to interrogation manager suspect and expression events.
+        /// Stores initial visual transform scales and subscribes to case and interrogation manager events.
         /// </summary>
         private void Start()
         {
@@ -35,8 +43,17 @@ namespace CaseClosed.Gameplay
 
             if (InterrogationManager.Instance != null)
             {
-                InterrogationManager.Instance.OnSuspectChanged += UpdateSuspectProfile;
-                InterrogationManager.Instance.OnExpressionChanged += SetExpression;
+                InterrogationManager.Instance.OnSuspectChanged += HandleSuspectChanged;
+                InterrogationManager.Instance.OnExpressionChanged += HandleExpressionChanged;
+            }
+
+            if (CaseManager.Instance != null)
+            {
+                CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
+                if (CaseManager.Instance.activeCase != null)
+                {
+                    HandleCaseLoaded(CaseManager.Instance.activeCase);
+                }
             }
         }
 
@@ -56,14 +73,100 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
+        /// Handles case loading event, populating character portrait based on slot configuration.
+        /// </summary>
+        /// <param name="activeCase">The newly loaded case.</param>
+        private void HandleCaseLoaded(CaseSO activeCase)
+        {
+            if (activeCase == null) return;
+
+            if (!string.IsNullOrEmpty(explicitCharacterId))
+            {
+                if (activeCase.primarySuspect != null && activeCase.primarySuspect.characterId == explicitCharacterId)
+                {
+                    UpdateSuspectProfile(activeCase.primarySuspect);
+                    return;
+                }
+
+                if (activeCase.additionalSuspects != null)
+                {
+                    foreach (var s in activeCase.additionalSuspects)
+                    {
+                        if (s != null && s.characterId == explicitCharacterId)
+                        {
+                            UpdateSuspectProfile(s);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            switch (characterSlot)
+            {
+                case CharacterSlot.PrimarySuspect:
+                    UpdateSuspectProfile(activeCase.primarySuspect);
+                    break;
+
+                case CharacterSlot.SecondarySuspect:
+                    if (activeCase.additionalSuspects != null && activeCase.additionalSuspects.Count > 0)
+                    {
+                        UpdateSuspectProfile(activeCase.additionalSuspects[0]);
+                    }
+                    else
+                    {
+                        SetSprite(null);
+                    }
+                    break;
+
+                case CharacterSlot.AutoDetect:
+                    UpdateSuspectProfile(InterrogationManager.Instance?.currentSuspect ?? activeCase.primarySuspect);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Handles suspect change event from interrogation manager.
+        /// </summary>
+        /// <param name="suspect">The new suspect profile.</param>
+        private void HandleSuspectChanged(CharacterProfileSO suspect)
+        {
+            if (characterSlot == CharacterSlot.AutoDetect)
+            {
+                UpdateSuspectProfile(suspect);
+            }
+        }
+
+        /// <summary>
+        /// Handles character expression change event.
+        /// </summary>
+        /// <param name="expression">The new expression state.</param>
+        private void HandleExpressionChanged(CharacterExpression expression)
+        {
+            if (activeSuspect != null)
+            {
+                // Only react if this display corresponds to the active suspect being interrogated
+                CharacterProfileSO currentInterrogated = InterrogationManager.Instance?.currentSuspect;
+                if (characterSlot == CharacterSlot.AutoDetect || currentInterrogated == null || currentInterrogated.characterId == activeSuspect.characterId)
+                {
+                    SetExpression(expression);
+                }
+            }
+        }
+
+        /// <summary>
         /// Updates the displayed character to a new suspect profile, setting their default sitting pose sprite.
         /// </summary>
         /// <param name="suspect">The suspect profile to display.</param>
         public void UpdateSuspectProfile(CharacterProfileSO suspect)
         {
             activeSuspect = suspect;
-            if (suspect == null) return;
+            if (suspect == null)
+            {
+                SetSprite(null);
+                return;
+            }
 
+            Debug.Log($"[Gameplay:CharacterDisplay] Updated display for slot '{characterSlot}' to '{suspect.fullName}' (ID: {suspect.characterId})");
             SetSprite(suspect.defaultSittingPose);
         }
 
@@ -84,15 +187,15 @@ namespace CaseClosed.Gameplay
         /// <param name="sprite">The sprite to render.</param>
         private void SetSprite(Sprite sprite)
         {
-            if (sprite == null) return;
-
             if (characterPortraitImage != null)
             {
                 characterPortraitImage.sprite = sprite;
+                characterPortraitImage.enabled = (sprite != null);
             }
             if (characterSpriteRenderer != null)
             {
                 characterSpriteRenderer.sprite = sprite;
+                characterSpriteRenderer.enabled = (sprite != null);
             }
         }
     }
