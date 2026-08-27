@@ -1,40 +1,26 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
-    public enum PersonalityTrait
-    {
-        Calm,
-        Nervous,
-        Defensive,
-        Aggressive,
-        Secretive,
-        Confident
-    }
-
-    public enum CharacterExpression
-    {
-        Neutral,
-        Curious,
-        Nervous,
-        Angry,
-        Sad,
-        Surprised,
-        Defensive,
-        Shocked,
-        Thinking,
-        Smug
-    }
-
+    /// <summary>
+    /// Maps a specific facial expression enum to its corresponding visual sprite asset.
+    /// </summary>
     [Serializable]
     public class ExpressionSpriteMapping
     {
+        /// <summary>The emotional expression mapped to this sprite.</summary>
         public CharacterExpression expression;
+
+        /// <summary>The 2D sprite visual representing the expression.</summary>
         public Sprite sprite;
     }
 
+    /// <summary>
+    /// ScriptableObject defining suspect/witness identity, dossier background, personality, and visual expressions.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewCharacterProfile", menuName = "Case Closed/Character Profile")]
     public class CharacterProfileSO : ScriptableObject
     {
@@ -60,12 +46,20 @@ namespace CaseClosed.Data
         public Sprite defaultSittingPose;
         public List<ExpressionSpriteMapping> expressions = new List<ExpressionSpriteMapping>();
 
+        /// <summary>
+        /// Retrieves the matching portrait sprite for a requested character expression, falling back to the default pose.
+        /// </summary>
+        /// <param name="expr">The character expression to look up.</param>
+        /// <returns>The mapped <see cref="Sprite"/> if found; otherwise, <see cref="defaultSittingPose"/>.</returns>
         public Sprite GetSpriteForExpression(CharacterExpression expr)
         {
-            foreach (var mapping in expressions)
+            if (expressions != null)
             {
-                if (mapping.expression == expr)
-                    return mapping.sprite;
+                foreach (var mapping in expressions)
+                {
+                    if (mapping != null && mapping.expression == expr)
+                        return mapping.sprite;
+                }
             }
             return defaultSittingPose;
         }

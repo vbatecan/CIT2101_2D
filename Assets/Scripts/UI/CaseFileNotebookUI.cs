@@ -1,15 +1,19 @@
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using CaseClosed.Data;
+using CaseClosed.Enums;
 using CaseClosed.Managers;
+using CaseClosed.Services;
 
 namespace CaseClosed.UI
 {
+    /// <summary>
+    /// UI View MonoBehaviour managing the detective's case file notebook tabs and display rendering,
+    /// delegating text compilation and formatting to <see cref="NotebookFormattingService"/>.
+    /// Can be dragged directly onto the NotebookPanel GameObject in the Unity Inspector.
+    /// </summary>
     public class CaseFileNotebookUI : MonoBehaviour
     {
-        public enum NotebookTab { CaseSummary, Suspects, Evidence, Clues }
-
         [Header("Tab Buttons")]
         public Button summaryTabButton;
         public Button suspectsTabButton;
@@ -22,7 +26,11 @@ namespace CaseClosed.UI
         public Text notebookContentBody;
 
         private NotebookTab currentTab = NotebookTab.CaseSummary;
+        private readonly NotebookFormattingService formattingService = new NotebookFormattingService();
 
+        /// <summary>
+        /// Binds UI button click listeners for tab switching and close actions.
+        /// </summary>
         private void Start()
         {
             if (summaryTabButton != null) summaryTabButton.onClick.AddListener(() => SwitchTab(NotebookTab.CaseSummary));
@@ -32,92 +40,64 @@ namespace CaseClosed.UI
             if (closeNotebookButton != null) closeNotebookButton.onClick.AddListener(OnCloseClicked);
         }
 
+        /// <summary>
+        /// Refreshes the active tab content when the notebook panel is enabled.
+        /// </summary>
         private void OnEnable()
         {
             SwitchTab(currentTab);
         }
 
+        /// <summary>
+        /// Switches the active notebook tab, formats the corresponding data using <see cref="NotebookFormattingService"/>,
+        /// and updates the text display while playing an audio effect.
+        /// </summary>
+        /// <param name="tab">The target <see cref="NotebookTab"/> to display.</param>
         public void SwitchTab(NotebookTab tab)
         {
             currentTab = tab;
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             if (activeCase == null) return;
 
-            StringBuilder sb = new StringBuilder();
+            Debug.Log($"[UI:Notebook] Switched to tab '{tab}' for case '{activeCase.caseTitle}'");
+
+            string contentText = string.Empty;
 
             switch (tab)
             {
                 case NotebookTab.CaseSummary:
                     if (notebookTitleText != null) notebookTitleText.text = activeCase.caseTitle;
-                    sb.AppendLine($"Date & Location: {activeCase.dateAndLocation}");
-                    sb.AppendLine($"Victim: {activeCase.victimInfo}\n");
-                    sb.AppendLine($"[INCIDENT SUMMARY]\n{activeCase.incidentDescription}\n");
-                    sb.AppendLine($"[OBJECTIVE]\n{activeCase.objective}");
+                    contentText = formattingService.FormatCaseSummary(activeCase);
                     break;
 
                 case NotebookTab.Suspects:
                     if (notebookTitleText != null) notebookTitleText.text = "Suspect Profiles";
-                    AppendSuspectProfile(sb, activeCase.primarySuspect, true);
-                    if (activeCase.additionalSuspects != null)
-                    {
-                        foreach (var suspect in activeCase.additionalSuspects)
-                        {
-                            AppendSuspectProfile(sb, suspect, false);
-                        }
-                    }
+                    contentText = formattingService.FormatSuspectProfiles(activeCase);
                     break;
 
                 case NotebookTab.Evidence:
                     if (notebookTitleText != null) notebookTitleText.text = "Discovered Evidence";
                     var discovered = CaseManager.Instance?.discoveredEvidenceIds;
-                    foreach (var ev in activeCase.evidenceItems)
-                    {
-                        if (discovered != null && discovered.Contains(ev.id))
-                        {
-                            sb.AppendLine($"• {ev.evidenceName} [{ev.category}]");
-                            sb.AppendLine($"  {ev.baseDescription}");
-                            if (ev.isExamined) sb.AppendLine($"  [EXAMINED]: {ev.detailedObservation}");
-                            sb.AppendLine();
-                        }
-                    }
+                    contentText = formattingService.FormatDiscoveredEvidence(activeCase, discovered);
                     break;
 
                 case NotebookTab.Clues:
                     if (notebookTitleText != null) notebookTitleText.text = "Unlocked Clues & Deductions";
                     var cluesDict = CaseManager.Instance?.unlockedCluesText;
-                    if (cluesDict != null && cluesDict.Count > 0)
-                    {
-                        foreach (var kvp in cluesDict)
-                        {
-                            sb.AppendLine($"[CLUE #{kvp.Key}]");
-                            sb.AppendLine($"{kvp.Value}\n");
-                        }
-                    }
-                    else
-                    {
-                        sb.AppendLine("No clues unlocked yet. Examine evidence and interrogate suspects.");
-                    }
+                    contentText = formattingService.FormatUnlockedClues(cluesDict);
                     break;
             }
 
-            if (notebookContentBody != null) notebookContentBody.text = sb.ToString();
+            if (notebookContentBody != null) notebookContentBody.text = contentText;
             AudioManager.Instance?.PlayPaperFlip();
         }
 
-        private void AppendSuspectProfile(StringBuilder sb, CharacterProfileSO profile, bool isPrimary)
-        {
-            if (profile == null) return;
-            sb.AppendLine($"=== {profile.fullName.ToUpper()} {(isPrimary ? "(PRIMARY SUSPECT)" : "")} ===");
-            sb.AppendLine($"Age: {profile.age} | Occupation: {profile.occupation}");
-            sb.AppendLine($"Personality: {profile.personalityTrait}");
-            sb.AppendLine($"Relationship to Victim: {profile.relationshipToVictim}");
-            sb.AppendLine($"Alibi: {profile.alibi}");
-            sb.AppendLine($"Possible Motive: {profile.possibleMotives}");
-            sb.AppendLine($"Known Conflicts: {profile.knownConflicts}\n");
-        }
-
+        /// <summary>
+        /// Handles click on the close notebook button, closing the panel via <see cref="UIManager"/>.
+        /// </summary>
         private void OnCloseClicked()
         {
+            Debug.Log("[UI:Notebook] Close notebook button clicked");
             UIManager.Instance?.ToggleNotebookPanel();
         }
     }

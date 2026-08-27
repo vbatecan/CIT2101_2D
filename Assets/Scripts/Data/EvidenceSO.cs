@@ -1,19 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
-    public enum EvidenceCategory
-    {
-        Photograph,
-        Document,
-        PersonalBelonging,
-        PhysicalClue,
-        ForensicReport,
-        DigitalRecord
-    }
-
+    /// <summary>
+    /// Represents an inspectable 2D hotspot region located on an evidence item during close-up examination.
+    /// </summary>
     [Serializable]
     public class EvidenceHotspot
     {
@@ -27,6 +21,9 @@ namespace CaseClosed.Data
         public bool isDiscovered;
     }
 
+    /// <summary>
+    /// ScriptableObject defining an evidence item, including visual sprites, detailed descriptions, and inspectable hotspots.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewEvidence", menuName = "Case Closed/Evidence Item")]
     public class EvidenceSO : ScriptableObject
     {
@@ -56,6 +53,9 @@ namespace CaseClosed.Data
         [Header("Inspectable Hotspots")]
         public List<EvidenceHotspot> hotspots = new List<EvidenceHotspot>();
 
+        /// <summary>
+        /// Resets the runtime examination flags and hotspot discovery states back to initial defaults.
+        /// </summary>
         public void ResetRuntimeState()
         {
             isExamined = false;
@@ -64,7 +64,10 @@ namespace CaseClosed.Data
             {
                 foreach (var spot in hotspots)
                 {
-                    spot.isDiscovered = false;
+                    if (spot != null)
+                    {
+                        spot.isDiscovered = false;
+                    }
                 }
             }
         }

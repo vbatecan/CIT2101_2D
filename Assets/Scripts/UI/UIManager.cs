@@ -1,20 +1,16 @@
 using UnityEngine;
+using CaseClosed.Enums;
 using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    public enum UIPanelType
-    {
-        InvestigationTable,
-        InspectModal,
-        CaseFileNotebook,
-        DeductionBoard,
-        ConclusionQuiz,
-        ResultsScreen
-    }
-
+    /// <summary>
+    /// Master UI View coordinator MonoBehaviour managing canvas panel states, modal dialogs, and navigation buttons.
+    /// Can be dragged directly onto the Canvas/UIManager GameObject in the Unity Inspector.
+    /// </summary>
     public class UIManager : MonoBehaviour
     {
+        /// <summary>Singleton instance of the UIManager.</summary>
         public static UIManager Instance { get; private set; }
 
         [Header("UI Panels")]
@@ -32,6 +28,9 @@ namespace CaseClosed.UI
 
         private UIPanelType currentPanel = UIPanelType.InvestigationTable;
 
+        /// <summary>
+        /// Initializes the singleton instance.
+        /// </summary>
         private void Awake()
         {
             if (Instance == null)
@@ -44,12 +43,18 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Shows the default investigation table panel and hooks event listeners on start.
+        /// </summary>
         private void Start()
         {
             ShowPanel(UIPanelType.InvestigationTable);
             RegisterEvents();
         }
 
+        /// <summary>
+        /// Registers event handlers for evidence inspect modal open and close notifications.
+        /// </summary>
         private void RegisterEvents()
         {
             if (EvidenceManager.Instance != null)
@@ -59,8 +64,13 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Activates the requested UI panel and deactivates all other mutually exclusive panels.
+        /// </summary>
+        /// <param name="panelType">The target <see cref="UIPanelType"/> to activate.</param>
         public void ShowPanel(UIPanelType panelType)
         {
+            Debug.Log($"[UI:Manager] Transitioning panel from '{currentPanel}' to '{panelType}'");
             currentPanel = panelType;
 
             if (mainTablePanel != null) mainTablePanel.SetActive(panelType == UIPanelType.InvestigationTable || panelType == UIPanelType.InspectModal);
@@ -73,24 +83,36 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayPaperFlip();
         }
 
+        /// <summary>
+        /// Toggles the case file notebook panel on and off.
+        /// </summary>
         public void ToggleNotebookPanel()
         {
+            Debug.Log("[UI:Manager] Toggle notebook panel clicked");
             if (currentPanel == UIPanelType.CaseFileNotebook)
                 ShowPanel(UIPanelType.InvestigationTable);
             else
                 ShowPanel(UIPanelType.CaseFileNotebook);
         }
 
+        /// <summary>
+        /// Toggles the deduction board panel on and off.
+        /// </summary>
         public void ToggleDeductionBoardPanel()
         {
+            Debug.Log("[UI:Manager] Toggle deduction board panel clicked");
             if (currentPanel == UIPanelType.DeductionBoard)
                 ShowPanel(UIPanelType.InvestigationTable);
             else
                 ShowPanel(UIPanelType.DeductionBoard);
         }
 
+        /// <summary>
+        /// Opens the final case conclusion quiz panel.
+        /// </summary>
         public void OpenConclusionQuiz()
         {
+            Debug.Log("[UI:Manager] Open conclusion quiz button clicked");
             ShowPanel(UIPanelType.ConclusionQuiz);
         }
     }

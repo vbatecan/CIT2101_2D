@@ -2,10 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CaseClosed.Data;
+using CaseClosed.Enums;
 using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
+    /// <summary>
+    /// UI View MonoBehaviour managing the conclusion quiz presentation, option selection,
+    /// and final results scorecard rendering.
+    /// Can be dragged directly onto the ConclusionPanel GameObject in the Unity Inspector.
+    /// </summary>
     public class ConclusionUI : MonoBehaviour
     {
         [Header("Quiz Elements")]
@@ -24,6 +30,9 @@ namespace CaseClosed.UI
 
         private List<int> playerAnswers = new List<int>();
 
+        /// <summary>
+        /// Binds UI button click listeners on start.
+        /// </summary>
         private void Start()
         {
             if (submitConclusionButton != null) submitConclusionButton.onClick.AddListener(OnSubmitClicked);
@@ -32,15 +41,23 @@ namespace CaseClosed.UI
             if (resultsContainer != null) resultsContainer.SetActive(false);
         }
 
+        /// <summary>
+        /// Rebuilds quiz options whenever the conclusion UI panel is enabled.
+        /// </summary>
         private void OnEnable()
         {
             SetupQuiz();
         }
 
+        /// <summary>
+        /// Initializes the player answer list and dynamically renders quiz questions and selectable option items.
+        /// </summary>
         private void SetupQuiz()
         {
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             if (activeCase == null || activeCase.conclusionQuestions == null) return;
+
+            Debug.Log($"[UI:Conclusion] Setting up conclusion quiz for '{activeCase.caseTitle}' with {activeCase.conclusionQuestions.Count} questions");
 
             if (quizContainer != null) quizContainer.SetActive(true);
             if (resultsContainer != null) resultsContainer.SetActive(false);
@@ -54,6 +71,10 @@ namespace CaseClosed.UI
             RenderQuestionOptions(activeCase);
         }
 
+        /// <summary>
+        /// Dynamically builds the UI hierarchy for question headers and clickable option choices.
+        /// </summary>
+        /// <param name="activeCase">The active case containing conclusion questions.</param>
         private void RenderQuestionOptions(CaseSO activeCase)
         {
             if (optionsGrid == null) return;
@@ -91,6 +112,7 @@ namespace CaseClosed.UI
 
                     optObj.GetComponent<Button>().onClick.AddListener(() =>
                     {
+                        Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
                         playerAnswers[questionIndex] = optionIndex;
                         optText.text = $"   [X] {q.options[optionIndex]}";
                         AudioManager.Instance?.PlayButtonClick();
@@ -99,17 +121,27 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Handles click on the submit button, triggering case evaluation in <see cref="CaseConclusionManager"/> and displaying results.
+        /// </summary>
         private void OnSubmitClicked()
         {
+            Debug.Log($"[UI:Conclusion] Submit conclusion button clicked. Answers count: {playerAnswers.Count}");
             if (CaseConclusionManager.Instance == null) return;
 
             CaseEvaluationResult result = CaseConclusionManager.Instance.EvaluateCase(playerAnswers);
             DisplayResultsCard(result);
         }
 
+        /// <summary>
+        /// Populates and displays the final evaluation results scorecard.
+        /// </summary>
+        /// <param name="result">The evaluation result data to display.</param>
         private void DisplayResultsCard(CaseEvaluationResult result)
         {
             if (result == null) return;
+
+            Debug.Log($"[UI:Conclusion] Displaying results scorecard: Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}");
 
             if (quizContainer != null) quizContainer.SetActive(false);
             if (resultsContainer != null) resultsContainer.SetActive(true);
@@ -143,8 +175,12 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Handles click on continue button, returning to the investigation table via <see cref="UIManager"/>.
+        /// </summary>
         private void OnContinueClicked()
         {
+            Debug.Log("[UI:Conclusion] Continue button clicked, navigating back to InvestigationTable");
             UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
         }
     }

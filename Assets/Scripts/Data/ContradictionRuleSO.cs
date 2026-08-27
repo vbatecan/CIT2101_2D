@@ -1,7 +1,12 @@
 using UnityEngine;
+using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
+    /// <summary>
+    /// ScriptableObject defining a contradiction rule, mapping statement nodes to required evidence items
+    /// and character reaction states.
+    /// </summary>
     [CreateAssetMenu(fileName = "NewContradictionRule", menuName = "Case Closed/Contradiction Rule")]
     public class ContradictionRuleSO : ScriptableObject
     {

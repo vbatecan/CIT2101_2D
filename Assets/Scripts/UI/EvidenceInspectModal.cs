@@ -5,6 +5,10 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
+    /// <summary>
+    /// UI View MonoBehaviour managing the zoomed evidence inspection modal, sprite rotation, and interactive hotspot buttons.
+    /// Can be dragged directly onto the InspectModal GameObject in the Unity Inspector.
+    /// </summary>
     public class EvidenceInspectModal : MonoBehaviour
     {
         [Header("UI Controls")]
@@ -21,6 +25,9 @@ namespace CaseClosed.UI
 
         private EvidenceSO currentEvidence;
 
+        /// <summary>
+        /// Binds UI button click listeners and subscribes to evidence manager events.
+        /// </summary>
         private void Start()
         {
             if (closeButton != null) closeButton.onClick.AddListener(OnCloseClicked);
@@ -34,10 +41,16 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Populates the inspect modal with zoomed sprite, title, observation descriptions, and hotspot overlays.
+        /// </summary>
+        /// <param name="evidence">The evidence item being inspected.</param>
         public void DisplayEvidence(EvidenceSO evidence)
         {
             currentEvidence = evidence;
             if (evidence == null) return;
+
+            Debug.Log($"[UI:InspectModal] Displaying evidence '{evidence.evidenceName}' (ID: {evidence.id}, Hotspots: {evidence.hotspots?.Count ?? 0})");
 
             if (evidenceTitleText != null) evidenceTitleText.text = evidence.evidenceName;
 
@@ -59,6 +72,10 @@ namespace CaseClosed.UI
             PopulateHotspots(evidence);
         }
 
+        /// <summary>
+        /// Dynamically creates interactive hotspot buttons positioned over normalized coordinates of the evidence sprite.
+        /// </summary>
+        /// <param name="evidence">The evidence item containing hotspot data.</param>
         private void PopulateHotspots(EvidenceSO evidence)
         {
             if (hotspotsContainer == null) return;
@@ -69,8 +86,6 @@ namespace CaseClosed.UI
             }
 
             if (evidence.hotspots == null || evidence.hotspots.Count == 0) return;
-
-            Vector2 containerSize = hotspotsContainer.rect.size;
 
             foreach (var spot in evidence.hotspots)
             {
@@ -88,13 +103,20 @@ namespace CaseClosed.UI
                 EvidenceHotspot currentSpot = spot;
                 spotObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
+                    Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
                     EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
                 });
             }
         }
 
+        /// <summary>
+        /// Updates the notification banner and re-renders hotspot markers when a hotspot is discovered.
+        /// </summary>
+        /// <param name="hotspot">The hotspot that was discovered.</param>
         private void HandleHotspotDiscovered(EvidenceHotspot hotspot)
         {
+            Debug.Log($"[UI:InspectModal] Hotspot discovered notification shown for '{hotspot.hotspotTitle}'");
+
             if (clueUnlockedNotificationText != null)
             {
                 clueUnlockedNotificationText.gameObject.SetActive(true);
@@ -107,16 +129,25 @@ namespace CaseClosed.UI
             }
         }
 
+        /// <summary>
+        /// Rotates the zoomed evidence sprite by a specified angle in degrees.
+        /// </summary>
+        /// <param name="angle">Rotation delta in degrees (e.g. 90f or -90f).</param>
         private void RotateSprite(float angle)
         {
+            Debug.Log($"[UI:InspectModal] Rotate button clicked (Angle delta: {angle}°)");
             if (evidenceZoomImage != null)
             {
                 evidenceZoomImage.rectTransform.Rotate(0, 0, angle);
             }
         }
 
+        /// <summary>
+        /// Handles close button click, closing the inspect modal via <see cref="EvidenceManager"/>.
+        /// </summary>
         private void OnCloseClicked()
         {
+            Debug.Log("[UI:InspectModal] Close inspect modal button clicked");
             EvidenceManager.Instance?.CloseInspectModal();
         }
     }

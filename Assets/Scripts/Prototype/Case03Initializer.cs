@@ -1,14 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CaseClosed.Data;
+using CaseClosed.Enums;
 using CaseClosed.Managers;
 
 namespace CaseClosed.Prototype
 {
+    /// <summary>
+    /// Prototype Level 3 Initializer: Generates the "The Last Call" case data at runtime.
+    /// Can be dragged directly onto a GameObject in the Unity Inspector.
+    /// </summary>
     public class Case03Initializer : MonoBehaviour
     {
+        /// <summary>Whether to automatically initialize and load Case 03 on Start.</summary>
         public bool initializeOnStart = false;
 
+        /// <summary>
+        /// Automatically loads Case 03 on start if <see cref="initializeOnStart"/> is enabled.
+        /// </summary>
         private void Start()
         {
             if (initializeOnStart)
@@ -23,6 +32,10 @@ namespace CaseClosed.Prototype
             }
         }
 
+        /// <summary>
+        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 3: The Last Call.
+        /// </summary>
+        /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase03Data()
         {
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();

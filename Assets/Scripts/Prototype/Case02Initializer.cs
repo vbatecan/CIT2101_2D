@@ -1,14 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CaseClosed.Data;
+using CaseClosed.Enums;
 using CaseClosed.Managers;
 
 namespace CaseClosed.Prototype
 {
+    /// <summary>
+    /// Prototype Level 2 Initializer: Generates the "Shattered Mirror" case data at runtime.
+    /// Can be dragged directly onto a GameObject in the Unity Inspector.
+    /// </summary>
     public class Case02Initializer : MonoBehaviour
     {
+        /// <summary>Whether to automatically initialize and load Case 02 on Start.</summary>
         public bool initializeOnStart = false;
 
+        /// <summary>
+        /// Automatically loads Case 02 on start if <see cref="initializeOnStart"/> is enabled.
+        /// </summary>
         private void Start()
         {
             if (initializeOnStart)
@@ -23,6 +32,10 @@ namespace CaseClosed.Prototype
             }
         }
 
+        /// <summary>
+        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 2: The Shattered Mirror.
+        /// </summary>
+        /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase02Data()
         {
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();

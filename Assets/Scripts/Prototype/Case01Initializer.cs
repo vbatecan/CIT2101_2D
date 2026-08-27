@@ -1,14 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CaseClosed.Data;
+using CaseClosed.Enums;
 using CaseClosed.Managers;
 
 namespace CaseClosed.Prototype
 {
+    /// <summary>
+    /// Prototype Level 1 Initializer: Generates the "Missing Necklace" case data at runtime.
+    /// Can be dragged directly onto a GameObject in the Unity Inspector.
+    /// </summary>
     public class Case01Initializer : MonoBehaviour
     {
+        /// <summary>Whether to automatically initialize and load Case 01 on Start.</summary>
         public bool initializeOnStart = true;
 
+        /// <summary>
+        /// Automatically loads Case 01 on start if <see cref="initializeOnStart"/> is enabled.
+        /// </summary>
         private void Start()
         {
             if (initializeOnStart)
@@ -23,6 +32,10 @@ namespace CaseClosed.Prototype
             }
         }
 
+        /// <summary>
+        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 1: The Missing Necklace.
+        /// </summary>
+        /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase01Data()
         {
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();

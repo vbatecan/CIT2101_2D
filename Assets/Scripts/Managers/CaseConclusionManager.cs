@@ -2,31 +2,28 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CaseClosed.Data;
+using CaseClosed.Services;
 
 namespace CaseClosed.Managers
 {
-    [Serializable]
-    public class CaseEvaluationResult
-    {
-        public int totalScore;
-        public int starCount; // 1 to 5
-        public string rankGrade; // S, A, B, C, D
-        public int correctQuizAnswers;
-        public int totalQuizQuestions;
-        public int evidenceFoundCount;
-        public int totalEvidenceCount;
-        public int contradictionsCaughtCount;
-        public int totalContradictionsCount;
-        public float completionTimeSeconds;
-        public bool isCaseSolved;
-    }
-
+    /// <summary>
+    /// Controller MonoBehaviour managing the case conclusion evaluation workflow,
+    /// delegating scoring logic to <see cref="CaseEvaluationService"/> and broadcasting results.
+    /// Can be dragged directly onto a GameObject in the Unity Inspector.
+    /// </summary>
     public class CaseConclusionManager : MonoBehaviour
     {
+        /// <summary>Singleton instance of the CaseConclusionManager.</summary>
         public static CaseConclusionManager Instance { get; private set; }
 
+        /// <summary>Event raised when a case evaluation has completed.</summary>
         public event Action<CaseEvaluationResult> OnCaseEvaluated;
 
+        private readonly CaseEvaluationService evaluationService = new CaseEvaluationService();
+
+        /// <summary>
+        /// Initializes the singleton instance.
+        /// </summary>
         private void Awake()
         {
             if (Instance == null)
@@ -39,79 +36,53 @@ namespace CaseClosed.Managers
             }
         }
 
+        /// <summary>
+        /// Evaluates player quiz answers against the active case, calculates composite score using <see cref="CaseEvaluationService"/>,
+        /// plays appropriate audio feedback, and notifies subscribers.
+        /// </summary>
+        /// <param name="playerSelectedOptionIndices">List of option indices selected for each conclusion question.</param>
+        /// <returns>A populated <see cref="CaseEvaluationResult"/>, or null if no case is active.</returns>
         public CaseEvaluationResult EvaluateCase(List<int> playerSelectedOptionIndices)
         {
             CaseSO activeCase = CaseManager.Instance?.activeCase;
-            if (activeCase == null) return null;
-
-            CaseEvaluationResult result = new CaseEvaluationResult();
-            result.completionTimeSeconds = CaseManager.Instance.ElapsedTime;
-
-            // 1. Quiz Evaluation
-            int quizScore = 0;
-            int correctCount = 0;
-            int totalQuestions = activeCase.conclusionQuestions.Count;
-
-            for (int i = 0; i < totalQuestions; i++)
+            if (activeCase == null)
             {
-                var q = activeCase.conclusionQuestions[i];
-                int selectedIdx = (i < playerSelectedOptionIndices.Count) ? playerSelectedOptionIndices[i] : -1;
-                if (selectedIdx == q.correctOptionIndex)
+                Debug.LogWarning("[CaseConclusion] Cannot evaluate case: activeCase is null");
+                return null;
+            }
+
+            int evidenceFoundCount = CaseManager.Instance.discoveredEvidenceIds.Count;
+            int contradictionsCaughtCount = CaseManager.Instance.exposedContradictionIds.Count;
+            float elapsedTime = CaseManager.Instance.ElapsedTime;
+
+            Debug.Log($"[CaseConclusion] Evaluating case '{activeCase.caseTitle}' (DiscoveredEv: {evidenceFoundCount}, Contradictions: {contradictionsCaughtCount}, ElapsedTime: {elapsedTime:F1}s)");
+
+            // Business logic calculation delegated to pure Service
+            CaseEvaluationResult result = evaluationService.EvaluateCase(
+                activeCase,
+                playerSelectedOptionIndices,
+                evidenceFoundCount,
+                contradictionsCaughtCount,
+                elapsedTime
+            );
+
+            if (result != null)
+            {
+                Debug.Log($"[CaseConclusion] Evaluation complete: Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}, CorrectQuiz={result.correctQuizAnswers}/{result.totalQuizQuestions}");
+
+                // Play audio cues based on result
+                if (result.isCaseSolved)
                 {
-                    quizScore += q.pointValue;
-                    correctCount++;
+                    AudioManager.Instance?.PlaySFX(AudioManager.Instance.caseSolvedSFX);
                 }
+                else
+                {
+                    AudioManager.Instance?.PlaySFX(AudioManager.Instance.caseFailedSFX);
+                }
+
+                OnCaseEvaluated?.Invoke(result);
             }
 
-            result.correctQuizAnswers = correctCount;
-            result.totalQuizQuestions = totalQuestions;
-
-            // Primary suspect question (Question 0) must be correct to solve case
-            result.isCaseSolved = (correctCount >= 1 && playerSelectedOptionIndices.Count > 0 &&
-                                  playerSelectedOptionIndices[0] == activeCase.conclusionQuestions[0].correctOptionIndex);
-
-            // 2. Evidence Bonus
-            int evidenceFound = CaseManager.Instance.discoveredEvidenceIds.Count;
-            int totalEv = activeCase.totalKeyEvidenceCount > 0 ? activeCase.totalKeyEvidenceCount : activeCase.evidenceItems.Count;
-            result.evidenceFoundCount = evidenceFound;
-            result.totalEvidenceCount = totalEv;
-            int evidenceScore = Mathf.RoundToInt(((float)evidenceFound / Mathf.Max(1, totalEv)) * 300f);
-
-            // 3. Contradictions Bonus
-            int contradictionsCaught = CaseManager.Instance.exposedContradictionIds.Count;
-            int totalContra = activeCase.totalContradictionsCount > 0 ? activeCase.totalContradictionsCount : activeCase.contradictionRules.Count;
-            result.contradictionsCaughtCount = contradictionsCaught;
-            result.totalContradictionsCount = totalContra;
-            int contradictionScore = Mathf.RoundToInt(((float)contradictionsCaught / Mathf.Max(1, totalContra)) * 300f);
-
-            // 4. Time Bonus
-            int timeBonus = 0;
-            if (result.completionTimeSeconds <= activeCase.parCompletionTimeSeconds)
-            {
-                timeBonus = Mathf.RoundToInt((1f - (result.completionTimeSeconds / activeCase.parCompletionTimeSeconds)) * 200f);
-            }
-
-            // Total Calculation
-            result.totalScore = quizScore + evidenceScore + contradictionScore + timeBonus;
-
-            // Stars & Grade
-            if (!result.isCaseSolved)
-            {
-                result.starCount = 1;
-                result.rankGrade = "D";
-                AudioManager.Instance?.PlaySFX(AudioManager.Instance.caseFailedSFX);
-            }
-            else
-            {
-                if (result.totalScore >= 1500) { result.starCount = 5; result.rankGrade = "S"; }
-                else if (result.totalScore >= 1200) { result.starCount = 4; result.rankGrade = "A"; }
-                else if (result.totalScore >= 900) { result.starCount = 3; result.rankGrade = "B"; }
-                else { result.starCount = 2; result.rankGrade = "C"; }
-
-                AudioManager.Instance?.PlaySFX(AudioManager.Instance.caseSolvedSFX);
-            }
-
-            OnCaseEvaluated?.Invoke(result);
             return result;
         }
     }
