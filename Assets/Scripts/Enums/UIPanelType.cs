@@ -5,6 +5,9 @@ namespace CaseClosed.Enums
     /// </summary>
     public enum UIPanelType
     {
+        /// <summary>Title screen and main menu navigation gateway.</summary>
+        MainMenu,
+
         /// <summary>Main investigation desk with suspect sitting across table and inspectable items.</summary>
         InvestigationTable,
 
