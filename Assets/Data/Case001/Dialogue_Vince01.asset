@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6170d1c959a2065d6b794816b2a5ef88, type: 3}
+  m_Name: Dialogue_Vince01
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.DialogueTreeSO
+  treeId: TREE_VINCE_01
+  characterId: CHAR_VINCE_BATECAN
+  startNodeId: NODE_01
+  nodes:
+  - nodeId: NODE_01
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 6
+    statementText: I never went near the study! I stayed in the kitchen from 8:30
+      PM until everyone started shouting!
+    isChallengeable: 1
+    targetContradictionRuleId: RULE_VINCE_ALIBI_LIE
+    choices: []
+    defaultNextNodeId: 
+  - nodeId: NODE_02_CONFESSION
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 2
+    statementText: W-what?! The kitchen pantry log? Fine! The kitchen was locked...
+      I needed money to clear my debts, so I took the necklace!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: 

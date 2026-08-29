@@ -76,6 +76,17 @@ namespace CaseClosed.Managers
         }
 
         /// <summary>
+        /// Automatically loads activeCase on Start if assigned in the Inspector.
+        /// </summary>
+        private void Start()
+        {
+            if (activeCase != null && discoveredEvidenceIds.Count == 0)
+            {
+                LoadCase(activeCase);
+            }
+        }
+
+        /// <summary>
         /// Loads a new case into runtime, resetting discovery state sets, starting the investigation timer,
         /// assigning the active investigator, and registering initially discovered evidence items.
         /// </summary>

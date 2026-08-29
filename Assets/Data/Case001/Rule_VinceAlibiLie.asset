@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbde2d7fa0a54eb68b73deddf3aa2ccf, type: 3}
+  m_Name: Rule_VinceAlibiLie
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.ContradictionRuleSO
+  ruleId: RULE_VINCE_ALIBI_LIE
+  ruleTitle: Locked Kitchen Contradiction
+  targetStatementNodeId: NODE_01
+  requiredEvidenceId: EVD_KITCHEN_LOG
+  requiredClueId: 
+  reactionExpression: 2
+  reactionDialogue: 'Vince shifts nervously and stammers: "Wait... the kitchen log
+    shows it was locked by staff? I... I..."'
+  unlockedDialogueNodeId: NODE_02_CONFESSION
+  unlockedClueId: CLUE_VINCE_STAGED_BREAKIN
+  unlockedClueText: Vince Angelo Batecan confessed to staging the break-in for debt
+    money!
+  scoreBonus: 100

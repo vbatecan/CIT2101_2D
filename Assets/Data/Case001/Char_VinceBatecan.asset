@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed4d9661c3bfe10bb31f7b6447430fe, type: 3}
+  m_Name: Char_VinceBatecan
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterProfileSO
+  characterId: CHAR_VINCE_BATECAN
+  fullName: Vince Angelo Batecan
+  age: 25
+  occupation: Nephew of Kirby Raymundo
+  relationshipToVictim: Nephew
+  personalityTrait: 2
+  background: 
+  knownConflicts: Frequently argued with uncle Kirby Raymundo over financial allowance.
+  possibleMotives: Urgent gambling debts owed to local loan sharks.
+  alibi: Claims he stayed in the kitchen from 8:30 PM until everyone started shouting.
+  defaultSittingPose: {fileID: 5192951433554000830, guid: 83c20111c171ba1a8852c4d4fc9b524f, type: 3}
+  expressions: []

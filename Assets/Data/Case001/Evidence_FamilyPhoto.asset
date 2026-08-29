@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_FamilyPhoto
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_FAMILY_PHOTO
+  evidenceName: Family Photograph
+  category: 0
+  normalSprite: {fileID: 21300000, guid: d8d204978ca74fc9bcccffc82267c2be, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 21300000, guid: d8d204978ca74fc9bcccffc82267c2be, type: 3}
+  baseDescription: A photograph taken at 8:45 PM showing the study doorway.
+  detailedObservation: A distinct silhouette matching Vince is visible standing near
+    the study door.
+  unlockedClueText: Vince silhouette spotted near study doorway at 8:45 PM.
+  startsDiscovered: 1
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots:
+  - hotspotId: SPOT_DOORWAY_SILHOUETTE
+    hotspotTitle: Study Doorway Silhouette
+    normalizedPosition: {x: 0.3, y: 0.5}
+    radius: 0.1
+    observationText: Silhouette matching Vince standing right outside study room
+      at 8:45 PM.
+    clueUnlockedId: CLUE_VINCE_AT_DOOR
+    isDiscovered: 0

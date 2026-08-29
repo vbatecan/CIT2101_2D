@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_KitchenLog
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_KITCHEN_LOG
+  evidenceName: Kitchen Pantry Log
+  category: 1
+  normalSprite: {fileID: 0}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 0}
+  baseDescription: Logbook entry noting the kitchen pantry was locked by staff from
+    8:30 PM to 9:15 PM.
+  detailedObservation: 
+  unlockedClueText: Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince
+    could not have been inside!
+  startsDiscovered: 1
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots: []

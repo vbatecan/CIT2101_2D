@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed4d9661c3bfe10bb31f7b6447430fe, type: 3}
+  m_Name: Char_JanineSotto
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterProfileSO
+  characterId: CHAR_CASE1_FEMALE
+  fullName: Janine Marie Sotto
+  age: 24
+  occupation: Manor Guest & Key Witness
+  relationshipToVictim: Family Acquaintance
+  personalityTrait: 6
+  background: 
+  knownConflicts: Noticed Vince arguing heatedly with Uncle Kirby before dinner.
+  possibleMotives: None directly known; witnessed Vince running toward the garden.
+  alibi: Sat in the dining room talking with guests until 9:00 PM.
+  defaultSittingPose: {fileID: 2695760630116940890, guid: 2466b7bb4329a946c8d4366fb2d19317, type: 3}
+  expressions: []

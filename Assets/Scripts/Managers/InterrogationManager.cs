@@ -65,6 +65,17 @@ namespace CaseClosed.Managers
         }
 
         /// <summary>
+        /// Automatically sets interrogation target on Start if assigned in the Inspector.
+        /// </summary>
+        private void Start()
+        {
+            if (currentSuspect != null && currentDialogueTree != null && currentNode == null)
+            {
+                SetInterrogationTarget(currentSuspect, currentDialogueTree);
+            }
+        }
+
+        /// <summary>
         /// Sets the active suspect and dialogue tree for an interrogation session.
         /// </summary>
         /// <param name="suspect">The character profile of the suspect.</param>

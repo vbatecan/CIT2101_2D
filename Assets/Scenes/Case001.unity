@@ -1120,8 +1120,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc5d34d84efb823148b4aad45b9dd352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Managers.InterrogationManager
-  currentSuspect: {fileID: 0}
-  currentDialogueTree: {fileID: 0}
+  currentSuspect: {fileID: 11400000, guid: 3996146eb59e47f53b8a1858d38547df, type: 2}
+  currentDialogueTree: {fileID: 11400000, guid: 47f6ea391a0aab41da9a26566a448cf3, type: 2}
   currentNode:
     nodeId: 
     speakerId: 
@@ -1145,7 +1145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb9d6402e0ef501bfa25b4400246edb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Managers.EvidenceManager
-  currentlySelectedEvidence: {fileID: 0}
+  currentlySelectedEvidence: {fileID: 11400000, guid: 3b6e0c5a6a1e987778be1aa56b773d4f, type: 2}
   isInspectingModalOpen: 0
 --- !u!114 &370492371
 MonoBehaviour:
@@ -1159,9 +1159,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec325c2818ad78b6c86248a79e5ae6aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Managers.CaseManager
-  activeCase: {fileID: 0}
-  selectedInvestigator: {fileID: 0}
-  availableInvestigators: []
+  activeCase: {fileID: 11400000, guid: 3421a1a0bb6d37ef1a41648379159463, type: 2}
+  selectedInvestigator: {fileID: 11400000, guid: 8a71cd36dd50857348ca37edb02f351a, type: 2}
+  availableInvestigators:
+  - {fileID: 11400000, guid: 8a71cd36dd50857348ca37edb02f351a, type: 2}
+  - {fileID: 11400000, guid: c2286fadcf85a9934b712c3e8e3cefa7, type: 2}
   investigationStartTime: 0
 --- !u!114 &370492372
 MonoBehaviour:

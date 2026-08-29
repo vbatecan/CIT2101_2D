@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2e46c7e171daf0d92bc6f01f927bd3, type: 3}
+  m_Name: Case01_Data
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CaseSO
+  levelNumber: 1
+  caseId: LEVEL_01
+  caseTitle: 'LEVEL 1: The Missing Necklace'
+  dateAndLocation: Stormy Evening - High-Society Manor Study
+  incidentDescription: A valuable family necklace disappeared from the manor safe
+    during a stormy evening gathering.
+  objective: Interrogate Vince Angelo Batecan, inspect table evidence, disprove his
+    kitchen alibi, and uncover the truth.
+  victimInfo: Kirby Raymundo (Aristocrat - Proud & Demanding Owner)
+  leadInvestigator: {fileID: 11400000, guid: 8a71cd36dd50857348ca37edb02f351a, type: 2}
+  primarySuspect: {fileID: 11400000, guid: 3996146eb59e47f53b8a1858d38547df, type: 2}
+  additionalSuspects:
+  - {fileID: 11400000, guid: df651fde7d637afcfb0db1e782ae6ec2, type: 2}
+  evidenceItems:
+  - {fileID: 11400000, guid: 3b6e0c5a6a1e987778be1aa56b773d4f, type: 2}
+  - {fileID: 11400000, guid: a7534ad73ea89ae74ad3cdcf141c1943, type: 2}
+  - {fileID: 11400000, guid: e6736421cff131ee990ed0a262f4049f, type: 2}
+  - {fileID: 11400000, guid: d424d43d901b52fc6aac9ee6636ebfe5, type: 2}
+  - {fileID: 11400000, guid: 38f6b0fc9bb1a693b93507b6a9e695d7, type: 2}
+  clueConnections:
+  - {fileID: 11400000, guid: e008842cb603b27f8a8c637391416aa0, type: 2}
+  dialogueTrees:
+  - {fileID: 11400000, guid: 47f6ea391a0aab41da9a26566a448cf3, type: 2}
+  contradictionRules:
+  - {fileID: 11400000, guid: b5d8d926f05f21d1a86b42723e0d1b5f, type: 2}
+  conclusionQuestions:
+  - questionId: Q_SUSPECT
+    questionText: Who stole Kirby Raymundo's necklace?
+    options:
+    - Vince Angelo Batecan
+    - Kirby Raymundo
+    - House Staff
+    correctOptionIndex: 0
+    pointValue: 250
+  - questionId: Q_MOTIVE
+    questionText: What was Vince's motive?
+    options:
+    - Pay Off Debts
+    - Jealousy
+    - Accidental Spillage
+    correctOptionIndex: 0
+    pointValue: 250
+  - questionId: Q_EVIDENCE
+    questionText: Which evidence disproved Vince's kitchen alibi?
+    options:
+    - Kitchen Pantry Log
+    - Broken Teacup
+    - Family Photograph
+    correctOptionIndex: 0
+    pointValue: 250
+  totalKeyEvidenceCount: 5
+  totalContradictionsCount: 3
+  parCompletionTimeSeconds: 300

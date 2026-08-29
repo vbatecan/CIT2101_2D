@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_CoffeeCup
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_COFFEE_CUP
+  evidenceName: Iced Beverage Cup
+  category: 2
+  normalSprite: {fileID: 21300000, guid: f60e0cf3b58a446b8cbd2db8a0401eb2, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 21300000, guid: f60e0cf3b58a446b8cbd2db8a0401eb2, type: 3}
+  baseDescription: Vince's beverage cup placed on the table with nervous teeth bite
+    marks on the straw.
+  detailedObservation: 
+  unlockedClueText: Severe bite marks on straw indicate extreme nervous tension during
+    questioning.
+  startsDiscovered: 1
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots: []

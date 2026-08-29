@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5dbd736f4b707f1197570c82b81bc97, type: 3}
+  m_Name: Conn_VinceTimeline
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.ClueConnectionSO
+  connectionId: CONN_VINCE_TIMELINE
+  connectionTitle: Photo Silhouette & Kitchen Log
+  clueA_Id: CLUE_VINCE_AT_DOOR
+  clueB_Id: EVD_KITCHEN_LOG_BASE_CLUE
+  resultClueId: CLUE_VINCE_OUTSIDE_STUDY
+  resultClueTitle: Vince Was Outside Study At 8:45 PM
+  deductionText: The kitchen log proves Vince was not in the kitchen, while the photo
+    places him right outside the study door!
