@@ -176,6 +176,7 @@ namespace CaseClosed.Editor
             envCol.size = new Vector2(4.5f, 4.5f);
             TableEvidenceItem teiEnv = itemEnvelope.AddComponent<TableEvidenceItem>();
             teiEnv.spriteRenderer = envRen;
+            teiEnv.evidenceId = "EVD_FAMILY_PHOTO";
             teiEnv.openNotebookOnClick = false;
 
             // Item 2: Open Case File Notebook (Center Desk)
@@ -202,6 +203,7 @@ namespace CaseClosed.Editor
             knifeCol.size = new Vector2(5.0f, 2.0f);
             TableEvidenceItem teiKnife = itemKnife.AddComponent<TableEvidenceItem>();
             teiKnife.spriteRenderer = knifeRen;
+            teiKnife.evidenceId = "EVD_CRIME_KNIFE";
             teiKnife.openNotebookOnClick = false;
 
             // Item 4: Coffee Cup with Straw (Right Desk)
@@ -215,6 +217,7 @@ namespace CaseClosed.Editor
             cupCol.size = new Vector2(2.5f, 4.8f);
             TableEvidenceItem teiCup = itemCup.AddComponent<TableEvidenceItem>();
             teiCup.spriteRenderer = cupRen;
+            teiCup.evidenceId = "EVD_COFFEE_CUP";
             teiCup.openNotebookOnClick = false;
 
             // Item 5: Detective Arm Pointer (Interactive Mouse-Controlled Arm with ArmPointer.png)
@@ -239,7 +242,11 @@ namespace CaseClosed.Editor
 
             // 7. Managers Container
             GameObject managersObj = new GameObject("_Managers");
-            EnsureComponent<AudioManager>(managersObj);
+            AudioManager audioMgr = EnsureComponent<AudioManager>(managersObj);
+            audioMgr.bgmVolume = 1f;
+            audioMgr.sfxVolume = 1f;
+            audioMgr.isTypewriterEnabled = true;
+
             EnsureComponent<CaseManager>(managersObj);
             EnsureComponent<EvidenceManager>(managersObj);
             EnsureComponent<InterrogationManager>(managersObj);
@@ -247,6 +254,12 @@ namespace CaseClosed.Editor
             EnsureComponent<CaseConclusionManager>(managersObj);
 
             Case01Initializer init1 = EnsureComponent<Case01Initializer>(managersObj);
+            init1.maleSuspectSprite = maleSprite;
+            init1.femaleSuspectSprite = femaleSprite;
+            init1.envelopeSprite = envelopeSprite;
+            init1.knifeSprite = knifeSprite;
+            init1.notebookSprite = notebookSprite;
+            init1.coffeeCupSprite = cupSprite;
             init1.initializeOnStart = true;
 
             GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);

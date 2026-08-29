@@ -20,6 +20,9 @@ namespace CaseClosed.Gameplay
         [Tooltip("The ScriptableObject defining this evidence item. Leave empty if this is a general book/tool prop.")]
         public EvidenceSO evidenceData;
 
+        [Tooltip("Identifier matching an EvidenceSO.id (e.g. 'EVD_FAMILY_PHOTO', 'EVD_CRIME_KNIFE', 'EVD_COFFEE_CUP') to automatically bind at runtime.")]
+        public string evidenceId;
+
         [Header("Interactive Behavior Mode")]
         [Tooltip("If true, clicking this item on the table directly opens the Case File Notebook (e.g. for the open case book on desk).")]
         public bool openNotebookOnClick = false;
@@ -43,14 +46,20 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
-        /// Initializes the item sprite and baseline colors on start.
+        /// Initializes the item sprite and baseline colors on start, subscribing to case load events.
         /// </summary>
         private void Start()
         {
-            if (evidenceData != null && spriteRenderer != null && evidenceData.normalSprite != null)
+            if (CaseManager.Instance != null)
             {
-                spriteRenderer.sprite = evidenceData.normalSprite;
+                CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
+                if (CaseManager.Instance.activeCase != null)
+                {
+                    HandleCaseLoaded(CaseManager.Instance.activeCase);
+                }
             }
+
+            BindEvidenceData();
 
             if (spriteRenderer != null)
             {
@@ -58,6 +67,40 @@ namespace CaseClosed.Gameplay
             }
 
             if (highlightGlow != null) highlightGlow.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (CaseManager.Instance != null)
+            {
+                CaseManager.Instance.OnCaseLoaded -= HandleCaseLoaded;
+            }
+        }
+
+        private void HandleCaseLoaded(CaseSO activeCase)
+        {
+            if (activeCase == null || string.IsNullOrEmpty(evidenceId)) return;
+
+            if (activeCase.evidenceItems != null)
+            {
+                foreach (var ev in activeCase.evidenceItems)
+                {
+                    if (ev != null && ev.id == evidenceId)
+                    {
+                        evidenceData = ev;
+                        BindEvidenceData();
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void BindEvidenceData()
+        {
+            if (evidenceData != null && spriteRenderer != null && evidenceData.normalSprite != null)
+            {
+                spriteRenderer.sprite = evidenceData.normalSprite;
+            }
         }
 
         /// <summary>

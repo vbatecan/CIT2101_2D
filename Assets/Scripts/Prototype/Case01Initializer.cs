@@ -15,6 +15,18 @@ namespace CaseClosed.Prototype
         /// <summary>Whether to automatically initialize and load Case 01 on Start.</summary>
         public bool initializeOnStart = false;
 
+        [Header("Suspect Portraits & Visuals")]
+        public Sprite maleSuspectSprite;
+        public Sprite femaleSuspectSprite;
+
+        [Header("Evidence Sprites")]
+        public Sprite envelopeSprite;
+        public Sprite knifeSprite;
+        public Sprite teacupSprite;
+        public Sprite kitchenLogSprite;
+        public Sprite coffeeCupSprite;
+        public Sprite notebookSprite;
+
         /// <summary>
         /// Automatically loads Case 01 on start if <see cref="initializeOnStart"/> is enabled.
         /// </summary>
@@ -62,6 +74,7 @@ namespace CaseClosed.Prototype
             vince.alibi = "Claims he stayed in the kitchen from 8:30 PM until everyone started shouting.";
             vince.possibleMotives = "Urgent gambling debts owed to local loan sharks.";
             vince.knownConflicts = "Frequently argued with uncle Kirby Raymundo over financial allowance.";
+            vince.defaultSittingPose = maleSuspectSprite;
             c.primarySuspect = vince;
 
             // Secondary Suspect / Witness: Shanaia (Accomplice / Key Witness)
@@ -75,6 +88,7 @@ namespace CaseClosed.Prototype
             witnessFemale.alibi = "Sat in the dining room talking with guests until 9:00 PM.";
             witnessFemale.possibleMotives = "None directly known; witnessed Vince running toward the garden.";
             witnessFemale.knownConflicts = "Noticed Vince arguing heatedly with Uncle Kirby before dinner.";
+            witnessFemale.defaultSittingPose = femaleSuspectSprite;
             c.additionalSuspects.Add(witnessFemale);
 
             // Evidence Items
@@ -83,6 +97,8 @@ namespace CaseClosed.Prototype
             evPhoto.id = "EVD_FAMILY_PHOTO";
             evPhoto.evidenceName = "Family Photograph";
             evPhoto.category = EvidenceCategory.Photograph;
+            evPhoto.normalSprite = envelopeSprite;
+            evPhoto.zoomedSprite = envelopeSprite;
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
@@ -102,6 +118,8 @@ namespace CaseClosed.Prototype
             evKnife.id = "EVD_CRIME_KNIFE";
             evKnife.evidenceName = "Manor Safe Knife";
             evKnife.category = EvidenceCategory.PhysicalClue;
+            evKnife.normalSprite = knifeSprite;
+            evKnife.zoomedSprite = knifeSprite;
             evKnife.baseDescription = "A sharp silver letter opener knife found on the desk with scratches on the safe lock mechanism.";
             evKnife.detailedObservation = "Scratches on the blade tip match the pry marks on Kirby's locked safe dial.";
             evKnife.unlockedClueText = "Silver knife pry marks match the safe dial mechanism.";
@@ -121,6 +139,8 @@ namespace CaseClosed.Prototype
             evTeacup.id = "EVD_BROKEN_TEACUP";
             evTeacup.evidenceName = "Broken Teacup";
             evTeacup.category = EvidenceCategory.PhysicalClue;
+            evTeacup.normalSprite = teacupSprite;
+            evTeacup.zoomedSprite = teacupSprite;
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
             evTeacup.startsDiscovered = true;
@@ -131,6 +151,8 @@ namespace CaseClosed.Prototype
             evKitchenLog.id = "EVD_KITCHEN_LOG";
             evKitchenLog.evidenceName = "Kitchen Pantry Log";
             evKitchenLog.category = EvidenceCategory.Document;
+            evKitchenLog.normalSprite = kitchenLogSprite;
+            evKitchenLog.zoomedSprite = kitchenLogSprite;
             evKitchenLog.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchenLog.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchenLog.startsDiscovered = true;
@@ -141,6 +163,8 @@ namespace CaseClosed.Prototype
             evCup.id = "EVD_COFFEE_CUP";
             evCup.evidenceName = "Iced Beverage Cup";
             evCup.category = EvidenceCategory.PersonalBelonging;
+            evCup.normalSprite = coffeeCupSprite;
+            evCup.zoomedSprite = coffeeCupSprite;
             evCup.baseDescription = "Vince's beverage cup placed on the table with nervous teeth bite marks on the straw.";
             evCup.unlockedClueText = "Severe bite marks on straw indicate extreme nervous tension during questioning.";
             evCup.startsDiscovered = true;
