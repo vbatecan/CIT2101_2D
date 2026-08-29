@@ -175,22 +175,23 @@ namespace CaseClosed.Gameplay
             // 2. Select evidence in EvidenceManager
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
-            // 3. Check for zoom inspection
-            if (isInspectOrRightClick)
+            // 3. If dialogue is currently active with a statement, clicking this table item directly presents it to challenge!
+            if (DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.currentNode != null)
             {
-                Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
-                EvidenceManager.Instance?.OpenInspectModal(evidenceData);
-            }
-            else
-            {
+                Debug.Log($"[Gameplay:TableEvidence] Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
+                InterrogationManager.Instance.PresentEvidenceToChallenge(evidenceData);
+                return;
+            }
 
-                // 4. Trigger character explanation dialogue if configured
-                if (!string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect))
-                {
-                    Debug.Log($"[Gameplay:TableEvidence] Triggering suspect explanation dialogue node '{dialogueNodeToTriggerOnInspect}' for '{evidenceData.evidenceName}'");
-                    InterrogationManager.Instance?.JumpToNode(dialogueNodeToTriggerOnInspect);
-                }
+            // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
+            Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
+            EvidenceManager.Instance?.OpenInspectModal(evidenceData);
+
+            if (!string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect))
+            {
+                Debug.Log($"[Gameplay:TableEvidence] Triggering suspect explanation dialogue node '{dialogueNodeToTriggerOnInspect}' for '{evidenceData.evidenceName}'");
+                InterrogationManager.Instance?.JumpToNode(dialogueNodeToTriggerOnInspect);
             }
         }
     }

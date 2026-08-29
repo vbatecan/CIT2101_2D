@@ -37,6 +37,18 @@ namespace CaseClosed.UI
         private string currentFullText = "";
 
         /// <summary>
+        /// Clears placeholder text and ensures dialogue starts hidden.
+        /// </summary>
+        private void Awake()
+        {
+            if (speakerNameText != null) speakerNameText.text = "";
+            if (dialogueBodyText != null) dialogueBodyText.text = "";
+            if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
+            if (challengeHighlight != null) challengeHighlight.SetActive(false);
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>
         /// Binds UI button click listeners and subscribes to interrogation manager events.
         /// </summary>
         private void Start()
@@ -54,6 +66,10 @@ namespace CaseClosed.UI
             }
 
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
+            if (!IsDialogueOpen)
+            {
+                HideDialoguePanel();
+            }
         }
 
         private void OnDestroy()
@@ -68,7 +84,7 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Displays a dialogue node statement with typewriter effect and adjusts challenge button visibility.
+        /// Displays a dialogue node statement with typewriter effect.
         /// </summary>
         /// <param name="node">The dialogue node being presented.</param>
         public void DisplayNode(DialogueNode node)
@@ -87,7 +103,7 @@ namespace CaseClosed.UI
 
             if (challengeButton != null)
             {
-                challengeButton.gameObject.SetActive(node.isChallengeable);
+                challengeButton.gameObject.SetActive(false);
             }
         }
 

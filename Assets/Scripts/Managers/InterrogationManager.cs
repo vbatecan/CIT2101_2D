@@ -182,7 +182,7 @@ namespace CaseClosed.Managers
         /// <param name="presentedEvidence">The evidence item presented by the player.</param>
         public void PresentEvidenceToChallenge(EvidenceSO presentedEvidence)
         {
-            if (!isChallengeModeActive || currentNode == null || presentedEvidence == null) return;
+            if (currentNode == null || presentedEvidence == null) return;
 
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             if (activeCase == null) return;
