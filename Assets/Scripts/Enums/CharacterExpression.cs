@@ -33,6 +33,9 @@ namespace CaseClosed.Enums
         Thinking,
 
         /// <summary>Overconfident or dismissive grin.</summary>
-        Smug
+        Smug,
+
+        /// <summary>Composed, poker-faced resting demeanor.</summary>
+        Calm
     }
 }

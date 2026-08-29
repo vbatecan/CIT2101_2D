@@ -32,6 +32,11 @@ namespace CaseClosed.Managers
         public AudioClip caseSolvedSFX;
         public AudioClip caseFailedSFX;
 
+        [Header("Audio Settings")]
+        [Range(0f, 1f)] public float bgmVolume = 1f;
+        [Range(0f, 1f)] public float sfxVolume = 1f;
+        public bool isTypewriterEnabled = true;
+
         /// <summary>
         /// Initializes the singleton instance and configures persistent audio sources.
         /// </summary>
@@ -61,6 +66,45 @@ namespace CaseClosed.Managers
             bgmSource.loop = true;
             sfxSource.loop = false;
             typewriterSource.loop = false;
+
+            ApplyVolumes();
+        }
+
+        /// <summary>
+        /// Applies current volume settings to audio sources.
+        /// </summary>
+        public void ApplyVolumes()
+        {
+            if (bgmSource != null) bgmSource.volume = bgmVolume;
+            if (sfxSource != null) sfxSource.volume = sfxVolume;
+            if (typewriterSource != null) typewriterSource.volume = sfxVolume * 0.4f;
+        }
+
+        /// <summary>
+        /// Sets BGM volume level (0.0 to 1.0).
+        /// </summary>
+        public void SetBGMVolume(float volume)
+        {
+            bgmVolume = Mathf.Clamp01(volume);
+            if (bgmSource != null) bgmSource.volume = bgmVolume;
+        }
+
+        /// <summary>
+        /// Sets SFX volume level (0.0 to 1.0).
+        /// </summary>
+        public void SetSFXVolume(float volume)
+        {
+            sfxVolume = Mathf.Clamp01(volume);
+            if (sfxSource != null) sfxSource.volume = sfxVolume;
+            if (typewriterSource != null) typewriterSource.volume = sfxVolume * 0.4f;
+        }
+
+        /// <summary>
+        /// Toggles typewriter sound effect clicks.
+        /// </summary>
+        public void SetTypewriterEnabled(bool enabled)
+        {
+            isTypewriterEnabled = enabled;
         }
 
         /// <summary>
@@ -74,7 +118,19 @@ namespace CaseClosed.Managers
             {
                 Debug.Log($"[Audio] Playing BGM track: '{clip.name}'");
                 bgmSource.clip = clip;
+                bgmSource.volume = bgmVolume;
                 bgmSource.Play();
+            }
+        }
+
+        /// <summary>
+        /// Plays the main menu background music (investigation theme).
+        /// </summary>
+        public void PlayMenuBGM()
+        {
+            if (investigationBGM != null)
+            {
+                PlayBGM(investigationBGM);
             }
         }
 
@@ -85,7 +141,7 @@ namespace CaseClosed.Managers
         public void PlaySFX(AudioClip clip)
         {
             if (clip == null || sfxSource == null) return;
-            sfxSource.PlayOneShot(clip);
+            sfxSource.PlayOneShot(clip, sfxVolume);
         }
 
         /// <summary>
@@ -93,9 +149,9 @@ namespace CaseClosed.Managers
         /// </summary>
         public void PlayTypewriterKey()
         {
-            if (typewriterKeySFX != null && typewriterSource != null && !typewriterSource.isPlaying)
+            if (isTypewriterEnabled && typewriterKeySFX != null && typewriterSource != null && !typewriterSource.isPlaying)
             {
-                typewriterSource.PlayOneShot(typewriterKeySFX, 0.4f);
+                typewriterSource.PlayOneShot(typewriterKeySFX, sfxVolume * 0.4f);
             }
         }
 

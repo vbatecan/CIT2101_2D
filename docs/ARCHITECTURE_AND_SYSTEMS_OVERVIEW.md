@@ -61,12 +61,15 @@ Assets/Scripts/
 │   ├── ConclusionUI.cs
 │   ├── DialogueUI.cs
 │   ├── EvidenceInspectModal.cs
+│   ├── MainMenuUI.cs
 │   └── UIManager.cs
-└── Prototype/
-    ├── Case01Initializer.cs
-    ├── Case02Initializer.cs
-    ├── Case03Initializer.cs
-    └── GameBootstrap.cs
+├── Prototype/
+│   ├── Case01Initializer.cs
+│   ├── Case02Initializer.cs
+│   ├── Case03Initializer.cs
+│   └── GameBootstrap.cs
+└── Editor/
+    └── MainMenuSceneBuilder.cs
 ```
 
 ---
@@ -75,42 +78,43 @@ Assets/Scripts/
 
 ### 1. Enums (`Assets/Scripts/Enums/`)
 Every enum is separated into its own dedicated `.cs` file:
-* [`CharacterExpression.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Enums/CharacterExpression.cs): Facial expressions (Neutral, Defensive, Shocked, etc.).
-* [`CharacterSlot.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Enums/CharacterSlot.cs): Suspect assignment slot (PrimarySuspect, SecondarySuspect, AutoDetect).
-* [`EvidenceCategory.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Enums/EvidenceCategory.cs): Evidence classification types.
-* [`NotebookTab.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Enums/NotebookTab.cs): Navigation tabs for the detective notebook.
-* [`PersonalityTrait.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Enums/PersonalityTrait.cs): Character personality profiles.
-* [`UIPanelType.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Enums/UIPanelType.cs): Screen navigation panels and modals.
+* [`CharacterExpression.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Enums/CharacterExpression.cs): Facial expressions (Neutral, Defensive, Shocked, Calm, etc.).
+* [`CharacterSlot.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Enums/CharacterSlot.cs): Suspect assignment slot (PrimarySuspect, SecondarySuspect, AutoDetect).
+* [`EvidenceCategory.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Enums/EvidenceCategory.cs): Evidence classification types.
+* [`NotebookTab.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Enums/NotebookTab.cs): Navigation tabs for the detective notebook.
+* [`PersonalityTrait.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Enums/PersonalityTrait.cs): Character personality profiles.
+* [`UIPanelType.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Enums/UIPanelType.cs): Screen navigation panels and modals (MainMenu, InvestigationTable, etc.).
 
 ---
 
 ### 2. Services (`Assets/Scripts/Services/`)
 Pure C# classes executing core domain calculations:
-* [`CaseEvaluationService.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Services/CaseEvaluationService.cs): Scoring formulas, quiz grading, star math (1-5), and rank grades (`S`, `A`, `B`, `C`, `D`).
-* [`DeductionService.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Services/DeductionService.cs): Clue pairing and connection validation against deduction rules.
-* [`InterrogationService.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Services/InterrogationService.cs): Contradiction matching, failure expressions, and reaction dialogue generation.
-* [`EvidenceService.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Services/EvidenceService.cs): Hotspot discovery validation, clue extraction, and table presence toggles.
-* [`NotebookFormattingService.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Services/NotebookFormattingService.cs): Dossier, evidence, and clue text string layout compilation.
+* [`CaseEvaluationService.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Services/CaseEvaluationService.cs): Scoring formulas, quiz grading, star math (1-5), and rank grades (`S`, `A`, `B`, `C`, `D`).
+* [`DeductionService.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Services/DeductionService.cs): Clue pairing and connection validation against deduction rules.
+* [`InterrogationService.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Services/InterrogationService.cs): Contradiction matching, failure expressions, and reaction dialogue generation.
+* [`EvidenceService.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Services/EvidenceService.cs): Hotspot discovery validation, clue extraction, and table presence toggles.
+* [`NotebookFormattingService.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Services/NotebookFormattingService.cs): Dossier, evidence, and clue text string layout compilation.
 
 ---
 
 ### 3. Managers & Controllers (`Assets/Scripts/Managers/`)
 MonoBehaviours that can be dragged directly onto GameObjects:
-* [`CaseManager.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Managers/CaseManager.cs): Case runtime progression and discovery state tracker.
-* [`InterrogationManager.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Managers/InterrogationManager.cs): Dialogue tree navigation and contradiction challenge controller.
-* [`EvidenceManager.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Managers/EvidenceManager.cs): Evidence selection and inspect modal coordinator.
-* [`DeductionBoardController.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Managers/DeductionBoardController.cs): Deduction board interaction and clue linking controller.
-* [`CaseConclusionManager.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Managers/CaseConclusionManager.cs): Conclusion scoring controller.
-* [`AudioManager.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Managers/AudioManager.cs): Music and SFX audio playback.
+* [`CaseManager.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Managers/CaseManager.cs): Case runtime progression and discovery state tracker.
+* [`InterrogationManager.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Managers/InterrogationManager.cs): Dialogue tree navigation and contradiction challenge controller.
+* [`EvidenceManager.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Managers/EvidenceManager.cs): Evidence selection and inspect modal coordinator.
+* [`DeductionBoardController.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Managers/DeductionBoardController.cs): Deduction board interaction and clue linking controller.
+* [`CaseConclusionManager.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Managers/CaseConclusionManager.cs): Conclusion scoring controller.
+* [`AudioManager.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Managers/AudioManager.cs): Music and SFX audio playback and volume settings.
 
 ---
 
 ### 4. Gameplay & UI Layers (`Assets/Scripts/Gameplay/` & `Assets/Scripts/UI/`)
-* [`CharacterDisplay.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Gameplay/CharacterDisplay.cs): Manages portraits, emotional expressions, and idle breathing.
-* [`TableEvidenceItem.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Gameplay/TableEvidenceItem.cs): Physical table items, notebook openers, and dialogue triggers.
-* [`FixedInvestigationCamera.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/Gameplay/FixedInvestigationCamera.cs): Camera lock and editor viewport gizmos.
-* [`DialogueUI.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/UI/DialogueUI.cs): Typewriter dialogue rendering and evidence presenter picker.
-* [`CaseFileNotebookUI.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/UI/CaseFileNotebookUI.cs): Detective case notebook with tab navigation.
-* [`EvidenceInspectModal.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/UI/EvidenceInspectModal.cs): Zoomed 2D inspection popup with interactive hotspots.
-* [`ConclusionUI.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/UI/ConclusionUI.cs): Conclusion quiz and final scorecard display.
-* [`UIManager.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/Scripts/UI/UIManager.cs): Canvas panel visibility coordinator.
+* [`CharacterDisplay.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/CharacterDisplay.cs): Manages portraits, emotional expressions, and idle breathing.
+* [`TableEvidenceItem.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/TableEvidenceItem.cs): Physical table items, notebook openers, and dialogue triggers.
+* [`FixedInvestigationCamera.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/FixedInvestigationCamera.cs): Camera lock and editor viewport gizmos.
+* [`MainMenuUI.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/MainMenuUI.cs): Main menu screen, case select, detective handbook, settings, and credits coordinator.
+* [`DialogueUI.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/DialogueUI.cs): Typewriter dialogue rendering and evidence presenter picker.
+* [`CaseFileNotebookUI.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/CaseFileNotebookUI.cs): Detective case notebook with tab navigation.
+* [`EvidenceInspectModal.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/EvidenceInspectModal.cs): Zoomed 2D inspection popup with interactive hotspots.
+* [`ConclusionUI.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/ConclusionUI.cs): Conclusion quiz and final scorecard display.
+* [`UIManager.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/UIManager.cs): Canvas panel visibility and navigation coordinator.

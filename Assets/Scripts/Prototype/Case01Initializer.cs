@@ -13,7 +13,7 @@ namespace CaseClosed.Prototype
     public class Case01Initializer : MonoBehaviour
     {
         /// <summary>Whether to automatically initialize and load Case 01 on Start.</summary>
-        public bool initializeOnStart = true;
+        public bool initializeOnStart = false;
 
         /// <summary>
         /// Automatically loads Case 01 on start if <see cref="initializeOnStart"/> is enabled.

@@ -21,6 +21,12 @@ namespace CaseClosed.Enums
         Secretive,
 
         /// <summary>Assured of their innocence and unbothered by claims.</summary>
-        Confident
+        Confident,
+
+        /// <summary>Sharp intuition for physical clues and contradictions.</summary>
+        Observant,
+
+        /// <summary>Analytical, disciplined, and focused on forensic trails.</summary>
+        Methodical
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using CaseClosed.Enums;
 using CaseClosed.Managers;
 
@@ -14,6 +15,7 @@ namespace CaseClosed.UI
         public static UIManager Instance { get; private set; }
 
         [Header("UI Panels")]
+        public GameObject mainMenuPanel;
         public GameObject mainTablePanel;
         public GameObject inspectModalPanel;
         public GameObject notebookPanel;
@@ -27,8 +29,9 @@ namespace CaseClosed.UI
         public GameObject deductionBoardButton;
         public GameObject concludeCaseButton;
         public GameObject investigatorSelectButton;
+        public GameObject returnToMenuButton;
 
-        private UIPanelType currentPanel = UIPanelType.InvestigationTable;
+        private UIPanelType currentPanel = UIPanelType.MainMenu;
 
         /// <summary>
         /// Initializes the singleton instance.
@@ -46,11 +49,23 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Shows the default investigation table panel and hooks event listeners on start.
+        /// Shows the initial UI panel and hooks event listeners on start.
         /// </summary>
         private void Start()
         {
-            ShowPanel(UIPanelType.InvestigationTable);
+            if (returnToMenuButton != null)
+            {
+                Button btn = returnToMenuButton.GetComponent<Button>();
+                if (btn != null) btn.onClick.AddListener(ReturnToMainMenu);
+            }
+
+            if (investigatorSelectButton != null)
+            {
+                Button btn = investigatorSelectButton.GetComponent<Button>();
+                if (btn != null) btn.onClick.AddListener(ToggleInvestigatorSelectPanel);
+            }
+
+            ShowPanel(currentPanel);
             RegisterEvents();
         }
 
@@ -75,7 +90,10 @@ namespace CaseClosed.UI
             Debug.Log($"[UI:Manager] Transitioning panel from '{currentPanel}' to '{panelType}'");
             currentPanel = panelType;
 
-            if (mainTablePanel != null) mainTablePanel.SetActive(panelType == UIPanelType.InvestigationTable || panelType == UIPanelType.InspectModal);
+            bool isMainMenu = (panelType == UIPanelType.MainMenu);
+
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(isMainMenu);
+            if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && (panelType == UIPanelType.InvestigationTable || panelType == UIPanelType.InspectModal));
             if (inspectModalPanel != null) inspectModalPanel.SetActive(panelType == UIPanelType.InspectModal);
             if (notebookPanel != null) notebookPanel.SetActive(panelType == UIPanelType.CaseFileNotebook);
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
@@ -83,7 +101,24 @@ namespace CaseClosed.UI
             if (resultsScreenPanel != null) resultsScreenPanel.SetActive(panelType == UIPanelType.ResultsScreen);
             if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(panelType == UIPanelType.InvestigatorSelect);
 
+            // Toggle in-game header navigation visibility
+            if (notebookButton != null) notebookButton.SetActive(!isMainMenu);
+            if (deductionBoardButton != null) deductionBoardButton.SetActive(!isMainMenu);
+            if (concludeCaseButton != null) concludeCaseButton.SetActive(!isMainMenu);
+            if (investigatorSelectButton != null) investigatorSelectButton.SetActive(!isMainMenu);
+            if (returnToMenuButton != null) returnToMenuButton.SetActive(!isMainMenu);
+
             AudioManager.Instance?.PlayPaperFlip();
+        }
+
+        /// <summary>
+        /// Navigates back to the main menu screen.
+        /// </summary>
+        public void ReturnToMainMenu()
+        {
+            Debug.Log("[UI:Manager] Returning to Main Menu");
+            ShowPanel(UIPanelType.MainMenu);
+            AudioManager.Instance?.PlayMenuBGM();
         }
 
         /// <summary>

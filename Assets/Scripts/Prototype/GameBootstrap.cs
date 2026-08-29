@@ -1,4 +1,5 @@
 using UnityEngine;
+using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Gameplay;
 using CaseClosed.Managers;
@@ -8,11 +9,14 @@ namespace CaseClosed.Prototype
 {
     /// <summary>
     /// Entrypoint bootstrapping MonoBehaviour that initializes all managers, attaches required camera scripts,
-    /// and handles keyboard shortcuts (Keys 1, 2, 3) for quick level switching during prototyping.
+    /// registers selectable investigators, and handles keyboard shortcuts (Keys 1, 2, 3) for quick level switching.
     /// Can be dragged directly onto a GameBootstrap GameObject in the Unity Inspector.
     /// </summary>
     public class GameBootstrap : MonoBehaviour
     {
+        /// <summary>Whether to display the Main Menu on launch instead of auto-loading a level.</summary>
+        public bool startOnMainMenu = true;
+
         private Case01Initializer level1;
         private Case02Initializer level2;
         private Case03Initializer level3;
@@ -40,12 +44,15 @@ namespace CaseClosed.Prototype
 
             level1 = gameObject.GetComponent<Case01Initializer>();
             if (level1 == null) level1 = gameObject.AddComponent<Case01Initializer>();
+            level1.initializeOnStart = false;
 
             level2 = gameObject.GetComponent<Case02Initializer>();
             if (level2 == null) level2 = gameObject.AddComponent<Case02Initializer>();
+            level2.initializeOnStart = false;
 
             level3 = gameObject.GetComponent<Case03Initializer>();
             if (level3 == null) level3 = gameObject.AddComponent<Case03Initializer>();
+            level3.initializeOnStart = false;
 
             Debug.Log("[Prototype:Bootstrap] All managers and investigators initialized. Ready for level loading.");
         }
@@ -82,14 +89,34 @@ namespace CaseClosed.Prototype
         }
 
         /// <summary>
+        /// Displays Main Menu or default level upon start.
+        /// </summary>
+        private void Start()
+        {
+            if (startOnMainMenu)
+            {
+                UIManager.Instance?.ShowPanel(UIPanelType.MainMenu);
+                AudioManager.Instance?.PlayMenuBGM();
+            }
+            else
+            {
+                LoadLevel(1);
+            }
+        }
+
+        /// <summary>
         /// Listens for number key presses (1, 2, 3) to dynamically switch active cases / levels,
-        /// and key (I or C) to switch active investigator character.
+        /// (Esc / M) to return to Main Menu, and (I / C) to switch active investigator character.
         /// </summary>
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha1)) LoadLevel(1);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) LoadLevel(2);
             else if (Input.GetKeyDown(KeyCode.Alpha3)) LoadLevel(3);
+            else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.M))
+            {
+                UIManager.Instance?.ReturnToMainMenu();
+            }
             else if (Input.GetKeyDown(KeyCode.I))
             {
                 UIManager.Instance?.ToggleInvestigatorSelectPanel();

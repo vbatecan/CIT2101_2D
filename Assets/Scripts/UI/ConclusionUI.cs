@@ -29,6 +29,7 @@ namespace CaseClosed.UI
         public Button continueButton;
         public Button nextLevelButton;
         public Text nextLevelButtonText;
+        public Button returnToMainMenuButton;
 
         private List<int> playerAnswers = new List<int>();
 
@@ -40,6 +41,7 @@ namespace CaseClosed.UI
             if (submitConclusionButton != null) submitConclusionButton.onClick.AddListener(OnSubmitClicked);
             if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
             if (nextLevelButton != null) nextLevelButton.onClick.AddListener(OnNextLevelClicked);
+            if (returnToMainMenuButton != null) returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
 
             if (resultsContainer != null) resultsContainer.SetActive(false);
         }
@@ -223,7 +225,7 @@ namespace CaseClosed.UI
             int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
             int nextLevel = currentLevel + 1;
 
-            var bootstrap = FindFirstObjectByType<CaseClosed.Prototype.GameBootstrap>();
+            var bootstrap = Object.FindFirstObjectByType<CaseClosed.Prototype.GameBootstrap>();
             if (nextLevel <= 3 && bootstrap != null)
             {
                 Debug.Log($"[UI:Conclusion] Advancing to Level {nextLevel}...");
@@ -232,8 +234,17 @@ namespace CaseClosed.UI
             else
             {
                 Debug.Log("[UI:Conclusion] Reached final level or returning to Level Select");
-                UIManager.Instance?.ShowPanel(UIPanelType.InvestigatorSelect);
+                UIManager.Instance?.ReturnToMainMenu();
             }
+        }
+
+        /// <summary>
+        /// Handles click on return to main menu button, navigating back to the main menu.
+        /// </summary>
+        private void OnMainMenuClicked()
+        {
+            Debug.Log("[UI:Conclusion] Return to Main Menu button clicked");
+            UIManager.Instance?.ReturnToMainMenu();
         }
     }
 }
