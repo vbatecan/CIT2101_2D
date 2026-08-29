@@ -66,13 +66,7 @@ namespace CaseClosed.Gameplay
         /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = hoverColor;
-                if (evidenceData != null && evidenceData.highlightedSprite != null)
-                    spriteRenderer.sprite = evidenceData.highlightedSprite;
-            }
-            if (highlightGlow != null) highlightGlow.SetActive(true);
+            SetHoverState(true);
         }
 
         /// <summary>
@@ -81,13 +75,26 @@ namespace CaseClosed.Gameplay
         /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerExit(PointerEventData eventData)
         {
+            SetHoverState(false);
+        }
+
+        /// <summary>
+        /// Programmatically sets the hover visual state (used by ArmPointerController).
+        /// </summary>
+        public void SetHoverState(bool isHovered)
+        {
             if (spriteRenderer != null)
             {
-                spriteRenderer.color = originalColor;
-                if (evidenceData != null && evidenceData.normalSprite != null)
-                    spriteRenderer.sprite = evidenceData.normalSprite;
+                spriteRenderer.color = isHovered ? hoverColor : originalColor;
+                if (evidenceData != null)
+                {
+                    if (isHovered && evidenceData.highlightedSprite != null)
+                        spriteRenderer.sprite = evidenceData.highlightedSprite;
+                    else if (!isHovered && evidenceData.normalSprite != null)
+                        spriteRenderer.sprite = evidenceData.normalSprite;
+                }
             }
-            if (highlightGlow != null) highlightGlow.SetActive(false);
+            if (highlightGlow != null) highlightGlow.SetActive(isHovered);
         }
 
         /// <summary>
@@ -99,8 +106,18 @@ namespace CaseClosed.Gameplay
         /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerClick(PointerEventData eventData)
         {
+            bool isSecondary = eventData.clickCount >= 2 || eventData.button == PointerEventData.InputButton.Right;
+            TriggerClick(isSecondary);
+        }
+
+        /// <summary>
+        /// Programmatically triggers the interaction click on this table item (used by ArmPointerController).
+        /// </summary>
+        /// <param name="isInspectOrRightClick">If true, directly opens close-up inspect modal.</param>
+        public void TriggerClick(bool isInspectOrRightClick = false)
+        {
             string itemName = evidenceData != null ? evidenceData.evidenceName : gameObject.name;
-            Debug.Log($"[Gameplay:TableEvidence] Clicked '{itemName}' (Button: {eventData.button}, ClickCount: {eventData.clickCount}, OpenNotebook: {openNotebookOnClick})");
+            Debug.Log($"[Gameplay:TableEvidence] TriggerClick on '{itemName}' (InspectMode: {isInspectOrRightClick}, OpenNotebook: {openNotebookOnClick})");
 
             // 1. Check if configured to open notebook (Open Case Book on desk)
             if (openNotebookOnClick)
@@ -115,8 +132,8 @@ namespace CaseClosed.Gameplay
             // 2. Select evidence in EvidenceManager
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
-            // 3. Check for double-click / right-click zoom inspection
-            if (eventData.clickCount >= 2 || eventData.button == PointerEventData.InputButton.Right)
+            // 3. Check for zoom inspection
+            if (isInspectOrRightClick)
             {
                 Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
                 EvidenceManager.Instance?.OpenInspectModal(evidenceData);

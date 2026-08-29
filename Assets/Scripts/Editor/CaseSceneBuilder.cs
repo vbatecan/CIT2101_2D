@@ -16,12 +16,10 @@ using CaseClosed.UI;
 namespace CaseClosed.Editor
 {
     /// <summary>
-    /// Master Unity Editor utility for constructing, linking, and configuring all Case Closed scenes:
+    /// Master Unity Editor utility for constructing, linking, and configuring Case Closed scenes:
     /// - MainMenu.unity (Title Screen, Case Selection, Detective Handbook, Settings, Credits)
-    /// - Case001.unity (Interrogation Room Sketch Layout: Background, 2 Suspects, Table Desk, Interactive Table Items, UI)
-    /// - Case002.unity (Art Gallery Case Layout)
-    /// - Case003.unity (Coffee Shop Office Case Layout)
-    /// Also registers all scenes into EditorBuildSettings.
+    /// - Case001.unity (Refined Interrogation Room with Detective Arm Pointer, dual suspects, table items, UI)
+    /// Also registers scenes into EditorBuildSettings.
     /// </summary>
     public static class CaseSceneBuilder
     {
@@ -37,23 +35,19 @@ namespace CaseClosed.Editor
         private const string SceneDir = "Assets/Scenes";
         private const string MainMenuScenePath = "Assets/Scenes/MainMenu.unity";
         private const string Case001ScenePath = "Assets/Scenes/Case001.unity";
-        private const string Case002ScenePath = "Assets/Scenes/Case002.unity";
-        private const string Case003ScenePath = "Assets/Scenes/Case003.unity";
 
-        [MenuItem("Case Closed/Build All Scenes (MainMenu + Case001 + Case002 + Case003)", false, 0)]
+        [MenuItem("Case Closed/Build All Scenes (MainMenu + Case001)", false, 0)]
         public static void BuildAllScenes()
         {
-            Debug.Log("[CaseSceneBuilder] === STARTING AUTOMATED BUILD OF ALL 4 SCENES ===");
+            Debug.Log("[CaseSceneBuilder] === STARTING AUTOMATED BUILD OF MAINMENU & CASE001 ===");
             EnsureDirectory(SceneDir);
 
             BuildMainMenuScene();
             BuildCase001Scene();
-            BuildCase002Scene();
-            BuildCase003Scene();
 
             RegisterScenesInBuildSettings();
 
-            Debug.Log("[CaseSceneBuilder] === ALL 4 SCENES BUILT & REGISTERED SUCCESSFULLY! ===");
+            Debug.Log("[CaseSceneBuilder] === MAINMENU & CASE001 BUILT & REGISTERED SUCCESSFULLY! ===");
         }
 
         [MenuItem("Case Closed/Build MainMenu Scene", false, 10)]
@@ -72,8 +66,8 @@ namespace CaseClosed.Editor
             GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);
             bootstrap.startOnMainMenu = true;
 
-            // 3. Canvas & UI
-            GameObject canvasObj = CreateCanvasRoot();
+            // 3. Canvas & UI (Screen Space - Camera mode so UI aligns with camera in Scene View)
+            GameObject canvasObj = CreateCanvasRoot(mainCam);
             UIManager uiManager = EnsureComponent<UIManager>(canvasObj);
             EnsureEventSystem();
 
@@ -85,13 +79,13 @@ namespace CaseClosed.Editor
             Debug.Log($"[CaseSceneBuilder] MainMenu Scene saved to: {MainMenuScenePath}");
         }
 
-        [MenuItem("Case Closed/Build Case 001 Scene (Sketch Layout)", false, 11)]
+        [MenuItem("Case Closed/Build Case 001 Scene (Sketch Layout + Arm Pointer)", false, 11)]
         public static void BuildCase001Scene()
         {
-            Debug.Log("[CaseSceneBuilder] Building Case001 Scene matching sketch...");
+            Debug.Log("[CaseSceneBuilder] Building Case001 Scene with Detective Arm Pointer...");
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            // 1. Camera
+            // 1. Camera (Orthographic Size 5 -> 10 Units Height, 17.78 Units Width)
             Camera mainCam = CreateCamera();
 
             // 2. Load Assets
@@ -104,10 +98,10 @@ namespace CaseClosed.Editor
             Sprite envelopeSprite = LoadSprite("Assets/Art/Evidence/Sprite_EvidenceEnvelope.png");
             Sprite notebookSprite = LoadSprite("Assets/Art/Props/Sprite_OpenNotebook.png");
             Sprite cupSprite = LoadSprite("Assets/Art/Props/Sprite_CoffeeCup.png");
-            Sprite handSprite = LoadSprite("Assets/Art/Props/Sprite_DetectiveHand.png");
+            Sprite armSprite = LoadSprite("Assets/Assets/ArmPointer.png");
             Sprite alertSprite = LoadSprite("Assets/Art/UI/Sprite_AlertIcon.png");
 
-            // 3. Background Layer (Layer 1)
+            // 3. Background Layer (Layer 1: Fills the 16:9 Orthographic Camera)
             GameObject bgObj = new GameObject("Environment_Background");
             SpriteRenderer bgRenderer = bgObj.AddComponent<SpriteRenderer>();
             bgRenderer.sprite = bgSprite;
@@ -115,6 +109,7 @@ namespace CaseClosed.Editor
             bgObj.transform.position = new Vector3(0f, 0f, 0f);
             if (bgSprite != null)
             {
+                // Fit 10-unit orthographic height (1920x1080)
                 float bgScale = 10f / (bgSprite.rect.height / bgSprite.pixelsPerUnit);
                 bgObj.transform.localScale = new Vector3(bgScale, bgScale, 1f);
             }
@@ -126,14 +121,14 @@ namespace CaseClosed.Editor
                 SpriteRenderer alertRenderer = alertObj.AddComponent<SpriteRenderer>();
                 alertRenderer.sprite = alertSprite;
                 alertRenderer.sortingOrder = 15;
-                alertObj.transform.position = new Vector3(2.1f, 1.8f, 0f);
+                alertObj.transform.position = new Vector3(2.8f, 1.8f, 0f);
                 alertObj.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
             }
 
             // 4. Characters Layer (Layer 2: Behind the table)
             // Left: Male Suspect (Vince Batecan / Primary Suspect with headphones)
             GameObject charLeft = new GameObject("Character_Suspect_Left");
-            charLeft.transform.position = new Vector3(-2.2f, 0.4f, 0f);
+            charLeft.transform.position = new Vector3(-2.8f, 0.2f, 0f);
             charLeft.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
             SpriteRenderer maleRenderer = charLeft.AddComponent<SpriteRenderer>();
             maleRenderer.sprite = maleSprite;
@@ -148,8 +143,8 @@ namespace CaseClosed.Editor
 
             // Right: Female Suspect / Accomplice (Janine Sotto / Secondary Suspect)
             GameObject charRight = new GameObject("Character_Suspect_Right");
-            charRight.transform.position = new Vector3(2.0f, 0.3f, 0f);
-            charRight.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
+            charRight.transform.position = new Vector3(2.8f, 0.2f, 0f);
+            charRight.transform.localScale = new Vector3(0.80f, 0.80f, 1f);
             SpriteRenderer femaleRenderer = charRight.AddComponent<SpriteRenderer>();
             femaleRenderer.sprite = femaleSprite;
             femaleRenderer.sortingOrder = 5;
@@ -161,10 +156,10 @@ namespace CaseClosed.Editor
             cdRight.breathingSpeed = 2.2f;
             cdRight.breathingAmount = 0.025f;
 
-            // 5. Table Desk Layer (Layer 3: Foreground)
+            // 5. Table Desk Layer (Layer 3: Foreground Table)
             GameObject tableObj = new GameObject("Table_Desk");
-            tableObj.transform.position = new Vector3(0f, -2.4f, 0f);
-            tableObj.transform.localScale = new Vector3(1.9f, 1.8f, 1f);
+            tableObj.transform.position = new Vector3(0f, -2.8f, 0f);
+            tableObj.transform.localScale = new Vector3(1.85f, 1.85f, 1f);
             SpriteRenderer tableRenderer = tableObj.AddComponent<SpriteRenderer>();
             tableRenderer.sprite = tableSprite;
             tableRenderer.sortingOrder = 10;
@@ -172,7 +167,7 @@ namespace CaseClosed.Editor
             // 6. Interactive Table Evidence Items (Matching Sketch!)
             // Item 1: Envelope / Photo Evidence (Left)
             GameObject itemEnvelope = new GameObject("Item_Photo_Evidence");
-            itemEnvelope.transform.position = new Vector3(-3.6f, -1.8f, 0f);
+            itemEnvelope.transform.position = new Vector3(-4.5f, -2.0f, 0f);
             itemEnvelope.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
             SpriteRenderer envRen = itemEnvelope.AddComponent<SpriteRenderer>();
             envRen.sprite = envelopeSprite;
@@ -185,7 +180,7 @@ namespace CaseClosed.Editor
 
             // Item 2: Open Case File Notebook (Center Desk)
             GameObject itemBook = new GameObject("Item_CaseBook");
-            itemBook.transform.position = new Vector3(-0.4f, -2.1f, 0f);
+            itemBook.transform.position = new Vector3(-0.4f, -2.2f, 0f);
             itemBook.transform.localScale = new Vector3(0.75f, 0.75f, 1f);
             SpriteRenderer bookRen = itemBook.AddComponent<SpriteRenderer>();
             bookRen.sprite = notebookSprite;
@@ -194,7 +189,7 @@ namespace CaseClosed.Editor
             bookCol.size = new Vector2(4.8f, 3.5f);
             TableEvidenceItem teiBook = itemBook.AddComponent<TableEvidenceItem>();
             teiBook.spriteRenderer = bookRen;
-            teiBook.openNotebookOnClick = true;
+            teiBook.openNotebookOnClick = true; // Clicks open dossier notebook!
 
             // Item 3: Knife Evidence Clue (Center-Top Desk)
             GameObject itemKnife = new GameObject("Item_Weapon_Clue");
@@ -211,7 +206,7 @@ namespace CaseClosed.Editor
 
             // Item 4: Coffee Cup with Straw (Right Desk)
             GameObject itemCup = new GameObject("Item_Cup_Clue");
-            itemCup.transform.position = new Vector3(3.6f, -1.8f, 0f);
+            itemCup.transform.position = new Vector3(4.5f, -2.0f, 0f);
             itemCup.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
             SpriteRenderer cupRen = itemCup.AddComponent<SpriteRenderer>();
             cupRen.sprite = cupSprite;
@@ -222,16 +217,25 @@ namespace CaseClosed.Editor
             teiCup.spriteRenderer = cupRen;
             teiCup.openNotebookOnClick = false;
 
-            // Item 5: Detective Hand Pointer (Foreground)
-            if (handSprite != null)
-            {
-                GameObject itemHand = new GameObject("Detective_Hand_Pointer");
-                itemHand.transform.position = new Vector3(2.0f, -2.4f, 0f);
-                itemHand.transform.localScale = new Vector3(0.65f, 0.65f, 1f);
-                SpriteRenderer handRen = itemHand.AddComponent<SpriteRenderer>();
-                handRen.sprite = handSprite;
-                handRen.sortingOrder = 14;
-            }
+            // Item 5: Detective Arm Pointer (Interactive Mouse-Controlled Arm with ArmPointer.png)
+            GameObject armObj = new GameObject("Detective_Arm_Pointer");
+            armObj.transform.position = new Vector3(0f, -3.0f, 0f);
+            armObj.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
+            SpriteRenderer armRen = armObj.AddComponent<SpriteRenderer>();
+            armRen.sprite = armSprite;
+            armRen.sortingOrder = 20;
+
+            ArmPointerController armCtrl = armObj.AddComponent<ArmPointerController>();
+            armCtrl.targetCamera = mainCam;
+            armCtrl.armRenderer = armRen;
+            armCtrl.horizontalBounds = new Vector2(-6.0f, 6.0f);
+            armCtrl.verticalBounds = new Vector2(-3.8f, -0.8f);
+            armCtrl.restingY = -6.5f;
+
+            GameObject fingertipObj = new GameObject("Fingertip_Point");
+            fingertipObj.transform.SetParent(armObj.transform, false);
+            fingertipObj.transform.localPosition = new Vector3(0.1f, 4.8f, 0f);
+            armCtrl.fingertipPoint = fingertipObj.transform;
 
             // 7. Managers Container
             GameObject managersObj = new GameObject("_Managers");
@@ -248,8 +252,8 @@ namespace CaseClosed.Editor
             GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);
             bootstrap.startOnMainMenu = false;
 
-            // 8. Canvas & In-Game UI
-            GameObject canvasObj = CreateCanvasRoot();
+            // 8. Canvas & In-Game UI (Screen Space - Camera mode so UI aligns with camera in Scene View)
+            GameObject canvasObj = CreateCanvasRoot(mainCam);
             UIManager uiManager = EnsureComponent<UIManager>(canvasObj);
             EnsureEventSystem();
 
@@ -260,242 +264,6 @@ namespace CaseClosed.Editor
             Debug.Log($"[CaseSceneBuilder] Case001 Scene saved to: {Case001ScenePath}");
         }
 
-        [MenuItem("Case Closed/Build Case 002 Scene", false, 12)]
-        public static void BuildCase002Scene()
-        {
-            Debug.Log("[CaseSceneBuilder] Building Case002 Scene...");
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
-            CreateCamera();
-
-            Sprite bgSprite = LoadSprite("Assets/Assets/Interrogation Room.jpg");
-            Sprite tableSprite = LoadSprite("Assets/Assets/Interrogation Table.png");
-            Sprite maleSprite = LoadSprite("Assets/Assets/Case001_Male.png");
-            Sprite femaleSprite = LoadSprite("Assets/Assets/Case001_Female.png");
-            Sprite envelopeSprite = LoadSprite("Assets/Art/Evidence/Sprite_EvidenceEnvelope.png");
-            Sprite notebookSprite = LoadSprite("Assets/Art/Props/Sprite_OpenNotebook.png");
-            Sprite cupSprite = LoadSprite("Assets/Art/Props/Sprite_CoffeeCup.png");
-
-            // Background
-            GameObject bgObj = new GameObject("Environment_Background");
-            SpriteRenderer bgRenderer = bgObj.AddComponent<SpriteRenderer>();
-            bgRenderer.sprite = bgSprite;
-            bgRenderer.sortingOrder = 0;
-            if (bgSprite != null)
-            {
-                float bgScale = 10f / (bgSprite.rect.height / bgSprite.pixelsPerUnit);
-                bgObj.transform.localScale = new Vector3(bgScale, bgScale, 1f);
-            }
-
-            // Characters (Charl Pascual on Left, Paul Camacho on Right)
-            GameObject charLeft = new GameObject("Character_Suspect_Left");
-            charLeft.transform.position = new Vector3(-2.2f, 0.4f, 0f);
-            charLeft.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
-            SpriteRenderer rLeft = charLeft.AddComponent<SpriteRenderer>();
-            rLeft.sprite = maleSprite;
-            rLeft.sortingOrder = 5;
-            CharacterDisplay cdLeft = charLeft.AddComponent<CharacterDisplay>();
-            cdLeft.characterSlot = CharacterSlot.PrimarySuspect;
-            cdLeft.characterSpriteRenderer = rLeft;
-            cdLeft.enableIdleBreathing = true;
-
-            GameObject charRight = new GameObject("Character_Suspect_Right");
-            charRight.transform.position = new Vector3(2.0f, 0.3f, 0f);
-            charRight.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
-            SpriteRenderer rRight = charRight.AddComponent<SpriteRenderer>();
-            rRight.sprite = femaleSprite;
-            rRight.sortingOrder = 5;
-            CharacterDisplay cdRight = charRight.AddComponent<CharacterDisplay>();
-            cdRight.characterSlot = CharacterSlot.SecondarySuspect;
-            cdRight.characterSpriteRenderer = rRight;
-            cdRight.enableIdleBreathing = true;
-
-            // Table Desk
-            GameObject tableObj = new GameObject("Table_Desk");
-            tableObj.transform.position = new Vector3(0f, -2.4f, 0f);
-            tableObj.transform.localScale = new Vector3(1.9f, 1.8f, 1f);
-            SpriteRenderer tableRenderer = tableObj.AddComponent<SpriteRenderer>();
-            tableRenderer.sprite = tableSprite;
-            tableRenderer.sortingOrder = 10;
-
-            // Table Items
-            GameObject itemEnvelope = new GameObject("Item_Photo_Evidence");
-            itemEnvelope.transform.position = new Vector3(-3.6f, -1.8f, 0f);
-            itemEnvelope.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
-            SpriteRenderer envRen = itemEnvelope.AddComponent<SpriteRenderer>();
-            envRen.sprite = envelopeSprite;
-            envRen.sortingOrder = 12;
-            BoxCollider2D envCol = itemEnvelope.AddComponent<BoxCollider2D>();
-            envCol.size = new Vector2(4.5f, 4.5f);
-            TableEvidenceItem teiEnv = itemEnvelope.AddComponent<TableEvidenceItem>();
-            teiEnv.spriteRenderer = envRen;
-
-            GameObject itemBook = new GameObject("Item_CaseBook");
-            itemBook.transform.position = new Vector3(-0.4f, -2.1f, 0f);
-            itemBook.transform.localScale = new Vector3(0.75f, 0.75f, 1f);
-            SpriteRenderer bookRen = itemBook.AddComponent<SpriteRenderer>();
-            bookRen.sprite = notebookSprite;
-            bookRen.sortingOrder = 12;
-            BoxCollider2D bookCol = itemBook.AddComponent<BoxCollider2D>();
-            bookCol.size = new Vector2(4.8f, 3.5f);
-            TableEvidenceItem teiBook = itemBook.AddComponent<TableEvidenceItem>();
-            teiBook.spriteRenderer = bookRen;
-            teiBook.openNotebookOnClick = true;
-
-            GameObject itemCup = new GameObject("Item_Cup_Clue");
-            itemCup.transform.position = new Vector3(3.6f, -1.8f, 0f);
-            itemCup.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
-            SpriteRenderer cupRen = itemCup.AddComponent<SpriteRenderer>();
-            cupRen.sprite = cupSprite;
-            cupRen.sortingOrder = 12;
-            BoxCollider2D cupCol = itemCup.AddComponent<BoxCollider2D>();
-            cupCol.size = new Vector2(2.5f, 4.8f);
-            TableEvidenceItem teiCup = itemCup.AddComponent<TableEvidenceItem>();
-            teiCup.spriteRenderer = cupRen;
-
-            // Managers
-            GameObject managersObj = new GameObject("_Managers");
-            EnsureComponent<AudioManager>(managersObj);
-            EnsureComponent<CaseManager>(managersObj);
-            EnsureComponent<EvidenceManager>(managersObj);
-            EnsureComponent<InterrogationManager>(managersObj);
-            EnsureComponent<DeductionBoardController>(managersObj);
-            EnsureComponent<CaseConclusionManager>(managersObj);
-
-            Case02Initializer init2 = EnsureComponent<Case02Initializer>(managersObj);
-            init2.initializeOnStart = true;
-
-            GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);
-            bootstrap.startOnMainMenu = false;
-
-            // Canvas
-            GameObject canvasObj = CreateCanvasRoot();
-            UIManager uiManager = EnsureComponent<UIManager>(canvasObj);
-            EnsureEventSystem();
-            BuildInGameUIPanels(canvasObj, uiManager, 2);
-
-            EditorSceneManager.SaveScene(scene, Case002ScenePath);
-            Debug.Log($"[CaseSceneBuilder] Case002 Scene saved to: {Case002ScenePath}");
-        }
-
-        [MenuItem("Case Closed/Build Case 003 Scene", false, 13)]
-        public static void BuildCase003Scene()
-        {
-            Debug.Log("[CaseSceneBuilder] Building Case003 Scene...");
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-
-            CreateCamera();
-
-            Sprite bgSprite = LoadSprite("Assets/Assets/Interrogation Room.jpg");
-            Sprite tableSprite = LoadSprite("Assets/Assets/Interrogation Table.png");
-            Sprite maleSprite = LoadSprite("Assets/Assets/Case001_Male.png");
-            Sprite femaleSprite = LoadSprite("Assets/Assets/Case001_Female.png");
-            Sprite envelopeSprite = LoadSprite("Assets/Art/Evidence/Sprite_EvidenceEnvelope.png");
-            Sprite notebookSprite = LoadSprite("Assets/Art/Props/Sprite_OpenNotebook.png");
-            Sprite cupSprite = LoadSprite("Assets/Art/Props/Sprite_CoffeeCup.png");
-
-            // Background
-            GameObject bgObj = new GameObject("Environment_Background");
-            SpriteRenderer bgRenderer = bgObj.AddComponent<SpriteRenderer>();
-            bgRenderer.sprite = bgSprite;
-            bgRenderer.sortingOrder = 0;
-            if (bgSprite != null)
-            {
-                float bgScale = 10f / (bgSprite.rect.height / bgSprite.pixelsPerUnit);
-                bgObj.transform.localScale = new Vector3(bgScale, bgScale, 1f);
-            }
-
-            // Characters (Shanaia Ortega on Left, Shan Jaraba on Right)
-            GameObject charLeft = new GameObject("Character_Suspect_Left");
-            charLeft.transform.position = new Vector3(-2.2f, 0.4f, 0f);
-            charLeft.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
-            SpriteRenderer rLeft = charLeft.AddComponent<SpriteRenderer>();
-            rLeft.sprite = femaleSprite;
-            rLeft.sortingOrder = 5;
-            CharacterDisplay cdLeft = charLeft.AddComponent<CharacterDisplay>();
-            cdLeft.characterSlot = CharacterSlot.PrimarySuspect;
-            cdLeft.characterSpriteRenderer = rLeft;
-            cdLeft.enableIdleBreathing = true;
-
-            GameObject charRight = new GameObject("Character_Suspect_Right");
-            charRight.transform.position = new Vector3(2.0f, 0.3f, 0f);
-            charRight.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
-            SpriteRenderer rRight = charRight.AddComponent<SpriteRenderer>();
-            rRight.sprite = maleSprite;
-            rRight.sortingOrder = 5;
-            CharacterDisplay cdRight = charRight.AddComponent<CharacterDisplay>();
-            cdRight.characterSlot = CharacterSlot.SecondarySuspect;
-            cdRight.characterSpriteRenderer = rRight;
-            cdRight.enableIdleBreathing = true;
-
-            // Table Desk
-            GameObject tableObj = new GameObject("Table_Desk");
-            tableObj.transform.position = new Vector3(0f, -2.4f, 0f);
-            tableObj.transform.localScale = new Vector3(1.9f, 1.8f, 1f);
-            SpriteRenderer tableRenderer = tableObj.AddComponent<SpriteRenderer>();
-            tableRenderer.sprite = tableSprite;
-            tableRenderer.sortingOrder = 10;
-
-            // Table Items
-            GameObject itemEnvelope = new GameObject("Item_Photo_Evidence");
-            itemEnvelope.transform.position = new Vector3(-3.6f, -1.8f, 0f);
-            itemEnvelope.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
-            SpriteRenderer envRen = itemEnvelope.AddComponent<SpriteRenderer>();
-            envRen.sprite = envelopeSprite;
-            envRen.sortingOrder = 12;
-            BoxCollider2D envCol = itemEnvelope.AddComponent<BoxCollider2D>();
-            envCol.size = new Vector2(4.5f, 4.5f);
-            TableEvidenceItem teiEnv = itemEnvelope.AddComponent<TableEvidenceItem>();
-            teiEnv.spriteRenderer = envRen;
-
-            GameObject itemBook = new GameObject("Item_CaseBook");
-            itemBook.transform.position = new Vector3(-0.4f, -2.1f, 0f);
-            itemBook.transform.localScale = new Vector3(0.75f, 0.75f, 1f);
-            SpriteRenderer bookRen = itemBook.AddComponent<SpriteRenderer>();
-            bookRen.sprite = notebookSprite;
-            bookRen.sortingOrder = 12;
-            BoxCollider2D bookCol = itemBook.AddComponent<BoxCollider2D>();
-            bookCol.size = new Vector2(4.8f, 3.5f);
-            TableEvidenceItem teiBook = itemBook.AddComponent<TableEvidenceItem>();
-            teiBook.spriteRenderer = bookRen;
-            teiBook.openNotebookOnClick = true;
-
-            GameObject itemCup = new GameObject("Item_Cup_Clue");
-            itemCup.transform.position = new Vector3(3.6f, -1.8f, 0f);
-            itemCup.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
-            SpriteRenderer cupRen = itemCup.AddComponent<SpriteRenderer>();
-            cupRen.sprite = cupSprite;
-            cupRen.sortingOrder = 12;
-            BoxCollider2D cupCol = itemCup.AddComponent<BoxCollider2D>();
-            cupCol.size = new Vector2(2.5f, 4.8f);
-            TableEvidenceItem teiCup = itemCup.AddComponent<TableEvidenceItem>();
-            teiCup.spriteRenderer = cupRen;
-
-            // Managers
-            GameObject managersObj = new GameObject("_Managers");
-            EnsureComponent<AudioManager>(managersObj);
-            EnsureComponent<CaseManager>(managersObj);
-            EnsureComponent<EvidenceManager>(managersObj);
-            EnsureComponent<InterrogationManager>(managersObj);
-            EnsureComponent<DeductionBoardController>(managersObj);
-            EnsureComponent<CaseConclusionManager>(managersObj);
-
-            Case03Initializer init3 = EnsureComponent<Case03Initializer>(managersObj);
-            init3.initializeOnStart = true;
-
-            GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);
-            bootstrap.startOnMainMenu = false;
-
-            // Canvas
-            GameObject canvasObj = CreateCanvasRoot();
-            UIManager uiManager = EnsureComponent<UIManager>(canvasObj);
-            EnsureEventSystem();
-            BuildInGameUIPanels(canvasObj, uiManager, 3);
-
-            EditorSceneManager.SaveScene(scene, Case003ScenePath);
-            Debug.Log($"[CaseSceneBuilder] Case003 Scene saved to: {Case003ScenePath}");
-        }
-
         #region Helper Scene Construction Methods
 
         public static void RegisterScenesInBuildSettings()
@@ -503,9 +271,7 @@ namespace CaseClosed.Editor
             List<EditorBuildSettingsScene> buildScenes = new List<EditorBuildSettingsScene>
             {
                 new EditorBuildSettingsScene(MainMenuScenePath, true),
-                new EditorBuildSettingsScene(Case001ScenePath, true),
-                new EditorBuildSettingsScene(Case002ScenePath, true),
-                new EditorBuildSettingsScene(Case003ScenePath, true)
+                new EditorBuildSettingsScene(Case001ScenePath, true)
             };
 
             EditorBuildSettings.scenes = buildScenes.ToArray();
@@ -538,7 +304,7 @@ namespace CaseClosed.Editor
             return mainCam;
         }
 
-        private static GameObject CreateCanvasRoot()
+        private static GameObject CreateCanvasRoot(Camera mainCam)
         {
             GameObject canvasObj = GameObject.Find("Canvas_MainUI");
             if (canvasObj == null)
@@ -546,7 +312,10 @@ namespace CaseClosed.Editor
                 canvasObj = new GameObject("Canvas_MainUI", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             }
             Canvas canvas = canvasObj.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = mainCam;
+            canvas.planeDistance = 5f;
+            canvas.sortingOrder = 100;
 
             CanvasScaler scaler = canvasObj.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -642,16 +411,10 @@ namespace CaseClosed.Editor
             GameObject caseSelHeader = CreateText(caseSelCont, "Text_Header", "SELECT INVESTIGATION DOSSIER", 24, FontStyle.Bold, ColorHeaderGold, TextAnchor.MiddleCenter);
             SetupRectTransform(caseSelHeader, new Vector2(0.05f, 0.88f), new Vector2(0.95f, 0.98f), Vector2.zero, Vector2.zero);
 
-            GameObject btnCase1 = CreateButton(caseSelCont, "Button_Case01", "CASE 01: THE MISSING NECKLACE\n<size=13><color=#A0AAB8>Location: Manor Study | Suspect: Vince Angelo Batecan</color></size>", new Vector2(0f, 250f), new Vector2(650f, 70f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
+            GameObject btnCase1 = CreateButton(caseSelCont, "Button_Case01", "CASE 01: THE MISSING NECKLACE\n<size=13><color=#A0AAB8>Location: Manor Study | Suspect: Vince Angelo Batecan</color></size>", new Vector2(0f, 200f), new Vector2(650f, 70f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
             mainMenuUI.case01Button = btnCase1.GetComponent<Button>();
 
-            GameObject btnCase2 = CreateButton(caseSelCont, "Button_Case02", "CASE 02: THE SHATTERED MIRROR\n<size=13><color=#A0AAB8>Location: Art Gallery | Suspect: Charl Vonn Pascual</color></size>", new Vector2(0f, 160f), new Vector2(650f, 70f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
-            mainMenuUI.case02Button = btnCase2.GetComponent<Button>();
-
-            GameObject btnCase3 = CreateButton(caseSelCont, "Button_Case03", "CASE 03: THE LAST CALL\n<size=13><color=#A0AAB8>Location: Coffee Shop Office | Suspect: Shanaia Ortega</color></size>", new Vector2(0f, 70f), new Vector2(650f, 70f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
-            mainMenuUI.case03Button = btnCase3.GetComponent<Button>();
-
-            GameObject btnBackCaseSel = CreateButton(caseSelCont, "Button_Back", "◀ BACK TO MAIN MENU", new Vector2(0f, 10f), new Vector2(240f, 40f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
+            GameObject btnBackCaseSel = CreateButton(caseSelCont, "Button_Back", "◀ BACK TO MAIN MENU", new Vector2(0f, 20f), new Vector2(240f, 40f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
             mainMenuUI.backFromCaseSelectButton = btnBackCaseSel.GetComponent<Button>();
             caseSelCont.SetActive(false);
 
@@ -666,16 +429,14 @@ namespace CaseClosed.Editor
             SetupRectTransform(htpHeader, new Vector2(0.05f, 0.88f), new Vector2(0.95f, 0.98f), Vector2.zero, Vector2.zero);
 
             string htpRules =
-                "<b>1. EXAMINE TABLE EVIDENCE</b>\n" +
-                "Click on physical items lying on the investigation desk to inspect details, rotate 360°, and uncover hidden hotspots.\n\n" +
-                "<b>2. READ THE CASE DOSSIER</b>\n" +
-                "Open the detective notebook to review victim information, suspect backgrounds, known alibis, and discovered clue logs.\n\n" +
+                "<b>1. CONTROL THE DETECTIVE ARM POINTER</b>\n" +
+                "Move your mouse to control the detective's arm across the investigation table. Hover and click on items with your index fingertip.\n\n" +
+                "<b>2. EXAMINE TABLE EVIDENCE & CASE NOTEBOOK</b>\n" +
+                "Click on the open case book to review suspect dossiers, alibis, and clue notes. Inspect the knife, evidence envelope, and drink cup.\n\n" +
                 "<b>3. INTERROGATE & EXPOSE CONTRADICTIONS</b>\n" +
-                "Question suspects. When a statement contradicts physical evidence, press <b>[CHALLENGE]</b> and present the matching proof to trigger a breakthrough confession!\n\n" +
-                "<b>4. SYNTHESIZE DEDUCTIONS</b>\n" +
-                "Connect pairs of clues on the Deduction Board to formulate decisive deductions.\n\n" +
-                "<b>5. CONCLUDE THE CASE</b>\n" +
-                "Answer the multiple-choice conclusion inquiry to grade your detective performance (Rank S to D, 1 to 5 Stars)!";
+                "Question suspects. When a statement contradicts physical evidence, press <b>[⚡ CHALLENGE]</b> and present the matching proof to trigger a breakthrough confession!\n\n" +
+                "<b>4. SYNTHESIZE DEDUCTIONS & CONCLUDE</b>\n" +
+                "Connect clue pairs on the Deduction Board and complete the final inquiry to earn your detective rank (S to D)!";
 
             GameObject htpText = CreateText(htpCont, "Text_Rules", htpRules, 15, FontStyle.Normal, ColorTextWhite, TextAnchor.UpperLeft);
             SetupRectTransform(htpText, new Vector2(0.06f, 0.15f), new Vector2(0.94f, 0.86f), Vector2.zero, Vector2.zero);
@@ -725,6 +486,7 @@ namespace CaseClosed.Editor
                 "<b>PROJECT:</b> CIT2101_2D / Case Closed\n\n" +
                 "<b>CAST OF CHARACTERS:</b>\n" +
                 "• <b>Vince Angelo Batecan</b> — Case 01 Primary Suspect\n" +
+                "• <b>Janine Marie Sotto</b> — Case 01 Secondary Suspect / Accomplice\n" +
                 "• <b>Kirby Raymundo</b> — Manor Owner & Aristocrat\n" +
                 "• <b>Charl Vonn Pascual</b> — Night Security Guard\n" +
                 "• <b>Paul Gabriel Camacho</b> — Art Gallery Owner\n" +
@@ -763,7 +525,7 @@ namespace CaseClosed.Editor
             GameObject btnConclude = CreateButton(headerNav, "Button_ConcludeCase", "CONCLUDE CASE ▶", new Vector2(-190f, 10f), new Vector2(180f, 40f), new Vector2(1f, 0f), new Vector2(1f, 0f));
 
             // Case Banner in center of Header
-            string caseTitleHeader = $"CASE 00{caseLevel}: {(caseLevel == 1 ? "The Missing Necklace" : caseLevel == 2 ? "The Shattered Mirror" : "The Last Call")}";
+            string caseTitleHeader = $"CASE 00{caseLevel}: The Missing Necklace";
             GameObject caseTitleObj = CreateText(headerNav, "Text_CaseTitleHeader", caseTitleHeader, 18, FontStyle.Bold, ColorHeaderGold, TextAnchor.MiddleCenter);
             SetupRectTransform(caseTitleObj, new Vector2(0.35f, 0f), new Vector2(0.65f, 1f), Vector2.zero, Vector2.zero);
 
@@ -788,6 +550,11 @@ namespace CaseClosed.Editor
             GameObject btnChallenge = CreateButton(dialoguePanel, "Button_Challenge", "⚡ CHALLENGE", new Vector2(-140f, 70f), new Vector2(120f, 45f), new Vector2(1f, 0f), new Vector2(1f, 0f));
             btnChallenge.GetComponent<Image>().color = new Color(0.6f, 0.18f, 0.18f, 1f);
             dialogueUI.challengeButton = btnChallenge.GetComponent<Button>();
+
+            // Close button for dialogue
+            GameObject btnCloseDiag = CreateButton(dialoguePanel, "Button_CloseDialogue", "✕", new Vector2(-20f, -20f), new Vector2(32f, 32f), new Vector2(1f, 1f), new Vector2(1f, 1f));
+            btnCloseDiag.GetComponent<Image>().color = new Color(0.35f, 0.15f, 0.15f, 0.9f);
+            dialogueUI.closeDialogueButton = btnCloseDiag.GetComponent<Button>();
 
             // Evidence Picker Container inside Dialogue Panel
             GameObject evPicker = EnsureChild(dialoguePanel, "Container_EvidencePicker");
@@ -919,15 +686,10 @@ namespace CaseClosed.Editor
             SetupRectTransform(resBreakdown, new Vector2(0.1f, 0.25f), new Vector2(0.9f, 0.58f), Vector2.zero, Vector2.zero);
             conclusionUI.scoreBreakdownText = resBreakdown.GetComponent<Text>();
 
-            GameObject btnContinue = CreateButton(resultsCont, "Button_Continue", "REVIEW CASE", new Vector2(-220f, 40f), new Vector2(180f, 50f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
+            GameObject btnContinue = CreateButton(resultsCont, "Button_Continue", "REVIEW CASE", new Vector2(-120f, 40f), new Vector2(200f, 50f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
             conclusionUI.continueButton = btnContinue.GetComponent<Button>();
 
-            GameObject btnNextLvl = CreateButton(resultsCont, "Button_NextLevel", "NEXT CASE ▶", new Vector2(0f, 40f), new Vector2(200f, 50f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
-            btnNextLvl.GetComponent<Image>().color = new Color(0.2f, 0.5f, 0.2f, 1f);
-            conclusionUI.nextLevelButton = btnNextLvl.GetComponent<Button>();
-            conclusionUI.nextLevelButtonText = btnNextLvl.GetComponentInChildren<Text>();
-
-            GameObject btnResMenu = CreateButton(resultsCont, "Button_ReturnToMenu", "MAIN MENU ◀", new Vector2(220f, 40f), new Vector2(180f, 50f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
+            GameObject btnResMenu = CreateButton(resultsCont, "Button_ReturnToMenu", "MAIN MENU ◀", new Vector2(120f, 40f), new Vector2(200f, 50f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
             btnResMenu.GetComponent<Image>().color = ColorHeaderGold;
             btnResMenu.GetComponentInChildren<Text>().color = Color.black;
             conclusionUI.returnToMainMenuButton = btnResMenu.GetComponent<Button>();

@@ -18,6 +18,7 @@ namespace CaseClosed.UI
         public Text dialogueBodyText;
         public Button nextButton;
         public Button challengeButton;
+        public Button closeDialogueButton;
         public GameObject challengeHighlight;
 
         [Header("Evidence Selection Overlay (Presenting Evidence)")]
@@ -27,6 +28,9 @@ namespace CaseClosed.UI
 
         [Header("Typewriter Settings")]
         public float charactersPerSecond = 35f;
+
+        /// <summary>Global state indicating whether the dialogue window is currently visible and active.</summary>
+        public static bool IsDialogueOpen { get; private set; } = false;
 
         private Coroutine typewriterCoroutine;
         private bool isTyping = false;
@@ -39,15 +43,28 @@ namespace CaseClosed.UI
         {
             if (nextButton != null) nextButton.onClick.AddListener(OnNextButtonClicked);
             if (challengeButton != null) challengeButton.onClick.AddListener(OnChallengeButtonClicked);
+            if (closeDialogueButton != null) closeDialogueButton.onClick.AddListener(OnCloseButtonClicked);
 
             if (InterrogationManager.Instance != null)
             {
                 InterrogationManager.Instance.OnDialogueNodeDisplayed += DisplayNode;
                 InterrogationManager.Instance.OnChallengeModeToggled += UpdateChallengeState;
                 InterrogationManager.Instance.OnChallengeResult += HandleChallengeResult;
+                InterrogationManager.Instance.OnDialogueClosed += HideDialoguePanel;
             }
 
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (InterrogationManager.Instance != null)
+            {
+                InterrogationManager.Instance.OnDialogueNodeDisplayed -= DisplayNode;
+                InterrogationManager.Instance.OnChallengeModeToggled -= UpdateChallengeState;
+                InterrogationManager.Instance.OnChallengeResult -= HandleChallengeResult;
+                InterrogationManager.Instance.OnDialogueClosed -= HideDialoguePanel;
+            }
         }
 
         /// <summary>
@@ -57,6 +74,9 @@ namespace CaseClosed.UI
         public void DisplayNode(DialogueNode node)
         {
             if (node == null) return;
+
+            IsDialogueOpen = true;
+            gameObject.SetActive(true);
 
             Debug.Log($"[UI:Dialogue] Displaying node '{node.nodeId}' (Speaker: '{node.speakerName}', Challengeable: {node.isChallengeable})");
 
@@ -187,12 +207,35 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
+        /// Handles dialogue close button click, returning immediately to table exploration mode.
+        /// </summary>
+        private void OnCloseButtonClicked()
+        {
+            Debug.Log("[UI:Dialogue] Close dialogue button clicked");
+            InterrogationManager.Instance?.CloseDialogue();
+        }
+
+        /// <summary>
+        /// Hides the dialogue panel when dialogue finishes or is closed.
+        /// </summary>
+        public void HideDialoguePanel()
+        {
+            IsDialogueOpen = false;
+            if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+            isTyping = false;
+            if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>
         /// Displays the reaction dialogue and updates the speaker name following a challenge attempt.
         /// </summary>
         /// <param name="success">Whether the challenge exposed a contradiction.</param>
         /// <param name="reactionMessage">The reaction dialogue text returned from the challenge.</param>
         private void HandleChallengeResult(bool success, string reactionMessage)
         {
+            IsDialogueOpen = true;
+            gameObject.SetActive(true);
             Debug.Log($"[UI:Dialogue] Received challenge result (Success: {success}, MessageLength: {reactionMessage?.Length ?? 0})");
 
             if (speakerNameText != null)

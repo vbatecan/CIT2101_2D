@@ -44,6 +44,9 @@ namespace CaseClosed.Managers
         /// <summary>Event raised when a challenge attempt completes (success flag, response message).</summary>
         public event Action<bool, string> OnChallengeResult;
 
+        /// <summary>Event raised when dialogue is dismissed or completed.</summary>
+        public event Action OnDialogueClosed;
+
         private readonly InterrogationService interrogationService = new InterrogationService();
 
         /// <summary>
@@ -128,8 +131,20 @@ namespace CaseClosed.Managers
             }
             else
             {
-                Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{currentNode.nodeId}'");
+                Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{currentNode.nodeId}'. Closing dialogue.");
+                CloseDialogue();
             }
+        }
+
+        /// <summary>
+        /// Closes the active dialogue window and returns to table exploration.
+        /// </summary>
+        public void CloseDialogue()
+        {
+            currentNode = null;
+            isChallengeModeActive = false;
+            OnChallengeModeToggled?.Invoke(false);
+            OnDialogueClosed?.Invoke();
         }
 
         /// <summary>

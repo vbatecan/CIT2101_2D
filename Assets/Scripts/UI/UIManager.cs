@@ -31,7 +31,10 @@ namespace CaseClosed.UI
         public GameObject investigatorSelectButton;
         public GameObject returnToMenuButton;
 
-        private UIPanelType currentPanel = UIPanelType.MainMenu;
+        private UIPanelType _currentPanel = UIPanelType.MainMenu;
+
+        /// <summary>The currently active UI panel type.</summary>
+        public UIPanelType currentPanel => _currentPanel;
 
         /// <summary>
         /// Initializes the singleton instance.
@@ -87,8 +90,8 @@ namespace CaseClosed.UI
         /// <param name="panelType">The target <see cref="UIPanelType"/> to activate.</param>
         public void ShowPanel(UIPanelType panelType)
         {
-            Debug.Log($"[UI:Manager] Transitioning panel from '{currentPanel}' to '{panelType}'");
-            currentPanel = panelType;
+            Debug.Log($"[UI:Manager] Transitioning panel from '{_currentPanel}' to '{panelType}'");
+            _currentPanel = panelType;
 
             bool isMainMenu = (panelType == UIPanelType.MainMenu);
 
