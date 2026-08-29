@@ -39,12 +39,17 @@ namespace CaseClosed.Prototype
         public CaseSO CreateCase02Data()
         {
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
+            c.levelNumber = 2;
             c.caseId = "LEVEL_02";
             c.caseTitle = "LEVEL 2: The Shattered Mirror";
             c.dateAndLocation = "11:00 PM - Upscale Art Gallery Back Office";
             c.incidentDescription = "Gallery owner Paul Gabriel Camacho claims an intruder broke through the exterior alley window and stole a priceless painting.";
             c.objective = "Interrogate Charl Vonn Pascual and Paul Gabriel Camacho, inspect the physical glass evidence, catch the false testimony, and expose the insurance fraud.";
             c.victimInfo = "Paul Gabriel Camacho (Gallery Owner - Secretive & Dramatic)";
+            if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
+            {
+                c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+            }
 
             // Primary Witness / Suspect: Charl Vonn Pascual (Night Security Guard)
             CharacterProfileSO charl = ScriptableObject.CreateInstance<CharacterProfileSO>();
@@ -70,13 +75,15 @@ namespace CaseClosed.Prototype
             paul.possibleMotives = "Insurance payout to save failing gallery.";
             c.additionalSuspects.Add(paul);
 
-            // Investigator: Detective Kyle Gabriel Pastrana
+            // Register Investigator Profile: Detective Kyle Gabriel Pastrana
             CharacterProfileSO kyle = ScriptableObject.CreateInstance<CharacterProfileSO>();
             kyle.characterId = "CHAR_KYLE_PASTRANA";
             kyle.fullName = "Detective Kyle Gabriel Pastrana";
             kyle.age = 34;
-            kyle.occupation = "Lead Detective";
-            c.additionalSuspects.Add(kyle);
+            kyle.occupation = "Lead Field Detective";
+            kyle.personalityTrait = PersonalityTrait.Observant;
+            kyle.background = "Seasoned field investigator with sharp instincts for physical evidence, crime scene reconstruction, and spotting fabrications.";
+            CaseManager.Instance?.RegisterAvailableInvestigator(kyle);
 
             // Evidence Items
             // 1. Crime Scene Photo (Window Frame)

@@ -19,6 +19,13 @@ namespace CaseClosed.Managers
         /// <summary>The currently loaded case ScriptableObject.</summary>
         public CaseSO activeCase;
 
+        [Header("Active Player Investigator")]
+        /// <summary>The investigator character selected by the player to solve the case.</summary>
+        public CharacterProfileSO selectedInvestigator;
+
+        /// <summary>Registered investigator characters available for player selection.</summary>
+        public List<CharacterProfileSO> availableInvestigators = new List<CharacterProfileSO>();
+
         [Header("Runtime State Tracking")]
         /// <summary>Set of evidence IDs that have been discovered during the current investigation.</summary>
         public HashSet<string> discoveredEvidenceIds = new HashSet<string>();
@@ -40,6 +47,9 @@ namespace CaseClosed.Managers
 
         /// <summary>Event raised when a new case file is loaded into runtime.</summary>
         public event Action<CaseSO> OnCaseLoaded;
+
+        /// <summary>Event raised when the player selects or switches their investigator character.</summary>
+        public event Action<CharacterProfileSO> OnInvestigatorChanged;
 
         /// <summary>Event raised when a new piece of evidence is discovered.</summary>
         public event Action<EvidenceSO> OnEvidenceDiscovered;
@@ -67,7 +77,7 @@ namespace CaseClosed.Managers
 
         /// <summary>
         /// Loads a new case into runtime, resetting discovery state sets, starting the investigation timer,
-        /// and registering initially discovered evidence items.
+        /// assigning the active investigator, and registering initially discovered evidence items.
         /// </summary>
         /// <param name="newCase">The case ScriptableObject to load.</param>
         public void LoadCase(CaseSO newCase)
@@ -79,7 +89,12 @@ namespace CaseClosed.Managers
             exposedContradictionIds.Clear();
             investigationStartTime = Time.time;
 
-            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (ID: {newCase?.caseId})");
+            if (activeCase != null && selectedInvestigator != null)
+            {
+                activeCase.leadInvestigator = selectedInvestigator;
+            }
+
+            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (Level: {newCase?.levelNumber}, ID: {newCase?.caseId}, Investigator: '{selectedInvestigator?.fullName ?? "Unassigned"}')");
 
             if (activeCase != null && activeCase.evidenceItems != null)
             {
@@ -97,6 +112,41 @@ namespace CaseClosed.Managers
             }
 
             OnCaseLoaded?.Invoke(activeCase);
+        }
+
+        /// <summary>
+        /// Sets the active investigator character for the player and updates the current case.
+        /// </summary>
+        /// <param name="investigator">The character profile of the investigator chosen by the player.</param>
+        public void SetSelectedInvestigator(CharacterProfileSO investigator)
+        {
+            if (investigator == null) return;
+            selectedInvestigator = investigator;
+
+            if (activeCase != null)
+            {
+                activeCase.leadInvestigator = investigator;
+            }
+
+            Debug.Log($"[CaseManager] Active investigator changed to: '{investigator.fullName}' ({investigator.occupation})");
+            OnInvestigatorChanged?.Invoke(investigator);
+        }
+
+        /// <summary>
+        /// Registers a selectable investigator character if not already in the available list.
+        /// </summary>
+        /// <param name="investigator">The investigator profile to register.</param>
+        public void RegisterAvailableInvestigator(CharacterProfileSO investigator)
+        {
+            if (investigator == null) return;
+            if (!availableInvestigators.Contains(investigator))
+            {
+                availableInvestigators.Add(investigator);
+            }
+            if (selectedInvestigator == null)
+            {
+                SetSelectedInvestigator(investigator);
+            }
         }
 
         /// <summary>

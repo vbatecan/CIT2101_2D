@@ -20,11 +20,13 @@ namespace CaseClosed.UI
         public GameObject deductionBoardPanel;
         public GameObject conclusionQuizPanel;
         public GameObject resultsScreenPanel;
+        public GameObject investigatorSelectPanel;
 
         [Header("Header Navigation Buttons")]
         public GameObject notebookButton;
         public GameObject deductionBoardButton;
         public GameObject concludeCaseButton;
+        public GameObject investigatorSelectButton;
 
         private UIPanelType currentPanel = UIPanelType.InvestigationTable;
 
@@ -79,8 +81,21 @@ namespace CaseClosed.UI
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
             if (resultsScreenPanel != null) resultsScreenPanel.SetActive(panelType == UIPanelType.ResultsScreen);
+            if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(panelType == UIPanelType.InvestigatorSelect);
 
             AudioManager.Instance?.PlayPaperFlip();
+        }
+
+        /// <summary>
+        /// Toggles the investigator selection panel on and off.
+        /// </summary>
+        public void ToggleInvestigatorSelectPanel()
+        {
+            Debug.Log("[UI:Manager] Toggle investigator select panel clicked");
+            if (currentPanel == UIPanelType.InvestigatorSelect)
+                ShowPanel(UIPanelType.InvestigationTable);
+            else
+                ShowPanel(UIPanelType.InvestigatorSelect);
         }
 
         /// <summary>

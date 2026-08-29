@@ -12,6 +12,9 @@ namespace CaseClosed.Enums
         PrimarySuspect,
 
         /// <summary>Dedicated slot for a secondary suspect, witness, or accomplice (e.g. right character).</summary>
-        SecondarySuspect
+        SecondarySuspect,
+
+        /// <summary>Dedicated slot for the player's active detective / investigator character.</summary>
+        Investigator
     }
 }

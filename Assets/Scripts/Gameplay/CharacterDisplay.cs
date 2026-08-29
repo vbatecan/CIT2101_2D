@@ -50,9 +50,14 @@ namespace CaseClosed.Gameplay
             if (CaseManager.Instance != null)
             {
                 CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
+                CaseManager.Instance.OnInvestigatorChanged += HandleInvestigatorChanged;
                 if (CaseManager.Instance.activeCase != null)
                 {
                     HandleCaseLoaded(CaseManager.Instance.activeCase);
+                }
+                else if (characterSlot == CharacterSlot.Investigator && CaseManager.Instance.selectedInvestigator != null)
+                {
+                    UpdateSuspectProfile(CaseManager.Instance.selectedInvestigator);
                 }
             }
         }
@@ -121,6 +126,22 @@ namespace CaseClosed.Gameplay
                 case CharacterSlot.AutoDetect:
                     UpdateSuspectProfile(InterrogationManager.Instance?.currentSuspect ?? activeCase.primarySuspect);
                     break;
+
+                case CharacterSlot.Investigator:
+                    UpdateSuspectProfile(activeCase.leadInvestigator ?? CaseManager.Instance?.selectedInvestigator);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Handles investigator change event from case manager.
+        /// </summary>
+        /// <param name="investigator">The new active investigator profile.</param>
+        private void HandleInvestigatorChanged(CharacterProfileSO investigator)
+        {
+            if (characterSlot == CharacterSlot.Investigator)
+            {
+                UpdateSuspectProfile(investigator);
             }
         }
 

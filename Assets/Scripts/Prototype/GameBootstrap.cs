@@ -17,12 +17,15 @@ namespace CaseClosed.Prototype
         private Case02Initializer level2;
         private Case03Initializer level3;
 
+        private CharacterProfileSO investigatorKyle;
+        private CharacterProfileSO investigatorMiguel;
+
         /// <summary>
-        /// Ensures all singleton managers exist, sets up fixed camera, and registers level initializers.
+        /// Ensures all singleton managers exist, sets up fixed camera, registers investigators, and registers level initializers.
         /// </summary>
         private void Awake()
         {
-            Debug.Log("[Prototype:Bootstrap] GameBootstrap initializing core managers and systems...");
+            Debug.Log("[Prototype:Bootstrap] GameBootstrap initializing core managers, investigators, and systems...");
 
             SetupFixedCamera();
             EnsureManager<AudioManager>();
@@ -33,6 +36,8 @@ namespace CaseClosed.Prototype
             EnsureManager<CaseConclusionManager>();
             EnsureManager<UIManager>();
 
+            SetupInvestigators();
+
             level1 = gameObject.GetComponent<Case01Initializer>();
             if (level1 == null) level1 = gameObject.AddComponent<Case01Initializer>();
 
@@ -42,17 +47,89 @@ namespace CaseClosed.Prototype
             level3 = gameObject.GetComponent<Case03Initializer>();
             if (level3 == null) level3 = gameObject.AddComponent<Case03Initializer>();
 
-            Debug.Log("[Prototype:Bootstrap] All managers initialized. Ready for level loading.");
+            Debug.Log("[Prototype:Bootstrap] All managers and investigators initialized. Ready for level loading.");
         }
 
         /// <summary>
-        /// Listens for number key presses (1, 2, 3) to dynamically switch active cases.
+        /// Instantiates and registers the 2 investigator characters: Detective Kyle Gabriel Pastrana and Detective Miguel Borja.
+        /// </summary>
+        private void SetupInvestigators()
+        {
+            // Investigator 1: Detective Kyle Gabriel Pastrana
+            investigatorKyle = ScriptableObject.CreateInstance<CharacterProfileSO>();
+            investigatorKyle.characterId = "CHAR_KYLE_PASTRANA";
+            investigatorKyle.fullName = "Detective Kyle Gabriel Pastrana";
+            investigatorKyle.age = 34;
+            investigatorKyle.occupation = "Lead Field Detective";
+            investigatorKyle.personalityTrait = PersonalityTrait.Observant;
+            investigatorKyle.background = "Veteran lead field detective with sharp intuition for physical clues, crime scenes, and catching suspect contradictions.";
+
+            // Investigator 2: Detective Miguel Borja
+            investigatorMiguel = ScriptableObject.CreateInstance<CharacterProfileSO>();
+            investigatorMiguel.characterId = "CHAR_MIGUEL_BORJA";
+            investigatorMiguel.fullName = "Detective Miguel Borja";
+            investigatorMiguel.age = 36;
+            investigatorMiguel.occupation = "Lead Digital Forensics Detective";
+            investigatorMiguel.personalityTrait = PersonalityTrait.Methodical;
+            investigatorMiguel.background = "Analytical cyber forensics specialist skilled in digital trails, encrypted logs, and meticulous investigative deduction.";
+
+            if (CaseManager.Instance != null)
+            {
+                CaseManager.Instance.RegisterAvailableInvestigator(investigatorKyle);
+                CaseManager.Instance.RegisterAvailableInvestigator(investigatorMiguel);
+                CaseManager.Instance.SetSelectedInvestigator(investigatorKyle);
+            }
+        }
+
+        /// <summary>
+        /// Listens for number key presses (1, 2, 3) to dynamically switch active cases / levels,
+        /// and key (I or C) to switch active investigator character.
         /// </summary>
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha1)) LoadLevel(1);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) LoadLevel(2);
             else if (Input.GetKeyDown(KeyCode.Alpha3)) LoadLevel(3);
+            else if (Input.GetKeyDown(KeyCode.I))
+            {
+                UIManager.Instance?.ToggleInvestigatorSelectPanel();
+            }
+            else if (Input.GetKeyDown(KeyCode.C))
+            {
+                ToggleInvestigator();
+            }
+        }
+
+        /// <summary>
+        /// Toggles between the 2 available investigator characters (Kyle Pastrana <-> Miguel Borja).
+        /// </summary>
+        public void ToggleInvestigator()
+        {
+            if (CaseManager.Instance == null) return;
+            if (CaseManager.Instance.selectedInvestigator == investigatorKyle)
+            {
+                SelectInvestigator(1);
+            }
+            else
+            {
+                SelectInvestigator(0);
+            }
+        }
+
+        /// <summary>
+        /// Selects an investigator by index: 0 for Kyle Pastrana, 1 for Miguel Borja.
+        /// </summary>
+        /// <param name="index">Investigator index (0 or 1).</param>
+        public void SelectInvestigator(int index)
+        {
+            if (CaseManager.Instance == null) return;
+
+            CharacterProfileSO target = (index == 1) ? investigatorMiguel : investigatorKyle;
+            if (target != null)
+            {
+                CaseManager.Instance.SetSelectedInvestigator(target);
+                Debug.Log($"[Prototype:Bootstrap] Selected investigator: '{target.fullName}'");
+            }
         }
 
         /// <summary>

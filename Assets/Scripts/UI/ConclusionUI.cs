@@ -27,6 +27,8 @@ namespace CaseClosed.UI
         public Text starRatingText;
         public Text scoreBreakdownText;
         public Button continueButton;
+        public Button nextLevelButton;
+        public Text nextLevelButtonText;
 
         private List<int> playerAnswers = new List<int>();
 
@@ -37,6 +39,7 @@ namespace CaseClosed.UI
         {
             if (submitConclusionButton != null) submitConclusionButton.onClick.AddListener(OnSubmitClicked);
             if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
+            if (nextLevelButton != null) nextLevelButton.onClick.AddListener(OnNextLevelClicked);
 
             if (resultsContainer != null) resultsContainer.SetActive(false);
         }
@@ -146,9 +149,14 @@ namespace CaseClosed.UI
             if (quizContainer != null) quizContainer.SetActive(false);
             if (resultsContainer != null) resultsContainer.SetActive(true);
 
+            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CharacterProfileSO investigator = activeCase?.leadInvestigator ?? CaseManager.Instance?.selectedInvestigator;
+            string investigatorName = investigator != null ? investigator.fullName : "Unknown Investigator";
+            int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
+
             if (resultTitleText != null)
             {
-                resultTitleText.text = result.isCaseSolved ? "CASE SOLVED!" : "INVESTIGATION FAILED";
+                resultTitleText.text = result.isCaseSolved ? $"LEVEL {currentLevel} SOLVED!" : $"LEVEL {currentLevel} FAILED";
                 resultTitleText.color = result.isCaseSolved ? Color.green : Color.red;
             }
 
@@ -167,11 +175,33 @@ namespace CaseClosed.UI
             if (scoreBreakdownText != null)
             {
                 scoreBreakdownText.text =
+                    $"Lead Investigator: {investigatorName}\n" +
                     $"Total Score: {result.totalScore} pts\n" +
                     $"Correct Quiz Answers: {result.correctQuizAnswers}/{result.totalQuizQuestions}\n" +
                     $"Evidence Discovered: {result.evidenceFoundCount}/{result.totalEvidenceCount}\n" +
                     $"Contradictions Caught: {result.contradictionsCaughtCount}/{result.totalContradictionsCount}\n" +
                     $"Time Taken: {Mathf.FloorToInt(result.completionTimeSeconds / 60)}m {Mathf.FloorToInt(result.completionTimeSeconds % 60)}s";
+            }
+
+            if (nextLevelButton != null)
+            {
+                int nextLevel = currentLevel + 1;
+                if (nextLevel <= 3)
+                {
+                    nextLevelButton.gameObject.SetActive(true);
+                    if (nextLevelButtonText != null)
+                    {
+                        nextLevelButtonText.text = $"Proceed to Level {nextLevel} >";
+                    }
+                }
+                else
+                {
+                    nextLevelButton.gameObject.SetActive(true);
+                    if (nextLevelButtonText != null)
+                    {
+                        nextLevelButtonText.text = "Replay / Level Select";
+                    }
+                }
             }
         }
 
@@ -182,6 +212,28 @@ namespace CaseClosed.UI
         {
             Debug.Log("[UI:Conclusion] Continue button clicked, navigating back to InvestigationTable");
             UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
+        }
+
+        /// <summary>
+        /// Handles click on next level button, progressing from Level 1 -> Level 2 -> Level 3 or opening selection.
+        /// </summary>
+        private void OnNextLevelClicked()
+        {
+            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
+            int nextLevel = currentLevel + 1;
+
+            var bootstrap = FindFirstObjectByType<CaseClosed.Prototype.GameBootstrap>();
+            if (nextLevel <= 3 && bootstrap != null)
+            {
+                Debug.Log($"[UI:Conclusion] Advancing to Level {nextLevel}...");
+                bootstrap.LoadLevel(nextLevel);
+            }
+            else
+            {
+                Debug.Log("[UI:Conclusion] Reached final level or returning to Level Select");
+                UIManager.Instance?.ShowPanel(UIPanelType.InvestigatorSelect);
+            }
         }
     }
 }

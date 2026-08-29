@@ -39,12 +39,17 @@ namespace CaseClosed.Prototype
         public CaseSO CreateCase03Data()
         {
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
+            c.levelNumber = 3;
             c.caseId = "LEVEL_03";
             c.caseTitle = "LEVEL 3: The Last Call";
             c.dateAndLocation = "After Hours - Downtown Coffee Shop Office";
             c.incidentDescription = "Tech startup founder Kurt Miguel Ancheta's secret prototype drive went missing from his bag after a late meeting.";
             c.objective = "Interrogate Shanaia Ortega, examine digital logs and CCTV stills, expose her false departure claim, and recover the stolen prototype.";
             c.victimInfo = "Kurt Miguel Ancheta (Startup Founder - Distressed Victim)";
+            if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
+            {
+                c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+            }
 
             // Primary Witness / Suspect: Shanaia Ortega (Lead Software Developer)
             CharacterProfileSO shanaia = ScriptableObject.CreateInstance<CharacterProfileSO>();
@@ -69,13 +74,15 @@ namespace CaseClosed.Prototype
             shan.alibi = "Working at register until 7:30 PM closing.";
             c.additionalSuspects.Add(shan);
 
-            // Investigator: Detective Miguel Borja
+            // Register Investigator Profile: Detective Miguel Borja
             CharacterProfileSO miguel = ScriptableObject.CreateInstance<CharacterProfileSO>();
             miguel.characterId = "CHAR_MIGUEL_BORJA";
             miguel.fullName = "Detective Miguel Borja";
             miguel.age = 36;
             miguel.occupation = "Lead Digital Forensics Detective";
-            c.additionalSuspects.Add(miguel);
+            miguel.personalityTrait = PersonalityTrait.Methodical;
+            miguel.background = "High-tech forensics specialist with expertise in electronic logs, cyber forensics, and spotting technical alibi inconsistencies.";
+            CaseManager.Instance?.RegisterAvailableInvestigator(miguel);
 
             // Evidence Items
             // 1. Victim's Smartphone Log

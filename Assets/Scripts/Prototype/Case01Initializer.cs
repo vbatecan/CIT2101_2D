@@ -39,12 +39,17 @@ namespace CaseClosed.Prototype
         public CaseSO CreateCase01Data()
         {
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
+            c.levelNumber = 1;
             c.caseId = "LEVEL_01";
             c.caseTitle = "LEVEL 1: The Missing Necklace";
             c.dateAndLocation = "Stormy Evening - High-Society Manor Study";
             c.incidentDescription = "A valuable family necklace disappeared from the manor safe during a stormy evening gathering.";
             c.objective = "Interrogate Vince Angelo Batecan, inspect table evidence, disprove his kitchen alibi, and uncover the truth.";
             c.victimInfo = "Kirby Raymundo (Aristocrat - Proud & Demanding Owner)";
+            if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
+            {
+                c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+            }
 
             // Primary Suspect: Vince Angelo Batecan (Nephew)
             CharacterProfileSO vince = ScriptableObject.CreateInstance<CharacterProfileSO>();

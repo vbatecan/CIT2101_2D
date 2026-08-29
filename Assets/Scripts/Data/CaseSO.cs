@@ -24,6 +24,7 @@ namespace CaseClosed.Data
     public class CaseSO : ScriptableObject
     {
         [Header("Case Overview")]
+        public int levelNumber = 1;
         public string caseId;
         public string caseTitle;
         public string dateAndLocation;
@@ -32,6 +33,9 @@ namespace CaseClosed.Data
         [TextArea(2, 4)]
         public string objective;
         public string victimInfo;
+
+        [Header("Lead Investigator (Assigned or Selected by Player)")]
+        public CharacterProfileSO leadInvestigator;
 
         [Header("Characters & Suspects")]
         public CharacterProfileSO primarySuspect;

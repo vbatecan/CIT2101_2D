@@ -11,7 +11,7 @@ namespace CaseClosed.Services
     public class NotebookFormattingService
     {
         /// <summary>
-        /// Formats the overview, date, location, victim, summary, and objective of a case.
+        /// Formats the overview, level designation, assigned investigator, victim, summary, and objective of a case.
         /// </summary>
         /// <param name="activeCase">The case data to format.</param>
         /// <returns>A formatted synopsis string.</returns>
@@ -20,6 +20,11 @@ namespace CaseClosed.Services
             if (activeCase == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"[LEVEL {activeCase.levelNumber}] - {activeCase.caseTitle}");
+            if (activeCase.leadInvestigator != null)
+            {
+                sb.AppendLine($"Lead Investigator: {activeCase.leadInvestigator.fullName} ({activeCase.leadInvestigator.occupation})");
+            }
             sb.AppendLine($"Date & Location: {activeCase.dateAndLocation}");
             sb.AppendLine($"Victim: {activeCase.victimInfo}\n");
             sb.AppendLine($"[INCIDENT SUMMARY]\n{activeCase.incidentDescription}\n");

@@ -21,6 +21,9 @@ namespace CaseClosed.Enums
         ConclusionQuiz,
 
         /// <summary>Final evaluation summary card showing score, letter rank, and star rating.</summary>
-        ResultsScreen
+        ResultsScreen,
+
+        /// <summary>Character selection modal for choosing the player's active investigator.</summary>
+        InvestigatorSelect
     }
 }
