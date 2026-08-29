@@ -110,9 +110,9 @@ namespace CaseClosed.Prototype
         /// </summary>
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) LoadLevel(1);
-            else if (Input.GetKeyDown(KeyCode.Alpha2)) LoadLevel(2);
-            else if (Input.GetKeyDown(KeyCode.Alpha3)) LoadLevel(3);
+            if (Input.GetKeyDown(KeyCode.Alpha1)) SwitchToCaseSceneOrLevel(1);
+            else if (Input.GetKeyDown(KeyCode.Alpha2)) SwitchToCaseSceneOrLevel(2);
+            else if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchToCaseSceneOrLevel(3);
             else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.M))
             {
                 UIManager.Instance?.ReturnToMainMenu();
@@ -124,6 +124,24 @@ namespace CaseClosed.Prototype
             else if (Input.GetKeyDown(KeyCode.C))
             {
                 ToggleInvestigator();
+            }
+        }
+
+        /// <summary>
+        /// Switches to the dedicated scene for the given case index if loaded/available, or calls <see cref="LoadLevel"/>.
+        /// </summary>
+        /// <param name="caseIndex">The 1-based case index (1, 2, 3).</param>
+        public void SwitchToCaseSceneOrLevel(int caseIndex)
+        {
+            string sceneName = $"Case00{caseIndex}";
+            if (Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                Debug.Log($"[Prototype:Bootstrap] Loading scene '{sceneName}'...");
+                UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+            }
+            else
+            {
+                LoadLevel(caseIndex);
             }
         }
 

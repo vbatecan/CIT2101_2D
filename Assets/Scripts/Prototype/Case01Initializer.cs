@@ -64,8 +64,21 @@ namespace CaseClosed.Prototype
             vince.knownConflicts = "Frequently argued with uncle Kirby Raymundo over financial allowance.";
             c.primarySuspect = vince;
 
+            // Secondary Suspect / Witness: Shanaia (Accomplice / Key Witness)
+            CharacterProfileSO witnessFemale = ScriptableObject.CreateInstance<CharacterProfileSO>();
+            witnessFemale.characterId = "CHAR_CASE1_FEMALE";
+            witnessFemale.fullName = "Janine Marie Sotto";
+            witnessFemale.age = 24;
+            witnessFemale.occupation = "Manor Guest & Key Witness";
+            witnessFemale.relationshipToVictim = "Family Acquaintance";
+            witnessFemale.personalityTrait = PersonalityTrait.Observant;
+            witnessFemale.alibi = "Sat in the dining room talking with guests until 9:00 PM.";
+            witnessFemale.possibleMotives = "None directly known; witnessed Vince running toward the garden.";
+            witnessFemale.knownConflicts = "Noticed Vince arguing heatedly with Uncle Kirby before dinner.";
+            c.additionalSuspects.Add(witnessFemale);
+
             // Evidence Items
-            // 1. Family Photograph
+            // 1. Family Photograph (Envelope Clue)
             EvidenceSO evPhoto = ScriptableObject.CreateInstance<EvidenceSO>();
             evPhoto.id = "EVD_FAMILY_PHOTO";
             evPhoto.evidenceName = "Family Photograph";
@@ -84,7 +97,26 @@ namespace CaseClosed.Prototype
             evPhoto.hotspots.Add(spotDoor);
             c.evidenceItems.Add(evPhoto);
 
-            // 2. Broken Teacup
+            // 2. Crime Weapon / Manor Knife
+            EvidenceSO evKnife = ScriptableObject.CreateInstance<EvidenceSO>();
+            evKnife.id = "EVD_CRIME_KNIFE";
+            evKnife.evidenceName = "Manor Safe Knife";
+            evKnife.category = EvidenceCategory.PhysicalClue;
+            evKnife.baseDescription = "A sharp silver letter opener knife found on the desk with scratches on the safe lock mechanism.";
+            evKnife.detailedObservation = "Scratches on the blade tip match the pry marks on Kirby's locked safe dial.";
+            evKnife.unlockedClueText = "Silver knife pry marks match the safe dial mechanism.";
+            evKnife.startsDiscovered = true;
+
+            EvidenceHotspot spotKnifeTip = new EvidenceHotspot();
+            spotKnifeTip.hotspotId = "SPOT_KNIFE_SCRATCH";
+            spotKnifeTip.hotspotTitle = "Scratched Blade Tip";
+            spotKnifeTip.normalizedPosition = new Vector2(0.85f, 0.5f);
+            spotKnifeTip.observationText = "Microscopic gold paint transfer matching the safe handle.";
+            spotKnifeTip.clueUnlockedId = "CLUE_KNIFE_SAFE_PRY";
+            evKnife.hotspots.Add(spotKnifeTip);
+            c.evidenceItems.Add(evKnife);
+
+            // 3. Broken Teacup
             EvidenceSO evTeacup = ScriptableObject.CreateInstance<EvidenceSO>();
             evTeacup.id = "EVD_BROKEN_TEACUP";
             evTeacup.evidenceName = "Broken Teacup";
@@ -94,7 +126,7 @@ namespace CaseClosed.Prototype
             evTeacup.startsDiscovered = true;
             c.evidenceItems.Add(evTeacup);
 
-            // 3. Kitchen Receipt / Log
+            // 4. Kitchen Receipt / Log
             EvidenceSO evKitchenLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evKitchenLog.id = "EVD_KITCHEN_LOG";
             evKitchenLog.evidenceName = "Kitchen Pantry Log";
@@ -103,6 +135,16 @@ namespace CaseClosed.Prototype
             evKitchenLog.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchenLog.startsDiscovered = true;
             c.evidenceItems.Add(evKitchenLog);
+
+            // 5. Interrogation Drink Cup
+            EvidenceSO evCup = ScriptableObject.CreateInstance<EvidenceSO>();
+            evCup.id = "EVD_COFFEE_CUP";
+            evCup.evidenceName = "Iced Beverage Cup";
+            evCup.category = EvidenceCategory.PersonalBelonging;
+            evCup.baseDescription = "Vince's beverage cup placed on the table with nervous teeth bite marks on the straw.";
+            evCup.unlockedClueText = "Severe bite marks on straw indicate extreme nervous tension during questioning.";
+            evCup.startsDiscovered = true;
+            c.evidenceItems.Add(evCup);
 
             // Dialogue Tree
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();

@@ -225,17 +225,27 @@ namespace CaseClosed.UI
             int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
             int nextLevel = currentLevel + 1;
 
-            var bootstrap = Object.FindFirstObjectByType<CaseClosed.Prototype.GameBootstrap>();
-            if (nextLevel <= 3 && bootstrap != null)
+            if (nextLevel <= 3)
             {
-                Debug.Log($"[UI:Conclusion] Advancing to Level {nextLevel}...");
-                bootstrap.LoadLevel(nextLevel);
+                string targetScene = $"Case00{nextLevel}";
+                if (Application.CanStreamedLevelBeLoaded(targetScene))
+                {
+                    Debug.Log($"[UI:Conclusion] Loading scene '{targetScene}' via SceneManager...");
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+                    return;
+                }
+
+                var bootstrap = Object.FindFirstObjectByType<CaseClosed.Prototype.GameBootstrap>();
+                if (bootstrap != null)
+                {
+                    Debug.Log($"[UI:Conclusion] Advancing to Level {nextLevel} via bootstrap...");
+                    bootstrap.LoadLevel(nextLevel);
+                    return;
+                }
             }
-            else
-            {
-                Debug.Log("[UI:Conclusion] Reached final level or returning to Level Select");
-                UIManager.Instance?.ReturnToMainMenu();
-            }
+
+            Debug.Log("[UI:Conclusion] Reached final level or returning to Level Select");
+            OnMainMenuClicked();
         }
 
         /// <summary>
@@ -244,7 +254,14 @@ namespace CaseClosed.UI
         private void OnMainMenuClicked()
         {
             Debug.Log("[UI:Conclusion] Return to Main Menu button clicked");
-            UIManager.Instance?.ReturnToMainMenu();
+            if (Application.CanStreamedLevelBeLoaded("MainMenu"))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            }
+            else
+            {
+                UIManager.Instance?.ReturnToMainMenu();
+            }
         }
     }
 }

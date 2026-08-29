@@ -117,8 +117,17 @@ namespace CaseClosed.UI
         public void ReturnToMainMenu()
         {
             Debug.Log("[UI:Manager] Returning to Main Menu");
-            ShowPanel(UIPanelType.MainMenu);
-            AudioManager.Instance?.PlayMenuBGM();
+            string activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            if (activeScene != "MainMenu" && activeScene != "Main" && Application.CanStreamedLevelBeLoaded("MainMenu"))
+            {
+                Debug.Log("[UI:Manager] Loading 'MainMenu' scene...");
+                UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+            }
+            else
+            {
+                ShowPanel(UIPanelType.MainMenu);
+                AudioManager.Instance?.PlayMenuBGM();
+            }
         }
 
         /// <summary>

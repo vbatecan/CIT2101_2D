@@ -181,14 +181,13 @@ namespace CaseClosed.Gameplay
         public void UpdateSuspectProfile(CharacterProfileSO suspect)
         {
             activeSuspect = suspect;
-            if (suspect == null)
-            {
-                SetSprite(null);
-                return;
-            }
+            if (suspect == null) return;
 
             Debug.Log($"[Gameplay:CharacterDisplay] Updated display for slot '{characterSlot}' to '{suspect.fullName}' (ID: {suspect.characterId})");
-            SetSprite(suspect.defaultSittingPose);
+            if (suspect.defaultSittingPose != null)
+            {
+                SetSprite(suspect.defaultSittingPose);
+            }
         }
 
         /// <summary>
@@ -199,7 +198,10 @@ namespace CaseClosed.Gameplay
         {
             if (activeSuspect == null) return;
             Sprite exprSprite = activeSuspect.GetSpriteForExpression(expression);
-            SetSprite(exprSprite);
+            if (exprSprite != null)
+            {
+                SetSprite(exprSprite);
+            }
         }
 
         /// <summary>

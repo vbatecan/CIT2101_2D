@@ -147,13 +147,21 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Loads the chosen case index via <see cref="GameBootstrap"/>.
+        /// Loads the chosen case index via SceneManager or falls back to <see cref="GameBootstrap"/>.
         /// </summary>
         /// <param name="caseIndex">The 1-based case index (1, 2, or 3).</param>
         public void LaunchCase(int caseIndex)
         {
             Debug.Log($"[UI:MainMenu] Launching Case {caseIndex}...");
             AudioManager.Instance?.PlayButtonClick();
+
+            string sceneName = $"Case00{caseIndex}";
+            if (Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                Debug.Log($"[UI:MainMenu] Loading scene '{sceneName}' via SceneManager...");
+                UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+                return;
+            }
 
             GameBootstrap bootstrap = FindFirstObjectByType<GameBootstrap>();
             if (bootstrap != null)
