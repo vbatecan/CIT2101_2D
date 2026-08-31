@@ -94,12 +94,10 @@ namespace CaseClosed.Editor
             Sprite maleSprite = LoadSprite("Assets/Assets/Case001_Male.png");
             Sprite femaleSprite = LoadSprite("Assets/Assets/Case001_Female.png");
 
-            Sprite knifeSprite = LoadSprite("Assets/Art/Evidence/Sprite_Knife.png");
-            Sprite envelopeSprite = LoadSprite("Assets/Art/Evidence/Sprite_EvidenceEnvelope.png");
-            Sprite notebookSprite = LoadSprite("Assets/Art/Props/Sprite_OpenNotebook.png");
-            Sprite cupSprite = LoadSprite("Assets/Art/Props/Sprite_CoffeeCup.png");
+            Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png");
+            Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png");
+            Sprite kitchenSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/KitchenPOV.png");
             Sprite armSprite = LoadSprite("Assets/Assets/ArmPointer.png");
-            Sprite alertSprite = LoadSprite("Assets/Art/UI/Sprite_AlertIcon.png");
 
             // 3. Background Layer (Layer 1: Fills the 16:9 Orthographic Camera)
             GameObject bgObj = new GameObject("Environment_Background");
@@ -112,17 +110,6 @@ namespace CaseClosed.Editor
                 // Fit 10-unit orthographic height (1920x1080)
                 float bgScale = 10f / (bgSprite.rect.height / bgSprite.pixelsPerUnit);
                 bgObj.transform.localScale = new Vector3(bgScale, bgScale, 1f);
-            }
-
-            // Alert Reaction Icon on mirror/characters
-            if (alertSprite != null)
-            {
-                GameObject alertObj = new GameObject("Reaction_Alert_Icon");
-                SpriteRenderer alertRenderer = alertObj.AddComponent<SpriteRenderer>();
-                alertRenderer.sprite = alertSprite;
-                alertRenderer.sortingOrder = 15;
-                alertObj.transform.position = new Vector3(2.8f, 1.8f, 0f);
-                alertObj.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
             }
 
             // 4. Characters Layer (Layer 2: Behind the table)
@@ -164,63 +151,50 @@ namespace CaseClosed.Editor
             tableRenderer.sprite = tableSprite;
             tableRenderer.sortingOrder = 10;
 
-            // 6. Interactive Table Evidence Items (Matching Sketch!)
-            // Item 1: Envelope / Photo Evidence (Left)
-            GameObject itemEnvelope = new GameObject("Item_Photo_Evidence");
-            itemEnvelope.transform.position = new Vector3(-4.5f, -2.0f, 0f);
-            itemEnvelope.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
-            SpriteRenderer envRen = itemEnvelope.AddComponent<SpriteRenderer>();
-            envRen.sprite = envelopeSprite;
-            envRen.sortingOrder = 12;
-            BoxCollider2D envCol = itemEnvelope.AddComponent<BoxCollider2D>();
-            envCol.size = new Vector2(4.5f, 4.5f);
-            TableEvidenceItem teiEnv = itemEnvelope.AddComponent<TableEvidenceItem>();
-            teiEnv.spriteRenderer = envRen;
-            teiEnv.evidenceId = "EVD_FAMILY_PHOTO";
-            teiEnv.openNotebookOnClick = false;
+            // 6. Interactive Table Evidence Items
+            // Item 1: Photo Evidence (Left)
+            GameObject itemPhoto = new GameObject("Item_Photo_Evidence");
+            itemPhoto.transform.position = new Vector3(-4.5f, -2.0f, 0f);
+            itemPhoto.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+            SpriteRenderer photoRen = itemPhoto.AddComponent<SpriteRenderer>();
+            photoRen.sprite = photoSprite;
+            photoRen.sortingOrder = 12;
+            BoxCollider2D photoCol = itemPhoto.AddComponent<BoxCollider2D>();
+            photoCol.size = new Vector2(4.5f, 4.5f);
+            TableEvidenceItem teiPhoto = itemPhoto.AddComponent<TableEvidenceItem>();
+            teiPhoto.spriteRenderer = photoRen;
+            teiPhoto.evidenceId = "EVD_FAMILY_PHOTO";
+            teiPhoto.openNotebookOnClick = false;
 
-            // Item 2: Open Case File Notebook (Center Desk)
-            GameObject itemBook = new GameObject("Item_CaseBook");
-            itemBook.transform.position = new Vector3(-0.4f, -2.2f, 0f);
-            itemBook.transform.localScale = new Vector3(0.75f, 0.75f, 1f);
-            SpriteRenderer bookRen = itemBook.AddComponent<SpriteRenderer>();
-            bookRen.sprite = notebookSprite;
-            bookRen.sortingOrder = 12;
-            BoxCollider2D bookCol = itemBook.AddComponent<BoxCollider2D>();
-            bookCol.size = new Vector2(4.8f, 3.5f);
-            TableEvidenceItem teiBook = itemBook.AddComponent<TableEvidenceItem>();
-            teiBook.spriteRenderer = bookRen;
-            teiBook.openNotebookOnClick = true; // Clicks open dossier notebook!
+            // Item 2: Teacup Clue (Center Desk)
+            GameObject itemTeacup = new GameObject("Item_Teacup_Clue");
+            itemTeacup.transform.position = new Vector3(0.0f, -2.0f, 0f);
+            itemTeacup.transform.localScale = new Vector3(0.65f, 0.65f, 1f);
+            SpriteRenderer teacupRen = itemTeacup.AddComponent<SpriteRenderer>();
+            teacupRen.sprite = teacupSprite;
+            teacupRen.sortingOrder = 12;
+            BoxCollider2D teacupCol = itemTeacup.AddComponent<BoxCollider2D>();
+            teacupCol.size = new Vector2(4.0f, 3.0f);
+            TableEvidenceItem teiTeacup = itemTeacup.AddComponent<TableEvidenceItem>();
+            teiTeacup.spriteRenderer = teacupRen;
+            teiTeacup.evidenceId = "EVD_BROKEN_TEACUP";
+            teiTeacup.openNotebookOnClick = false;
 
-            // Item 3: Knife Evidence Clue (Center-Top Desk)
-            GameObject itemKnife = new GameObject("Item_Weapon_Clue");
-            itemKnife.transform.position = new Vector3(0.0f, -0.9f, 0f);
-            itemKnife.transform.localScale = new Vector3(0.65f, 0.65f, 1f);
-            SpriteRenderer knifeRen = itemKnife.AddComponent<SpriteRenderer>();
-            knifeRen.sprite = knifeSprite;
-            knifeRen.sortingOrder = 12;
-            BoxCollider2D knifeCol = itemKnife.AddComponent<BoxCollider2D>();
-            knifeCol.size = new Vector2(5.0f, 2.0f);
-            TableEvidenceItem teiKnife = itemKnife.AddComponent<TableEvidenceItem>();
-            teiKnife.spriteRenderer = knifeRen;
-            teiKnife.evidenceId = "EVD_CRIME_KNIFE";
-            teiKnife.openNotebookOnClick = false;
+            // Item 3: Kitchen Log (Right Desk)
+            GameObject itemKitchen = new GameObject("Item_KitchenLog_Clue");
+            itemKitchen.transform.position = new Vector3(4.5f, -2.0f, 0f);
+            itemKitchen.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
+            SpriteRenderer kitchenRen = itemKitchen.AddComponent<SpriteRenderer>();
+            kitchenRen.sprite = kitchenSprite;
+            kitchenRen.sortingOrder = 12;
+            BoxCollider2D kitchenCol = itemKitchen.AddComponent<BoxCollider2D>();
+            kitchenCol.size = new Vector2(4.0f, 3.0f);
+            TableEvidenceItem teiKitchen = itemKitchen.AddComponent<TableEvidenceItem>();
+            teiKitchen.spriteRenderer = kitchenRen;
+            teiKitchen.evidenceId = "EVD_KITCHEN_LOG";
+            teiKitchen.openNotebookOnClick = false;
 
-            // Item 4: Coffee Cup with Straw (Right Desk)
-            GameObject itemCup = new GameObject("Item_Cup_Clue");
-            itemCup.transform.position = new Vector3(4.5f, -2.0f, 0f);
-            itemCup.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
-            SpriteRenderer cupRen = itemCup.AddComponent<SpriteRenderer>();
-            cupRen.sprite = cupSprite;
-            cupRen.sortingOrder = 12;
-            BoxCollider2D cupCol = itemCup.AddComponent<BoxCollider2D>();
-            cupCol.size = new Vector2(2.5f, 4.8f);
-            TableEvidenceItem teiCup = itemCup.AddComponent<TableEvidenceItem>();
-            teiCup.spriteRenderer = cupRen;
-            teiCup.evidenceId = "EVD_COFFEE_CUP";
-            teiCup.openNotebookOnClick = false;
-
-            // Item 5: Detective Arm Pointer (Interactive Mouse-Controlled Arm with ArmPointer.png)
+            // Item 4: Detective Arm Pointer (Interactive Mouse-Controlled Arm with ArmPointer.png)
             GameObject armObj = new GameObject("Detective_Arm_Pointer");
             armObj.transform.position = new Vector3(0f, -3.0f, 0f);
             armObj.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
@@ -256,10 +230,9 @@ namespace CaseClosed.Editor
             Case01Initializer init1 = EnsureComponent<Case01Initializer>(managersObj);
             init1.maleSuspectSprite = maleSprite;
             init1.femaleSuspectSprite = femaleSprite;
-            init1.envelopeSprite = envelopeSprite;
-            init1.knifeSprite = knifeSprite;
-            init1.notebookSprite = notebookSprite;
-            init1.coffeeCupSprite = cupSprite;
+            init1.envelopeSprite = photoSprite;
+            init1.teacupSprite = teacupSprite;
+            init1.kitchenLogSprite = kitchenSprite;
             init1.initializeOnStart = true;
 
             GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);

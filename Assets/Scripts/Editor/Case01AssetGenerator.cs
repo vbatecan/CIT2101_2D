@@ -23,10 +23,12 @@ namespace CaseClosed.Editor
             // 1. Sprites
             Sprite maleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/Case001_Male.png");
             Sprite femaleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/Case001_Female.png");
-            Sprite envSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Evidence/Sprite_EvidenceEnvelope.png");
-            Sprite knifeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Evidence/Sprite_Knife.png");
-            Sprite cupSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Props/Sprite_CoffeeCup.png");
-            Sprite bookSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Props/Sprite_OpenNotebook.png");
+            Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png", "DoorwayPOV_0");
+            Sprite photoZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/DoorwayTOP.png", "DoorwayTOP_0");
+            Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png", "TeacupPOv_0");
+            Sprite teacupZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TeacupTOP.png", "TeacupTOP_0");
+            Sprite kitchenSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/KitchenPOV.png", "KitchenPOV_0");
+            Sprite kitchenZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/KitchenlogTOP.png", "KitchenlogTOP_0");
 
             // 2. Suspects & Characters
             CharacterProfileSO vince = ScriptableObject.CreateInstance<CharacterProfileSO>();
@@ -78,8 +80,8 @@ namespace CaseClosed.Editor
             evPhoto.id = "EVD_FAMILY_PHOTO";
             evPhoto.evidenceName = "Family Photograph";
             evPhoto.category = EvidenceCategory.Photograph;
-            evPhoto.normalSprite = envSprite;
-            evPhoto.zoomedSprite = envSprite;
+            evPhoto.normalSprite = photoSprite;
+            evPhoto.zoomedSprite = photoZoomSprite;
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
@@ -95,31 +97,12 @@ namespace CaseClosed.Editor
             evPhoto.hotspots.Add(spotDoor);
             SaveAsset(evPhoto, $"{FolderPath}/Evidence_FamilyPhoto.asset");
 
-            EvidenceSO evKnife = ScriptableObject.CreateInstance<EvidenceSO>();
-            evKnife.id = "EVD_CRIME_KNIFE";
-            evKnife.evidenceName = "Manor Safe Knife";
-            evKnife.category = EvidenceCategory.PhysicalClue;
-            evKnife.normalSprite = knifeSprite;
-            evKnife.zoomedSprite = knifeSprite;
-            evKnife.baseDescription = "A sharp silver letter opener knife found on the desk with scratches on the safe lock mechanism.";
-            evKnife.detailedObservation = "Scratches on the blade tip match the pry marks on Kirby's locked safe dial.";
-            evKnife.unlockedClueText = "Silver knife pry marks match the safe dial mechanism.";
-            evKnife.startsDiscovered = true;
-            EvidenceHotspot spotKnife = new EvidenceHotspot
-            {
-                hotspotId = "SPOT_KNIFE_SCRATCH",
-                hotspotTitle = "Scratched Blade Tip",
-                normalizedPosition = new Vector2(0.85f, 0.5f),
-                observationText = "Microscopic gold paint transfer matching the safe handle.",
-                clueUnlockedId = "CLUE_KNIFE_SAFE_PRY"
-            };
-            evKnife.hotspots.Add(spotKnife);
-            SaveAsset(evKnife, $"{FolderPath}/Evidence_CrimeKnife.asset");
-
             EvidenceSO evTeacup = ScriptableObject.CreateInstance<EvidenceSO>();
             evTeacup.id = "EVD_BROKEN_TEACUP";
             evTeacup.evidenceName = "Broken Teacup";
             evTeacup.category = EvidenceCategory.PhysicalClue;
+            evTeacup.normalSprite = teacupSprite;
+            evTeacup.zoomedSprite = teacupZoomSprite;
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
             evTeacup.startsDiscovered = true;
@@ -129,21 +112,12 @@ namespace CaseClosed.Editor
             evKitchen.id = "EVD_KITCHEN_LOG";
             evKitchen.evidenceName = "Kitchen Pantry Log";
             evKitchen.category = EvidenceCategory.Document;
+            evKitchen.normalSprite = kitchenSprite;
+            evKitchen.zoomedSprite = kitchenZoomSprite;
             evKitchen.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchen.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchen.startsDiscovered = true;
             SaveAsset(evKitchen, $"{FolderPath}/Evidence_KitchenLog.asset");
-
-            EvidenceSO evCup = ScriptableObject.CreateInstance<EvidenceSO>();
-            evCup.id = "EVD_COFFEE_CUP";
-            evCup.evidenceName = "Iced Beverage Cup";
-            evCup.category = EvidenceCategory.PersonalBelonging;
-            evCup.normalSprite = cupSprite;
-            evCup.zoomedSprite = cupSprite;
-            evCup.baseDescription = "Vince's beverage cup placed on the table with nervous teeth bite marks on the straw.";
-            evCup.unlockedClueText = "Severe bite marks on straw indicate extreme nervous tension during questioning.";
-            evCup.startsDiscovered = true;
-            SaveAsset(evCup, $"{FolderPath}/Evidence_CoffeeCup.asset");
 
             // 4. Dialogue Tree
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
@@ -212,10 +186,8 @@ namespace CaseClosed.Editor
             case01.primarySuspect = vince;
             case01.additionalSuspects.Add(janine);
             case01.evidenceItems.Add(evPhoto);
-            case01.evidenceItems.Add(evKnife);
             case01.evidenceItems.Add(evTeacup);
             case01.evidenceItems.Add(evKitchen);
-            case01.evidenceItems.Add(evCup);
             case01.dialogueTrees.Add(tree);
             case01.contradictionRules.Add(rule1);
             case01.clueConnections.Add(conn1);
@@ -252,6 +224,26 @@ namespace CaseClosed.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[Case01AssetGenerator] Case 001 ScriptableObject assets generated successfully in " + FolderPath);
+        }
+
+        private static Sprite LoadSprite(string path, string spriteName = null)
+        {
+            if (string.IsNullOrEmpty(spriteName))
+            {
+                Sprite sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                if (sp != null) return sp;
+            }
+
+            Object[] all = AssetDatabase.LoadAllAssetsAtPath(path);
+            foreach (var obj in all)
+            {
+                if (obj is Sprite s)
+                {
+                    if (string.IsNullOrEmpty(spriteName) || s.name == spriteName)
+                        return s;
+                }
+            }
+            return null;
         }
 
         private static void SaveAsset(Object asset, string path)

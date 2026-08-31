@@ -23,7 +23,6 @@ namespace CaseClosed.Prototype
         public Sprite windowPhotoTableSprite;
         public Sprite securityLogTableSprite;
         public Sprite insurancePolicyTableSprite;
-        public Sprite notebookTableSprite;
 
         [Header("Evidence Sprites - Top POV (Inspect / Zoomed)")]
         public Sprite windowPhotoZoomedSprite;
