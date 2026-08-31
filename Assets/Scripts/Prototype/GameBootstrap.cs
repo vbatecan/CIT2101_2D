@@ -39,7 +39,6 @@ namespace CaseClosed.Prototype
             EnsureManager<DeductionBoardController>();
             EnsureManager<CaseConclusionManager>();
             EnsureManager<UIManager>();
-            EnsureManager<CursorManager>();
 
             SetupInvestigators();
 

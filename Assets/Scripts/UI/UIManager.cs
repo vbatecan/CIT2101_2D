@@ -113,15 +113,6 @@ namespace CaseClosed.UI
             if (investigatorSelectButton != null) investigatorSelectButton.SetActive(showHeaderNav);
             if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
 
-            if (isMainMenu)
-            {
-                CursorManager.Instance?.SetDefaultCursor();
-            }
-            else if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
-            {
-                CursorManager.Instance?.SetArmCursor();
-            }
-
             AudioManager.Instance?.PlayPaperFlip();
         }
 
