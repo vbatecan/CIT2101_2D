@@ -94,13 +94,19 @@ namespace CaseClosed.Editor
             Sprite maleSprite = LoadSprite("Assets/Assets/Case001_Male.png");
             Sprite femaleSprite = LoadSprite("Assets/Assets/Case001_Female.png");
 
-            Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png");
-            Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png");
-            Sprite kitchenSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/KitchenPOV.png");
+            Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png", "DoorwayPOV_0");
+            Sprite photoZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/DoorwayTOP.png", "DoorwayTOP_0");
+            Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png", "TeacupPOv_2") ?? LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png");
+            Sprite teacupZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TeacupTOP.png", "TeacupTOP_1") ?? LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TeacupTOP.png");
+            Sprite kitchenSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/KitchenPOV.png", "KitchenPOV_0");
+            Sprite kitchenZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/KitchenlogTOP.png", "KitchenlogTOP_0");
             Sprite armSprite = LoadSprite("Assets/Assets/ArmPointer.png");
 
-            // 3. Background Layer (Layer 1: Fills the 16:9 Orthographic Camera)
+            // 3. Environments Parent & Background Layer (Layer 1: Fills the 16:9 Orthographic Camera)
+            GameObject envParent = new GameObject("Environments");
+
             GameObject bgObj = new GameObject("Environment_Background");
+            bgObj.transform.SetParent(envParent.transform, false);
             SpriteRenderer bgRenderer = bgObj.AddComponent<SpriteRenderer>();
             bgRenderer.sprite = bgSprite;
             bgRenderer.sortingOrder = 0;
@@ -112,9 +118,21 @@ namespace CaseClosed.Editor
                 bgObj.transform.localScale = new Vector3(bgScale, bgScale, 1f);
             }
 
-            // 4. Characters Layer (Layer 2: Behind the table)
+            // Table Desk Layer (Layer 3: Foreground Table)
+            GameObject tableObj = new GameObject("Table_Desk");
+            tableObj.transform.SetParent(envParent.transform, false);
+            tableObj.transform.position = new Vector3(0f, -2.8f, 0f);
+            tableObj.transform.localScale = new Vector3(1.85f, 1.85f, 1f);
+            SpriteRenderer tableRenderer = tableObj.AddComponent<SpriteRenderer>();
+            tableRenderer.sprite = tableSprite;
+            tableRenderer.sortingOrder = 10;
+
+            // 4. Characters Parent & Suspect Layers (Layer 2: Behind the table)
+            GameObject charsParent = new GameObject("Characters");
+
             // Left: Male Suspect (Vince Batecan / Primary Suspect with headphones)
             GameObject charLeft = new GameObject("Character_Suspect_Left");
+            charLeft.transform.SetParent(charsParent.transform, false);
             charLeft.transform.position = new Vector3(-2.8f, 0.2f, 0f);
             charLeft.transform.localScale = new Vector3(0.85f, 0.85f, 1f);
             SpriteRenderer maleRenderer = charLeft.AddComponent<SpriteRenderer>();
@@ -130,6 +148,7 @@ namespace CaseClosed.Editor
 
             // Right: Female Suspect / Accomplice (Janine Sotto / Secondary Suspect)
             GameObject charRight = new GameObject("Character_Suspect_Right");
+            charRight.transform.SetParent(charsParent.transform, false);
             charRight.transform.position = new Vector3(2.8f, 0.2f, 0f);
             charRight.transform.localScale = new Vector3(0.80f, 0.80f, 1f);
             SpriteRenderer femaleRenderer = charRight.AddComponent<SpriteRenderer>();
@@ -143,19 +162,14 @@ namespace CaseClosed.Editor
             cdRight.breathingSpeed = 2.2f;
             cdRight.breathingAmount = 0.025f;
 
-            // 5. Table Desk Layer (Layer 3: Foreground Table)
-            GameObject tableObj = new GameObject("Table_Desk");
-            tableObj.transform.position = new Vector3(0f, -2.8f, 0f);
-            tableObj.transform.localScale = new Vector3(1.85f, 1.85f, 1f);
-            SpriteRenderer tableRenderer = tableObj.AddComponent<SpriteRenderer>();
-            tableRenderer.sprite = tableSprite;
-            tableRenderer.sortingOrder = 10;
+            // 5. Items Parent & Interactive Table Evidence Items
+            GameObject itemsParent = new GameObject("Items");
 
-            // 6. Interactive Table Evidence Items
-            // Item 1: Photo Evidence (Left)
+            // Item 1: Photo Evidence (Left Desk)
             GameObject itemPhoto = new GameObject("Item_Photo_Evidence");
-            itemPhoto.transform.position = new Vector3(-4.5f, -2.0f, 0f);
-            itemPhoto.transform.localScale = new Vector3(0.6f, 0.6f, 1f);
+            itemPhoto.transform.SetParent(itemsParent.transform, false);
+            itemPhoto.transform.position = new Vector3(-4.2f, -2.0f, 0f);
+            itemPhoto.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
             SpriteRenderer photoRen = itemPhoto.AddComponent<SpriteRenderer>();
             photoRen.sprite = photoSprite;
             photoRen.sortingOrder = 12;
@@ -168,7 +182,8 @@ namespace CaseClosed.Editor
 
             // Item 2: Teacup Clue (Center Desk)
             GameObject itemTeacup = new GameObject("Item_Teacup_Clue");
-            itemTeacup.transform.position = new Vector3(0.0f, -2.0f, 0f);
+            itemTeacup.transform.SetParent(itemsParent.transform, false);
+            itemTeacup.transform.position = new Vector3(0.0f, -2.1f, 0f);
             itemTeacup.transform.localScale = new Vector3(0.65f, 0.65f, 1f);
             SpriteRenderer teacupRen = itemTeacup.AddComponent<SpriteRenderer>();
             teacupRen.sprite = teacupSprite;
@@ -182,7 +197,8 @@ namespace CaseClosed.Editor
 
             // Item 3: Kitchen Log (Right Desk)
             GameObject itemKitchen = new GameObject("Item_KitchenLog_Clue");
-            itemKitchen.transform.position = new Vector3(4.5f, -2.0f, 0f);
+            itemKitchen.transform.SetParent(itemsParent.transform, false);
+            itemKitchen.transform.position = new Vector3(4.2f, -2.0f, 0f);
             itemKitchen.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
             SpriteRenderer kitchenRen = itemKitchen.AddComponent<SpriteRenderer>();
             kitchenRen.sprite = kitchenSprite;
@@ -194,7 +210,7 @@ namespace CaseClosed.Editor
             teiKitchen.evidenceId = "EVD_KITCHEN_LOG";
             teiKitchen.openNotebookOnClick = false;
 
-            // Item 4: Detective Arm Pointer (Interactive Mouse-Controlled Arm with ArmPointer.png)
+            // 6. Detective Arm Pointer (Interactive Mouse-Controlled Arm with ArmPointer.png)
             GameObject armObj = new GameObject("Detective_Arm_Pointer");
             armObj.transform.position = new Vector3(0f, -3.0f, 0f);
             armObj.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
@@ -230,9 +246,12 @@ namespace CaseClosed.Editor
             Case01Initializer init1 = EnsureComponent<Case01Initializer>(managersObj);
             init1.maleSuspectSprite = maleSprite;
             init1.femaleSuspectSprite = femaleSprite;
-            init1.envelopeSprite = photoSprite;
-            init1.teacupSprite = teacupSprite;
-            init1.kitchenLogSprite = kitchenSprite;
+            init1.photoTableSprite = photoSprite;
+            init1.teacupTableSprite = teacupSprite;
+            init1.kitchenLogTableSprite = kitchenSprite;
+            init1.photoZoomedSprite = photoZoomSprite;
+            init1.teacupZoomedSprite = teacupZoomSprite;
+            init1.kitchenLogZoomedSprite = kitchenZoomSprite;
             init1.initializeOnStart = true;
 
             GameBootstrap bootstrap = EnsureComponent<GameBootstrap>(managersObj);
@@ -319,17 +338,26 @@ namespace CaseClosed.Editor
             }
         }
 
-        private static Sprite LoadSprite(string path)
+        private static Sprite LoadSprite(string path, string spriteName = null)
         {
-            Sprite sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (sp != null) return sp;
+            if (string.IsNullOrEmpty(spriteName))
+            {
+                Sprite sp = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+                if (sp != null) return sp;
+            }
 
             Object[] all = AssetDatabase.LoadAllAssetsAtPath(path);
+            Sprite fallback = null;
             foreach (var obj in all)
             {
-                if (obj is Sprite s) return s;
+                if (obj is Sprite s)
+                {
+                    if (fallback == null) fallback = s;
+                    if (!string.IsNullOrEmpty(spriteName) && s.name == spriteName)
+                        return s;
+                }
             }
-            return null;
+            return fallback;
         }
 
         private static void EnsureDirectory(string dirPath)

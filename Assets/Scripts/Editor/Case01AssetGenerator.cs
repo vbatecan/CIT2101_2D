@@ -25,8 +25,8 @@ namespace CaseClosed.Editor
             Sprite femaleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/Case001_Female.png");
             Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png", "DoorwayPOV_0");
             Sprite photoZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/DoorwayTOP.png", "DoorwayTOP_0");
-            Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png", "TeacupPOv_0");
-            Sprite teacupZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TeacupTOP.png", "TeacupTOP_0");
+            Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png", "TeacupPOv_2") ?? LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png");
+            Sprite teacupZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TeacupTOP.png", "TeacupTOP_1") ?? LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TeacupTOP.png");
             Sprite kitchenSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/KitchenPOV.png", "KitchenPOV_0");
             Sprite kitchenZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/KitchenlogTOP.png", "KitchenlogTOP_0");
 
@@ -235,15 +235,17 @@ namespace CaseClosed.Editor
             }
 
             Object[] all = AssetDatabase.LoadAllAssetsAtPath(path);
+            Sprite fallback = null;
             foreach (var obj in all)
             {
                 if (obj is Sprite s)
                 {
-                    if (string.IsNullOrEmpty(spriteName) || s.name == spriteName)
+                    if (fallback == null) fallback = s;
+                    if (!string.IsNullOrEmpty(spriteName) && s.name == spriteName)
                         return s;
                 }
             }
-            return null;
+            return fallback;
         }
 
         private static void SaveAsset(Object asset, string path)

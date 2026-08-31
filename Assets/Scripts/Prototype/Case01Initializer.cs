@@ -19,13 +19,15 @@ namespace CaseClosed.Prototype
         public Sprite maleSuspectSprite;
         public Sprite femaleSuspectSprite;
 
-        [Header("Evidence Sprites")]
-        public Sprite envelopeSprite;
-        public Sprite knifeSprite;
-        public Sprite teacupSprite;
-        public Sprite kitchenLogSprite;
-        public Sprite coffeeCupSprite;
-        public Sprite notebookSprite;
+        [Header("Evidence Sprites - Table POV")]
+        public Sprite photoTableSprite;
+        public Sprite teacupTableSprite;
+        public Sprite kitchenLogTableSprite;
+
+        [Header("Evidence Sprites - Top POV (Inspect / Zoomed)")]
+        public Sprite photoZoomedSprite;
+        public Sprite teacupZoomedSprite;
+        public Sprite kitchenLogZoomedSprite;
 
         /// <summary>
         /// Automatically loads Case 01 on start if <see cref="initializeOnStart"/> is enabled.
@@ -77,7 +79,7 @@ namespace CaseClosed.Prototype
             vince.defaultSittingPose = maleSuspectSprite;
             c.primarySuspect = vince;
 
-            // Secondary Suspect / Witness: Shanaia (Accomplice / Key Witness)
+            // Secondary Suspect / Witness: Janine Marie Sotto (Accomplice / Key Witness)
             CharacterProfileSO witnessFemale = ScriptableObject.CreateInstance<CharacterProfileSO>();
             witnessFemale.characterId = "CHAR_CASE1_FEMALE";
             witnessFemale.fullName = "Janine Marie Sotto";
@@ -92,13 +94,13 @@ namespace CaseClosed.Prototype
             c.additionalSuspects.Add(witnessFemale);
 
             // Evidence Items
-            // 1. Family Photograph (Envelope Clue)
+            // 1. Family Photograph (Doorway Clue)
             EvidenceSO evPhoto = ScriptableObject.CreateInstance<EvidenceSO>();
             evPhoto.id = "EVD_FAMILY_PHOTO";
             evPhoto.evidenceName = "Family Photograph";
             evPhoto.category = EvidenceCategory.Photograph;
-            evPhoto.normalSprite = envelopeSprite;
-            evPhoto.zoomedSprite = envelopeSprite;
+            evPhoto.normalSprite = photoTableSprite;
+            evPhoto.zoomedSprite = photoZoomedSprite;
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
@@ -113,62 +115,29 @@ namespace CaseClosed.Prototype
             evPhoto.hotspots.Add(spotDoor);
             c.evidenceItems.Add(evPhoto);
 
-            // 2. Crime Weapon / Manor Knife
-            EvidenceSO evKnife = ScriptableObject.CreateInstance<EvidenceSO>();
-            evKnife.id = "EVD_CRIME_KNIFE";
-            evKnife.evidenceName = "Manor Safe Knife";
-            evKnife.category = EvidenceCategory.PhysicalClue;
-            evKnife.normalSprite = knifeSprite;
-            evKnife.zoomedSprite = knifeSprite;
-            evKnife.baseDescription = "A sharp silver letter opener knife found on the desk with scratches on the safe lock mechanism.";
-            evKnife.detailedObservation = "Scratches on the blade tip match the pry marks on Kirby's locked safe dial.";
-            evKnife.unlockedClueText = "Silver knife pry marks match the safe dial mechanism.";
-            evKnife.startsDiscovered = true;
-
-            EvidenceHotspot spotKnifeTip = new EvidenceHotspot();
-            spotKnifeTip.hotspotId = "SPOT_KNIFE_SCRATCH";
-            spotKnifeTip.hotspotTitle = "Scratched Blade Tip";
-            spotKnifeTip.normalizedPosition = new Vector2(0.85f, 0.5f);
-            spotKnifeTip.observationText = "Microscopic gold paint transfer matching the safe handle.";
-            spotKnifeTip.clueUnlockedId = "CLUE_KNIFE_SAFE_PRY";
-            evKnife.hotspots.Add(spotKnifeTip);
-            c.evidenceItems.Add(evKnife);
-
-            // 3. Broken Teacup
+            // 2. Broken Teacup
             EvidenceSO evTeacup = ScriptableObject.CreateInstance<EvidenceSO>();
             evTeacup.id = "EVD_BROKEN_TEACUP";
             evTeacup.evidenceName = "Broken Teacup";
             evTeacup.category = EvidenceCategory.PhysicalClue;
-            evTeacup.normalSprite = teacupSprite;
-            evTeacup.zoomedSprite = teacupSprite;
+            evTeacup.normalSprite = teacupTableSprite;
+            evTeacup.zoomedSprite = teacupZoomedSprite;
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
             evTeacup.startsDiscovered = true;
             c.evidenceItems.Add(evTeacup);
 
-            // 4. Kitchen Receipt / Log
+            // 3. Kitchen Receipt / Log
             EvidenceSO evKitchenLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evKitchenLog.id = "EVD_KITCHEN_LOG";
             evKitchenLog.evidenceName = "Kitchen Pantry Log";
             evKitchenLog.category = EvidenceCategory.Document;
-            evKitchenLog.normalSprite = kitchenLogSprite;
-            evKitchenLog.zoomedSprite = kitchenLogSprite;
+            evKitchenLog.normalSprite = kitchenLogTableSprite;
+            evKitchenLog.zoomedSprite = kitchenLogZoomedSprite;
             evKitchenLog.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchenLog.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchenLog.startsDiscovered = true;
             c.evidenceItems.Add(evKitchenLog);
-
-            // 5. Interrogation Drink Cup
-            EvidenceSO evCup = ScriptableObject.CreateInstance<EvidenceSO>();
-            evCup.id = "EVD_COFFEE_CUP";
-            evCup.evidenceName = "Iced Beverage Cup";
-            evCup.category = EvidenceCategory.PersonalBelonging;
-            evCup.normalSprite = coffeeCupSprite;
-            evCup.zoomedSprite = coffeeCupSprite;
-            evCup.baseDescription = "Vince's beverage cup placed on the table with nervous teeth bite marks on the straw.";
-            evCup.unlockedClueText = "Severe bite marks on straw indicate extreme nervous tension during questioning.";
-            evCup.startsDiscovered = true;
-            c.evidenceItems.Add(evCup);
 
             // Dialogue Tree
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();

@@ -15,9 +15,9 @@ MonoBehaviour:
   id: EVD_FAMILY_PHOTO
   evidenceName: Family Photograph
   category: 0
-  normalSprite: {fileID: 21300000, guid: d8d204978ca74fc9bcccffc82267c2be, type: 3}
+  normalSprite: {fileID: -1129675804575292397, guid: d49fb24437f6de1f288cc16b54a4711f, type: 3}
   highlightedSprite: {fileID: 0}
-  zoomedSprite: {fileID: 21300000, guid: d8d204978ca74fc9bcccffc82267c2be, type: 3}
+  zoomedSprite: {fileID: -2814718709115034861, guid: bb42deae26851e074a6d9e02e15f7eb6, type: 3}
   baseDescription: A photograph taken at 8:45 PM showing the study doorway.
   detailedObservation: A distinct silhouette matching Vince is visible standing near
     the study door.

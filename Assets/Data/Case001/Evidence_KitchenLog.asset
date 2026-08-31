@@ -15,9 +15,9 @@ MonoBehaviour:
   id: EVD_KITCHEN_LOG
   evidenceName: Kitchen Pantry Log
   category: 1
-  normalSprite: {fileID: 0}
+  normalSprite: {fileID: -9036354060889954212, guid: 24b6ffe27ff2940cc8d5b297b026a681, type: 3}
   highlightedSprite: {fileID: 0}
-  zoomedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 1945886133884770186, guid: f0321aa637183527389a59412b0852d4, type: 3}
   baseDescription: Logbook entry noting the kitchen pantry was locked by staff from
     8:30 PM to 9:15 PM.
   detailedObservation: 
