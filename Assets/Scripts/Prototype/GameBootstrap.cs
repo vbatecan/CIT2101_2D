@@ -39,6 +39,7 @@ namespace CaseClosed.Prototype
             EnsureManager<DeductionBoardController>();
             EnsureManager<CaseConclusionManager>();
             EnsureManager<UIManager>();
+            EnsureManager<CursorManager>();
 
             SetupInvestigators();
 
@@ -248,6 +249,11 @@ namespace CaseClosed.Prototype
             if (mainCam.GetComponent<FixedInvestigationCamera>() == null)
             {
                 mainCam.gameObject.AddComponent<FixedInvestigationCamera>();
+            }
+
+            if (mainCam.GetComponent<UnityEngine.EventSystems.Physics2DRaycaster>() == null)
+            {
+                mainCam.gameObject.AddComponent<UnityEngine.EventSystems.Physics2DRaycaster>();
             }
         }
 

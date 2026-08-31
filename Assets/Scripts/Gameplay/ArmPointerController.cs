@@ -241,6 +241,10 @@ namespace CaseClosed.Gameplay
             isTapping = false;
         }
 
+        [Header("Cursor Manager Integration")]
+        [Tooltip("If true and CursorManager has set the custom arm cursor, hide the duplicate in-world desk arm sprite.")]
+        public bool hideWorldArmWhenCustomCursorActive = true;
+
         public void SetDialogueOrUIMode(bool active)
         {
             isDialogueOrUIActive = active;
@@ -250,15 +254,20 @@ namespace CaseClosed.Gameplay
 
         private void UpdateCursorAndArmState()
         {
-            if (isDialogueOrUIActive)
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            if (CursorManager.Instance != null)
             {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else
-            {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Confined;
+                if (hideWorldArmWhenCustomCursorActive && armRenderer != null)
+                {
+                    armRenderer.enabled = false;
+                }
+
+                if (!isDialogueOrUIActive && CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
+                {
+                    CursorManager.Instance.SetArmCursor();
+                }
             }
         }
     }

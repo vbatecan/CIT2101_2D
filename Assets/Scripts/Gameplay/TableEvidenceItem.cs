@@ -153,6 +153,24 @@ namespace CaseClosed.Gameplay
             SetHoverState(false);
         }
 
+        private void OnMouseEnter()
+        {
+            SetHoverState(true);
+        }
+
+        private void OnMouseExit()
+        {
+            SetHoverState(false);
+        }
+
+        private void OnMouseDown()
+        {
+            if (!EventSystem.current || !EventSystem.current.IsPointerOverGameObject())
+            {
+                TriggerClick(false);
+            }
+        }
+
         /// <summary>
         /// Programmatically sets the hover visual state (used by ArmPointerController).
         /// </summary>
