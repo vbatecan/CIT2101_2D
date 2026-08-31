@@ -2112,7 +2112,19 @@ MonoBehaviour:
   closeButton: {fileID: 909830448}
   rotateLeftButton: {fileID: 60456192}
   rotateRightButton: {fileID: 2015048548}
+  zoomInButton: {fileID: 0}
+  zoomOutButton: {fileID: 0}
+  resetZoomButton: {fileID: 0}
+  zoomSlider: {fileID: 0}
+  zoomLevelText: {fileID: 0}
+  viewportRectTransform: {fileID: 0}
   hotspotsContainer: {fileID: 1897701682}
+  minZoom: 1
+  maxZoom: 3.5
+  zoomStep: 0.25
+  scrollSensitivity: 0.15
+  smoothZoom: 1
+  zoomLerpSpeed: 15
 --- !u!114 &472950824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2958,7 +2970,7 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 701587288}
-  enableIdleBreathing: 1
+  enableIdleBreathing: 0
   breathingSpeed: 2
   breathingAmount: 0.025
 --- !u!212 &701587288
@@ -3965,7 +3977,7 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 1082013777}
-  enableIdleBreathing: 1
+  enableIdleBreathing: 0
   breathingSpeed: 2.2
   breathingAmount: 0.025
 --- !u!212 &1082013777

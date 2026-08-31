@@ -614,17 +614,25 @@ namespace CaseClosed.Editor
 
             // 5. Inspect Modal Panel
             GameObject inspectPanel = EnsureChild(canvasObj, "Panel_InspectModal");
-            SetupRectTransform(inspectPanel, new Vector2(0.18f, 0.12f), new Vector2(0.82f, 0.88f), Vector2.zero, Vector2.zero);
+            SetupRectTransform(inspectPanel, new Vector2(0.15f, 0.08f), new Vector2(0.85f, 0.92f), Vector2.zero, Vector2.zero);
             Image inspBg = EnsureComponent<Image>(inspectPanel);
             inspBg.color = ColorDarkBg;
             EvidenceInspectModal inspectUI = EnsureComponent<EvidenceInspectModal>(inspectPanel);
 
             GameObject inspTitle = CreateText(inspectPanel, "Text_EvidenceTitle", "Evidence Close-Up Inspection", 24, FontStyle.Bold, ColorHeaderGold, TextAnchor.MiddleCenter);
-            SetupRectTransform(inspTitle, new Vector2(0.1f, 0.88f), new Vector2(0.9f, 0.98f), Vector2.zero, Vector2.zero);
+            SetupRectTransform(inspTitle, new Vector2(0.1f, 0.90f), new Vector2(0.9f, 0.98f), Vector2.zero, Vector2.zero);
             inspectUI.evidenceTitleText = inspTitle.GetComponent<Text>();
 
-            GameObject inspImg = EnsureChild(inspectPanel, "Image_Zoomed");
-            SetupRectTransform(inspImg, new Vector2(0.15f, 0.18f), new Vector2(0.85f, 0.82f), Vector2.zero, Vector2.zero);
+            // Viewport container with RectMask2D for clean clipping during zoom and pan
+            GameObject inspViewport = EnsureChild(inspectPanel, "Viewport_Evidence");
+            SetupRectTransform(inspViewport, new Vector2(0.08f, 0.16f), new Vector2(0.92f, 0.88f), Vector2.zero, Vector2.zero);
+            Image vpBg = EnsureComponent<Image>(inspViewport);
+            vpBg.color = new Color(0.05f, 0.06f, 0.08f, 0.85f);
+            EnsureComponent<RectMask2D>(inspViewport);
+            inspectUI.viewportRectTransform = inspViewport.GetComponent<RectTransform>();
+
+            GameObject inspImg = EnsureChild(inspViewport, "Image_Zoomed");
+            SetupRectTransform(inspImg, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             Image zoomImg = EnsureComponent<Image>(inspImg);
             zoomImg.preserveAspect = true;
             inspectUI.evidenceZoomImage = zoomImg;
@@ -633,12 +641,30 @@ namespace CaseClosed.Editor
             SetupRectTransform(hotspotContainer, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             inspectUI.hotspotsContainer = hotspotContainer.GetComponent<RectTransform>();
 
-            GameObject btnRotL = CreateButton(inspectPanel, "Button_RotateLeft", "⟲ -90°", new Vector2(30f, 20f), new Vector2(100f, 40f), new Vector2(0f, 0f), new Vector2(0f, 0f));
-            GameObject btnRotR = CreateButton(inspectPanel, "Button_RotateRight", "⟳ +90°", new Vector2(140f, 20f), new Vector2(100f, 40f), new Vector2(0f, 0f), new Vector2(0f, 0f));
-            GameObject btnCloseInsp = CreateButton(inspectPanel, "Button_CloseInspect", "✕ CLOSE", new Vector2(-140f, 20f), new Vector2(120f, 40f), new Vector2(1f, 0f), new Vector2(1f, 0f));
+            // Bottom controls toolbar
+            GameObject btnRotL = CreateButton(inspectPanel, "Button_RotateLeft", "⟲ -90°", new Vector2(20f, 15f), new Vector2(85f, 38f), new Vector2(0f, 0f), new Vector2(0f, 0f));
+            GameObject btnRotR = CreateButton(inspectPanel, "Button_RotateRight", "⟳ +90°", new Vector2(115f, 15f), new Vector2(85f, 38f), new Vector2(0f, 0f), new Vector2(0f, 0f));
+
+            GameObject btnZoomOut = CreateButton(inspectPanel, "Button_ZoomOut", "🔍 -", new Vector2(210f, 15f), new Vector2(55f, 38f), new Vector2(0f, 0f), new Vector2(0f, 0f));
+            GameObject txtZoomLevel = CreateText(inspectPanel, "Text_ZoomLevel", "100%", 16, FontStyle.Bold, ColorHeaderGold, TextAnchor.MiddleCenter);
+            SetupRectTransform(txtZoomLevel, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(275f, 15f), new Vector2(335f, 53f));
+            GameObject btnZoomIn = CreateButton(inspectPanel, "Button_ZoomIn", "🔍 +", new Vector2(345f, 15f), new Vector2(55f, 38f), new Vector2(0f, 0f), new Vector2(0f, 0f));
+
+            GameObject btnResetView = CreateButton(inspectPanel, "Button_ResetZoom", "⟲ FIT", new Vector2(410f, 15f), new Vector2(80f, 38f), new Vector2(0f, 0f), new Vector2(0f, 0f));
+            GameObject btnCloseInsp = CreateButton(inspectPanel, "Button_CloseInspect", "✕ CLOSE", new Vector2(-120f, 15f), new Vector2(100f, 38f), new Vector2(1f, 0f), new Vector2(1f, 0f));
+
+            // Clue discovery notification banner
+            GameObject clueBanner = CreateText(inspectPanel, "Text_ClueNotification", "[NEW CLUE DISCOVERED]", 16, FontStyle.BoldAndItalic, new Color(0.3f, 1f, 0.4f, 1f), TextAnchor.MiddleCenter);
+            SetupRectTransform(clueBanner, new Vector2(0.1f, 0.10f), new Vector2(0.9f, 0.16f), Vector2.zero, Vector2.zero);
+            clueBanner.SetActive(false);
+            inspectUI.clueUnlockedNotificationText = clueBanner.GetComponent<Text>();
 
             inspectUI.rotateLeftButton = btnRotL.GetComponent<Button>();
             inspectUI.rotateRightButton = btnRotR.GetComponent<Button>();
+            inspectUI.zoomOutButton = btnZoomOut.GetComponent<Button>();
+            inspectUI.zoomLevelText = txtZoomLevel.GetComponent<Text>();
+            inspectUI.zoomInButton = btnZoomIn.GetComponent<Button>();
+            inspectUI.resetZoomButton = btnResetView.GetComponent<Button>();
             inspectUI.closeButton = btnCloseInsp.GetComponent<Button>();
             inspectPanel.SetActive(false);
 
