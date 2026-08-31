@@ -94,22 +94,24 @@ namespace CaseClosed.UI
             _currentPanel = panelType;
 
             bool isMainMenu = (panelType == UIPanelType.MainMenu);
+            bool isInspect = (panelType == UIPanelType.InspectModal);
 
             if (mainMenuPanel != null) mainMenuPanel.SetActive(isMainMenu);
-            if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && (panelType == UIPanelType.InvestigationTable || panelType == UIPanelType.InspectModal));
-            if (inspectModalPanel != null) inspectModalPanel.SetActive(panelType == UIPanelType.InspectModal);
+            if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && panelType == UIPanelType.InvestigationTable);
+            if (inspectModalPanel != null) inspectModalPanel.SetActive(isInspect);
             if (notebookPanel != null) notebookPanel.SetActive(panelType == UIPanelType.CaseFileNotebook);
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
             if (resultsScreenPanel != null) resultsScreenPanel.SetActive(panelType == UIPanelType.ResultsScreen);
             if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(panelType == UIPanelType.InvestigatorSelect);
 
-            // Toggle in-game header navigation visibility
-            if (notebookButton != null) notebookButton.SetActive(!isMainMenu);
-            if (deductionBoardButton != null) deductionBoardButton.SetActive(!isMainMenu);
-            if (concludeCaseButton != null) concludeCaseButton.SetActive(!isMainMenu);
-            if (investigatorSelectButton != null) investigatorSelectButton.SetActive(!isMainMenu);
-            if (returnToMenuButton != null) returnToMenuButton.SetActive(!isMainMenu);
+            // Toggle in-game header navigation visibility (hidden during MainMenu and during isolated Evidence Inspection)
+            bool showHeaderNav = !isMainMenu && !isInspect;
+            if (notebookButton != null) notebookButton.SetActive(showHeaderNav);
+            if (deductionBoardButton != null) deductionBoardButton.SetActive(showHeaderNav);
+            if (concludeCaseButton != null) concludeCaseButton.SetActive(showHeaderNav);
+            if (investigatorSelectButton != null) investigatorSelectButton.SetActive(showHeaderNav);
+            if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
 
             AudioManager.Instance?.PlayPaperFlip();
         }
