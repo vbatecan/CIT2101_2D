@@ -1096,7 +1096,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f88482df4e8f15cc491000d2aeebbbb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Gameplay.TableEvidenceItem
-  evidenceData: {fileID: 0}
+  evidenceData: {fileID: 11400000, guid: e6736421cff131ee990ed0a262f4049f, type: 2}
   evidenceId: EVD_BROKEN_TEACUP
   openNotebookOnClick: 0
   dialogueNodeToTriggerOnInspect: 
@@ -3378,7 +3378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f88482df4e8f15cc491000d2aeebbbb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Gameplay.TableEvidenceItem
-  evidenceData: {fileID: 0}
+  evidenceData: {fileID: 11400000, guid: d424d43d901b52fc6aac9ee6636ebfe5, type: 2}
   evidenceId: EVD_KITCHEN_LOG
   openNotebookOnClick: 0
   dialogueNodeToTriggerOnInspect: 
@@ -4110,7 +4110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec325c2818ad78b6c86248a79e5ae6aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Managers.CaseManager
-  activeCase: {fileID: 0}
+  activeCase: {fileID: 11400000, guid: 3421a1a0bb6d37ef1a41648379159463, type: 2}
   selectedInvestigator: {fileID: 0}
   availableInvestigators: []
   investigationStartTime: 0
@@ -5036,7 +5036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f88482df4e8f15cc491000d2aeebbbb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Gameplay.TableEvidenceItem
-  evidenceData: {fileID: 0}
+  evidenceData: {fileID: 11400000, guid: 3b6e0c5a6a1e987778be1aa56b773d4f, type: 2}
   evidenceId: EVD_FAMILY_PHOTO
   openNotebookOnClick: 0
   dialogueNodeToTriggerOnInspect: 

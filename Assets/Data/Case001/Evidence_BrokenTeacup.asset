@@ -15,9 +15,9 @@ MonoBehaviour:
   id: EVD_BROKEN_TEACUP
   evidenceName: Broken Teacup
   category: 3
-  normalSprite: {fileID: -3429926949459235691, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
+  normalSprite: {fileID: -7146263275692110481, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
   highlightedSprite: {fileID: 0}
-  zoomedSprite: {fileID: -5595004464495049902, guid: 5a801634c8ef8b347b6278c05b99a13a, type: 3}
+  zoomedSprite: {fileID: -7824835962962995920, guid: 5a801634c8ef8b347b6278c05b99a13a, type: 3}
   baseDescription: Found shattered inside the locked study, right near the safe.
   detailedObservation: 
   unlockedClueText: Teacup shattered directly in front of the safe during break-in.

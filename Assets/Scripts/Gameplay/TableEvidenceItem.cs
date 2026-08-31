@@ -38,11 +38,12 @@ namespace CaseClosed.Gameplay
         private Color originalColor = Color.white;
 
         /// <summary>
-        /// Retrieves the attached SpriteRenderer if not set in Inspector.
+        /// Retrieves the attached SpriteRenderer if not set in Inspector and resolves evidence data.
         /// </summary>
         private void Awake()
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            ResolveEvidenceData();
         }
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace CaseClosed.Gameplay
                 }
             }
 
+            ResolveEvidenceData();
             BindEvidenceData();
 
             if (spriteRenderer != null)
@@ -75,6 +77,36 @@ namespace CaseClosed.Gameplay
             {
                 CaseManager.Instance.OnCaseLoaded -= HandleCaseLoaded;
             }
+        }
+
+        /// <summary>
+        /// Attempts to resolve the EvidenceSO data from the active case or assigned identifier.
+        /// </summary>
+        public EvidenceSO ResolveEvidenceData()
+        {
+            if (evidenceData != null)
+            {
+                if (string.IsNullOrEmpty(evidenceId)) evidenceId = evidenceData.id;
+                return evidenceData;
+            }
+
+            if (!string.IsNullOrEmpty(evidenceId) && CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
+            {
+                if (CaseManager.Instance.activeCase.evidenceItems != null)
+                {
+                    foreach (var ev in CaseManager.Instance.activeCase.evidenceItems)
+                    {
+                        if (ev != null && ev.id == evidenceId)
+                        {
+                            evidenceData = ev;
+                            BindEvidenceData();
+                            return evidenceData;
+                        }
+                    }
+                }
+            }
+
+            return evidenceData;
         }
 
         private void HandleCaseLoaded(CaseSO activeCase)
@@ -159,9 +191,6 @@ namespace CaseClosed.Gameplay
         /// <param name="isInspectOrRightClick">If true, directly opens close-up inspect modal.</param>
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
-            string itemName = evidenceData != null ? evidenceData.evidenceName : gameObject.name;
-            Debug.Log($"[Gameplay:TableEvidence] TriggerClick on '{itemName}' (InspectMode: {isInspectOrRightClick}, OpenNotebook: {openNotebookOnClick})");
-
             // 1. Check if configured to open notebook (Open Case Book on desk)
             if (openNotebookOnClick)
             {
@@ -170,7 +199,15 @@ namespace CaseClosed.Gameplay
                 return;
             }
 
-            if (evidenceData == null) return;
+            ResolveEvidenceData();
+            if (evidenceData == null)
+            {
+                Debug.LogWarning($"[Gameplay:TableEvidence] Cannot trigger click: evidenceData is null for '{gameObject.name}' (evidenceId: '{evidenceId}')");
+                return;
+            }
+
+            string itemName = evidenceData.evidenceName;
+            Debug.Log($"[Gameplay:TableEvidence] TriggerClick on '{itemName}' (InspectMode: {isInspectOrRightClick}, OpenNotebook: {openNotebookOnClick})");
 
             // 2. Select evidence in EvidenceManager
             EvidenceManager.Instance?.SelectEvidence(evidenceData);

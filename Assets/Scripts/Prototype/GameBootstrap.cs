@@ -113,9 +113,26 @@ namespace CaseClosed.Prototype
             if (Input.GetKeyDown(KeyCode.Alpha1)) SwitchToCaseSceneOrLevel(1);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) SwitchToCaseSceneOrLevel(2);
             else if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchToCaseSceneOrLevel(3);
-            else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.M))
+            else if (Input.GetKeyDown(KeyCode.M))
             {
                 UIManager.Instance?.ReturnToMainMenu();
+            }
+            else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                // If Evidence Inspect Modal is currently open, let EvidenceInspectModal handle closing (do NOT return to Main Menu)
+                if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen)
+                {
+                    // Handled by EvidenceInspectModal
+                }
+                else if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable && UIManager.Instance.currentPanel != UIPanelType.MainMenu)
+                {
+                    // Return to investigation table from sub-panels (Notebook, Deduction Board, etc.)
+                    UIManager.Instance.ShowPanel(UIPanelType.InvestigationTable);
+                }
+                else
+                {
+                    UIManager.Instance?.ReturnToMainMenu();
+                }
             }
             else if (Input.GetKeyDown(KeyCode.I))
             {
