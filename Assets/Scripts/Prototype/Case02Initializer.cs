@@ -15,6 +15,21 @@ namespace CaseClosed.Prototype
         /// <summary>Whether to automatically initialize and load Case 02 on Start.</summary>
         public bool initializeOnStart = false;
 
+        [Header("Suspect Portraits & Visuals")]
+        public Sprite guardSuspectSprite;
+        public Sprite ownerSuspectSprite;
+
+        [Header("Evidence Sprites - Table POV")]
+        public Sprite windowPhotoTableSprite;
+        public Sprite securityLogTableSprite;
+        public Sprite insurancePolicyTableSprite;
+        public Sprite notebookTableSprite;
+
+        [Header("Evidence Sprites - Top POV (Inspect / Zoomed)")]
+        public Sprite windowPhotoZoomedSprite;
+        public Sprite securityLogZoomedSprite;
+        public Sprite insurancePolicyZoomedSprite;
+
         /// <summary>
         /// Automatically loads Case 02 on start if <see cref="initializeOnStart"/> is enabled.
         /// </summary>
@@ -61,6 +76,7 @@ namespace CaseClosed.Prototype
             charl.personalityTrait = PersonalityTrait.Calm;
             charl.alibi = "Claims he was standing right outside the office door when he heard glass shatter at 11:00 PM.";
             charl.possibleMotives = "Bribed by gallery owner.";
+            charl.defaultSittingPose = guardSuspectSprite;
             c.primarySuspect = charl;
 
             // Secondary Suspect: Paul Gabriel Camacho (Gallery Owner)
@@ -73,6 +89,7 @@ namespace CaseClosed.Prototype
             paul.personalityTrait = PersonalityTrait.Secretive;
             paul.alibi = "Claims he was at home when the alarm triggered.";
             paul.possibleMotives = "Insurance payout to save failing gallery.";
+            paul.defaultSittingPose = ownerSuspectSprite;
             c.additionalSuspects.Add(paul);
 
             // Register Investigator Profile: Detective Kyle Gabriel Pastrana
@@ -91,6 +108,8 @@ namespace CaseClosed.Prototype
             evWindowPhoto.id = "EVD_WINDOW_PHOTO";
             evWindowPhoto.evidenceName = "Window Frame Crime Scene Photo";
             evWindowPhoto.category = EvidenceCategory.Photograph;
+            evWindowPhoto.normalSprite = windowPhotoTableSprite;
+            evWindowPhoto.zoomedSprite = windowPhotoZoomedSprite;
             evWindowPhoto.baseDescription = "Photograph of the shattered back office window taken from the alley.";
             evWindowPhoto.detailedObservation = "Glass shards are scattered OUTSIDE on the alley pavement, proving the window was broken from the INSIDE.";
             evWindowPhoto.unlockedClueText = "Glass shards scattered outside on pavement prove window was broken from INSIDE!";
@@ -110,7 +129,10 @@ namespace CaseClosed.Prototype
             evShiftLog.id = "EVD_SHIFT_LOG";
             evShiftLog.evidenceName = "Security Guard Shift Log";
             evShiftLog.category = EvidenceCategory.Document;
+            evShiftLog.normalSprite = securityLogTableSprite;
+            evShiftLog.zoomedSprite = securityLogZoomedSprite;
             evShiftLog.baseDescription = "Electronic keycard log showing guard movements throughout the night.";
+            evShiftLog.detailedObservation = "Digital badge log printout highlighting: 11:00 PM - Charl Pascual scanned at East Gate.";
             evShiftLog.unlockedClueText = "Log shows Charl was checking the East Perimeter gate at 11:00 PM, far away from the office!";
             evShiftLog.startsDiscovered = true;
             c.evidenceItems.Add(evShiftLog);
@@ -120,7 +142,10 @@ namespace CaseClosed.Prototype
             evInsurance.id = "EVD_INSURANCE_POLICY";
             evInsurance.evidenceName = "Art Insurance Policy";
             evInsurance.category = EvidenceCategory.Document;
+            evInsurance.normalSprite = insurancePolicyTableSprite;
+            evInsurance.zoomedSprite = insurancePolicyZoomedSprite;
             evInsurance.baseDescription = "Insurance policy agreement for the stolen painting.";
+            evInsurance.detailedObservation = "Policy rider with amendment stamped 48 hours before the incident doubling coverage to $500,000.";
             evInsurance.unlockedClueText = "Paul doubled the insurance payout value of the painting just 48 hours prior to the theft.";
             evInsurance.startsDiscovered = true;
             c.evidenceItems.Add(evInsurance);

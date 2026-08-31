@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_InsurancePolicy
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_INSURANCE_POLICY
+  evidenceName: Art Insurance Policy
+  category: 1
+  normalSprite: {fileID: 8746195129012609110, guid: 52ccca8ea1bb4f2969702ccf51259d8a, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: -4850736249340630376, guid: fce6a962d6d21811cb6639df12ac8bf9, type: 3}
+  baseDescription: Insurance policy agreement for the stolen painting.
+  detailedObservation: Policy rider with amendment stamped 48 hours before the incident
+    doubling coverage to $500,000.
+  unlockedClueText: Paul doubled the insurance payout value of the painting just
+    48 hours prior to the theft.
+  startsDiscovered: 1
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots: []

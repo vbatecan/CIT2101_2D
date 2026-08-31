@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed4d9661c3bfe10bb31f7b6447430fe, type: 3}
+  m_Name: Char_CharlPascual
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterProfileSO
+  characterId: CHAR_CHARL_PASCUAL
+  fullName: Charl Vonn Pascual
+  age: 30
+  occupation: Night Security Guard
+  relationshipToVictim: Employee of Paul Gabriel Camacho
+  personalityTrait: 0
+  background: 
+  knownConflicts: 
+  possibleMotives: Bribed by gallery owner.
+  alibi: Claims he was standing right outside the office door when he heard glass
+    shatter at 11:00 PM.
+  defaultSittingPose: {fileID: 0}
+  expressions: []

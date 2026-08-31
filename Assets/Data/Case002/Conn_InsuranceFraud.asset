@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5dbd736f4b707f1197570c82b81bc97, type: 3}
+  m_Name: Conn_InsuranceFraud
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.ClueConnectionSO
+  connectionId: CONN_INSURANCE_FRAUD
+  connectionTitle: Outside Glass & Doubled Insurance
+  clueA_Id: CLUE_BROKEN_FROM_INSIDE
+  clueB_Id: EVD_INSURANCE_POLICY_BASE_CLUE
+  resultClueId: CLUE_INSURANCE_FRAUD_PROOF
+  resultClueTitle: Proof of Staged Burglary Fraud
+  deductionText: The window broken from the inside combined with Paul doubling insurance
+    48h earlier confirms staged fraud!

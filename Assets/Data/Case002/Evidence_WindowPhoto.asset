@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_WindowPhoto
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_WINDOW_PHOTO
+  evidenceName: Window Frame Crime Scene Photo
+  category: 0
+  normalSprite: {fileID: 3911213246147480790, guid: b136fdbe1a6047752a83b9e04a7bc4b2, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 7034101391455836084, guid: d6ecb9b31b68d2cceb9e4ab19fc8b155, type: 3}
+  baseDescription: Photograph of the shattered back office window taken from the
+    alley.
+  detailedObservation: Glass shards are scattered OUTSIDE on the alley pavement,
+    proving the window was broken from the INSIDE.
+  unlockedClueText: Glass shards scattered outside on pavement prove window was broken
+    from INSIDE!
+  startsDiscovered: 1
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots:
+  - hotspotId: SPOT_OUTSIDE_GLASS
+    hotspotTitle: Outer Glass Distribution
+    normalizedPosition: {x: 0.5, y: 0.2}
+    radius: 0.1
+    observationText: Glass fragments lay outside on alley cobblestone rather than
+      inside office floor.
+    clueUnlockedId: CLUE_BROKEN_FROM_INSIDE
+    isDiscovered: 0

@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2e46c7e171daf0d92bc6f01f927bd3, type: 3}
+  m_Name: Case02_Data
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CaseSO
+  levelNumber: 2
+  caseId: LEVEL_02
+  caseTitle: 'LEVEL 2: The Shattered Mirror'
+  dateAndLocation: 11:00 PM - Upscale Art Gallery Back Office
+  incidentDescription: Gallery owner Paul Gabriel Camacho claims an intruder broke
+    through the exterior alley window and stole a priceless painting.
+  objective: Interrogate Charl Vonn Pascual and Paul Gabriel Camacho, inspect the
+    physical glass evidence, catch the false testimony, and expose the insurance
+    fraud.
+  victimInfo: Paul Gabriel Camacho (Gallery Owner - Secretive & Dramatic)
+  leadInvestigator: {fileID: 0}
+  primarySuspect: {fileID: 11400000, guid: 45fd013ff6d1d2cfda5ac03bbcc6ffd7, type: 2}
+  additionalSuspects:
+  - {fileID: 11400000, guid: 5f60040f04e23443b8b48f980b0ad5df, type: 2}
+  evidenceItems:
+  - {fileID: 11400000, guid: 7e625eb7e4566c7e5ad24bfa185e27c4, type: 2}
+  - {fileID: 11400000, guid: d97773fb837fe5bc7ab1edefe162cb51, type: 2}
+  - {fileID: 11400000, guid: 56c635b7eb2053c448e109ca48c983f4, type: 2}
+  clueConnections:
+  - {fileID: 11400000, guid: 3ada75dffb4d709aa94b07c3fbd24604, type: 2}
+  dialogueTrees:
+  - {fileID: 11400000, guid: 042ab1475a4b863f793fd07fceb6f385, type: 2}
+  contradictionRules:
+  - {fileID: 11400000, guid: 4eab92ac58e53f911bf1c8773e59eca0, type: 2}
+  conclusionQuestions:
+  - questionId: Q_SUSPECT
+    questionText: Who orchestrated the fake burglary?
+    options:
+    - Paul Gabriel Camacho (Gallery Owner)
+    - Charl Vonn Pascual (Security Guard)
+    - External Intruder
+    correctOptionIndex: 0
+    pointValue: 250
+  - questionId: Q_MOTIVE
+    questionText: What was the motive for staging the crime?
+    options:
+    - Insurance Fraud Payout
+    - Personal Grudge
+    - Covering Defective Art
+    correctOptionIndex: 0
+    pointValue: 250
+  - questionId: Q_EVIDENCE
+    questionText: Which evidence proved the window was broken from inside?
+    options:
+    - Window Frame Photo (Glass Outside)
+    - Shift Log
+    - Insurance Policy
+    correctOptionIndex: 0
+    pointValue: 250
+  totalKeyEvidenceCount: 5
+  totalContradictionsCount: 3
+  parCompletionTimeSeconds: 300

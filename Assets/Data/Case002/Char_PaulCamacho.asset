@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed4d9661c3bfe10bb31f7b6447430fe, type: 3}
+  m_Name: Char_PaulCamacho
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterProfileSO
+  characterId: CHAR_PAUL_CAMACHO
+  fullName: Paul Gabriel Camacho
+  age: 42
+  occupation: Art Gallery Owner
+  relationshipToVictim: Owner / Victim
+  personalityTrait: 4
+  background: 
+  knownConflicts: 
+  possibleMotives: Insurance payout to save failing gallery.
+  alibi: Claims he was at home when the alarm triggered.
+  defaultSittingPose: {fileID: 0}
+  expressions: []
