@@ -169,17 +169,37 @@ namespace CaseClosed.Gameplay
         private void HandleFingertipRaycast()
         {
             Vector2 checkPos = (fingertipPoint != null) ? (Vector2)fingertipPoint.position : (Vector2)transform.position;
-            Collider2D hit = Physics2D.OverlapCircle(checkPos, interactionRadius, interactableLayers);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(checkPos, interactionRadius, interactableLayers);
 
-            TableEvidenceItem item = (hit != null) ? hit.GetComponent<TableEvidenceItem>() : null;
+            TableEvidenceItem nearestItem = null;
+            float closestDistSqr = float.MaxValue;
 
-            if (item != currentHoveredItem)
+            if (hits != null)
+            {
+                for (int i = 0; i < hits.Length; i++)
+                {
+                    Collider2D hit = hits[i];
+                    if (hit == null) continue;
+                    TableEvidenceItem item = hit.GetComponentInParent<TableEvidenceItem>();
+                    if (item != null && item.gameObject.activeInHierarchy)
+                    {
+                        float distSqr = ((Vector2)item.transform.position - checkPos).sqrMagnitude;
+                        if (distSqr < closestDistSqr)
+                        {
+                            closestDistSqr = distSqr;
+                            nearestItem = item;
+                        }
+                    }
+                }
+            }
+
+            if (nearestItem != currentHoveredItem)
             {
                 ClearHoveredItem();
 
-                if (item != null)
+                if (nearestItem != null)
                 {
-                    currentHoveredItem = item;
+                    currentHoveredItem = nearestItem;
                     currentHoveredItem.SetHoverState(true);
                 }
             }

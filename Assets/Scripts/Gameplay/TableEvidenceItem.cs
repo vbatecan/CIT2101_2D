@@ -9,9 +9,8 @@ namespace CaseClosed.Gameplay
 {
     /// <summary>
     /// Gameplay MonoBehaviour attached to physical evidence and interactive items placed on the investigation desk,
-    /// providing hover highlights, single-click selection/explanation, double-click zoom inspection,
-    /// and case file notebook opening triggers.
-    /// Can be dragged directly onto Table Item GameObjects in the Unity Inspector.
+    /// providing luminous glowing aura feedback when hovered by the detective's arm pointer, hover highlights,
+    /// single-click selection/explanation, double-click zoom inspection, and case file notebook opening triggers.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
     public class TableEvidenceItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
@@ -30,27 +29,77 @@ namespace CaseClosed.Gameplay
         [Tooltip("Optional dialogue node ID to jump to in InterrogationManager when this item is clicked (suspect explains item).")]
         public string dialogueNodeToTriggerOnInspect;
 
-        [Header("Visual Feedback")]
+        [Header("Glow Aura & Visual Feedback")]
         public SpriteRenderer spriteRenderer;
-        public GameObject highlightGlow;
-        public Color hoverColor = new Color(1f, 1f, 0.8f, 1f);
 
+        [ColorUsage(true, true)]
+        [Tooltip("HDR/RGB color of the glowing silhouette aura surrounding the evidence item when hovered.")]
+        public Color glowColor = new Color(1.0f, 0.88f, 0.25f, 0.95f);
+
+        [Tooltip("Maximum glow intensity multiplier when hovered.")]
+        public float maxGlowIntensity = 1.0f;
+
+        [Tooltip("Base scale expansion factor for the glowing silhouette halo.")]
+        public float haloBaseScale = 1.08f;
+
+        [Tooltip("Speed of fading the glow in and out.")]
+        public float glowFadeSpeed = 12f;
+
+        [Tooltip("If true, the glow aura gently breathes and pulses while hovered.")]
+        public bool pulseGlow = true;
+
+        [Tooltip("Speed of the breathing pulse.")]
+        public float pulseSpeed = 4.0f;
+
+        [Tooltip("Amplitude of the breathing pulse expansion & alpha oscillation.")]
+        public float pulseAmplitude = 0.04f;
+
+        [Header("Tactile Hover Response")]
+        [Tooltip("If true, slightly lifts and scales the item up when hovered.")]
+        public bool scaleOnHover = true;
+
+        [Tooltip("Scale multiplier applied during hover.")]
+        public float hoverScaleMultiplier = 1.035f;
+
+        [Tooltip("Subtle brightness/tint boost applied to the item sprite during hover.")]
+        public Color hoverColor = new Color(1f, 1f, 0.9f, 1f);
+
+        [Tooltip("Optional custom external glow GameObject (e.g. inspector light or particle aura).")]
+        public GameObject highlightGlow;
+
+        // Runtime animation state
+        private bool isHovered = false;
+        private float currentGlowIntensity = 0f;
+        [SerializeField, HideInInspector] private Vector3 baseScale = Vector3.one;
+        private bool hasCachedBaseScale = false;
         private Color originalColor = Color.white;
 
-        /// <summary>
-        /// Retrieves the attached SpriteRenderer if not set in Inspector and resolves evidence data.
-        /// </summary>
+        // Auto-generated glow halo child
+        private GameObject haloObj;
+        private SpriteRenderer haloRenderer;
+
+        public bool IsHovered => isHovered;
+        public float CurrentGlowIntensity => currentGlowIntensity;
+
         private void Awake()
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+
+            EnsureBaseScaleCached();
+
+            if (spriteRenderer != null)
+            {
+                originalColor = spriteRenderer.color;
+            }
+
+            SetupGlowHalo();
             ResolveEvidenceData();
         }
 
-        /// <summary>
-        /// Initializes the item sprite and baseline colors on start, subscribing to case load events.
-        /// </summary>
         private void Start()
         {
+            EnsureBaseScaleCached();
+
             if (CaseManager.Instance != null)
             {
                 CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
@@ -62,13 +111,15 @@ namespace CaseClosed.Gameplay
 
             ResolveEvidenceData();
             BindEvidenceData();
-
-            if (spriteRenderer != null)
-            {
-                originalColor = spriteRenderer.color;
-            }
+            AdjustColliderToSprite();
 
             if (highlightGlow != null) highlightGlow.SetActive(false);
+            if (haloObj != null) haloObj.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            EnsureBaseScaleCached();
         }
 
         private void OnDestroy()
@@ -76,6 +127,144 @@ namespace CaseClosed.Gameplay
             if (CaseManager.Instance != null)
             {
                 CaseManager.Instance.OnCaseLoaded -= HandleCaseLoaded;
+            }
+        }
+
+        private void EnsureBaseScaleCached()
+        {
+            if (!hasCachedBaseScale || baseScale.sqrMagnitude < 0.00001f)
+            {
+                if (transform.localScale.sqrMagnitude > 0.00001f)
+                {
+                    baseScale = transform.localScale;
+                    hasCachedBaseScale = true;
+                }
+            }
+        }
+
+        private void Update()
+        {
+            UpdateGlowAnimation();
+        }
+
+        /// <summary>
+        /// Creates and configures the dedicated glowing silhouette child object behind the evidence item.
+        /// </summary>
+        private void SetupGlowHalo()
+        {
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null) return;
+
+            Transform child = transform.Find("Glow_Halo");
+            if (child != null)
+            {
+                haloObj = child.gameObject;
+                haloRenderer = haloObj.GetComponent<SpriteRenderer>();
+            }
+            else
+            {
+                haloObj = new GameObject("Glow_Halo");
+                haloObj.transform.SetParent(transform, false);
+                haloObj.transform.localPosition = new Vector3(0f, 0f, 0.01f);
+                haloRenderer = haloObj.AddComponent<SpriteRenderer>();
+            }
+
+            if (haloRenderer != null)
+            {
+                haloRenderer.sprite = spriteRenderer.sprite;
+                haloRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+                haloRenderer.sortingOrder = Mathf.Max(0, spriteRenderer.sortingOrder - 1);
+
+                Shader unlitShader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default") ?? Shader.Find("Sprites/Default");
+                if (unlitShader != null)
+                {
+                    haloRenderer.material = new Material(unlitShader);
+                }
+
+                haloRenderer.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
+            }
+
+            haloObj.SetActive(false);
+        }
+
+        /// <summary>
+        /// Smoothly animates glow intensity, breathing pulse oscillation, and subtle scale lift.
+        /// </summary>
+        private void UpdateGlowAnimation()
+        {
+            EnsureBaseScaleCached();
+
+            if (haloObj == null)
+            {
+                SetupGlowHalo();
+            }
+
+            float targetIntensity = isHovered ? maxGlowIntensity : 0f;
+            currentGlowIntensity = Mathf.MoveTowards(currentGlowIntensity, targetIntensity, Time.deltaTime * glowFadeSpeed);
+
+            if (currentGlowIntensity > 0.001f)
+            {
+                if (haloObj != null && !haloObj.activeSelf)
+                {
+                    haloObj.SetActive(true);
+                }
+
+                if (haloRenderer != null)
+                {
+                    if (haloRenderer.sprite != spriteRenderer.sprite)
+                    {
+                        haloRenderer.sprite = spriteRenderer.sprite;
+                    }
+
+                    float pulse = (pulseGlow && isHovered) ? (1.0f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmplitude) : 1.0f;
+                    float alpha = Mathf.Clamp01(currentGlowIntensity * pulse * glowColor.a);
+                    haloRenderer.color = new Color(glowColor.r, glowColor.g, glowColor.b, alpha);
+
+                    float scaleFactor = haloBaseScale + ((pulse - 1.0f) * 0.5f);
+                    haloObj.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+                }
+
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.color = Color.Lerp(originalColor, hoverColor, currentGlowIntensity);
+                }
+            }
+            else
+            {
+                if (haloObj != null && haloObj.activeSelf)
+                {
+                    haloObj.SetActive(false);
+                }
+
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.color = originalColor;
+                }
+            }
+
+            if (scaleOnHover && hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f)
+            {
+                Vector3 targetScale = isHovered ? (baseScale * hoverScaleMultiplier) : baseScale;
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * glowFadeSpeed);
+            }
+        }
+
+        /// <summary>
+        /// Auto-sizes BoxCollider2D to match the active sprite's size and center if needed.
+        /// </summary>
+        public void AdjustColliderToSprite()
+        {
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            BoxCollider2D boxCol = GetComponent<BoxCollider2D>();
+
+            if (boxCol != null && spriteRenderer != null && spriteRenderer.sprite != null)
+            {
+                Vector2 spriteSize = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
+                if (boxCol.size.x < spriteSize.x * 0.7f || boxCol.size.y < spriteSize.y * 0.7f)
+                {
+                    boxCol.size = spriteSize;
+                    boxCol.offset = Vector2.zero;
+                }
             }
         }
 
@@ -121,6 +310,7 @@ namespace CaseClosed.Gameplay
                     {
                         evidenceData = ev;
                         BindEvidenceData();
+                        AdjustColliderToSprite();
                         break;
                     }
                 }
@@ -132,13 +322,14 @@ namespace CaseClosed.Gameplay
             if (evidenceData != null && spriteRenderer != null && evidenceData.normalSprite != null)
             {
                 spriteRenderer.sprite = evidenceData.normalSprite;
+                if (haloRenderer != null) haloRenderer.sprite = evidenceData.normalSprite;
+                AdjustColliderToSprite();
             }
         }
 
         /// <summary>
         /// Applies hover tint and highlighted sprite when the mouse pointer hovers over the item.
         /// </summary>
-        /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerEnter(PointerEventData eventData)
         {
             SetHoverState(true);
@@ -147,7 +338,6 @@ namespace CaseClosed.Gameplay
         /// <summary>
         /// Restores original color and sprite when the mouse pointer exits the item boundary.
         /// </summary>
-        /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerExit(PointerEventData eventData)
         {
             SetHoverState(false);
@@ -173,21 +363,29 @@ namespace CaseClosed.Gameplay
 
         /// <summary>
         /// Programmatically sets the hover visual state (used by ArmPointerController).
+        /// Triggers glowing aura, scale lift, and highlighted sprite change.
         /// </summary>
         public void SetHoverState(bool isHovered)
         {
-            if (spriteRenderer != null)
+            this.isHovered = isHovered;
+
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (haloObj == null) SetupGlowHalo();
+
+            if (spriteRenderer != null && evidenceData != null)
             {
-                spriteRenderer.color = isHovered ? hoverColor : originalColor;
-                if (evidenceData != null)
-                {
-                    if (isHovered && evidenceData.highlightedSprite != null)
-                        spriteRenderer.sprite = evidenceData.highlightedSprite;
-                    else if (!isHovered && evidenceData.normalSprite != null)
-                        spriteRenderer.sprite = evidenceData.normalSprite;
-                }
+                if (isHovered && evidenceData.highlightedSprite != null)
+                    spriteRenderer.sprite = evidenceData.highlightedSprite;
+                else if (!isHovered && evidenceData.normalSprite != null)
+                    spriteRenderer.sprite = evidenceData.normalSprite;
+
+                if (haloRenderer != null) haloRenderer.sprite = spriteRenderer.sprite;
             }
-            if (highlightGlow != null) highlightGlow.SetActive(isHovered);
+
+            if (highlightGlow != null)
+            {
+                highlightGlow.SetActive(isHovered);
+            }
         }
 
         /// <summary>
@@ -196,7 +394,6 @@ namespace CaseClosed.Gameplay
         /// - Single click: selects evidence and triggers suspect explanation dialogue if configured.
         /// - Double-click / Right-click: opens close-up inspect modal.
         /// </summary>
-        /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerClick(PointerEventData eventData)
         {
             bool isSecondary = eventData.clickCount >= 2 || eventData.button == PointerEventData.InputButton.Right;
@@ -206,7 +403,6 @@ namespace CaseClosed.Gameplay
         /// <summary>
         /// Programmatically triggers the interaction click on this table item (used by ArmPointerController).
         /// </summary>
-        /// <param name="isInspectOrRightClick">If true, directly opens close-up inspect modal.</param>
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
             // 1. Check if configured to open notebook (Open Case Book on desk)
