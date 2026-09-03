@@ -225,6 +225,7 @@ namespace CaseClosed.Prototype
                     InterrogationManager.Instance.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
                 }
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
+                ArmPointerController.Instance?.ForceSyncState();
             }
             else
             {

@@ -83,13 +83,20 @@ namespace CaseClosed.Gameplay
 
         private void Start()
         {
-            UpdateCursorAndArmState();
+            ForceSyncState();
+        }
+
+        private void OnEnable()
+        {
+            if (targetCamera == null) targetCamera = Camera.main;
+            ForceSyncState();
         }
 
         private void OnDisable()
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            ClearHoveredItem();
         }
 
         private void OnDestroy()
@@ -117,21 +124,44 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        private void CheckUIModeState()
+        /// <summary>
+        /// Evaluates whether the game is currently in a UI/Dialogue/Inspection state.
+        /// </summary>
+        public bool DetermineUIMode()
         {
-            bool shouldBeInUIMode = false;
-
             // Check if any modal panel is open in UIManager
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable)
             {
-                shouldBeInUIMode = true;
+                return true;
+            }
+
+            // Check if Evidence Inspection is open
+            if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen)
+            {
+                return true;
             }
 
             // Check if Dialogue is actively displayed
             if (DialogueUI.IsDialogueOpen)
             {
-                shouldBeInUIMode = true;
+                return true;
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Forces re-evaluation of UI mode and resets cursor and arm active flags.
+        /// </summary>
+        public void ForceSyncState()
+        {
+            bool shouldBeInUIMode = DetermineUIMode();
+            SetDialogueOrUIMode(shouldBeInUIMode);
+        }
+
+        private void CheckUIModeState()
+        {
+            bool shouldBeInUIMode = DetermineUIMode();
 
             if (shouldBeInUIMode != isDialogueOrUIActive)
             {

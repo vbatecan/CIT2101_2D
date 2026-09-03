@@ -3,6 +3,7 @@ using UnityEngine;
 using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Managers;
+using CaseClosed.UI;
 
 namespace CaseClosed.Prototype
 {
@@ -43,6 +44,8 @@ namespace CaseClosed.Prototype
                 {
                     InterrogationManager.Instance.SetInterrogationTarget(case02.primarySuspect, case02.dialogueTrees[0]);
                 }
+
+                UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
             }
         }
 

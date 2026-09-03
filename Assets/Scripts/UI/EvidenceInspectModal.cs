@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using CaseClosed.Data;
+using CaseClosed.Gameplay;
 using CaseClosed.Managers;
 
 namespace CaseClosed.UI
@@ -605,9 +606,10 @@ namespace CaseClosed.UI
         {
             Debug.Log("[UI:InspectModal] Closing isolated evidence inspection mode");
             isInspecting = false;
+            EvidenceManager.Instance?.CloseInspectModal();
             RestoreSceneObjects();
             ResetView();
-            EvidenceManager.Instance?.CloseInspectModal();
+            ArmPointerController.Instance?.ForceSyncState();
         }
 
         /// <summary>
@@ -618,6 +620,7 @@ namespace CaseClosed.UI
             isInspecting = false;
             RestoreSceneObjects();
             ResetView();
+            ArmPointerController.Instance?.ForceSyncState();
         }
     }
 }

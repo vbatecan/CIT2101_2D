@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using CaseClosed.Enums;
+using CaseClosed.Gameplay;
 using CaseClosed.Managers;
 
 namespace CaseClosed.UI
@@ -68,7 +69,26 @@ namespace CaseClosed.UI
                 if (btn != null) btn.onClick.AddListener(ToggleInvestigatorSelectPanel);
             }
 
-            ShowPanel(currentPanel);
+            if (notebookButton != null)
+            {
+                Button btn = notebookButton.GetComponent<Button>();
+                if (btn != null) btn.onClick.AddListener(ToggleNotebookPanel);
+            }
+
+            if (deductionBoardButton != null)
+            {
+                Button btn = deductionBoardButton.GetComponent<Button>();
+                if (btn != null) btn.onClick.AddListener(ToggleDeductionBoardPanel);
+            }
+
+            if (concludeCaseButton != null)
+            {
+                Button btn = concludeCaseButton.GetComponent<Button>();
+                if (btn != null) btn.onClick.AddListener(OpenConclusionQuiz);
+            }
+
+            UIPanelType initialPanel = (mainMenuPanel != null) ? UIPanelType.MainMenu : UIPanelType.InvestigationTable;
+            ShowPanel(initialPanel);
             RegisterEvents();
         }
 
@@ -113,6 +133,7 @@ namespace CaseClosed.UI
             if (investigatorSelectButton != null) investigatorSelectButton.SetActive(showHeaderNav);
             if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
 
+            ArmPointerController.Instance?.ForceSyncState();
             AudioManager.Instance?.PlayPaperFlip();
         }
 
