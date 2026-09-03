@@ -2,18 +2,26 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using CaseClosed.Data;
+using CaseClosed.Enums;
+using CaseClosed.Services;
+using CaseClosed.UI;
 
 namespace CaseClosed.Managers
 {
     /// <summary>
     /// Central state coordinator MonoBehaviour tracking the active case, discovered evidence,
-    /// unlocked clue logs, and exposed contradictions.
+    /// unlocked clue logs, exposed contradictions, and investigation countdown timer.
     /// Can be dragged directly onto a GameObject in the Unity Inspector.
     /// </summary>
     public class CaseManager : MonoBehaviour
     {
         /// <summary>Singleton instance of the CaseManager.</summary>
         public static CaseManager Instance { get; private set; }
+
+        private readonly CaseTimerService timerService = new CaseTimerService();
+
+        /// <summary>Pure domain service for timer and urgency calculations.</summary>
+        public CaseTimerService TimerService => timerService;
 
         [Header("Current Active Case")]
         /// <summary>The currently loaded case ScriptableObject.</summary>
@@ -42,8 +50,26 @@ namespace CaseClosed.Managers
         /// <summary>The timestamp when the investigation began.</summary>
         public float investigationStartTime;
 
-        /// <summary>Elapsed investigation time in seconds since case load.</summary>
-        public float ElapsedTime => Time.time - investigationStartTime;
+        private float _accumulatedElapsedTime = 0f;
+        private float _lastResumeTimestamp = 0f;
+
+        /// <summary>Whether the active case has a countdown time limit configured.</summary>
+        public bool HasActiveTimeLimit => activeCase != null && activeCase.hasTimeLimit && activeCase.timeLimitSeconds > 0f;
+
+        /// <summary>Configured time limit in seconds for the current case.</summary>
+        public float CaseTimeLimit => activeCase != null ? activeCase.timeLimitSeconds : 0f;
+
+        /// <summary>Whether the investigation timer is actively running.</summary>
+        public bool IsTimerRunning { get; private set; }
+
+        /// <summary>Whether the case countdown time has expired (Game Over).</summary>
+        public bool HasTimeExpired { get; private set; }
+
+        /// <summary>Total elapsed active investigation time in seconds.</summary>
+        public float ElapsedTime => _accumulatedElapsedTime + (IsTimerRunning ? (Time.time - _lastResumeTimestamp) : 0f);
+
+        /// <summary>Remaining investigation time in seconds before game over.</summary>
+        public float RemainingTime => timerService.CalculateRemainingTime(CaseTimeLimit, ElapsedTime);
 
         /// <summary>Event raised when a new case file is loaded into runtime.</summary>
         public event Action<CaseSO> OnCaseLoaded;
@@ -60,6 +86,12 @@ namespace CaseClosed.Managers
         /// <summary>Event raised when a contradiction is successfully exposed.</summary>
         public event Action<ContradictionRuleSO> OnContradictionExposed;
 
+        /// <summary>Event raised on every timer tick with remainingSeconds and elapsedSeconds.</summary>
+        public event Action<float, float> OnTimerTick;
+
+        /// <summary>Event raised when the case investigation time expires (Game Over).</summary>
+        public event Action OnTimeExpired;
+
         /// <summary>
         /// Initializes the singleton instance.
         /// </summary>
@@ -69,12 +101,28 @@ namespace CaseClosed.Managers
             {
                 Instance = this;
             }
-            else
+            else if (Instance != this)
             {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    DestroyImmediate(gameObject);
+                else
+                    Destroy(gameObject);
+#else
                 Destroy(gameObject);
+#endif
             }
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
+        /// <summary>
         /// <summary>
         /// Automatically loads activeCase on Start if assigned in the Inspector.
         /// </summary>
@@ -83,6 +131,24 @@ namespace CaseClosed.Managers
             if (activeCase != null && discoveredEvidenceIds.Count == 0)
             {
                 LoadCase(activeCase);
+            }
+        }
+
+        /// <summary>
+        /// Frame update driving countdown ticks and checking for timer expiry.
+        /// </summary>
+        private void Update()
+        {
+            if (IsTimerRunning && HasActiveTimeLimit && !HasTimeExpired)
+            {
+                float remaining = RemainingTime;
+                float elapsed = ElapsedTime;
+                OnTimerTick?.Invoke(remaining, elapsed);
+
+                if (remaining <= 0f || timerService.IsTimeExpired(activeCase.timeLimitSeconds, elapsed))
+                {
+                    TriggerTimeExpired();
+                }
             }
         }
 
@@ -98,14 +164,18 @@ namespace CaseClosed.Managers
             unlockedClueIds.Clear();
             unlockedCluesText.Clear();
             exposedContradictionIds.Clear();
+            _accumulatedElapsedTime = 0f;
+            _lastResumeTimestamp = Time.time;
             investigationStartTime = Time.time;
+            HasTimeExpired = false;
+            IsTimerRunning = HasActiveTimeLimit;
 
             if (activeCase != null && selectedInvestigator != null)
             {
                 activeCase.leadInvestigator = selectedInvestigator;
             }
 
-            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (Level: {newCase?.levelNumber}, ID: {newCase?.caseId}, Investigator: '{selectedInvestigator?.fullName ?? "Unassigned"}')");
+            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (Level: {newCase?.levelNumber}, ID: {newCase?.caseId}, TimeLimit: {(HasActiveTimeLimit ? $"{CaseTimeLimit}s" : "Untimed")}, Investigator: '{selectedInvestigator?.fullName ?? "Unassigned"}')");
 
             if (activeCase != null && activeCase.evidenceItems != null)
             {
@@ -123,6 +193,62 @@ namespace CaseClosed.Managers
             }
 
             OnCaseLoaded?.Invoke(activeCase);
+            OnTimerTick?.Invoke(RemainingTime, 0f);
+        }
+
+        /// <summary>
+        /// Pauses the investigation countdown timer (e.g. during Main Menu or Results screen).
+        /// </summary>
+        public void PauseTimer()
+        {
+            if (IsTimerRunning)
+            {
+                _accumulatedElapsedTime += Time.time - _lastResumeTimestamp;
+                IsTimerRunning = false;
+                Debug.Log($"[CaseManager] Timer paused. Total active elapsed time: {_accumulatedElapsedTime:F1}s");
+            }
+        }
+
+        /// <summary>
+        /// Resumes the countdown timer if the case is active and has not expired.
+        /// </summary>
+        public void ResumeTimer()
+        {
+            if (!IsTimerRunning && !HasTimeExpired && HasActiveTimeLimit)
+            {
+                _lastResumeTimestamp = Time.time;
+                IsTimerRunning = true;
+                Debug.Log($"[CaseManager] Timer resumed. Remaining time: {RemainingTime:F1}s");
+            }
+        }
+
+        /// <summary>
+        /// Triggers investigation failure due to time expiration (Game Over).
+        /// </summary>
+        public void TriggerTimeExpired()
+        {
+            if (HasTimeExpired) return;
+
+            HasTimeExpired = true;
+            IsTimerRunning = false;
+            _accumulatedElapsedTime = CaseTimeLimit;
+
+            Debug.Log($"[CaseManager] Investigation time expired for case '{(activeCase != null ? activeCase.caseTitle : "Unknown")}'. Game Over!");
+            AudioManager.Instance?.PlayCaseFailed();
+            OnTimeExpired?.Invoke();
+            UIManager.Instance?.ShowPanel(UIPanelType.GameOver);
+        }
+
+        /// <summary>
+        /// Restarts the current case investigation from the beginning with a fresh countdown.
+        /// </summary>
+        public void RetryCurrentCase()
+        {
+            if (activeCase != null)
+            {
+                Debug.Log($"[CaseManager] Retrying case '{activeCase.caseTitle}'...");
+                LoadCase(activeCase);
+            }
         }
 
         /// <summary>

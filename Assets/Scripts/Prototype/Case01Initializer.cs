@@ -63,6 +63,8 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "A valuable family necklace disappeared from the manor safe during a stormy evening gathering.";
             c.objective = "Interrogate Vince Angelo Batecan, inspect table evidence, disprove his kitchen alibi, and uncover the truth.";
             c.victimInfo = "Kirby Raymundo (Aristocrat - Proud & Demanding Owner)";
+            c.hasTimeLimit = true;
+            c.timeLimitSeconds = 60f;
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;

@@ -49,6 +49,8 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "Tech startup founder Kurt Miguel Ancheta's secret prototype drive went missing from his bag after a late meeting.";
             c.objective = "Interrogate Shanaia Ortega, examine digital logs and CCTV stills, expose her false departure claim, and recover the stolen prototype.";
             c.victimInfo = "Kurt Miguel Ancheta (Startup Founder - Distressed Victim)";
+            c.hasTimeLimit = true;
+            c.timeLimitSeconds = 300f;
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;

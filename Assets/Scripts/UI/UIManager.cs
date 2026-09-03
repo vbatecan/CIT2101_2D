@@ -24,8 +24,10 @@ namespace CaseClosed.UI
         public GameObject conclusionQuizPanel;
         public GameObject resultsScreenPanel;
         public GameObject investigatorSelectPanel;
+        public GameObject gameOverPanel;
 
-        [Header("Header Navigation Buttons")]
+        [Header("Header Navigation Elements")]
+        public GameObject timerContainer;
         public GameObject notebookButton;
         public GameObject deductionBoardButton;
         public GameObject concludeCaseButton;
@@ -61,6 +63,11 @@ namespace CaseClosed.UI
 
         private void OnDestroy()
         {
+            if (CaseManager.Instance != null)
+            {
+                CaseManager.Instance.OnTimeExpired -= HandleTimeExpired;
+            }
+
             if (Instance == this)
             {
                 Instance = null;
@@ -108,7 +115,7 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Registers event handlers for evidence inspect modal open and close notifications.
+        /// Registers event handlers for modal transitions and case expiration notifications.
         /// </summary>
         private void RegisterEvents()
         {
@@ -117,6 +124,17 @@ namespace CaseClosed.UI
                 EvidenceManager.Instance.OnInspectModalOpened += (ev) => ShowPanel(UIPanelType.InspectModal);
                 EvidenceManager.Instance.OnInspectModalClosed += () => ShowPanel(UIPanelType.InvestigationTable);
             }
+
+            if (CaseManager.Instance != null)
+            {
+                CaseManager.Instance.OnTimeExpired += HandleTimeExpired;
+            }
+        }
+
+        private void HandleTimeExpired()
+        {
+            Debug.Log("[UI:Manager] Received OnTimeExpired event from CaseManager. Showing GameOver overlay.");
+            ShowPanel(UIPanelType.GameOver);
         }
 
         /// <summary>
@@ -130,6 +148,14 @@ namespace CaseClosed.UI
 
             bool isMainMenu = (panelType == UIPanelType.MainMenu);
             bool isInspect = (panelType == UIPanelType.InspectModal);
+            bool isGameOver = (panelType == UIPanelType.GameOver);
+            bool isResults = (panelType == UIPanelType.ResultsScreen);
+
+            if (gameOverPanel == null)
+            {
+                var foundGO = Object.FindFirstObjectByType<GameOverUI>(FindObjectsInactive.Include);
+                if (foundGO != null) gameOverPanel = foundGO.gameObject;
+            }
 
             if (mainMenuPanel != null) mainMenuPanel.SetActive(isMainMenu);
             if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && panelType == UIPanelType.InvestigationTable);
@@ -137,16 +163,35 @@ namespace CaseClosed.UI
             if (notebookPanel != null) notebookPanel.SetActive(panelType == UIPanelType.CaseFileNotebook);
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
-            if (resultsScreenPanel != null) resultsScreenPanel.SetActive(panelType == UIPanelType.ResultsScreen);
+            if (resultsScreenPanel != null) resultsScreenPanel.SetActive(isResults);
             if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(panelType == UIPanelType.InvestigatorSelect);
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(isGameOver);
+                if (isGameOver)
+                {
+                    gameOverPanel.transform.SetAsLastSibling();
+                }
+            }
 
-            // Toggle in-game header navigation visibility (hidden during MainMenu and during isolated Evidence Inspection)
-            bool showHeaderNav = !isMainMenu && !isInspect;
+            // Toggle in-game header navigation visibility (hidden during MainMenu, Evidence Inspection, Results, and GameOver)
+            bool showHeaderNav = !isMainMenu && !isInspect && !isGameOver && !isResults;
+            if (timerContainer != null) timerContainer.SetActive(showHeaderNav);
             if (notebookButton != null) notebookButton.SetActive(showHeaderNav);
             if (deductionBoardButton != null) deductionBoardButton.SetActive(showHeaderNav);
             if (concludeCaseButton != null) concludeCaseButton.SetActive(showHeaderNav);
             if (investigatorSelectButton != null) investigatorSelectButton.SetActive(showHeaderNav);
             if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
+
+            // Control countdown timer state across panels
+            if (isMainMenu || isResults || isGameOver)
+            {
+                CaseManager.Instance?.PauseTimer();
+            }
+            else
+            {
+                CaseManager.Instance?.ResumeTimer();
+            }
 
             ArmPointerController.Instance?.ForceSyncState();
             AudioManager.Instance?.PlayPaperFlip();

@@ -26,6 +26,7 @@ MonoBehaviour:
     targetContradictionRuleId: RULE_VINCE_ALIBI_LIE
     choices: []
     defaultNextNodeId: 
+    unlockEvidenceOnComplete: []
   - nodeId: NODE_02_CONFESSION
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
@@ -36,3 +37,4 @@ MonoBehaviour:
     targetContradictionRuleId: 
     choices: []
     defaultNextNodeId: 
+    unlockEvidenceOnComplete: []

@@ -56,5 +56,12 @@ namespace CaseClosed.Data
         public int totalKeyEvidenceCount = 5;
         public int totalContradictionsCount = 3;
         public float parCompletionTimeSeconds = 300f; // 5 mins
+
+        [Header("Time Limit Configuration")]
+        [Tooltip("Whether this case has an active countdown time limit.")]
+        public bool hasTimeLimit = true;
+
+        [Tooltip("Configurable countdown time limit in seconds for solving the case before investigation fails (Game Over).")]
+        public float timeLimitSeconds = 300f; // 5 mins default
     }
 }

@@ -23,6 +23,8 @@ MonoBehaviour:
     the study door.
   unlockedClueText: Vince silhouette spotted near study doorway at 8:45 PM.
   startsDiscovered: 1
+  requiredDialogueNodeId: 
+  dialogueNodeToTriggerOnInspect: 
   isExamined: 0
   isToggledOnTable: 1
   hotspots:

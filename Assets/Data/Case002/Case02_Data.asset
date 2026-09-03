@@ -64,3 +64,5 @@ MonoBehaviour:
   totalKeyEvidenceCount: 5
   totalContradictionsCount: 3
   parCompletionTimeSeconds: 300
+  hasTimeLimit: 1
+  timeLimitSeconds: 300
