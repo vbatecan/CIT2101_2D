@@ -63,8 +63,6 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "Gallery owner Paul Gabriel Camacho claims an intruder broke through the exterior alley window and stole a priceless painting.";
             c.objective = "Interrogate Charl Vonn Pascual and Paul Gabriel Camacho, inspect the physical glass evidence, catch the false testimony, and expose the insurance fraud.";
             c.victimInfo = "Paul Gabriel Camacho (Gallery Owner - Secretive & Dramatic)";
-            c.totalKeyEvidenceCount = 3;
-            c.totalContradictionsCount = 1;
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;

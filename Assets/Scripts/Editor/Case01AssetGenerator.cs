@@ -191,6 +191,8 @@ namespace CaseClosed.Editor
             case01.dialogueTrees.Add(tree);
             case01.contradictionRules.Add(rule1);
             case01.clueConnections.Add(conn1);
+            case01.hasTimeLimit = true;
+            case01.timeLimitSeconds = 300f;
 
             ConclusionQuestion q1 = new ConclusionQuestion
             {

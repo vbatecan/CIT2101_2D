@@ -27,6 +27,9 @@ namespace CaseClosed.Enums
         ResultsScreen,
 
         /// <summary>Character selection modal for choosing the player's active investigator.</summary>
-        InvestigatorSelect
+        InvestigatorSelect,
+
+        /// <summary>Game over screen when investigation time limit runs out.</summary>
+        GameOver
     }
 }

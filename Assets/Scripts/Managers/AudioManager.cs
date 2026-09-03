@@ -65,6 +65,9 @@ namespace CaseClosed.Managers
         [Tooltip("Case failed / incorrect accusation sound.")]
         public AudioClip caseFailedSFX;
 
+        [Tooltip("Clock ticking sound effect when investigation timer is low.")]
+        public AudioClip clockTickSFX;
+
         [Header("Audio Settings")]
         [Range(0f, 1f)] public float bgmVolume = 0.8f;
         [Range(0f, 1f)] public float sfxVolume = 1f;
@@ -339,6 +342,23 @@ namespace CaseClosed.Managers
 
         /// <summary>Plays case failed sound effect.</summary>
         public void PlayCaseFailed() => PlaySFX(caseFailedSFX);
+
+        /// <summary>Plays clock ticking sound effect when investigation time is running out.</summary>
+        public void PlayClockTick()
+        {
+            if (clockTickSFX != null)
+            {
+                PlaySFX(clockTickSFX);
+            }
+            else if (buttonClickSFX != null && sfxSource != null)
+            {
+                sfxSource.PlayOneShot(buttonClickSFX, sfxVolume * 0.45f);
+            }
+            else if (typewriterKeySFX != null && typewriterSource != null)
+            {
+                typewriterSource.PlayOneShot(typewriterKeySFX, sfxVolume * 0.45f);
+            }
+        }
 
         /// <summary>
         /// Self-healing fallback to auto-assign clips from Assets/Audio if any are missing.
