@@ -303,17 +303,28 @@ namespace CaseClosed.UI
         /// </summary>
         public void RestoreSceneObjects()
         {
-            if (hiddenSceneObjects.Count == 0) return;
-
-            Debug.Log($"[UI:InspectModal] Restoring {hiddenSceneObjects.Count} hidden scene objects.");
-            foreach (var go in hiddenSceneObjects)
+            if (hiddenSceneObjects.Count > 0)
             {
-                if (go != null)
+                Debug.Log($"[UI:InspectModal] Restoring {hiddenSceneObjects.Count} hidden scene objects.");
+                foreach (var go in hiddenSceneObjects)
                 {
-                    go.SetActive(true);
+                    if (go != null)
+                    {
+                        go.SetActive(true);
+                    }
                 }
+                hiddenSceneObjects.Clear();
             }
-            hiddenSceneObjects.Clear();
+
+            // Explicit fail-safe: Ensure detective arm pointer is active and tap state is reset
+            if (ArmPointerController.Instance != null)
+            {
+                if (!ArmPointerController.Instance.gameObject.activeSelf)
+                {
+                    ArmPointerController.Instance.gameObject.SetActive(true);
+                }
+                ArmPointerController.Instance.ResetTapState();
+            }
         }
 
         /// <summary>
@@ -606,9 +617,10 @@ namespace CaseClosed.UI
         {
             Debug.Log("[UI:InspectModal] Closing isolated evidence inspection mode");
             isInspecting = false;
-            EvidenceManager.Instance?.CloseInspectModal();
             RestoreSceneObjects();
             ResetView();
+            EvidenceManager.Instance?.CloseInspectModal();
+            ArmPointerController.Instance?.ResetTapState();
             ArmPointerController.Instance?.ForceSyncState();
         }
 
@@ -620,6 +632,7 @@ namespace CaseClosed.UI
             isInspecting = false;
             RestoreSceneObjects();
             ResetView();
+            ArmPointerController.Instance?.ResetTapState();
             ArmPointerController.Instance?.ForceSyncState();
         }
     }

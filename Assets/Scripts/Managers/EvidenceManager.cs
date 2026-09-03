@@ -44,9 +44,24 @@ namespace CaseClosed.Managers
             {
                 Instance = this;
             }
-            else
+            else if (Instance != this)
             {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    DestroyImmediate(gameObject);
+                else
+                    Destroy(gameObject);
+#else
                 Destroy(gameObject);
+#endif
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
             }
         }
 
