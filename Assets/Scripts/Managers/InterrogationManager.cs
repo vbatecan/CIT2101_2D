@@ -129,6 +129,8 @@ namespace CaseClosed.Managers
         {
             if (currentNode == null || isChallengeModeActive) return;
 
+            CompleteCurrentNode();
+
             if (currentNode.choices != null && currentNode.choices.Count > 0)
             {
                 // Branching choices UI handles navigation
@@ -144,6 +146,22 @@ namespace CaseClosed.Managers
             {
                 Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{currentNode.nodeId}'. Closing dialogue.");
                 CloseDialogue();
+            }
+        }
+
+        /// <summary>
+        /// Applies story rewards when the player finishes reading the current dialogue node.
+        /// </summary>
+        private void CompleteCurrentNode()
+        {
+            if (currentNode == null || CaseManager.Instance == null) return;
+
+            if (currentNode.unlockEvidenceOnComplete != null)
+            {
+                foreach (string evidenceId in currentNode.unlockEvidenceOnComplete)
+                {
+                    CaseManager.Instance.UnlockEvidence(evidenceId);
+                }
             }
         }
 

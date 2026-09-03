@@ -13,6 +13,8 @@ namespace CaseClosed.UI
     /// </summary>
     public class DialogueUI : MonoBehaviour
     {
+        public static DialogueUI Instance { get; private set; }
+
         [Header("UI Elements")]
         public Text speakerNameText;
         public Text dialogueBodyText;
@@ -25,6 +27,11 @@ namespace CaseClosed.UI
         public GameObject evidencePickerContainer;
         public Transform evidencePickerGrid;
         public GameObject evidencePickerItemPrefab;
+
+        [Header("World Bubble Alignment")]
+        [Tooltip("Optional RectTransform used as the dialogue bubble. If empty, this component's RectTransform is moved.")]
+        public RectTransform bubbleRect;
+        public Vector2 bubbleScreenOffset = new Vector2(0f, 90f);
 
         [Header("Typewriter Settings")]
         public float charactersPerSecond = 35f;
@@ -41,6 +48,9 @@ namespace CaseClosed.UI
         /// </summary>
         private void Awake()
         {
+            if (Instance == null) Instance = this;
+            else if (Instance != this) Destroy(gameObject);
+
             if (speakerNameText != null) speakerNameText.text = "";
             if (dialogueBodyText != null) dialogueBodyText.text = "";
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
@@ -74,6 +84,8 @@ namespace CaseClosed.UI
 
         private void OnDestroy()
         {
+            if (Instance == this) Instance = null;
+
             if (InterrogationManager.Instance != null)
             {
                 InterrogationManager.Instance.OnDialogueNodeDisplayed -= DisplayNode;
@@ -104,6 +116,30 @@ namespace CaseClosed.UI
             if (challengeButton != null)
             {
                 challengeButton.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Places the optional bubble above a world-space evidence item.
+        /// </summary>
+        public void AlignToWorldTarget(Transform target)
+        {
+            if (target == null) return;
+
+            RectTransform targetRect = bubbleRect != null ? bubbleRect : transform as RectTransform;
+            Canvas canvas = targetRect != null ? targetRect.GetComponentInParent<Canvas>() : null;
+            Camera worldCamera = Camera.main;
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(worldCamera, target.position) + bubbleScreenOffset;
+
+            if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay && canvas.worldCamera != null)
+            {
+                worldCamera = canvas.worldCamera;
+            }
+
+            if (canvas != null && targetRect != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                canvas.transform as RectTransform, screenPoint, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : worldCamera, out Vector2 localPoint))
+            {
+                targetRect.localPosition = localPoint;
             }
         }
 

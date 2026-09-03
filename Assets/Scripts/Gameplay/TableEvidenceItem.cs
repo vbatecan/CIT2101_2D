@@ -439,10 +439,14 @@ namespace CaseClosed.Gameplay
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
             EvidenceManager.Instance?.OpenInspectModal(evidenceData);
 
-            if (!string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect))
+            string nodeToTrigger = !string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect)
+                ? dialogueNodeToTriggerOnInspect
+                : evidenceData.dialogueNodeToTriggerOnInspect;
+            if (!string.IsNullOrEmpty(nodeToTrigger))
             {
-                Debug.Log($"[Gameplay:TableEvidence] Triggering suspect explanation dialogue node '{dialogueNodeToTriggerOnInspect}' for '{evidenceData.evidenceName}'");
-                InterrogationManager.Instance?.JumpToNode(dialogueNodeToTriggerOnInspect);
+                Debug.Log($"[Gameplay:TableEvidence] Triggering suspect explanation dialogue node '{nodeToTrigger}' for '{evidenceData.evidenceName}'");
+                DialogueUI.Instance?.AlignToWorldTarget(transform);
+                InterrogationManager.Instance?.JumpToNode(nodeToTrigger);
             }
         }
     }

@@ -127,7 +127,9 @@ namespace CaseClosed.Prototype
             evTeacup.zoomedSprite = teacupZoomedSprite;
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
-            evTeacup.startsDiscovered = true;
+            evTeacup.startsDiscovered = false;
+            evTeacup.requiredDialogueNodeId = "NODE_02_ROOM_LEAD";
+            evTeacup.dialogueNodeToTriggerOnInspect = "NODE_03_TEACUP_LEAD";
             c.evidenceItems.Add(evTeacup);
 
             // 3. Kitchen Receipt / Log
@@ -139,7 +141,8 @@ namespace CaseClosed.Prototype
             evKitchenLog.zoomedSprite = kitchenLogZoomedSprite;
             evKitchenLog.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchenLog.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
-            evKitchenLog.startsDiscovered = true;
+            evKitchenLog.startsDiscovered = false;
+            evKitchenLog.requiredDialogueNodeId = "NODE_03_TEACUP_LEAD";
             c.evidenceItems.Add(evKitchenLog);
 
             // Dialogue Tree
@@ -148,26 +151,70 @@ namespace CaseClosed.Prototype
             tree.characterId = vince.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Contradictory Alibi)
+            // Node 1 (Opening Alibi)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = vince.characterId;
             node1.speakerName = vince.fullName;
             node1.expression = CharacterExpression.Defensive;
-            node1.statementText = "I never went near the study! I stayed in the kitchen from 8:30 PM until everyone started shouting!";
-            node1.isChallengeable = true;
-            node1.targetContradictionRuleId = "RULE_VINCE_ALIBI_LIE";
+            node1.statementText = "I never went near the study. I stayed in the kitchen from 8:30 PM until everyone started shouting!";
+            node1.defaultNextNodeId = "NODE_01B_INTERVIEW";
             tree.nodes.Add(node1);
 
-            // Node 2 (Nervous Confession)
+            DialogueNode node1b = new DialogueNode();
+            node1b.nodeId = "NODE_01B_INTERVIEW";
+            node1b.speakerName = "Detective";
+            node1b.statementText = "Your timeline puts you in the kitchen for forty-five minutes. Who can confirm that, and why are you so certain the study is irrelevant?";
+            node1b.defaultNextNodeId = "NODE_02_ROOM_LEAD";
+            tree.nodes.Add(node1b);
+
+            // Node 2 (First Evidence Lead)
             DialogueNode node2 = new DialogueNode();
-            node2.nodeId = "NODE_02_CONFESSION";
+            node2.nodeId = "NODE_02_ROOM_LEAD";
             node2.speakerId = vince.characterId;
             node2.speakerName = vince.fullName;
-            node2.expression = CharacterExpression.Nervous;
-            node2.statementText = "W-what?! The kitchen pantry log? Fine! The kitchen was locked... I needed money to clear my debts, so I took the necklace!";
-            node2.isChallengeable = false;
+            node2.expression = CharacterExpression.Defensive;
+            node2.statementText = "The study was locked, Detective. There is nothing there that connects me to the necklace.";
+            node2.unlockEvidenceOnComplete.Add("EVD_BROKEN_TEACUP");
             tree.nodes.Add(node2);
+
+            // Node 3 (Teacup Lead)
+            DialogueNode node3 = new DialogueNode();
+            node3.nodeId = "NODE_03_TEACUP_LEAD";
+            node3.speakerId = vince.characterId;
+            node3.speakerName = vince.fullName;
+            node3.expression = CharacterExpression.Nervous;
+            node3.statementText = "That broken cup? I heard it fall, but I was nowhere near the safe. The pantry log will prove I was in the kitchen.";
+            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
+            node3.unlockEvidenceOnComplete.Add("EVD_KITCHEN_LOG");
+            tree.nodes.Add(node3);
+
+            DialogueNode node3b = new DialogueNode();
+            node3b.nodeId = "NODE_03B_CONFIRMATION";
+            node3b.speakerName = "Detective";
+            node3b.statementText = "The photograph places you near the study, and this log tests the rest of your timeline. I want one clear answer before we continue.";
+            node3b.defaultNextNodeId = "NODE_04_FINAL_ALIBI";
+            tree.nodes.Add(node3b);
+
+            // Node 4 (Contradictory Alibi)
+            DialogueNode node4 = new DialogueNode();
+            node4.nodeId = "NODE_04_FINAL_ALIBI";
+            node4.speakerId = vince.characterId;
+            node4.speakerName = vince.fullName;
+            node4.expression = CharacterExpression.Defensive;
+            node4.statementText = "I stayed in that kitchen the entire time. You cannot prove otherwise.";
+            node4.isChallengeable = true;
+            node4.targetContradictionRuleId = "RULE_VINCE_ALIBI_LIE";
+            tree.nodes.Add(node4);
+
+            // Node 5 (Confession)
+            DialogueNode node5 = new DialogueNode();
+            node5.nodeId = "NODE_05_CONFESSION";
+            node5.speakerId = vince.characterId;
+            node5.speakerName = vince.fullName;
+            node5.expression = CharacterExpression.Nervous;
+            node5.statementText = "W-what?! The kitchen pantry log? Fine! I needed money to clear my debts, so I took the necklace!";
+            tree.nodes.Add(node5);
 
             c.dialogueTrees.Add(tree);
 
@@ -175,11 +222,11 @@ namespace CaseClosed.Prototype
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_VINCE_ALIBI_LIE";
             rule1.ruleTitle = "Locked Kitchen Contradiction";
-            rule1.targetStatementNodeId = "NODE_01";
+            rule1.targetStatementNodeId = "NODE_04_FINAL_ALIBI";
             rule1.requiredEvidenceId = "EVD_KITCHEN_LOG";
             rule1.reactionExpression = CharacterExpression.Nervous;
             rule1.reactionDialogue = "Vince shifts nervously and stammers: \"Wait... the kitchen log shows it was locked by staff? I... I...\"";
-            rule1.unlockedDialogueNodeId = "NODE_02_CONFESSION";
+            rule1.unlockedDialogueNodeId = "NODE_05_CONFESSION";
             rule1.unlockedClueId = "CLUE_VINCE_STAGED_BREAKIN";
             rule1.unlockedClueText = "Vince Angelo Batecan confessed to staging the break-in for debt money!";
             c.contradictionRules.Add(rule1);

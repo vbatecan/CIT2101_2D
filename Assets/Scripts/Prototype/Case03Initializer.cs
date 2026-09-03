@@ -107,7 +107,9 @@ namespace CaseClosed.Prototype
             evCctv.baseDescription = "Security footage capture from the back exit camera.";
             evCctv.detailedObservation = "Clearly shows Shanaia's distinct jacket entering the back exit door at 7:10 PM.";
             evCctv.unlockedClueText = "Shanaia's jacket captured entering cafe back exit at 7:10 PM.";
-            evCctv.startsDiscovered = true;
+            evCctv.startsDiscovered = false;
+            evCctv.requiredDialogueNodeId = "NODE_02_PHONE_LEAD";
+            evCctv.dialogueNodeToTriggerOnInspect = "NODE_03_CCTV_LEAD";
 
             EvidenceHotspot spotJacket = new EvidenceHotspot();
             spotJacket.hotspotId = "SPOT_DISTINCT_JACKET";
@@ -125,7 +127,8 @@ namespace CaseClosed.Prototype
             evDraft.category = EvidenceCategory.Document;
             evDraft.baseDescription = "Drafted letter found inside Kurt's briefcase.";
             evDraft.unlockedClueText = "Kurt planned to fire Shanaia for secretly selling company data to rival firms.";
-            evDraft.startsDiscovered = true;
+            evDraft.startsDiscovered = false;
+            evDraft.requiredDialogueNodeId = "NODE_03_CCTV_LEAD";
             c.evidenceItems.Add(evDraft);
 
             // Dialogue Tree for Shanaia Ortega
@@ -134,26 +137,70 @@ namespace CaseClosed.Prototype
             tree.characterId = shanaia.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Contradictory Statement)
+            // Node 1 (Opening Statement)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = shanaia.characterId;
             node1.speakerName = shanaia.fullName;
             node1.expression = CharacterExpression.Calm;
             node1.statementText = "Once our 5:30 PM meeting wrapped up, I went straight home. I didn't contact Kurt or return to the cafe for the rest of the night.";
-            node1.isChallengeable = true;
-            node1.targetContradictionRuleId = "RULE_SHANAIA_TIMELINE_LIE";
+            node1.defaultNextNodeId = "NODE_01B_INTERVIEW";
             tree.nodes.Add(node1);
 
-            // Node 2 (Angry / Shocked Confession)
+            DialogueNode node1b = new DialogueNode();
+            node1b.nodeId = "NODE_01B_INTERVIEW";
+            node1b.speakerName = "Detective";
+            node1b.statementText = "You left immediately after the meeting. Tell me what you did next, and why Kurt's phone should not be part of that timeline.";
+            node1b.defaultNextNodeId = "NODE_02_PHONE_LEAD";
+            tree.nodes.Add(node1b);
+
+            // Node 2 (Phone Lead)
             DialogueNode node2 = new DialogueNode();
-            node2.nodeId = "NODE_02_CONFESSION";
+            node2.nodeId = "NODE_02_PHONE_LEAD";
             node2.speakerId = shanaia.characterId;
             node2.speakerName = shanaia.fullName;
-            node2.expression = CharacterExpression.Angry;
-            node2.statementText = "What?! You found the CCTV camera footage? Kurt was going to fire me and take my code! I snuck back in at 7:10 PM to take what belongs to me!";
-            node2.isChallengeable = false;
+            node2.expression = CharacterExpression.Calm;
+            node2.statementText = "Kurt's phone contains nothing useful. You should focus on the meeting, not his private calls.";
+            node2.unlockEvidenceOnComplete.Add("EVD_CCTV_STILL");
             tree.nodes.Add(node2);
+
+            // Node 3 (CCTV Lead)
+            DialogueNode node3 = new DialogueNode();
+            node3.nodeId = "NODE_03_CCTV_LEAD";
+            node3.speakerId = shanaia.characterId;
+            node3.speakerName = shanaia.fullName;
+            node3.expression = CharacterExpression.Nervous;
+            node3.statementText = "The back exit camera is unreliable. It could not possibly show me there after I left.";
+            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
+            node3.unlockEvidenceOnComplete.Add("EVD_RESIGNATION_LETTER");
+            tree.nodes.Add(node3);
+
+            DialogueNode node3b = new DialogueNode();
+            node3b.nodeId = "NODE_03B_CONFIRMATION";
+            node3b.speakerName = "Detective";
+            node3b.statementText = "The call log puts a contact at 7:15 PM, and the camera tests your return at 7:10 PM. I am giving you one chance to correct the timeline.";
+            node3b.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
+            tree.nodes.Add(node3b);
+
+            // Node 4 (Final Statement)
+            DialogueNode node4 = new DialogueNode();
+            node4.nodeId = "NODE_04_FINAL_STATEMENT";
+            node4.speakerId = shanaia.characterId;
+            node4.speakerName = shanaia.fullName;
+            node4.expression = CharacterExpression.Calm;
+            node4.statementText = "Once I left at 5:30 PM, I never returned to that cafe. That is the timeline.";
+            node4.isChallengeable = true;
+            node4.targetContradictionRuleId = "RULE_SHANAIA_TIMELINE_LIE";
+            tree.nodes.Add(node4);
+
+            // Node 5 (Angry / Shocked Confession)
+            DialogueNode node5 = new DialogueNode();
+            node5.nodeId = "NODE_05_CONFESSION";
+            node5.speakerId = shanaia.characterId;
+            node5.speakerName = shanaia.fullName;
+            node5.expression = CharacterExpression.Angry;
+            node5.statementText = "What?! You found the CCTV footage? Kurt was going to fire me and take my code! I snuck back in at 7:10 PM to take what belongs to me!";
+            tree.nodes.Add(node5);
 
             c.dialogueTrees.Add(tree);
 
@@ -161,11 +208,11 @@ namespace CaseClosed.Prototype
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_SHANAIA_TIMELINE_LIE";
             rule1.ruleTitle = "False Departure Claim";
-            rule1.targetStatementNodeId = "NODE_01";
+            rule1.targetStatementNodeId = "NODE_04_FINAL_STATEMENT";
             rule1.requiredEvidenceId = "EVD_CCTV_STILL";
             rule1.reactionExpression = CharacterExpression.Shocked;
             rule1.reactionDialogue = "Shanaia's calm veneer snaps into fury: \"CCTV at the back exit? How did you get access to Shan Jaraba's private feeds?\"";
-            rule1.unlockedDialogueNodeId = "NODE_02_CONFESSION";
+            rule1.unlockedDialogueNodeId = "NODE_05_CONFESSION";
             rule1.unlockedClueId = "CLUE_SHANAIA_CONFESSED";
             rule1.unlockedClueText = "Shanaia Ortega confessed to sneaking back at 7:10 PM and stealing the prototype drive!";
             c.contradictionRules.Add(rule1);

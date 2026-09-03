@@ -136,7 +136,9 @@ namespace CaseClosed.Prototype
             evShiftLog.baseDescription = "Electronic keycard log showing guard movements throughout the night.";
             evShiftLog.detailedObservation = "Digital badge log printout highlighting: 11:00 PM - Charl Pascual scanned at East Gate.";
             evShiftLog.unlockedClueText = "Log shows Charl was checking the East Perimeter gate at 11:00 PM, far away from the office!";
-            evShiftLog.startsDiscovered = true;
+            evShiftLog.startsDiscovered = false;
+            evShiftLog.requiredDialogueNodeId = "NODE_02_WINDOW_LEAD";
+            evShiftLog.dialogueNodeToTriggerOnInspect = "NODE_03_SHIFT_LEAD";
             c.evidenceItems.Add(evShiftLog);
 
             // 3. Insurance Policy Document
@@ -149,7 +151,8 @@ namespace CaseClosed.Prototype
             evInsurance.baseDescription = "Insurance policy agreement for the stolen painting.";
             evInsurance.detailedObservation = "Policy rider with amendment stamped 48 hours before the incident doubling coverage to $500,000.";
             evInsurance.unlockedClueText = "Paul doubled the insurance payout value of the painting just 48 hours prior to the theft.";
-            evInsurance.startsDiscovered = true;
+            evInsurance.startsDiscovered = false;
+            evInsurance.requiredDialogueNodeId = "NODE_03_SHIFT_LEAD";
             c.evidenceItems.Add(evInsurance);
 
             // Dialogue Tree for Charl Vonn Pascual
@@ -158,26 +161,70 @@ namespace CaseClosed.Prototype
             tree.characterId = charl.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Contradictory Guard Statement)
+            // Node 1 (Opening Guard Statement)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = charl.characterId;
             node1.speakerName = charl.fullName;
             node1.expression = CharacterExpression.Calm;
             node1.statementText = "I was standing right outside the office door when I heard the window shatter from the alley at 11:00 PM.";
-            node1.isChallengeable = true;
-            node1.targetContradictionRuleId = "RULE_CHARL_LOCATION_LIE";
+            node1.defaultNextNodeId = "NODE_01B_INTERVIEW";
             tree.nodes.Add(node1);
 
-            // Node 2 (Exposed Guard Confession)
+            DialogueNode node1b = new DialogueNode();
+            node1b.nodeId = "NODE_01B_INTERVIEW";
+            node1b.speakerName = "Detective";
+            node1b.statementText = "You heard the break at exactly 11:00 PM. Describe where you were standing, and what you saw on each side of the window.";
+            node1b.defaultNextNodeId = "NODE_02_WINDOW_LEAD";
+            tree.nodes.Add(node1b);
+
+            // Node 2 (Window Lead)
             DialogueNode node2 = new DialogueNode();
-            node2.nodeId = "NODE_02_CONFESSION";
+            node2.nodeId = "NODE_02_WINDOW_LEAD";
             node2.speakerId = charl.characterId;
             node2.speakerName = charl.fullName;
-            node2.expression = CharacterExpression.Nervous;
-            node2.statementText = "Fine! The shift log doesn't lie... I was at the East Gate. Mr. Paul Camacho paid me 2,000 credits to lie about being outside his door and stage the break-in!";
-            node2.isChallengeable = false;
+            node2.expression = CharacterExpression.Calm;
+            node2.statementText = "The alley window was broken from outside. Check the frame if you doubt me.";
+            node2.unlockEvidenceOnComplete.Add("EVD_SHIFT_LOG");
             tree.nodes.Add(node2);
+
+            // Node 3 (Shift Lead)
+            DialogueNode node3 = new DialogueNode();
+            node3.nodeId = "NODE_03_SHIFT_LEAD";
+            node3.speakerId = charl.characterId;
+            node3.speakerName = charl.fullName;
+            node3.expression = CharacterExpression.Nervous;
+            node3.statementText = "The shift log is routine. It will show I was near the office, exactly as I said.";
+            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
+            node3.unlockEvidenceOnComplete.Add("EVD_INSURANCE_POLICY");
+            tree.nodes.Add(node3);
+
+            DialogueNode node3b = new DialogueNode();
+            node3b.nodeId = "NODE_03B_CONFIRMATION";
+            node3b.speakerName = "Detective";
+            node3b.statementText = "The glass pattern raises one question. If the window was broken from inside, why does your story place you outside the office?";
+            node3b.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
+            tree.nodes.Add(node3b);
+
+            // Node 4 (Final Guard Statement)
+            DialogueNode node4 = new DialogueNode();
+            node4.nodeId = "NODE_04_FINAL_STATEMENT";
+            node4.speakerId = charl.characterId;
+            node4.speakerName = charl.fullName;
+            node4.expression = CharacterExpression.Calm;
+            node4.statementText = "I was outside that office at 11:00 PM. The keycard record cannot say otherwise.";
+            node4.isChallengeable = true;
+            node4.targetContradictionRuleId = "RULE_CHARL_LOCATION_LIE";
+            tree.nodes.Add(node4);
+
+            // Node 5 (Exposed Guard Confession)
+            DialogueNode node5 = new DialogueNode();
+            node5.nodeId = "NODE_05_CONFESSION";
+            node5.speakerId = charl.characterId;
+            node5.speakerName = charl.fullName;
+            node5.expression = CharacterExpression.Nervous;
+            node5.statementText = "Fine! The shift log doesn't lie. I was at the East Gate. Mr. Paul Camacho paid me 2,000 credits to stage the break-in!";
+            tree.nodes.Add(node5);
 
             c.dialogueTrees.Add(tree);
 
@@ -185,11 +232,11 @@ namespace CaseClosed.Prototype
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_CHARL_LOCATION_LIE";
             rule1.ruleTitle = "False Guard Guard Location";
-            rule1.targetStatementNodeId = "NODE_01";
+            rule1.targetStatementNodeId = "NODE_04_FINAL_STATEMENT";
             rule1.requiredEvidenceId = "EVD_SHIFT_LOG";
             rule1.reactionExpression = CharacterExpression.Nervous;
             rule1.reactionDialogue = "Charl loses his calm composure: \"The keycard shift log? Ah... I forgot the electronic scanners record timestamps...\"";
-            rule1.unlockedDialogueNodeId = "NODE_02_CONFESSION";
+            rule1.unlockedDialogueNodeId = "NODE_05_CONFESSION";
             rule1.unlockedClueId = "CLUE_PAUL_STAGED_BURGLARY";
             rule1.unlockedClueText = "Paul Camacho paid Charl to lie and stage the inside window breakage for insurance fraud!";
             c.contradictionRules.Add(rule1);

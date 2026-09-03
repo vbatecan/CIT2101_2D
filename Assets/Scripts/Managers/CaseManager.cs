@@ -178,6 +178,24 @@ namespace CaseClosed.Managers
         }
 
         /// <summary>
+        /// Unlocks a case evidence item by ID after a story or dialogue requirement is completed.
+        /// </summary>
+        /// <param name="evidenceId">The evidence ID configured on the active case.</param>
+        public void UnlockEvidence(string evidenceId)
+        {
+            if (string.IsNullOrEmpty(evidenceId) || activeCase == null || activeCase.evidenceItems == null) return;
+
+            foreach (EvidenceSO evidence in activeCase.evidenceItems)
+            {
+                if (evidence != null && evidence.id == evidenceId)
+                {
+                    RegisterDiscoveredEvidence(evidence);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Unlocks a clue and registers its description in the notebook dictionary, notifying listeners.
         /// </summary>
         /// <param name="clueId">The unique clue identifier.</param>

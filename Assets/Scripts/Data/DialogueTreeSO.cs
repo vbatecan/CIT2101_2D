@@ -37,6 +37,9 @@ namespace CaseClosed.Data
         [Header("Branching Navigation")]
         public List<DialogueNodeChoice> choices = new List<DialogueNodeChoice>();
         public string defaultNextNodeId;
+
+        [Header("Story Rewards")]
+        public List<string> unlockEvidenceOnComplete = new List<string>();
     }
 
     /// <summary>
