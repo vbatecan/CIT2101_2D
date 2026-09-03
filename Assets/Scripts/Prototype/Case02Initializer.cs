@@ -63,6 +63,8 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "Gallery owner Paul Gabriel Camacho claims an intruder broke through the exterior alley window and stole a priceless painting.";
             c.objective = "Interrogate Charl Vonn Pascual and Paul Gabriel Camacho, inspect the physical glass evidence, catch the false testimony, and expose the insurance fraud.";
             c.victimInfo = "Paul Gabriel Camacho (Gallery Owner - Secretive & Dramatic)";
+            c.totalKeyEvidenceCount = 3;
+            c.totalContradictionsCount = 1;
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
@@ -255,24 +257,38 @@ namespace CaseClosed.Prototype
             // Conclusion Questions
             ConclusionQuestion q1 = new ConclusionQuestion();
             q1.questionId = "Q_SUSPECT";
-            q1.questionText = "Who orchestrated the fake burglary?";
-            q1.options = new List<string> { "Paul Gabriel Camacho (Gallery Owner)", "Charl Vonn Pascual (Security Guard)", "External Intruder" };
+            q1.questionText = "Who organized the staged burglary at the art gallery?";
+            q1.options = new List<string> { "Paul Gabriel Camacho", "Charl Vonn Pascual", "An Unknown Thief" };
             q1.correctOptionIndex = 0;
             c.conclusionQuestions.Add(q1);
 
             ConclusionQuestion q2 = new ConclusionQuestion();
-            q2.questionId = "Q_MOTIVE";
-            q2.questionText = "What was the motive for staging the crime?";
-            q2.options = new List<string> { "Insurance Fraud Payout", "Personal Grudge", "Covering Defective Art" };
-            q2.correctOptionIndex = 0;
+            q2.questionId = "Q_ACCOMPLICE";
+            q2.questionText = "Who was Paul's paid accomplice?";
+            q2.options = new List<string> { "Kirby Raymundo", "Charl Vonn Pascual", "Vince Angelo Batecan" };
+            q2.correctOptionIndex = 1;
             c.conclusionQuestions.Add(q2);
 
             ConclusionQuestion q3 = new ConclusionQuestion();
-            q3.questionId = "Q_EVIDENCE";
-            q3.questionText = "Which evidence proved the window was broken from inside?";
-            q3.options = new List<string> { "Window Frame Photo (Glass Outside)", "Shift Log", "Insurance Policy" };
+            q3.questionId = "Q_MOTIVE";
+            q3.questionText = "What was Paul's motive for staging the burglary?";
+            q3.options = new List<string> { "Revenge against Charl", "To obtain a $500,000 insurance payout", "To steal another painting" };
             q3.correctOptionIndex = 0;
             c.conclusionQuestions.Add(q3);
+
+            ConclusionQuestion q4 = new ConclusionQuestion();
+            q4.questionId = "Q_WINDOW";
+            q4.questionText = "What did the window crime scene reveal?";
+            q4.options = new List<string> { "The window was broken from the inside.", "The window was broken from the outside.", "The window was already damaged before the incident." };
+            q4.correctOptionIndex = 0;
+            c.conclusionQuestions.Add(q4);
+
+            ConclusionQuestion q5 = new ConclusionQuestion();
+            q5.questionId = "Q_INSURANCE";
+            q5.questionText = "What suspicious change was made to the painting's insurance policy?";
+            q5.options = new List<string> { "The insurance was cancelled.", "Coverage was reduced to $100,000.", "Coverage increased from $250,000 to $500,000." };
+            q5.correctOptionIndex = 2;
+            c.conclusionQuestions.Add(q5);
 
             return c;
         }

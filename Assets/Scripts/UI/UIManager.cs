@@ -140,7 +140,7 @@ namespace CaseClosed.UI
             Button button = concludeCaseButton.GetComponent<Button>();
             if (button != null)
             {
-                button.interactable = CaseManager.Instance != null && CaseManager.Instance.AreAllEvidenceExamined();
+                button.interactable = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
             }
 
             if (CaseManager.Instance != null)
@@ -275,9 +275,9 @@ namespace CaseClosed.UI
         /// </summary>
         public void OpenConclusionQuiz()
         {
-            if (CaseManager.Instance == null || !CaseManager.Instance.AreAllEvidenceExamined())
+            if (CaseManager.Instance == null || !CaseManager.Instance.IsReadyForConclusion())
             {
-                Debug.LogWarning("[UI:Manager] Conclusion locked: open all three case evidence items first.");
+                Debug.LogWarning("[UI:Manager] Conclusion locked: examine all evidence and expose every contradiction first.");
                 UpdateConclusionButtonState();
                 return;
             }

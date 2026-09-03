@@ -158,6 +158,7 @@ namespace CaseClosed.Tests
             Assert.AreEqual(UIPanelType.InvestigationTable, uiManager.currentPanel);
 
             // Open Conclusion Quiz
+            caseManager.activeCase.totalContradictionsCount = 0;
             uiManager.OpenConclusionQuiz();
             Assert.AreEqual(UIPanelType.ConclusionQuiz, uiManager.currentPanel);
         }

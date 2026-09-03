@@ -49,13 +49,10 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "Tech startup founder Kurt Miguel Ancheta's secret prototype drive went missing from his bag after a late meeting.";
             c.objective = "Interrogate Shanaia Ortega, examine digital logs and CCTV stills, expose her false departure claim, and recover the stolen prototype.";
             c.victimInfo = "Kurt Miguel Ancheta (Startup Founder - Distressed Victim)";
-<<<<<<< HEAD
             c.totalKeyEvidenceCount = 3;
             c.totalContradictionsCount = 1;
-=======
             c.hasTimeLimit = true;
             c.timeLimitSeconds = 300f;
->>>>>>> db3692dae52edad3614283d2312273f82b856b30
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
@@ -245,17 +242,31 @@ namespace CaseClosed.Prototype
 
             ConclusionQuestion q2 = new ConclusionQuestion();
             q2.questionId = "Q_MOTIVE";
-            q2.questionText = "What motivated Shanaia to steal the drive?";
-            q2.options = new List<string> { "Steal prototype before being fired", "Accidental mix-up", "Blackmail" };
-            q2.correctOptionIndex = 0;
+            q2.questionText = "What was Shanaia's motive for stealing the prototype?";
+            q2.options = new List<string> { "To get revenge on Kurt", "To avoid termination and gain leverage", "To purchase the cafe" };
+            q2.correctOptionIndex = 1;
             c.conclusionQuestions.Add(q2);
 
             ConclusionQuestion q3 = new ConclusionQuestion();
-            q3.questionId = "Q_EVIDENCE";
-            q3.questionText = "Which evidence disproved Shanaia's alibi?";
-            q3.options = new List<string> { "Coffee Shop CCTV Frame", "Termination Notice Draft", "Victim's Smartphone Call Log" };
-            q3.correctOptionIndex = 0;
+            q3.questionId = "Q_RETURN_EVIDENCE";
+            q3.questionText = "Which evidence showed that Shanaia returned to the cafe?";
+            q3.options = new List<string> { "Termination Notice", "Kurt's Call Log", "Cafe CCTV" };
+            q3.correctOptionIndex = 2;
             c.conclusionQuestions.Add(q3);
+
+            ConclusionQuestion q4 = new ConclusionQuestion();
+            q4.questionId = "Q_CALL_TIME";
+            q4.questionText = "At approximately what time did Shanaia's encrypted call appear in Kurt's call log?";
+            q4.options = new List<string> { "5:30 PM", "7:15 PM", "8:00 PM" };
+            q4.correctOptionIndex = 1;
+            c.conclusionQuestions.Add(q4);
+
+            ConclusionQuestion q5 = new ConclusionQuestion();
+            q5.questionId = "Q_TERMINATION_REASON";
+            q5.questionText = "Why was Shanaia being terminated?";
+            q5.options = new List<string> { "Selling proprietary company data", "Stealing company money", "Repeatedly missing work" };
+            q5.correctOptionIndex = 0;
+            c.conclusionQuestions.Add(q5);
 
             return c;
         }

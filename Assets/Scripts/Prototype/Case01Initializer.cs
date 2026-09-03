@@ -63,13 +63,10 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "A valuable family necklace disappeared from the manor safe during a stormy evening gathering.";
             c.objective = "Interrogate Vince Angelo Batecan, inspect table evidence, disprove his kitchen alibi, and uncover the truth.";
             c.victimInfo = "Kirby Raymundo (Aristocrat - Proud & Demanding Owner)";
-<<<<<<< HEAD
             c.totalKeyEvidenceCount = 3;
             c.totalContradictionsCount = 1;
-=======
             c.hasTimeLimit = true;
             c.timeLimitSeconds = 60f;
->>>>>>> db3692dae52edad3614283d2312273f82b856b30
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
@@ -89,16 +86,16 @@ namespace CaseClosed.Prototype
             vince.defaultSittingPose = maleSuspectSprite;
             c.primarySuspect = vince;
 
-            // Secondary Suspect / Witness: Janine Marie Sotto (Accomplice / Key Witness)
+            // Secondary Suspect / Witness: Jane Arie Reyes (Key Witness)
             CharacterProfileSO witnessFemale = ScriptableObject.CreateInstance<CharacterProfileSO>();
             witnessFemale.characterId = "CHAR_CASE1_FEMALE";
-            witnessFemale.fullName = "Janine Marie Sotto";
+            witnessFemale.fullName = "Jane Arie Reyes";
             witnessFemale.age = 24;
             witnessFemale.occupation = "Manor Guest & Key Witness";
             witnessFemale.relationshipToVictim = "Family Acquaintance";
             witnessFemale.personalityTrait = PersonalityTrait.Observant;
             witnessFemale.alibi = "Sat in the dining room talking with guests until 9:00 PM.";
-            witnessFemale.possibleMotives = "None directly known; witnessed Vince running toward the garden.";
+            witnessFemale.possibleMotives = "None directly known.";
             witnessFemale.knownConflicts = "Noticed Vince arguing heatedly with Uncle Kirby before dinner.";
             witnessFemale.defaultSittingPose = femaleSuspectSprite;
             c.additionalSuspects.Add(witnessFemale);
@@ -239,23 +236,37 @@ namespace CaseClosed.Prototype
             ConclusionQuestion q1 = new ConclusionQuestion();
             q1.questionId = "Q_SUSPECT";
             q1.questionText = "Who stole Kirby Raymundo's necklace?";
-            q1.options = new List<string> { "Vince Angelo Batecan", "Kirby Raymundo", "House Staff" };
+            q1.options = new List<string> { "Vince Angelo Batecan", "Jane Arie Reyes", "House Staff" };
             q1.correctOptionIndex = 0;
             c.conclusionQuestions.Add(q1);
 
             ConclusionQuestion q2 = new ConclusionQuestion();
             q2.questionId = "Q_MOTIVE";
-            q2.questionText = "What was Vince's motive?";
-            q2.options = new List<string> { "Pay Off Debts", "Jealousy", "Accidental Spillage" };
-            q2.correctOptionIndex = 0;
+            q2.questionText = "What was Vince Angelo Batecan's motive?";
+            q2.options = new List<string> { "Jealousy", "Gambling debts", "Revenge" };
+            q2.correctOptionIndex = 1;
             c.conclusionQuestions.Add(q2);
 
             ConclusionQuestion q3 = new ConclusionQuestion();
-            q3.questionId = "Q_EVIDENCE";
-            q3.questionText = "Which evidence disproved Vince's kitchen alibi?";
-            q3.options = new List<string> { "Kitchen Pantry Log", "Broken Teacup", "Family Photograph" };
+            q3.questionId = "Q_ALIBI";
+            q3.questionText = "Where did Vince claim he remained during the incident?";
+            q3.options = new List<string> { "The Kitchen", "The Garden", "The Study" };
             q3.correctOptionIndex = 0;
             c.conclusionQuestions.Add(q3);
+
+            ConclusionQuestion q4 = new ConclusionQuestion();
+            q4.questionId = "Q_EVIDENCE";
+            q4.questionText = "Which evidence most strongly disproved Vince's kitchen alibi?";
+            q4.options = new List<string> { "Kitchen Pantry Log", "Broken Teacup", "Family Photograph" };
+            q4.correctOptionIndex = 0;
+            c.conclusionQuestions.Add(q4);
+
+            ConclusionQuestion q5 = new ConclusionQuestion();
+            q5.questionId = "Q_WITNESS";
+            q5.questionText = "Who saw Vince and Kirby arguing before dinner?";
+            q5.options = new List<string> { "Jane Arie Reyes", "Charl Vonn Pascual", "Shan Jaraba" };
+            q5.correctOptionIndex = 0;
+            c.conclusionQuestions.Add(q5);
 
             return c;
         }

@@ -325,6 +325,16 @@ namespace CaseClosed.Managers
         }
 
         /// <summary>
+        /// Returns true when the player has completed the investigation breakthrough and can confront the culprit.
+        /// </summary>
+        public bool IsReadyForConclusion()
+        {
+            if (!AreAllEvidenceExamined()) return false;
+            if (activeCase == null || activeCase.totalContradictionsCount <= 0) return false;
+            return exposedContradictionIds.Count >= activeCase.totalContradictionsCount;
+        }
+
+        /// <summary>
         /// Unlocks a case evidence item by ID after a story or dialogue requirement is completed.
         /// </summary>
         /// <param name="evidenceId">The evidence ID configured on the active case.</param>

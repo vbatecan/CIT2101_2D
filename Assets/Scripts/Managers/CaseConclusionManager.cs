@@ -51,9 +51,9 @@ namespace CaseClosed.Managers
                 return null;
             }
 
-            if (!CaseManager.Instance.AreAllEvidenceExamined())
+            if (!CaseManager.Instance.IsReadyForConclusion())
             {
-                Debug.LogWarning("[CaseConclusion] Cannot evaluate case: all three evidence items must be opened first.");
+                Debug.LogWarning("[CaseConclusion] Cannot evaluate case: examine all evidence and expose every contradiction first.");
                 return null;
             }
 
