@@ -38,7 +38,7 @@ namespace CaseClosed.Services
             EvaluateQuiz(activeCase, playerSelectedOptionIndices, out int quizScore, out int correctCount, out bool isPrimarySuspectCorrect);
             result.correctQuizAnswers = correctCount;
             result.totalQuizQuestions = activeCase.conclusionQuestions.Count;
-            result.isCaseSolved = isPrimarySuspectCorrect;
+            result.isCaseSolved = activeCase.conclusionQuestions.Count == correctCount;
 
             // 2. Evidence Scoring
             int totalEv = activeCase.totalKeyEvidenceCount > 0 ? activeCase.totalKeyEvidenceCount : activeCase.evidenceItems.Count;

@@ -63,6 +63,8 @@ namespace CaseClosed.Prototype
             c.incidentDescription = "A valuable family necklace disappeared from the manor safe during a stormy evening gathering.";
             c.objective = "Interrogate Vince Angelo Batecan, inspect table evidence, disprove his kitchen alibi, and uncover the truth.";
             c.victimInfo = "Kirby Raymundo (Aristocrat - Proud & Demanding Owner)";
+            c.totalKeyEvidenceCount = 3;
+            c.totalContradictionsCount = 1;
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
@@ -158,15 +160,8 @@ namespace CaseClosed.Prototype
             node1.speakerName = vince.fullName;
             node1.expression = CharacterExpression.Defensive;
             node1.statementText = "I never went near the study. I stayed in the kitchen from 8:30 PM until everyone started shouting!";
-            node1.defaultNextNodeId = "NODE_01B_INTERVIEW";
+            node1.defaultNextNodeId = "NODE_02_ROOM_LEAD";
             tree.nodes.Add(node1);
-
-            DialogueNode node1b = new DialogueNode();
-            node1b.nodeId = "NODE_01B_INTERVIEW";
-            node1b.speakerName = "Detective";
-            node1b.statementText = "Your timeline puts you in the kitchen for forty-five minutes. Who can confirm that, and why are you so certain the study is irrelevant?";
-            node1b.defaultNextNodeId = "NODE_02_ROOM_LEAD";
-            tree.nodes.Add(node1b);
 
             // Node 2 (First Evidence Lead)
             DialogueNode node2 = new DialogueNode();
@@ -185,16 +180,9 @@ namespace CaseClosed.Prototype
             node3.speakerName = vince.fullName;
             node3.expression = CharacterExpression.Nervous;
             node3.statementText = "That broken cup? I heard it fall, but I was nowhere near the safe. The pantry log will prove I was in the kitchen.";
-            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
+            node3.defaultNextNodeId = "NODE_04_FINAL_ALIBI";
             node3.unlockEvidenceOnComplete.Add("EVD_KITCHEN_LOG");
             tree.nodes.Add(node3);
-
-            DialogueNode node3b = new DialogueNode();
-            node3b.nodeId = "NODE_03B_CONFIRMATION";
-            node3b.speakerName = "Detective";
-            node3b.statementText = "The photograph places you near the study, and this log tests the rest of your timeline. I want one clear answer before we continue.";
-            node3b.defaultNextNodeId = "NODE_04_FINAL_ALIBI";
-            tree.nodes.Add(node3b);
 
             // Node 4 (Contradictory Alibi)
             DialogueNode node4 = new DialogueNode();

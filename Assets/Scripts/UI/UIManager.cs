@@ -105,6 +105,7 @@ namespace CaseClosed.UI
             UIPanelType initialPanel = (mainMenuPanel != null) ? UIPanelType.MainMenu : UIPanelType.InvestigationTable;
             ShowPanel(initialPanel);
             RegisterEvents();
+            UpdateConclusionButtonState();
         }
 
         /// <summary>
@@ -115,7 +116,24 @@ namespace CaseClosed.UI
             if (EvidenceManager.Instance != null)
             {
                 EvidenceManager.Instance.OnInspectModalOpened += (ev) => ShowPanel(UIPanelType.InspectModal);
-                EvidenceManager.Instance.OnInspectModalClosed += () => ShowPanel(UIPanelType.InvestigationTable);
+                EvidenceManager.Instance.OnInspectModalClosed += HandleInspectModalClosed;
+            }
+        }
+
+        private void HandleInspectModalClosed()
+        {
+            ShowPanel(UIPanelType.InvestigationTable);
+            UpdateConclusionButtonState();
+        }
+
+        private void UpdateConclusionButtonState()
+        {
+            if (concludeCaseButton == null) return;
+
+            Button button = concludeCaseButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = CaseManager.Instance != null && CaseManager.Instance.AreAllEvidenceExamined();
             }
         }
 
@@ -212,6 +230,13 @@ namespace CaseClosed.UI
         /// </summary>
         public void OpenConclusionQuiz()
         {
+            if (CaseManager.Instance == null || !CaseManager.Instance.AreAllEvidenceExamined())
+            {
+                Debug.LogWarning("[UI:Manager] Conclusion locked: open all three case evidence items first.");
+                UpdateConclusionButtonState();
+                return;
+            }
+
             Debug.Log("[UI:Manager] Open conclusion quiz button clicked");
             ShowPanel(UIPanelType.ConclusionQuiz);
         }

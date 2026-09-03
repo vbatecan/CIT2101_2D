@@ -27,6 +27,7 @@ namespace CaseClosed.UI
         public Text starRatingText;
         public Text scoreBreakdownText;
         public Button continueButton;
+        public Text continueButtonText;
         public Button nextLevelButton;
         public Text nextLevelButtonText;
         public Button returnToMainMenuButton;
@@ -70,7 +71,7 @@ namespace CaseClosed.UI
             playerAnswers.Clear();
             for (int i = 0; i < activeCase.conclusionQuestions.Count; i++)
             {
-                playerAnswers.Add(0); // Default to first option
+                playerAnswers.Add(-1);
             }
 
             RenderQuestionOptions(activeCase);
@@ -134,6 +135,15 @@ namespace CaseClosed.UI
             Debug.Log($"[UI:Conclusion] Submit conclusion button clicked. Answers count: {playerAnswers.Count}");
             if (CaseConclusionManager.Instance == null) return;
 
+            for (int i = 0; i < playerAnswers.Count; i++)
+            {
+                if (playerAnswers[i] < 0)
+                {
+                    Debug.LogWarning($"[UI:Conclusion] Cannot submit: question {i + 1} has not been answered.");
+                    return;
+                }
+            }
+
             CaseEvaluationResult result = CaseConclusionManager.Instance.EvaluateCase(playerAnswers);
             DisplayResultsCard(result);
         }
@@ -158,7 +168,7 @@ namespace CaseClosed.UI
 
             if (resultTitleText != null)
             {
-                resultTitleText.text = result.isCaseSolved ? $"LEVEL {currentLevel} SOLVED!" : $"LEVEL {currentLevel} FAILED";
+                resultTitleText.text = result.isCaseSolved ? "CASE CLOSED" : "CASE NOT CLOSED";
                 resultTitleText.color = result.isCaseSolved ? Color.green : Color.red;
             }
 
@@ -178,6 +188,7 @@ namespace CaseClosed.UI
             {
                 scoreBreakdownText.text =
                     $"Lead Investigator: {investigatorName}\n" +
+                    $"Case {currentLevel}: {activeCase?.caseTitle}\n" +
                     $"Total Score: {result.totalScore} pts\n" +
                     $"Correct Quiz Answers: {result.correctQuizAnswers}/{result.totalQuizQuestions}\n" +
                     $"Evidence Discovered: {result.evidenceFoundCount}/{result.totalEvidenceCount}\n" +
@@ -187,10 +198,10 @@ namespace CaseClosed.UI
 
             if (nextLevelButton != null)
             {
+                nextLevelButton.gameObject.SetActive(result.isCaseSolved);
                 int nextLevel = currentLevel + 1;
                 if (nextLevel <= 3)
                 {
-                    nextLevelButton.gameObject.SetActive(true);
                     if (nextLevelButtonText != null)
                     {
                         nextLevelButtonText.text = $"Proceed to Level {nextLevel} >";
@@ -198,22 +209,39 @@ namespace CaseClosed.UI
                 }
                 else
                 {
-                    nextLevelButton.gameObject.SetActive(true);
                     if (nextLevelButtonText != null)
                     {
                         nextLevelButtonText.text = "Replay / Level Select";
                     }
                 }
             }
+
+            if (returnToMainMenuButton != null) returnToMainMenuButton.gameObject.SetActive(result.isCaseSolved);
+            if (continueButton != null)
+            {
+                continueButton.gameObject.SetActive(!result.isCaseSolved);
+                if (continueButtonText != null) continueButtonText.text = "Back to Level Start";
+            }
         }
 
         /// <summary>
-        /// Handles click on continue button, returning to the investigation table via <see cref="UIManager"/>.
+        /// Handles a failed conclusion by restarting the active level from its initial state.
         /// </summary>
         private void OnContinueClicked()
         {
-            Debug.Log("[UI:Conclusion] Continue button clicked, navigating back to InvestigationTable");
-            UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
+            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
+            Debug.Log($"[UI:Conclusion] Restarting failed Level {currentLevel} from the beginning");
+
+            CaseClosed.Prototype.GameBootstrap bootstrap = Object.FindFirstObjectByType<CaseClosed.Prototype.GameBootstrap>();
+            if (bootstrap != null)
+            {
+                bootstrap.LoadLevel(currentLevel);
+                return;
+            }
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
 
         /// <summary>

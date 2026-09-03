@@ -51,6 +51,12 @@ namespace CaseClosed.Managers
                 return null;
             }
 
+            if (!CaseManager.Instance.AreAllEvidenceExamined())
+            {
+                Debug.LogWarning("[CaseConclusion] Cannot evaluate case: all three evidence items must be opened first.");
+                return null;
+            }
+
             int evidenceFoundCount = CaseManager.Instance.discoveredEvidenceIds.Count;
             int contradictionsCaughtCount = CaseManager.Instance.exposedContradictionIds.Count;
             float elapsedTime = CaseManager.Instance.ElapsedTime;

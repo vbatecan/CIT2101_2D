@@ -178,6 +178,27 @@ namespace CaseClosed.Managers
         }
 
         /// <summary>
+        /// Returns true only after every evidence item in the active case has been opened in inspection.
+        /// </summary>
+        public bool AreAllEvidenceExamined()
+        {
+            if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count < 3)
+            {
+                return false;
+            }
+
+            foreach (EvidenceSO evidence in activeCase.evidenceItems)
+            {
+                if (evidence == null || !evidence.isExamined)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Unlocks a case evidence item by ID after a story or dialogue requirement is completed.
         /// </summary>
         /// <param name="evidenceId">The evidence ID configured on the active case.</param>
