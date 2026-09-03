@@ -72,11 +72,20 @@ namespace CaseClosed.Tests
             GameObject fp = new GameObject("Fingertip_Point");
             fp.transform.SetParent(armObj.transform);
             armController.fingertipPoint = fp.transform;
+
+            // Route singletons to test fixtures
+            typeof(UIManager).GetProperty("Instance")?.SetValue(null, uiManager);
+            typeof(EvidenceManager).GetProperty("Instance")?.SetValue(null, evidenceManager);
+            typeof(ArmPointerController).GetProperty("Instance")?.SetValue(null, armController);
         }
 
         [TearDown]
         public void TearDown()
         {
+            typeof(UIManager).GetProperty("Instance")?.SetValue(null, null);
+            typeof(EvidenceManager).GetProperty("Instance")?.SetValue(null, null);
+            typeof(ArmPointerController).GetProperty("Instance")?.SetValue(null, null);
+
             if (testRoot != null)
             {
                 Object.DestroyImmediate(testRoot);
@@ -180,17 +189,74 @@ namespace CaseClosed.Tests
         }
 
         [Test]
+        public void ArmPointerController_ResetTapState_RestoresCursorTrackingAfterDeactivation()
+        {
+            uiManager.ShowPanel(UIPanelType.InvestigationTable);
+            armController.ForceSyncState();
+
+            // Simulate clicking on an evidence item: tap starts and isTapping becomes true
+            armController.isTapping = true;
+            Assert.IsTrue(armController.isTapping);
+
+            // Directly call ForceSyncState (as done by RestoreSceneObjects and CloseInspect upon reactivation)
+            armController.ForceSyncState();
+
+            // Tap state should be cleanly reset to allow cursor follow
+            Assert.IsFalse(armController.isTapping, "isTapping must be false after ForceSyncState to allow cursor follow");
+            Assert.IsTrue(armController.isArmActive, "isArmActive must be true after returning to InvestigationTable");
+        }
+
+        [Test]
+        public void EvidenceInspectModal_CloseInspect_RestoresAndReactivatesArmPointer()
+        {
+            uiManager.ShowPanel(UIPanelType.InvestigationTable);
+            evidenceManager.isInspectingModalOpen = false;
+
+            // Create inspect modal on inspectModalPanel
+            EvidenceInspectModal inspectModal = uiManager.inspectModalPanel.AddComponent<EvidenceInspectModal>();
+            inspectModal.sceneObjectsToHide = new string[] { "Test_ArmPointer" };
+
+            // Start in tapping state
+            armController.isTapping = true;
+
+            // Create test evidence
+            EvidenceSO testEvidence = ScriptableObject.CreateInstance<EvidenceSO>();
+            testEvidence.id = "EVD_TEST_CLOSE";
+            testEvidence.evidenceName = "Test Broken Clock";
+
+            // Enter inspection
+            inspectModal.DisplayEvidence(testEvidence);
+            Assert.IsFalse(armController.gameObject.activeSelf, "Arm should be hidden during evidence inspection");
+
+            // Exit inspection
+            inspectModal.CloseInspect();
+
+            // Assert arm is restored, active, and tap state is reset
+            Assert.IsTrue(armController.gameObject.activeSelf, "Arm GameObject must be reactivated after CloseInspect");
+            Assert.IsFalse(armController.isTapping, "Arm isTapping must be reset so arm follows cursor");
+            Assert.IsTrue(armController.isArmActive, "Arm must be marked active after CloseInspect");
+            Assert.IsFalse(inspectModal.IsInspecting, "Inspect modal must be marked closed");
+
+            Object.DestroyImmediate(testEvidence);
+            Object.DestroyImmediate(inspectModal);
+        }
+
+        [Test]
         public void CaseEvaluationService_EvaluateCase_CalculatesScoreAndGrade()
         {
             CaseEvaluationService service = new CaseEvaluationService();
             CaseSO caseSO = ScriptableObject.CreateInstance<CaseSO>();
+            caseSO.totalKeyEvidenceCount = 1;
+            caseSO.totalContradictionsCount = 1;
+            caseSO.parCompletionTimeSeconds = 300f;
 
             ConclusionQuestion q1 = new ConclusionQuestion
             {
                 questionId = "Q1",
                 questionText = "Question 1",
                 options = new List<string> { "Correct", "Wrong" },
-                correctOptionIndex = 0
+                correctOptionIndex = 0,
+                pointValue = 1000
             };
             caseSO.conclusionQuestions.Add(q1);
 

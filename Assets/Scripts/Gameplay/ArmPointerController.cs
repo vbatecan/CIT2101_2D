@@ -13,7 +13,19 @@ namespace CaseClosed.Gameplay
     /// </summary>
     public class ArmPointerController : MonoBehaviour
     {
-        public static ArmPointerController Instance { get; private set; }
+        private static ArmPointerController _instance;
+        public static ArmPointerController Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindFirstObjectByType<ArmPointerController>(FindObjectsInactive.Include);
+                }
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         [Header("Camera & Visuals")]
         [Tooltip("The orthographic 2D camera rendering the table scene.")]
@@ -57,12 +69,38 @@ namespace CaseClosed.Gameplay
         public bool isDialogueOrUIActive = false;
 
         private TableEvidenceItem currentHoveredItem;
-        private bool isTapping = false;
+        public bool isTapping = false;
+        private Coroutine _tapCoroutine;
+
+        /// <summary>
+        /// Resets the tap state and cancels any ongoing tap animation coroutine.
+        /// Ensures the arm does not stay stuck in a non-following state when interrupted.
+        /// </summary>
+        public void ResetTapState()
+        {
+            if (_tapCoroutine != null)
+            {
+                StopCoroutine(_tapCoroutine);
+                _tapCoroutine = null;
+            }
+            isTapping = false;
+        }
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
-            else Destroy(gameObject);
+            if (_instance == null) _instance = this;
+            else if (_instance != this)
+            {
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    DestroyImmediate(gameObject);
+                else
+                    Destroy(gameObject);
+#else
+                Destroy(gameObject);
+#endif
+                return;
+            }
 
             if (targetCamera == null) targetCamera = Camera.main;
             if (armRenderer == null) armRenderer = GetComponent<SpriteRenderer>();
@@ -89,11 +127,13 @@ namespace CaseClosed.Gameplay
         private void OnEnable()
         {
             if (targetCamera == null) targetCamera = Camera.main;
+            ResetTapState();
             ForceSyncState();
         }
 
         private void OnDisable()
         {
+            ResetTapState();
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
             ClearHoveredItem();
@@ -101,6 +141,11 @@ namespace CaseClosed.Gameplay
 
         private void OnDestroy()
         {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+            ResetTapState();
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
@@ -155,6 +200,7 @@ namespace CaseClosed.Gameplay
         /// </summary>
         public void ForceSyncState()
         {
+            ResetTapState();
             bool shouldBeInUIMode = DetermineUIMode();
             SetDialogueOrUIMode(shouldBeInUIMode);
         }
@@ -248,7 +294,8 @@ namespace CaseClosed.Gameplay
         {
             if (Input.GetMouseButtonDown(0)) // Left Click
             {
-                StartCoroutine(TapAnimation());
+                ResetTapState();
+                _tapCoroutine = StartCoroutine(TapAnimation());
 
                 if (currentHoveredItem != null)
                 {
@@ -289,10 +336,15 @@ namespace CaseClosed.Gameplay
 
             transform.position = origPos;
             isTapping = false;
+            _tapCoroutine = null;
         }
 
         public void SetDialogueOrUIMode(bool active)
         {
+            if (active)
+            {
+                ResetTapState();
+            }
             isDialogueOrUIActive = active;
             isArmActive = !active;
             UpdateCursorAndArmState();
