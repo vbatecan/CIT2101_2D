@@ -38,15 +38,50 @@ namespace CaseClosed.UI
             if (evidenceTabButton != null) evidenceTabButton.onClick.AddListener(() => SwitchTab(NotebookTab.Evidence));
             if (cluesTabButton != null) cluesTabButton.onClick.AddListener(() => SwitchTab(NotebookTab.Clues));
             if (closeNotebookButton != null) closeNotebookButton.onClick.AddListener(OnCloseClicked);
-        }
 
-        /// <summary>
-        /// Refreshes the active tab content when the notebook panel is enabled.
-        /// </summary>
-        private void OnEnable()
-        {
+            SubscribeToManagerEvents();
             SwitchTab(currentTab);
         }
+
+        private void OnEnable()
+        {
+            SubscribeToManagerEvents();
+            SwitchTab(currentTab);
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeFromManagerEvents();
+        }
+
+        private void OnDestroy()
+        {
+            UnsubscribeFromManagerEvents();
+        }
+
+        private bool isSubscribed = false;
+
+        private void SubscribeToManagerEvents()
+        {
+            if (isSubscribed || CaseManager.Instance == null) return;
+            CaseManager.Instance.OnCaseLoaded += HandleCaseStateChanged;
+            CaseManager.Instance.OnEvidenceDiscovered += HandleEvidenceDiscovered;
+            CaseManager.Instance.OnClueUnlocked += HandleClueUnlocked;
+            isSubscribed = true;
+        }
+
+        private void UnsubscribeFromManagerEvents()
+        {
+            if (!isSubscribed || CaseManager.Instance == null) return;
+            CaseManager.Instance.OnCaseLoaded -= HandleCaseStateChanged;
+            CaseManager.Instance.OnEvidenceDiscovered -= HandleEvidenceDiscovered;
+            CaseManager.Instance.OnClueUnlocked -= HandleClueUnlocked;
+            isSubscribed = false;
+        }
+
+        private void HandleCaseStateChanged(CaseSO c) => SwitchTab(currentTab);
+        private void HandleEvidenceDiscovered(EvidenceSO e) => SwitchTab(currentTab);
+        private void HandleClueUnlocked(string k, string v) => SwitchTab(currentTab);
 
         /// <summary>
         /// Switches the active notebook tab, formats the corresponding data using <see cref="NotebookFormattingService"/>,
@@ -57,7 +92,12 @@ namespace CaseClosed.UI
         {
             currentTab = tab;
             CaseSO activeCase = CaseManager.Instance?.activeCase;
-            if (activeCase == null) return;
+            if (activeCase == null)
+            {
+                if (notebookTitleText != null) notebookTitleText.text = "Case File Notebook";
+                if (notebookContentBody != null) notebookContentBody.text = "No active case file loaded.\nPlease select an active case from the Case Files menu.";
+                return;
+            }
 
             Debug.Log($"[UI:Notebook] Switched to tab '{tab}' for case '{activeCase.caseTitle}'");
 

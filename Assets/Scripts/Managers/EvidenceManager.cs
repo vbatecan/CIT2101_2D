@@ -40,21 +40,7 @@ namespace CaseClosed.Managers
         /// </summary>
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else if (Instance != this)
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    DestroyImmediate(gameObject);
-                else
-                    Destroy(gameObject);
-#else
-                Destroy(gameObject);
-#endif
-            }
+            Instance = this;
         }
 
         private void OnDestroy()

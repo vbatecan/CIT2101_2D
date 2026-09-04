@@ -42,17 +42,9 @@ namespace CaseClosed.Prototype
 
             SetupInvestigators();
 
-            level1 = gameObject.GetComponent<Case01Initializer>();
-            if (level1 == null) level1 = gameObject.AddComponent<Case01Initializer>();
-            level1.initializeOnStart = false;
-
-            level2 = gameObject.GetComponent<Case02Initializer>();
-            if (level2 == null) level2 = gameObject.AddComponent<Case02Initializer>();
-            level2.initializeOnStart = false;
-
-            level3 = gameObject.GetComponent<Case03Initializer>();
-            if (level3 == null) level3 = gameObject.AddComponent<Case03Initializer>();
-            level3.initializeOnStart = false;
+            level1 = gameObject.GetComponent<Case01Initializer>() ?? FindFirstObjectByType<Case01Initializer>();
+            level2 = gameObject.GetComponent<Case02Initializer>() ?? FindFirstObjectByType<Case02Initializer>();
+            level3 = gameObject.GetComponent<Case03Initializer>() ?? FindFirstObjectByType<Case03Initializer>();
 
             Debug.Log("[Prototype:Bootstrap] All managers and investigators initialized. Ready for level loading.");
         }
@@ -93,15 +85,35 @@ namespace CaseClosed.Prototype
         /// </summary>
         private void Start()
         {
-            if (startOnMainMenu)
+            string activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            Debug.Log($"[Prototype:Bootstrap] GameBootstrap Start in scene '{activeScene}', startOnMainMenu={startOnMainMenu}");
+
+            if (activeScene == "MainMenu" || (startOnMainMenu && activeScene != "Case001" && activeScene != "Case002" && activeScene != "Case003"))
             {
                 UIManager.Instance?.ShowPanel(UIPanelType.MainMenu);
                 AudioManager.Instance?.PlayMenuBGM();
+                return;
             }
-            else
+
+            int targetLevel = 1;
+            if (activeScene.Contains("002") || activeScene.Contains("Case2") || activeScene.Contains("Case02"))
             {
-                LoadLevel(1);
+                targetLevel = 2;
             }
+            else if (activeScene.Contains("003") || activeScene.Contains("Case3") || activeScene.Contains("Case03"))
+            {
+                targetLevel = 3;
+            }
+
+            // If a case is already loaded matching this level, keep it
+            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == targetLevel)
+            {
+                UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
+                ArmPointerController.Instance?.ForceSyncState();
+                return;
+            }
+
+            LoadLevel(targetLevel);
         }
 
         /// <summary>
@@ -207,13 +219,16 @@ namespace CaseClosed.Prototype
             switch (levelIndex)
             {
                 case 1:
-                    if (level1 != null) caseData = level1.CreateCase01Data();
+                    if (level1 == null) level1 = gameObject.GetComponent<Case01Initializer>() ?? FindFirstObjectByType<Case01Initializer>() ?? gameObject.AddComponent<Case01Initializer>();
+                    caseData = level1.CreateCase01Data();
                     break;
                 case 2:
-                    if (level2 != null) caseData = level2.CreateCase02Data();
+                    if (level2 == null) level2 = gameObject.GetComponent<Case02Initializer>() ?? FindFirstObjectByType<Case02Initializer>() ?? gameObject.AddComponent<Case02Initializer>();
+                    caseData = level2.CreateCase02Data();
                     break;
                 case 3:
-                    if (level3 != null) caseData = level3.CreateCase03Data();
+                    if (level3 == null) level3 = gameObject.GetComponent<Case03Initializer>() ?? FindFirstObjectByType<Case03Initializer>() ?? gameObject.AddComponent<Case03Initializer>();
+                    caseData = level3.CreateCase03Data();
                     break;
             }
 

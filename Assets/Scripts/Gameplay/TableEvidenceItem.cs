@@ -145,6 +145,48 @@ namespace CaseClosed.Gameplay
         private void Update()
         {
             UpdateGlowAnimation();
+            CheckDirectMouseInteraction();
+        }
+
+        private void CheckDirectMouseInteraction()
+        {
+            Camera cam = Camera.main;
+            if (cam == null) return;
+
+            // Disallow desk interaction if UI modal or inspection modal is currently active
+            if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
+            if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
+
+            // Disallow desk interaction if pointer is hovering over a UI canvas element (e.g. Header buttons)
+            if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+
+            Vector3 mouseScreen = Input.mousePosition;
+            Vector3 mouseWorld3D = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
+            Vector2 mouseWorld = new Vector2(mouseWorld3D.x, mouseWorld3D.y);
+
+            Collider2D col = GetComponent<Collider2D>();
+            if (col == null) return;
+
+            bool isOver = col.OverlapPoint(mouseWorld);
+
+            // If arm pointer is inactive or absent, provide direct cursor hover highlights
+            if (ArmPointerController.Instance == null || !ArmPointerController.Instance.isArmActive)
+            {
+                if (isOver && !isHovered) SetHoverState(true);
+                else if (!isOver && isHovered) SetHoverState(false);
+            }
+
+            if (isOver)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    TriggerClick(false);
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    TriggerClick(true);
+                }
+            }
         }
 
         /// <summary>
@@ -279,17 +321,39 @@ namespace CaseClosed.Gameplay
                 return evidenceData;
             }
 
-            if (!string.IsNullOrEmpty(evidenceId) && CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
+            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
             {
-                if (CaseManager.Instance.activeCase.evidenceItems != null)
+                var evList = CaseManager.Instance.activeCase.evidenceItems;
+                if (evList != null)
                 {
-                    foreach (var ev in CaseManager.Instance.activeCase.evidenceItems)
+                    // 1. Exact ID match
+                    if (!string.IsNullOrEmpty(evidenceId))
                     {
-                        if (ev != null && ev.id == evidenceId)
+                        foreach (var ev in evList)
                         {
-                            evidenceData = ev;
-                            BindEvidenceData();
-                            return evidenceData;
+                            if (ev != null && (ev.id == evidenceId || ev.id.Equals(evidenceId, System.StringComparison.OrdinalIgnoreCase)))
+                            {
+                                evidenceData = ev;
+                                BindEvidenceData();
+                                return evidenceData;
+                            }
+                        }
+                    }
+
+                    // 2. Loose / partial name match fallback
+                    string cleanObjName = gameObject.name.ToUpper();
+                    foreach (var ev in evList)
+                    {
+                        if (ev != null)
+                        {
+                            string cleanEvId = ev.id.ToUpper();
+                            if ((!string.IsNullOrEmpty(evidenceId) && cleanEvId.Contains(evidenceId.ToUpper())) ||
+                                cleanObjName.Contains(cleanEvId) || cleanEvId.Contains(cleanObjName))
+                            {
+                                evidenceData = ev;
+                                BindEvidenceData();
+                                return evidenceData;
+                            }
                         }
                     }
                 }
@@ -414,6 +478,15 @@ namespace CaseClosed.Gameplay
             }
 
             ResolveEvidenceData();
+            if (evidenceData == null)
+            {
+                if (CaseManager.Instance?.activeCase != null && CaseManager.Instance.activeCase.evidenceItems != null && CaseManager.Instance.activeCase.evidenceItems.Count > 0)
+                {
+                    evidenceData = CaseManager.Instance.activeCase.evidenceItems[0];
+                    BindEvidenceData();
+                }
+            }
+
             if (evidenceData == null)
             {
                 Debug.LogWarning($"[Gameplay:TableEvidence] Cannot trigger click: evidenceData is null for '{gameObject.name}' (evidenceId: '{evidenceId}')");

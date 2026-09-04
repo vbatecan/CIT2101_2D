@@ -99,9 +99,12 @@ namespace CaseClosed.UI
                 Text hText = headerObj.GetComponent<Text>();
                 hText.text = $"\n{qIdx + 1}. {q.questionText}";
                 hText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                hText.fontSize = 16;
+                hText.fontSize = 18;
                 hText.fontStyle = FontStyle.Bold;
-                hText.color = Color.yellow;
+                hText.color = new Color(0.95f, 0.82f, 0.45f, 1f); // Crisp Gold
+                Shadow hShadow = headerObj.AddComponent<Shadow>();
+                hShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                hShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
 
                 int questionIndex = qIdx;
                 for (int optIdx = 0; optIdx < q.options.Count; optIdx++)
@@ -113,8 +116,11 @@ namespace CaseClosed.UI
                     Text optText = optObj.GetComponent<Text>();
                     optText.text = $"   [ ] {q.options[optIdx]}";
                     optText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                    optText.fontSize = 14;
+                    optText.fontSize = 16;
                     optText.color = Color.white;
+                    Shadow optShadow = optObj.AddComponent<Shadow>();
+                    optShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                    optShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
 
                     optObj.GetComponent<Button>().onClick.AddListener(() =>
                     {
@@ -170,6 +176,11 @@ namespace CaseClosed.UI
             {
                 resultTitleText.text = result.isCaseSolved ? "CASE CLOSED" : "CASE NOT CLOSED";
                 resultTitleText.color = result.isCaseSolved ? Color.green : Color.red;
+            }
+
+            if (result.isCaseSolved)
+            {
+                CaseClosed.Services.CaseProgressionService.Instance?.SetCaseCompleted(currentLevel, true);
             }
 
             if (resultGradeText != null) resultGradeText.text = $"GRADE: {result.rankGrade}";

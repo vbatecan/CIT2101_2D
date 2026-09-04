@@ -48,8 +48,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void Awake()
         {
-            if (Instance == null) Instance = this;
-            else if (Instance != this) Destroy(gameObject);
+            Instance = this;
 
             if (speakerNameText != null) speakerNameText.text = "";
             if (dialogueBodyText != null) dialogueBodyText.text = "";
@@ -80,6 +79,19 @@ namespace CaseClosed.UI
             {
                 HideDialoguePanel();
             }
+
+            if (CaseClosed.Services.GameSettingsService.Instance != null)
+            {
+                charactersPerSecond = CaseClosed.Services.GameSettingsService.Instance.TextSpeed;
+            }
+        }
+
+        /// <summary>
+        /// Updates the typewriter dialogue text speed (characters per second).
+        /// </summary>
+        public void SetTextSpeed(float speed)
+        {
+            charactersPerSecond = Mathf.Clamp(speed, 15f, 100f);
         }
 
         private void OnDestroy()

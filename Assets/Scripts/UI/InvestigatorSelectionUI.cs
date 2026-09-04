@@ -140,7 +140,15 @@ namespace CaseClosed.UI
             GameBootstrap bootstrap = FindFirstObjectByType<GameBootstrap>();
             if (bootstrap != null)
             {
-                bootstrap.LoadLevel(levelIndex);
+                bootstrap.SwitchToCaseSceneOrLevel(levelIndex);
+            }
+            else
+            {
+                string sceneName = $"Case00{levelIndex}";
+                if (Application.CanStreamedLevelBeLoaded(sceneName))
+                {
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+                }
             }
             RefreshUI();
             UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);

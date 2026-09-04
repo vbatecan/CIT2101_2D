@@ -15,7 +15,11 @@ namespace CaseClosed.Managers
     public class AudioManager : MonoBehaviour
     {
         private const string PrefKeyBgmVolume = "CaseClosed_BGM_Volume";
+        private const string PrefKeyBgmMuted = "CaseClosed_BGM_Muted";
         private const string PrefKeySfxVolume = "CaseClosed_SFX_Volume";
+        private const string PrefKeySfxMuted = "CaseClosed_SFX_Muted";
+        private const string PrefKeyDialogVolume = "CaseClosed_Dialog_Volume";
+        private const string PrefKeyDialogMuted = "CaseClosed_Dialog_Muted";
         private const string PrefKeyTypewriterEnabled = "CaseClosed_Typewriter_Enabled";
 
         /// <summary>Singleton instance of the AudioManager.</summary>
@@ -70,7 +74,11 @@ namespace CaseClosed.Managers
 
         [Header("Audio Settings")]
         [Range(0f, 1f)] public float bgmVolume = 0.8f;
+        public bool isBgmMuted = false;
         [Range(0f, 1f)] public float sfxVolume = 1f;
+        public bool isSfxMuted = false;
+        [Range(0f, 1f)] public float dialogVolume = 1f;
+        public bool isDialogMuted = false;
         public bool isTypewriterEnabled = true;
 
         private Coroutine crossFadeCoroutine;
@@ -80,17 +88,17 @@ namespace CaseClosed.Managers
         /// </summary>
         private void Awake()
         {
-            if (Instance == null)
+            Instance = this;
+            LoadSavedAudioSettings();
+            EnsureAudioSources();
+            AutoAssignClipsIfMissing();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
             {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                LoadSavedAudioSettings();
-                EnsureAudioSources();
-                AutoAssignClipsIfMissing();
-            }
-            else if (Instance != this)
-            {
-                Destroy(gameObject);
+                Instance = null;
             }
         }
 
@@ -100,7 +108,14 @@ namespace CaseClosed.Managers
         private void LoadSavedAudioSettings()
         {
             bgmVolume = PlayerPrefs.GetFloat(PrefKeyBgmVolume, 0.8f);
+            isBgmMuted = PlayerPrefs.GetInt(PrefKeyBgmMuted, 0) == 1;
+
             sfxVolume = PlayerPrefs.GetFloat(PrefKeySfxVolume, 1.0f);
+            isSfxMuted = PlayerPrefs.GetInt(PrefKeySfxMuted, 0) == 1;
+
+            dialogVolume = PlayerPrefs.GetFloat(PrefKeyDialogVolume, 1.0f);
+            isDialogMuted = PlayerPrefs.GetInt(PrefKeyDialogMuted, 0) == 1;
+
             isTypewriterEnabled = PlayerPrefs.GetInt(PrefKeyTypewriterEnabled, 1) == 1;
         }
 
@@ -138,13 +153,13 @@ namespace CaseClosed.Managers
         }
 
         /// <summary>
-        /// Applies current volume settings to audio sources.
+        /// Applies current volume settings to audio sources considering mute states.
         /// </summary>
         public void ApplyVolumes()
         {
-            if (bgmSource != null) bgmSource.volume = bgmVolume;
-            if (sfxSource != null) sfxSource.volume = sfxVolume;
-            if (typewriterSource != null) typewriterSource.volume = sfxVolume * 0.4f;
+            if (bgmSource != null) bgmSource.volume = isBgmMuted ? 0f : bgmVolume;
+            if (sfxSource != null) sfxSource.volume = isSfxMuted ? 0f : sfxVolume;
+            if (typewriterSource != null) typewriterSource.volume = isDialogMuted ? 0f : (dialogVolume * 0.5f);
         }
 
         /// <summary>
@@ -155,8 +170,21 @@ namespace CaseClosed.Managers
             bgmVolume = Mathf.Clamp01(volume);
             PlayerPrefs.SetFloat(PrefKeyBgmVolume, bgmVolume);
             PlayerPrefs.Save();
-            if (bgmSource != null) bgmSource.volume = bgmVolume;
+            ApplyVolumes();
         }
+
+        /// <summary>
+        /// Sets whether BGM is muted.
+        /// </summary>
+        public void SetBgmMuted(bool muted)
+        {
+            isBgmMuted = muted;
+            PlayerPrefs.SetInt(PrefKeyBgmMuted, muted ? 1 : 0);
+            PlayerPrefs.Save();
+            ApplyVolumes();
+        }
+
+        public void ToggleBgmMute() => SetBgmMuted(!isBgmMuted);
 
         /// <summary>
         /// Sets SFX volume level (0.0 to 1.0) and persists the value to PlayerPrefs.
@@ -166,8 +194,69 @@ namespace CaseClosed.Managers
             sfxVolume = Mathf.Clamp01(volume);
             PlayerPrefs.SetFloat(PrefKeySfxVolume, sfxVolume);
             PlayerPrefs.Save();
-            if (sfxSource != null) sfxSource.volume = sfxVolume;
-            if (typewriterSource != null) typewriterSource.volume = sfxVolume * 0.4f;
+            ApplyVolumes();
+        }
+
+        /// <summary>
+        /// Sets whether SFX is muted.
+        /// </summary>
+        public void SetSfxMuted(bool muted)
+        {
+            isSfxMuted = muted;
+            PlayerPrefs.SetInt(PrefKeySfxMuted, muted ? 1 : 0);
+            PlayerPrefs.Save();
+            ApplyVolumes();
+        }
+
+        public void ToggleSfxMute() => SetSfxMuted(!isSfxMuted);
+
+        /// <summary>
+        /// Sets Dialog volume level (0.0 to 1.0) and persists the value to PlayerPrefs.
+        /// </summary>
+        public void SetDialogVolume(float volume)
+        {
+            dialogVolume = Mathf.Clamp01(volume);
+            PlayerPrefs.SetFloat(PrefKeyDialogVolume, dialogVolume);
+            PlayerPrefs.Save();
+            ApplyVolumes();
+        }
+
+        /// <summary>
+        /// Sets whether Dialog audio is muted.
+        /// </summary>
+        public void SetDialogMuted(bool muted)
+        {
+            isDialogMuted = muted;
+            PlayerPrefs.SetInt(PrefKeyDialogMuted, muted ? 1 : 0);
+            PlayerPrefs.Save();
+            ApplyVolumes();
+        }
+
+        public void ToggleDialogMute() => SetDialogMuted(!isDialogMuted);
+
+        /// <summary>
+        /// Resets all audio settings to their standard factory defaults.
+        /// </summary>
+        public void ResetAudioSettingsToDefault()
+        {
+            bgmVolume = 0.8f;
+            isBgmMuted = false;
+            sfxVolume = 1.0f;
+            isSfxMuted = false;
+            dialogVolume = 1.0f;
+            isDialogMuted = false;
+            isTypewriterEnabled = true;
+
+            PlayerPrefs.SetFloat(PrefKeyBgmVolume, bgmVolume);
+            PlayerPrefs.SetInt(PrefKeyBgmMuted, 0);
+            PlayerPrefs.SetFloat(PrefKeySfxVolume, sfxVolume);
+            PlayerPrefs.SetInt(PrefKeySfxMuted, 0);
+            PlayerPrefs.SetFloat(PrefKeyDialogVolume, dialogVolume);
+            PlayerPrefs.SetInt(PrefKeyDialogMuted, 0);
+            PlayerPrefs.SetInt(PrefKeyTypewriterEnabled, 1);
+            PlayerPrefs.Save();
+
+            ApplyVolumes();
         }
 
         /// <summary>
@@ -304,7 +393,7 @@ namespace CaseClosed.Managers
         /// <param name="clip">The sound effect audio clip to play.</param>
         public void PlaySFX(AudioClip clip)
         {
-            if (clip == null || sfxSource == null) return;
+            if (clip == null || sfxSource == null || isSfxMuted) return;
             sfxSource.PlayOneShot(clip, sfxVolume);
         }
 
@@ -313,9 +402,9 @@ namespace CaseClosed.Managers
         /// </summary>
         public void PlayTypewriterKey()
         {
-            if (isTypewriterEnabled && typewriterKeySFX != null && typewriterSource != null && !typewriterSource.isPlaying)
+            if (isTypewriterEnabled && !isDialogMuted && typewriterKeySFX != null && typewriterSource != null && !typewriterSource.isPlaying)
             {
-                typewriterSource.PlayOneShot(typewriterKeySFX, sfxVolume * 0.4f);
+                typewriterSource.PlayOneShot(typewriterKeySFX, dialogVolume * 0.5f);
             }
         }
 

@@ -88,19 +88,7 @@ namespace CaseClosed.Gameplay
 
         private void Awake()
         {
-            if (_instance == null) _instance = this;
-            else if (_instance != this)
-            {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    DestroyImmediate(gameObject);
-                else
-                    Destroy(gameObject);
-#else
-                Destroy(gameObject);
-#endif
-                return;
-            }
+            _instance = this;
 
             if (targetCamera == null) targetCamera = Camera.main;
             if (armRenderer == null) armRenderer = GetComponent<SpriteRenderer>();
@@ -292,6 +280,11 @@ namespace CaseClosed.Gameplay
 
         private void HandleMouseClicks()
         {
+            if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             if (Input.GetMouseButtonDown(0)) // Left Click
             {
                 ResetTapState();
@@ -301,6 +294,11 @@ namespace CaseClosed.Gameplay
                 {
                     currentHoveredItem.TriggerClick(false);
                 }
+                else
+                {
+                    TableEvidenceItem item = FindItemAtFingertipOrCursor();
+                    if (item != null) item.TriggerClick(false);
+                }
             }
             else if (Input.GetMouseButtonDown(1)) // Right Click
             {
@@ -308,7 +306,24 @@ namespace CaseClosed.Gameplay
                 {
                     currentHoveredItem.TriggerClick(true);
                 }
+                else
+                {
+                    TableEvidenceItem item = FindItemAtFingertipOrCursor();
+                    if (item != null) item.TriggerClick(true);
+                }
             }
+        }
+
+        private TableEvidenceItem FindItemAtFingertipOrCursor()
+        {
+            Vector2 checkPos = (fingertipPoint != null) ? (Vector2)fingertipPoint.position : (Vector2)transform.position;
+            Collider2D hit = Physics2D.OverlapCircle(checkPos, interactionRadius, interactableLayers);
+            if (hit == null && targetCamera != null)
+            {
+                Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(Input.mousePosition);
+                hit = Physics2D.OverlapPoint(new Vector2(mouseWorld.x, mouseWorld.y), interactableLayers);
+            }
+            return hit != null ? hit.GetComponentInParent<TableEvidenceItem>() : null;
         }
 
         private IEnumerator TapAnimation()

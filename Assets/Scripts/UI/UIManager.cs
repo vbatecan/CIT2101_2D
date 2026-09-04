@@ -44,20 +44,19 @@ namespace CaseClosed.UI
         /// </summary>
         private void Awake()
         {
-            if (Instance == null)
+            Instance = this;
+
+            // Enforce sharp font rasterization and pixel-perfect canvas alignment at runtime
+            Canvas canvas = GetComponent<Canvas>();
+            if (canvas != null)
             {
-                Instance = this;
+                canvas.pixelPerfect = true;
             }
-            else if (Instance != this)
+
+            CanvasScaler scaler = GetComponent<CanvasScaler>();
+            if (scaler != null && scaler.dynamicPixelsPerUnit < 3.0f)
             {
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                    DestroyImmediate(gameObject);
-                else
-                    Destroy(gameObject);
-#else
-                Destroy(gameObject);
-#endif
+                scaler.dynamicPixelsPerUnit = 3.0f;
             }
         }
 
