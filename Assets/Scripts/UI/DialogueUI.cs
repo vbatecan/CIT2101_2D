@@ -52,6 +52,7 @@ namespace CaseClosed.UI
 
             if (speakerNameText != null) speakerNameText.text = "";
             if (dialogueBodyText != null) dialogueBodyText.text = "";
+            SetNextButtonInteractable(false);
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
             if (challengeHighlight != null) challengeHighlight.SetActive(false);
             gameObject.SetActive(false);
@@ -123,6 +124,7 @@ namespace CaseClosed.UI
             if (speakerNameText != null) speakerNameText.text = node.speakerName;
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+            SetNextButtonInteractable(false);
             typewriterCoroutine = StartCoroutine(TypeText(node.statementText));
 
             if (challengeButton != null)
@@ -163,6 +165,7 @@ namespace CaseClosed.UI
         private IEnumerator TypeText(string text)
         {
             isTyping = true;
+            SetNextButtonInteractable(false);
             currentFullText = text;
             if (dialogueBodyText != null) dialogueBodyText.text = "";
 
@@ -175,36 +178,23 @@ namespace CaseClosed.UI
             }
 
             isTyping = false;
+            SetNextButtonInteractable(true);
         }
 
-        /// <summary>
-        /// Instantly finishes the current typewriter animation, displaying the full dialogue string.
-        /// </summary>
-        public void CompleteTypingInstantly()
+        private void SetNextButtonInteractable(bool interactable)
         {
-            if (isTyping)
-            {
-                if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
-                if (dialogueBodyText != null) dialogueBodyText.text = currentFullText;
-                isTyping = false;
-            }
+            if (nextButton != null) nextButton.interactable = interactable;
         }
 
         /// <summary>
-        /// Handles next button click: completes text immediately if typing, or advances dialogue node if finished.
+        /// Handles next button click after the current line has finished printing.
         /// </summary>
         private void OnNextButtonClicked()
         {
             Debug.Log($"[UI:Dialogue] Next button clicked (IsTyping: {isTyping})");
 
-            if (isTyping)
-            {
-                CompleteTypingInstantly();
-            }
-            else
-            {
-                InterrogationManager.Instance?.AdvanceDialogue();
-            }
+            if (isTyping) return;
+            InterrogationManager.Instance?.AdvanceDialogue();
         }
 
         /// <summary>
@@ -287,6 +277,7 @@ namespace CaseClosed.UI
             IsDialogueOpen = false;
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
             isTyping = false;
+            SetNextButtonInteractable(false);
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
             gameObject.SetActive(false);
         }
@@ -309,6 +300,7 @@ namespace CaseClosed.UI
             }
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+            SetNextButtonInteractable(false);
             typewriterCoroutine = StartCoroutine(TypeText(reactionMessage));
         }
     }
