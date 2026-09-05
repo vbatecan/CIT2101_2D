@@ -28,6 +28,13 @@ Assets/Scripts/
 
 ## 2. Mandatory Rules of Engagement for Agents
 
+### Preserve Hand-Authored Layouts
+
+- Existing scenes and prefabs are the source of truth for UI layout and object placement.
+- Do not create, restore, or execute bulk UI/layout generators, scene rebuilders, or automatic layout-repair scripts unless the user explicitly requests that exact operation.
+- Make only specifically requested, targeted layout edits; preserve all other Inspector values and prefab overrides.
+- Tests must never regenerate or save production scenes, prefabs, or assets. Use temporary test objects or read-only asset validation instead.
+
 1. **Verify Unity APIs First**:
    - Unity 6 and URP/Cinemachine 3 APIs differ significantly from older Unity versions (e.g. `CinemachineCamera` vs `CinemachineVirtualCamera`, `linearVelocity` vs `velocity`).
    - Use `unity_reflect` and `unity_docs` or Context7 to verify exact type signatures and namespaces before writing C# code.
