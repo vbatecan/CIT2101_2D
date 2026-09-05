@@ -1455,9 +1455,6 @@ namespace CaseClosed.Editor
 
             CharacterDisplay cd = root.GetComponent<CharacterDisplay>();
             cd.characterSpriteRenderer = sr;
-            cd.enableIdleBreathing = true;
-            cd.breathingSpeed = 2f;
-            cd.breathingAmount = 0.03f;
             cd.characterSlot = CharacterSlot.AutoDetect;
 
             SaveAndDestroy(root, path);
@@ -1487,9 +1484,6 @@ namespace CaseClosed.Editor
 
             CharacterDisplay cd = root.GetComponent<CharacterDisplay>();
             cd.characterSpriteRenderer = sr;
-            cd.enableIdleBreathing = true;
-            cd.breathingSpeed = 2f;
-            cd.breathingAmount = 0.03f;
             cd.characterSlot = slot;
 
             SaveAndDestroy(root, targetPath);
@@ -1894,7 +1888,6 @@ namespace CaseClosed.Editor
             CharacterDisplay[] displays = charactersRoot.GetComponentsInChildren<CharacterDisplay>(true);
             foreach (var display in displays)
             {
-                display.enableIdleBreathing = true;
                 if (display.characterSpriteRenderer == null)
                 {
                     display.characterSpriteRenderer = display.GetComponent<SpriteRenderer>();

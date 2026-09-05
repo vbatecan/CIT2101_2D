@@ -108,6 +108,3 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 3301298923871864992}
-  enableIdleBreathing: 1
-  breathingSpeed: 2
-  breathingAmount: 0.03

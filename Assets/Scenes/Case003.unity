@@ -153,9 +153,6 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 15965238}
-  enableIdleBreathing: 1
-  breathingSpeed: 2
-  breathingAmount: 0.025
 --- !u!212 &15965238
 SpriteRenderer:
   serializedVersion: 2
@@ -6579,9 +6576,6 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 1621765561}
-  enableIdleBreathing: 1
-  breathingSpeed: 2.2
-  breathingAmount: 0.025
 --- !u!212 &1621765561
 SpriteRenderer:
   serializedVersion: 2

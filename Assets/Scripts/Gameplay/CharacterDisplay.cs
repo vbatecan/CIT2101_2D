@@ -7,7 +7,7 @@ using CaseClosed.Managers;
 namespace CaseClosed.Gameplay
 {
     /// <summary>
-    /// Gameplay MonoBehaviour managing character portraits/sprites and subtle breathing idle animations across table views.
+    /// Gameplay MonoBehaviour managing character portraits/sprites across table views.
     /// Supports multi-character setups (Primary and Secondary suspects) sitting side-by-side across the interrogation table.
     /// Can be dragged directly onto character GameObjects in the Unity Inspector.
     /// </summary>
@@ -24,23 +24,13 @@ namespace CaseClosed.Gameplay
         public Image characterPortraitImage;
         public SpriteRenderer characterSpriteRenderer;
 
-        [Header("Idle Animation Settings")]
-        public bool enableIdleBreathing = true;
-        public float breathingSpeed = 2f;
-        public float breathingAmount = 0.03f;
-
         private CharacterProfileSO activeSuspect;
-        private Vector3 initialScale;
 
         /// <summary>
-        /// Stores initial visual transform scales and subscribes to case and interrogation manager events.
+        /// Subscribes to case and interrogation manager events.
         /// </summary>
         private void Start()
         {
-            if (characterPortraitImage != null) initialScale = characterPortraitImage.rectTransform.localScale;
-            else if (characterSpriteRenderer != null) initialScale = characterSpriteRenderer.transform.localScale;
-            else initialScale = transform.localScale;
-
             if (InterrogationManager.Instance != null)
             {
                 InterrogationManager.Instance.OnSuspectChanged += HandleSuspectChanged;
@@ -63,17 +53,20 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
-        /// Updates the subtle sinusoidal idle breathing scale on every frame.
+        /// Unsubscribes from case and interrogation manager events when destroyed.
         /// </summary>
-        private void Update()
+        private void OnDestroy()
         {
-            if (enableIdleBreathing)
+            if (InterrogationManager.Instance != null)
             {
-                float scaleOffset = Mathf.Sin(Time.time * breathingSpeed) * breathingAmount;
-                Vector3 newScale = new Vector3(initialScale.x, initialScale.y + scaleOffset, initialScale.z);
+                InterrogationManager.Instance.OnSuspectChanged -= HandleSuspectChanged;
+                InterrogationManager.Instance.OnExpressionChanged -= HandleExpressionChanged;
+            }
 
-                if (characterPortraitImage != null) characterPortraitImage.rectTransform.localScale = newScale;
-                else if (characterSpriteRenderer != null) characterSpriteRenderer.transform.localScale = newScale;
+            if (CaseManager.Instance != null)
+            {
+                CaseManager.Instance.OnCaseLoaded -= HandleCaseLoaded;
+                CaseManager.Instance.OnInvestigatorChanged -= HandleInvestigatorChanged;
             }
         }
 
