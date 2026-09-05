@@ -171,16 +171,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18, g: 0.23, b: 0.31, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 6861458476296816104, guid: 65ae141111ab8bd4c8b52558e21c80f4, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -946,7 +946,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 139073212}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -3748,14 +3748,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.06, g: 0.07, b: 0.09, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 2839455820850003538, guid: 30fd09be872da8a45872bfabc0ef922a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6658,39 +6658,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
---- !u!1 &952618598 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3912271890746092034, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 952618597}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &952618599 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3721677353766021362, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 952618597}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &952618600 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5984264733949201069, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 952618597}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &952618601 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6628290839085909350, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 952618597}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &952618602 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6543889433697936537, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 952618597}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &952618603 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3828272400331315168, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 952618597}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &952618604 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4188595161156564832, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
   m_PrefabInstance: {fileID: 952618597}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &980830342
@@ -6857,12 +6827,12 @@ MonoBehaviour:
   gameOverPanel: {fileID: 0}
   inGameMenuPanel: {fileID: 0}
   mainMenuConfirmPanel: {fileID: 0}
-  timerContainer: {fileID: 952618604}
-  notebookButton: {fileID: 952618603}
-  deductionBoardButton: {fileID: 952618602}
-  concludeCaseButton: {fileID: 952618601}
-  investigatorSelectButton: {fileID: 952618600}
-  returnToMenuButton: {fileID: 952618598}
+  timerContainer: {fileID: 0}
+  notebookButton: {fileID: 0}
+  deductionBoardButton: {fileID: 0}
+  concludeCaseButton: {fileID: 0}
+  investigatorSelectButton: {fileID: 0}
+  returnToMenuButton: {fileID: 0}
   resumeGameButton: {fileID: 0}
   inGameMainMenuButton: {fileID: 0}
   confirmMainMenuYesButton: {fileID: 0}
@@ -7622,7 +7592,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1082268494}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -8433,7 +8403,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1307756685}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -9662,7 +9632,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1488415290}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -9941,16 +9911,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18, g: 0.23, b: 0.31, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 776348533757304443, guid: ab574c40261365546a2d3c04f28ab8bd, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -10397,7 +10367,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1732270342}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -11442,16 +11412,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.55, g: 0.18, b: 0.18, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 1159532378635103625, guid: a9d4dc4c9dafdf54099184ef3e4c7040, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
