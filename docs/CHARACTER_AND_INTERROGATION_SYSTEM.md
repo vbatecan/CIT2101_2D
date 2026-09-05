@@ -38,9 +38,6 @@ Drag [`CharacterDisplay.cs`](file:///C:/Users/Andrei/Projects/CIT2101_2D/Assets/
    - Set to `PrimarySuspect` on `Character_Suspect_Left`.
    - Set to `SecondarySuspect` on `Character_Suspect_Right`.
 2. **`Character Sprite Renderer`**: Assign the GameObject's `SpriteRenderer`.
-3. **`Enable Idle Breathing`**: Checked (`true`) to apply subtle sinusoidal breathing animation so characters feel alive.
-4. **`Breathing Speed`**: `2.0`
-5. **`Breathing Amount`**: `0.03`
 
 ---
 

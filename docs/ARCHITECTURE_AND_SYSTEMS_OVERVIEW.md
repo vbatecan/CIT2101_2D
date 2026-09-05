@@ -109,7 +109,7 @@ MonoBehaviours that can be dragged directly onto GameObjects:
 ---
 
 ### 4. Gameplay & UI Layers (`Assets/Scripts/Gameplay/` & `Assets/Scripts/UI/`)
-* [`CharacterDisplay.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/CharacterDisplay.cs): Manages portraits, emotional expressions, and idle breathing.
+* [`CharacterDisplay.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/CharacterDisplay.cs): Manages portraits and emotional expressions.
 * [`TableEvidenceItem.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/TableEvidenceItem.cs): Physical table items, notebook openers, and dialogue triggers.
 * [`FixedInvestigationCamera.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/Gameplay/FixedInvestigationCamera.cs): Camera lock and editor viewport gizmos.
 * [`MainMenuUI.cs`](file:///home/vbatecan/Projects/game_dev/my2D/CIT2101_2D/Assets/Scripts/UI/MainMenuUI.cs): Main menu screen, case select, detective handbook, settings, and credits coordinator.

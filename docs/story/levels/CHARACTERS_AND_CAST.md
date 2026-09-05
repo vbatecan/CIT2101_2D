@@ -150,9 +150,6 @@ The game's visual presentation centers on a two-suspect composition across the i
 // Configured on Character_Suspect_Left & Character_Suspect_Right GameObjects
 [SerializeField] private CharacterSlot _slot; // PrimarySuspect or SecondarySuspect
 [SerializeField] private SpriteRenderer _spriteRenderer;
-[SerializeField] private bool _enableIdleBreathing = true;
-[SerializeField] private float _breathingSpeed = 2.0f;
-[SerializeField] private float _breathingAmount = 0.03f;
 ```
 
 ### Character Profile Data Model (`CharacterProfileSO.cs`)
