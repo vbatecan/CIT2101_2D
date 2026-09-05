@@ -101,7 +101,7 @@ namespace CaseClosed.Editor
                 Debug.LogWarning("[CaseTimerSetup] Panel_HeaderNav not found in scene.");
             }
 
-                EnsureInGameMenuUI(canvas.transform, headerNav, uiManager, defaultFont);
+            EnsureInGameMenuUI(canvas.transform, headerNav, uiManager, defaultFont);
 
             // 2. Ensure GameOver Panel under Canvas
             GameObject gameOverObj = EnsureGameOverUI(canvas.transform, defaultFont);
@@ -271,6 +271,166 @@ namespace CaseClosed.Editor
             panelObj.SetActive(false);
             EditorUtility.SetDirty(gameOverUI);
             return panelObj;
+        }
+
+        private static void EnsureInGameMenuUI(Transform canvasTrans, Transform headerNav, UIManager uiManager, Font font)
+        {
+            // 1. Link header return button if unassigned
+            if (uiManager.returnToMenuButton == null && headerNav != null)
+            {
+                Transform returnBtnTrans = headerNav.Find("Button_ReturnToMenu");
+                if (returnBtnTrans == null)
+                {
+                    returnBtnTrans = headerNav.Find("Button_Menu");
+                }
+                if (returnBtnTrans != null)
+                {
+                    uiManager.returnToMenuButton = returnBtnTrans.gameObject;
+                }
+            }
+
+            // 2. Ensure In-Game Menu Panel
+            Transform existingMenu = canvasTrans.Find("Panel_InGameMenu");
+            GameObject inGameMenuObj;
+
+            if (existingMenu != null)
+            {
+                inGameMenuObj = existingMenu.gameObject;
+            }
+            else
+            {
+                inGameMenuObj = new GameObject("Panel_InGameMenu", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                inGameMenuObj.transform.SetParent(canvasTrans, false);
+
+                RectTransform rt = inGameMenuObj.GetComponent<RectTransform>();
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+
+                Image bg = inGameMenuObj.GetComponent<Image>();
+                bg.color = new Color(0.04f, 0.05f, 0.08f, 0.88f);
+                bg.raycastTarget = true;
+            }
+
+            Transform menuCardTrans = inGameMenuObj.transform.Find("Card_InGameMenu");
+            GameObject menuCardObj;
+            if (menuCardTrans != null)
+            {
+                menuCardObj = menuCardTrans.gameObject;
+            }
+            else
+            {
+                menuCardObj = new GameObject("Card_InGameMenu", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                menuCardObj.transform.SetParent(inGameMenuObj.transform, false);
+
+                RectTransform cardRt = menuCardObj.GetComponent<RectTransform>();
+                cardRt.anchorMin = new Vector2(0.5f, 0.5f);
+                cardRt.anchorMax = new Vector2(0.5f, 0.5f);
+                cardRt.pivot = new Vector2(0.5f, 0.5f);
+                cardRt.anchoredPosition = Vector2.zero;
+                cardRt.sizeDelta = new Vector2(420f, 320f);
+
+                Image cardBg = menuCardObj.GetComponent<Image>();
+                cardBg.color = new Color(0.12f, 0.14f, 0.18f, 0.98f);
+            }
+
+            // Title
+            Text titleText = EnsureTextChild(menuCardObj.transform, "Text_Title", font, 24, FontStyle.Bold,
+                new Vector2(0f, 95f), new Vector2(380f, 40f), TextAnchor.MiddleCenter, Color.white);
+            titleText.text = "GAME PAUSED";
+
+            // Buttons
+            Button resumeBtn = EnsureButtonChild(menuCardObj.transform, "Button_Resume", font, "Resume Game",
+                new Vector2(0f, 25f), new Vector2(260f, 48f), new Color(0.18f, 0.45f, 0.25f));
+
+            Button mainMenuBtn = EnsureButtonChild(menuCardObj.transform, "Button_MainMenu", font, "Main Menu",
+                new Vector2(0f, -40f), new Vector2(260f, 48f), new Color(0.55f, 0.22f, 0.22f));
+
+            inGameMenuObj.SetActive(false);
+            uiManager.inGameMenuPanel = inGameMenuObj;
+            uiManager.resumeGameButton = resumeBtn;
+            uiManager.inGameMainMenuButton = mainMenuBtn;
+
+            // 3. Ensure Main Menu Confirmation Dialog Panel
+            Transform existingConfirm = canvasTrans.Find("Panel_MainMenuConfirm");
+            GameObject confirmPanelObj;
+
+            if (existingConfirm != null)
+            {
+                confirmPanelObj = existingConfirm.gameObject;
+            }
+            else
+            {
+                confirmPanelObj = new GameObject("Panel_MainMenuConfirm", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                confirmPanelObj.transform.SetParent(canvasTrans, false);
+
+                RectTransform rt = confirmPanelObj.GetComponent<RectTransform>();
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+
+                Image bg = confirmPanelObj.GetComponent<Image>();
+                bg.color = new Color(0.02f, 0.02f, 0.02f, 0.90f);
+                bg.raycastTarget = true;
+            }
+
+            Transform confirmCardTrans = confirmPanelObj.transform.Find("Card_Confirm");
+            GameObject confirmCardObj;
+            if (confirmCardTrans != null)
+            {
+                confirmCardObj = confirmCardTrans.gameObject;
+            }
+            else
+            {
+                confirmCardObj = new GameObject("Card_Confirm", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                confirmCardObj.transform.SetParent(confirmPanelObj.transform, false);
+
+                RectTransform cardRt = confirmCardObj.GetComponent<RectTransform>();
+                cardRt.anchorMin = new Vector2(0.5f, 0.5f);
+                cardRt.anchorMax = new Vector2(0.5f, 0.5f);
+                cardRt.pivot = new Vector2(0.5f, 0.5f);
+                cardRt.anchoredPosition = Vector2.zero;
+                cardRt.sizeDelta = new Vector2(500f, 260f);
+
+                Image cardBg = confirmCardObj.GetComponent<Image>();
+                cardBg.color = new Color(0.14f, 0.10f, 0.10f, 0.98f);
+            }
+
+            // Confirm Title & Message
+            Text confirmTitle = EnsureTextChild(confirmCardObj.transform, "Text_Title", font, 22, FontStyle.Bold,
+                new Vector2(0f, 70f), new Vector2(460f, 40f), TextAnchor.MiddleCenter, new Color(1f, 0.35f, 0.35f));
+            confirmTitle.text = "RETURN TO MAIN MENU?";
+
+            Text confirmMessage = EnsureTextChild(confirmCardObj.transform, "Text_Message", font, 15, FontStyle.Normal,
+                new Vector2(0f, 15f), new Vector2(440f, 50f), TextAnchor.MiddleCenter, new Color(0.85f, 0.85f, 0.85f));
+            confirmMessage.text = "Any unsaved investigation progress in this case will be lost.\nAre you sure you want to return to the main menu?";
+
+            // Confirm Buttons
+            Button yesBtn = EnsureButtonChild(confirmCardObj.transform, "Button_ConfirmYes", font, "Yes, Return",
+                new Vector2(-110f, -60f), new Vector2(180f, 46f), new Color(0.65f, 0.20f, 0.20f));
+
+            Button noBtn = EnsureButtonChild(confirmCardObj.transform, "Button_ConfirmNo", font, "Cancel",
+                new Vector2(110f, -60f), new Vector2(180f, 46f), new Color(0.30f, 0.32f, 0.38f));
+
+            confirmPanelObj.SetActive(false);
+            uiManager.mainMenuConfirmPanel = confirmPanelObj;
+            uiManager.confirmMainMenuYesButton = yesBtn;
+            uiManager.confirmMainMenuNoButton = noBtn;
+
+            var uiSerialized = new SerializedObject(uiManager);
+            uiSerialized.FindProperty("inGameMenuPanel").objectReferenceValue = inGameMenuObj;
+            uiSerialized.FindProperty("mainMenuConfirmPanel").objectReferenceValue = confirmPanelObj;
+            uiSerialized.FindProperty("resumeGameButton").objectReferenceValue = resumeBtn;
+            uiSerialized.FindProperty("inGameMainMenuButton").objectReferenceValue = mainMenuBtn;
+            uiSerialized.FindProperty("confirmMainMenuYesButton").objectReferenceValue = yesBtn;
+            uiSerialized.FindProperty("confirmMainMenuNoButton").objectReferenceValue = noBtn;
+            if (uiManager.returnToMenuButton != null)
+            {
+                uiSerialized.FindProperty("returnToMenuButton").objectReferenceValue = uiManager.returnToMenuButton;
+            }
+            uiSerialized.ApplyModifiedProperties();
         }
 
         private static Text EnsureTextChild(Transform parent, string name, Font font, int size, FontStyle style,
