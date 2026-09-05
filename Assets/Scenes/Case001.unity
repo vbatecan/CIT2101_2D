@@ -980,7 +980,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &203977180
 Transform:
   m_ObjectHideFlags: 0
@@ -3345,7 +3345,7 @@ MonoBehaviour:
   conclusionQuizPanel: {fileID: 1271874452}
   resultsScreenPanel: {fileID: 1017963406}
   investigatorSelectPanel: {fileID: 0}
-  gameOverPanel: {fileID: 0}
+  gameOverPanel: {fileID: 203977179}
   inGameMenuPanel: {fileID: 0}
   mainMenuConfirmPanel: {fileID: 0}
   timerContainer: {fileID: 1720920561}
@@ -4486,6 +4486,8 @@ MonoBehaviour:
   nextLevelButton: {fileID: 0}
   nextLevelButtonText: {fileID: 0}
   returnToMainMenuButton: {fileID: 2108290861}
+  resultBackgroundImage: {fileID: 1017963407}
+  solvedBackgroundSprite: {fileID: -8058373917310724304, guid: 0599ff3432b0be444b512fa10ae013bf, type: 3}
 --- !u!114 &1271874455
 MonoBehaviour:
   m_ObjectHideFlags: 0

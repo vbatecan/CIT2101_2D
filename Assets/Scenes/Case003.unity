@@ -2131,7 +2131,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.08, y: 0.02}
   m_AnchorMax: {x: 0.92, y: 0.28}
-  m_AnchoredPosition: {x: 0.001159668, y: -11.054993}
+  m_AnchoredPosition: {x: 0.0010986328, y: -11.054993}
   m_SizeDelta: {x: 300.11, y: 22.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &527956025
@@ -2959,14 +2959,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.06, g: 0.02, b: 0.02, a: 0.96}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 3914312475481781374, guid: 2570e48596bfbf74dbc50822ca524981, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4221,6 +4221,8 @@ MonoBehaviour:
   nextLevelButton: {fileID: 0}
   nextLevelButtonText: {fileID: 0}
   returnToMainMenuButton: {fileID: 1972121156}
+  resultBackgroundImage: {fileID: 266174766}
+  solvedBackgroundSprite: {fileID: -8058373917310724304, guid: 0599ff3432b0be444b512fa10ae013bf, type: 3}
 --- !u!114 &1099364635
 MonoBehaviour:
   m_ObjectHideFlags: 0

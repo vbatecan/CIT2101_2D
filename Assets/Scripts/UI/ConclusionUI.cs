@@ -32,6 +32,13 @@ namespace CaseClosed.UI
         public Text nextLevelButtonText;
         public Button returnToMainMenuButton;
 
+        [Header("Outcome Branding")]
+        [Tooltip("Full-screen background image used when the case is solved.")]
+        [SerializeField] private Image resultBackgroundImage;
+
+        [Tooltip("Case Closed / You Win artwork displayed for a successful conclusion.")]
+        [SerializeField] private Sprite solvedBackgroundSprite;
+
         private List<int> playerAnswers = new List<int>();
 
         /// <summary>
@@ -67,6 +74,17 @@ namespace CaseClosed.UI
 
             if (quizContainer != null) quizContainer.SetActive(true);
             if (resultsContainer != null) resultsContainer.SetActive(false);
+
+            if (resultBackgroundImage != null)
+            {
+                resultBackgroundImage.sprite = null;
+                resultBackgroundImage.color = new Color(0.06f, 0.07f, 0.09f, 0.98f);
+            }
+
+            if (resultTitleText != null)
+            {
+                resultTitleText.gameObject.SetActive(true);
+            }
 
             playerAnswers.Clear();
             for (int i = 0; i < activeCase.conclusionQuestions.Count; i++)
@@ -166,6 +184,19 @@ namespace CaseClosed.UI
 
             if (quizContainer != null) quizContainer.SetActive(false);
             if (resultsContainer != null) resultsContainer.SetActive(true);
+
+            if (resultBackgroundImage != null)
+            {
+                resultBackgroundImage.sprite = result.isCaseSolved ? solvedBackgroundSprite : null;
+                resultBackgroundImage.color = result.isCaseSolved && solvedBackgroundSprite != null
+                    ? Color.white
+                    : new Color(0.06f, 0.07f, 0.09f, 0.98f);
+            }
+
+            if (resultTitleText != null)
+            {
+                resultTitleText.gameObject.SetActive(!result.isCaseSolved);
+            }
 
             CaseSO activeCase = CaseManager.Instance?.activeCase;
             CharacterProfileSO investigator = activeCase?.leadInvestigator ?? CaseManager.Instance?.selectedInvestigator;
