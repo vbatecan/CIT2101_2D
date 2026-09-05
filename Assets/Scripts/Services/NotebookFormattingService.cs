@@ -20,15 +20,16 @@ namespace CaseClosed.Services
             if (activeCase == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"[LEVEL {activeCase.levelNumber}] - {activeCase.caseTitle}");
+            sb.AppendLine($"<size=22><b>CASE FILE #{activeCase.levelNumber}</b></size>");
+            sb.AppendLine($"<size=18><b>{activeCase.caseTitle}</b></size>\n");
             if (activeCase.leadInvestigator != null)
             {
-                sb.AppendLine($"Lead Investigator: {activeCase.leadInvestigator.fullName} ({activeCase.leadInvestigator.occupation})");
+                sb.AppendLine($"<b>Lead Investigator:</b> {activeCase.leadInvestigator.fullName} ({activeCase.leadInvestigator.occupation})");
             }
-            sb.AppendLine($"Date & Location: {activeCase.dateAndLocation}");
-            sb.AppendLine($"Victim: {activeCase.victimInfo}\n");
-            sb.AppendLine($"[INCIDENT SUMMARY]\n{activeCase.incidentDescription}\n");
-            sb.AppendLine($"[OBJECTIVE]\n{activeCase.objective}");
+            sb.AppendLine($"<b>Date & Location:</b> {activeCase.dateAndLocation}");
+            sb.AppendLine($"<b>Victim:</b> {activeCase.victimInfo}\n");
+            sb.AppendLine($"<size=16><b>[ INCIDENT SUMMARY ]</b></size>\n{activeCase.incidentDescription}\n");
+            sb.AppendLine($"<size=16><b>[ CURRENT OBJECTIVE ]</b></size>\n{activeCase.objective}");
             return sb.ToString();
         }
 
@@ -72,13 +73,14 @@ namespace CaseClosed.Services
             if (profile == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"=== {profile.fullName.ToUpper()} {(isPrimary ? "(PRIMARY SUSPECT)" : "")} ===");
-            sb.AppendLine($"Age: {profile.age} | Occupation: {profile.occupation}");
-            sb.AppendLine($"Personality: {profile.personalityTrait}");
-            sb.AppendLine($"Relationship to Victim: {profile.relationshipToVictim}");
-            sb.AppendLine($"Alibi: {profile.alibi}");
-            sb.AppendLine($"Possible Motive: {profile.possibleMotives}");
-            sb.AppendLine($"Known Conflicts: {profile.knownConflicts}\n");
+            sb.AppendLine($"<size=20><b>{profile.fullName.ToUpper()}</b></size> {(isPrimary ? "<color=#991B1B><b>[PRIMARY SUSPECT]</b></color>" : "<color=#475569>[PERSON OF INTEREST]</color>")}");
+            sb.AppendLine($"<b>Age:</b> {profile.age}  |  <b>Occupation:</b> {profile.occupation}");
+            sb.AppendLine($"<b>Personality:</b> {profile.personalityTrait}");
+            sb.AppendLine($"<b>Relationship to Victim:</b> {profile.relationshipToVictim}\n");
+            sb.AppendLine($"<b>Alibi:</b>\n<i>\"{profile.alibi}\"</i>\n");
+            sb.AppendLine($"<b>Possible Motive:</b>\n{profile.possibleMotives}\n");
+            sb.AppendLine($"<b>Known Conflicts:</b>\n{profile.knownConflicts}\n");
+            sb.AppendLine("<color=#64748B>────────────────────────────</color>\n");
             return sb.ToString();
         }
 
@@ -93,18 +95,25 @@ namespace CaseClosed.Services
             if (activeCase == null || activeCase.evidenceItems == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
+            bool any = false;
             foreach (var ev in activeCase.evidenceItems)
             {
                 if (ev != null && discoveredIds != null && discoveredIds.Contains(ev.id))
                 {
-                    sb.AppendLine($"• {ev.evidenceName} [{ev.category}]");
+                    any = true;
+                    sb.AppendLine($"<size=18><b>• {ev.evidenceName}</b></size> <color=#475569>[{ev.category}]</color>");
                     sb.AppendLine($"  {ev.baseDescription}");
                     if (ev.isExamined && !string.IsNullOrEmpty(ev.detailedObservation))
                     {
-                        sb.AppendLine($"  [EXAMINED]: {ev.detailedObservation}");
+                        sb.AppendLine($"  <color=#0F766E><b>[EXAMINED]:</b> {ev.detailedObservation}</color>");
                     }
-                    sb.AppendLine();
+                    sb.AppendLine("<color=#94A3B8>────────────────────────────</color>\n");
                 }
+            }
+
+            if (!any)
+            {
+                sb.AppendLine("<i>No physical evidence logged yet.\nInspect the crime scene and interrogation desk to discover evidence.</i>");
             }
 
             return sb.ToString();
@@ -119,14 +128,15 @@ namespace CaseClosed.Services
         {
             if (unlockedClues == null || unlockedClues.Count == 0)
             {
-                return "No clues unlocked yet. Examine evidence and interrogate suspects.";
+                return "<i>No deduction clues unlocked yet.\nExamine evidence hotspots and confront suspects with contradictions.</i>";
             }
 
             StringBuilder sb = new StringBuilder();
             foreach (var kvp in unlockedClues)
             {
-                sb.AppendLine($"[CLUE #{kvp.Key}]");
-                sb.AppendLine($"{kvp.Value}\n");
+                sb.AppendLine($"<size=18><b>[CLUE #{kvp.Key}]</b></size>");
+                sb.AppendLine($"  {kvp.Value}\n");
+                sb.AppendLine("<color=#94A3B8>────────────────────────────</color>\n");
             }
 
             return sb.ToString();
