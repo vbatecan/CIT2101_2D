@@ -1083,90 +1083,40 @@ namespace CaseClosed.Editor
 
             InvestigatorSelectionUI ui = root.GetComponent<InvestigatorSelectionUI>();
 
-            AddTextChild(root.transform, "Text_Title", "SELECT LEAD INVESTIGATOR", 24, FontStyle.Bold,
+            AddTextChild(root.transform, "Text_Title", "SELECT CASE LEVEL", 24, FontStyle.Bold,
                 TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.45f, 1f),
                 new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, -35f), new Vector2(600f, 40f), true);
-
-            Text invStatus = AddTextChild(root.transform, "Text_CurrentInvestigator", "ACTIVE INVESTIGATOR: DETECTIVE KYLE PASTRANA", 16, FontStyle.Bold,
-                TextAnchor.MiddleCenter, Color.white,
-                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, -75f), new Vector2(700f, 30f), true);
-
-            // Kyle Card
-            GameObject kyleCard = new GameObject("Card_Kyle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            kyleCard.transform.SetParent(root.transform, false);
-            RectTransform kRt = kyleCard.GetComponent<RectTransform>();
-            kRt.anchorMin = new Vector2(0.5f, 0.5f);
-            kRt.anchorMax = new Vector2(0.5f, 0.5f);
-            kRt.anchoredPosition = new Vector2(-220f, 40f);
-            kRt.sizeDelta = new Vector2(360f, 260f);
-            Image kImg = kyleCard.GetComponent<Image>();
-            kImg.color = new Color(0.14f, 0.16f, 0.20f, 0.95f);
-
-            Text kyleDetails = AddTextChild(kyleCard.transform, "Text_KyleDetails", "<b>DETECTIVE KYLE GABRIEL PASTRANA</b>\nRole: Lead Field Detective | Age: 34\nSpecialty: Physical clues & alibi deduction.",
-                14, FontStyle.Normal, TextAnchor.UpperLeft, Color.white,
-                Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, true);
-            kyleDetails.rectTransform.offsetMin = new Vector2(16f, 60f);
-            kyleDetails.rectTransform.offsetMax = new Vector2(-16f, -16f);
-
-            Button kyleBtn = AddButtonChild(kyleCard.transform, "Button_SelectKyle", "Select Kyle", 15, new Color(0.18f, 0.45f, 0.25f),
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(200f, 42f));
-
-            // Miguel Card
-            GameObject miguelCard = new GameObject("Card_Miguel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            miguelCard.transform.SetParent(root.transform, false);
-            RectTransform mRt = miguelCard.GetComponent<RectTransform>();
-            mRt.anchorMin = new Vector2(0.5f, 0.5f);
-            mRt.anchorMax = new Vector2(0.5f, 0.5f);
-            mRt.anchoredPosition = new Vector2(220f, 40f);
-            mRt.sizeDelta = new Vector2(360f, 260f);
-            Image mImg = miguelCard.GetComponent<Image>();
-            mImg.color = new Color(0.14f, 0.16f, 0.20f, 0.95f);
-
-            Text miguelDetails = AddTextChild(miguelCard.transform, "Text_MiguelDetails", "<b>DETECTIVE MIGUEL BORJA</b>\nRole: Digital Forensics | Age: 36\nSpecialty: Cyber forensics & digital logs.",
-                14, FontStyle.Normal, TextAnchor.UpperLeft, Color.white,
-                Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, true);
-            miguelDetails.rectTransform.offsetMin = new Vector2(16f, 60f);
-            miguelDetails.rectTransform.offsetMax = new Vector2(-16f, -16f);
-
-            Button miguelBtn = AddButtonChild(miguelCard.transform, "Button_SelectMiguel", "Select Miguel", 15, new Color(0.18f, 0.45f, 0.25f),
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(200f, 42f));
+                new Vector2(0f, -60f), new Vector2(600f, 40f), true);
 
             // Level Selection Sub-Container
             GameObject levelSelectObj = new GameObject("Container_LevelSelect", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             levelSelectObj.transform.SetParent(root.transform, false);
             RectTransform lsRt = levelSelectObj.GetComponent<RectTransform>();
-            lsRt.anchorMin = new Vector2(0.5f, 0f);
-            lsRt.anchorMax = new Vector2(0.5f, 0f);
-            lsRt.pivot = new Vector2(0.5f, 0f);
-            lsRt.anchoredPosition = new Vector2(0f, 90f);
-            lsRt.sizeDelta = new Vector2(620f, 100f);
+            lsRt.anchorMin = new Vector2(0.5f, 0.5f);
+            lsRt.anchorMax = new Vector2(0.5f, 0.5f);
+            lsRt.pivot = new Vector2(0.5f, 0.5f);
+            lsRt.anchoredPosition = new Vector2(0f, 20f);
+            lsRt.sizeDelta = new Vector2(620f, 160f);
             Image lsBg = levelSelectObj.GetComponent<Image>();
             lsBg.color = new Color(0.10f, 0.12f, 0.15f, 0.90f);
 
-            Text levelStatus = AddTextChild(levelSelectObj.transform, "Text_LevelStatus", "CURRENT CASE: LEVEL 1", 15, FontStyle.Bold,
+            Text levelStatus = AddTextChild(levelSelectObj.transform, "Text_LevelStatus", "CURRENT CASE: LEVEL 1", 16, FontStyle.Bold,
                 TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.45f, 1f),
                 new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                new Vector2(0f, -18f), new Vector2(500f, 26f), true);
+                new Vector2(0f, -28f), new Vector2(500f, 30f), true);
 
             Button l1Btn = AddButtonChild(levelSelectObj.transform, "Button_Level1", "Case 01", 14, new Color(0.24f, 0.34f, 0.48f),
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-180f, 26f), new Vector2(150f, 38f));
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(-190f, 36f), new Vector2(175f, 44f));
 
             Button l2Btn = AddButtonChild(levelSelectObj.transform, "Button_Level2", "Case 02", 14, new Color(0.24f, 0.34f, 0.48f),
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 26f), new Vector2(150f, 38f));
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 36f), new Vector2(175f, 44f));
 
             Button l3Btn = AddButtonChild(levelSelectObj.transform, "Button_Level3", "Case 03", 14, new Color(0.24f, 0.34f, 0.48f),
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(180f, 26f), new Vector2(150f, 38f));
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(190f, 36f), new Vector2(175f, 44f));
 
             Button closeSelectionBtn = AddButtonChild(root.transform, "Button_CloseSelection", "Return to Desk", 15, new Color(0.35f, 0.35f, 0.38f),
-                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(220f, 44f));
+                new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(220f, 44f));
 
-            ui.selectKyleButton = kyleBtn;
-            ui.selectMiguelButton = miguelBtn;
-            ui.currentInvestigatorStatusText = invStatus;
-            ui.kyleCardDetailsText = kyleDetails;
-            ui.miguelCardDetailsText = miguelDetails;
             ui.level1Button = l1Btn;
             ui.level2Button = l2Btn;
             ui.level3Button = l3Btn;

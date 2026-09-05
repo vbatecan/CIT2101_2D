@@ -285,11 +285,10 @@ namespace CaseClosed.Tests
 
             InvestigatorSelectionUI ui = prefab.GetComponent<InvestigatorSelectionUI>();
             Assert.IsNotNull(ui);
-            Assert.IsNotNull(ui.selectKyleButton);
-            Assert.IsNotNull(ui.selectMiguelButton);
             Assert.IsNotNull(ui.level1Button);
             Assert.IsNotNull(ui.level2Button);
             Assert.IsNotNull(ui.level3Button);
+            Assert.IsNotNull(ui.currentLevelStatusText);
             Assert.IsNotNull(ui.closeSelectionButton);
         }
 
