@@ -1,0 +1,871 @@
+fileFormatVersion: 2
+guid: 206bb27d5d32074468e845f00e1d1401
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 371944194886638959
+    second: Shania_0
+  - first:
+      213: 3223897837527373954
+    second: Shania_1
+  - first:
+      213: -8091176254630712747
+    second: Shania_2
+  - first:
+      213: 379507053685279586
+    second: Shania_3
+  - first:
+      213: -6099167173370475165
+    second: Shania_4
+  - first:
+      213: 6994382851967004748
+    second: Shania_5
+  - first:
+      213: 5619773780242916653
+    second: Shania_6
+  - first:
+      213: 232244055336479783
+    second: Shania_7
+  - first:
+      213: 7468974470360589471
+    second: Shania_8
+  - first:
+      213: 5024755781271020390
+    second: Shania_9
+  - first:
+      213: -155032223972830347
+    second: Shania_10
+  - first:
+      213: -2179649973314570789
+    second: Shania_11
+  - first:
+      213: 5247637429301877703
+    second: Shania_12
+  - first:
+      213: -852751328447853306
+    second: Shania_13
+  - first:
+      213: 6961313018973660094
+    second: Shania_14
+  - first:
+      213: -2493875431068234011
+    second: Shania_15
+  - first:
+      213: 1528894938745902366
+    second: Shania_16
+  - first:
+      213: 6036373135650306413
+    second: Shania_17
+  - first:
+      213: 4055257149913883899
+    second: Shania_18
+  - first:
+      213: -6662953745137932778
+    second: Shania_19
+  - first:
+      213: -3615785322777563013
+    second: Shania_20
+  - first:
+      213: 6511296309144659431
+    second: Shania_21
+  - first:
+      213: -703641243817975291
+    second: Shania_22
+  - first:
+      213: 6564306973358944689
+    second: Shania_23
+  - first:
+      213: -7206841435009729660
+    second: Shania_24
+  - first:
+      213: -3504409409116680884
+    second: Shania_25
+  - first:
+      213: 4440403466706238144
+    second: Shania_26
+  - first:
+      213: -8749769694140363984
+    second: Shania_27
+  - first:
+      213: 2516989750064345600
+    second: Shania_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shania_0
+      rect:
+        serializedVersion: 2
+        x: 3264
+        y: 10366
+        width: 131
+        height: 74
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6d9c7c4649692500800000000000000
+      internalID: 371944194886638959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_1
+      rect:
+        serializedVersion: 2
+        x: 3968
+        y: 10392
+        width: 18
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28818f590069dbc20800000000000000
+      internalID: 3223897837527373954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_2
+      rect:
+        serializedVersion: 2
+        x: 788
+        y: 596
+        width: 6450
+        height: 9792
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55a29a7b01e56bf80800000000000000
+      internalID: -8091176254630712747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_3
+      rect:
+        serializedVersion: 2
+        x: 7424
+        y: 7380
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26b8aa497a7444500800000000000000
+      internalID: 379507053685279586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_4
+      rect:
+        serializedVersion: 2
+        x: 7424
+        y: 6792
+        width: 28
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d878545c76b5ba0800000000000000
+      internalID: -6099167173370475165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_5
+      rect:
+        serializedVersion: 2
+        x: 7350
+        y: 6718
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c40b392652a011160800000000000000
+      internalID: 6994382851967004748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_6
+      rect:
+        serializedVersion: 2
+        x: 7380
+        y: 6688
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d25ee617a727dfd40800000000000000
+      internalID: 5619773780242916653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_7
+      rect:
+        serializedVersion: 2
+        x: 7424
+        y: 6608
+        width: 6
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72ce683ecb8193300800000000000000
+      internalID: 232244055336479783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_8
+      rect:
+        serializedVersion: 2
+        x: 7438
+        y: 6614
+        width: 8
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f94ed4e55b027a760800000000000000
+      internalID: 7468974470360589471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_9
+      rect:
+        serializedVersion: 2
+        x: 7454
+        y: 6614
+        width: 6
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 663efb1c2c48bb540800000000000000
+      internalID: 5024755781271020390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_10
+      rect:
+        serializedVersion: 2
+        x: 7468
+        y: 6600
+        width: 30
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5735c51830739ddf0800000000000000
+      internalID: -155032223972830347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_11
+      rect:
+        serializedVersion: 2
+        x: 7468
+        y: 6614
+        width: 8
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd535e5c5e350c1e0800000000000000
+      internalID: -2179649973314570789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_12
+      rect:
+        serializedVersion: 2
+        x: 7498
+        y: 6606
+        width: 14
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cb1593507a53d840800000000000000
+      internalID: 5247637429301877703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_13
+      rect:
+        serializedVersion: 2
+        x: 7512
+        y: 6628
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60d8f125f2b6a24f0800000000000000
+      internalID: -852751328447853306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_14
+      rect:
+        serializedVersion: 2
+        x: 7438
+        y: 6598
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb32a32ee4d8b9060800000000000000
+      internalID: 6961313018973660094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_15
+      rect:
+        serializedVersion: 2
+        x: 7490
+        y: 6598
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ee8a113289f36dd0800000000000000
+      internalID: -2493875431068234011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_16
+      rect:
+        serializedVersion: 2
+        x: 7484
+        y: 6584
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1597daa8d9b73510800000000000000
+      internalID: 1528894938745902366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_17
+      rect:
+        serializedVersion: 2
+        x: 7498
+        y: 6584
+        width: 14
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d69b522826185c350800000000000000
+      internalID: 6036373135650306413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_18
+      rect:
+        serializedVersion: 2
+        x: 7334
+        y: 5462
+        width: 22
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf4ea7564ea274830800000000000000
+      internalID: 4055257149913883899
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_19
+      rect:
+        serializedVersion: 2
+        x: 7424
+        y: 5476
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 616e132eede6883a0800000000000000
+      internalID: -6662953745137932778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_20
+      rect:
+        serializedVersion: 2
+        x: 7440
+        y: 5474
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b70b5cbf76622ddc0800000000000000
+      internalID: -3615785322777563013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_21
+      rect:
+        serializedVersion: 2
+        x: 7410
+        y: 5454
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e521edae75cc5a50800000000000000
+      internalID: 6511296309144659431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_22
+      rect:
+        serializedVersion: 2
+        x: 7424
+        y: 5446
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5026aec440a2c36f0800000000000000
+      internalID: -703641243817975291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_23
+      rect:
+        serializedVersion: 2
+        x: 7470
+        y: 5446
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b1fdafb96a191b50800000000000000
+      internalID: 6564306973358944689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_24
+      rect:
+        serializedVersion: 2
+        x: 7878
+        y: 5446
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48bbda9f5e72cfb90800000000000000
+      internalID: -7206841435009729660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_25
+      rect:
+        serializedVersion: 2
+        x: 7438
+        y: 5430
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4d4016a536dd5fc0800000000000000
+      internalID: -3504409409116680884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_26
+      rect:
+        serializedVersion: 2
+        x: 7454
+        y: 5430
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ca307c3d6b7f9d30800000000000000
+      internalID: 4440403466706238144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_27
+      rect:
+        serializedVersion: 2
+        x: 7424
+        y: 5402
+        width: 6
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03b094a42d2929680800000000000000
+      internalID: -8749769694140363984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shania_28
+      rect:
+        serializedVersion: 2
+        x: 7440
+        y: 5416
+        width: 12
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00272e397d42ee220800000000000000
+      internalID: 2516989750064345600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shania_0: 371944194886638959
+      Shania_1: 3223897837527373954
+      Shania_10: -155032223972830347
+      Shania_11: -2179649973314570789
+      Shania_12: 5247637429301877703
+      Shania_13: -852751328447853306
+      Shania_14: 6961313018973660094
+      Shania_15: -2493875431068234011
+      Shania_16: 1528894938745902366
+      Shania_17: 6036373135650306413
+      Shania_18: 4055257149913883899
+      Shania_19: -6662953745137932778
+      Shania_2: -8091176254630712747
+      Shania_20: -3615785322777563013
+      Shania_21: 6511296309144659431
+      Shania_22: -703641243817975291
+      Shania_23: 6564306973358944689
+      Shania_24: -7206841435009729660
+      Shania_25: -3504409409116680884
+      Shania_26: 4440403466706238144
+      Shania_27: -8749769694140363984
+      Shania_28: 2516989750064345600
+      Shania_3: 379507053685279586
+      Shania_4: -6099167173370475165
+      Shania_5: 6994382851967004748
+      Shania_6: 5619773780242916653
+      Shania_7: 232244055336479783
+      Shania_8: 7468974470360589471
+      Shania_9: 5024755781271020390
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
