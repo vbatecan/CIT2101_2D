@@ -9,20 +9,11 @@ using CaseClosed.Prototype;
 namespace CaseClosed.UI
 {
     /// <summary>
-    /// UI View MonoBehaviour managing the detective investigator selection screen and level selector.
-    /// Allows the player to choose between the 2 investigator characters (Detective Kyle Gabriel Pastrana and Detective Miguel Borja)
-    /// and choose which case level (Level 1, Level 2, Level 3) to investigate.
+    /// UI View MonoBehaviour managing the case level selector.
+    /// Allows the player to choose which case level (Level 1, Level 2, Level 3) to investigate.
     /// </summary>
     public class InvestigatorSelectionUI : MonoBehaviour
     {
-        [Header("Investigator Selection Buttons")]
-        public Button selectKyleButton;
-        public Button selectMiguelButton;
-        public Text currentInvestigatorStatusText;
-
-        [Header("Investigator Cards Display Text")]
-        public Text kyleCardDetailsText;
-        public Text miguelCardDetailsText;
 
         [Header("Level Select Buttons (Cases 1, 2, 3)")]
         public Button level1Button;
@@ -34,13 +25,10 @@ namespace CaseClosed.UI
         public Button closeSelectionButton;
 
         /// <summary>
-        /// Binds UI button listeners for character picking, level selection, and close actions.
+        /// Binds UI button listeners for level selection and close actions.
         /// </summary>
         private void Start()
         {
-            if (selectKyleButton != null) selectKyleButton.onClick.AddListener(() => OnSelectInvestigatorByIndex(0));
-            if (selectMiguelButton != null) selectMiguelButton.onClick.AddListener(() => OnSelectInvestigatorByIndex(1));
-
             if (level1Button != null) level1Button.onClick.AddListener(() => OnSelectLevel(1));
             if (level2Button != null) level2Button.onClick.AddListener(() => OnSelectLevel(2));
             if (level3Button != null) level3Button.onClick.AddListener(() => OnSelectLevel(3));
@@ -49,7 +37,6 @@ namespace CaseClosed.UI
 
             if (CaseManager.Instance != null)
             {
-                CaseManager.Instance.OnInvestigatorChanged += (inv) => RefreshUI();
                 CaseManager.Instance.OnCaseLoaded += (c) => RefreshUI();
             }
 
@@ -65,39 +52,11 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Refreshes the display text, highlighting the selected investigator and active level.
+        /// Refreshes the display text showing the active level.
         /// </summary>
         public void RefreshUI()
         {
-            CharacterProfileSO selected = CaseManager.Instance?.selectedInvestigator;
             CaseSO activeCase = CaseManager.Instance?.activeCase;
-
-            if (currentInvestigatorStatusText != null)
-            {
-                string invName = selected != null ? selected.fullName : "None";
-                string invRole = selected != null ? selected.occupation : "";
-                currentInvestigatorStatusText.text = $"ACTIVE INVESTIGATOR: {invName.ToUpper()} ({invRole})";
-            }
-
-            if (kyleCardDetailsText != null)
-            {
-                bool isKyleActive = selected != null && selected.characterId == "CHAR_KYLE_PASTRANA";
-                kyleCardDetailsText.text =
-                    $"<b>DETECTIVE KYLE GABRIEL PASTRANA</b> {(isKyleActive ? "<color=yellow>[ACTIVE]</color>" : "")}\n" +
-                    $"Role: Lead Field Detective | Age: 34\n" +
-                    $"Trait: Observant & Direct\n" +
-                    $"Specialty: Scene reconstruction, physical evidence analysis, and disproving physical alibis.";
-            }
-
-            if (miguelCardDetailsText != null)
-            {
-                bool isMiguelActive = selected != null && selected.characterId == "CHAR_MIGUEL_BORJA";
-                miguelCardDetailsText.text =
-                    $"<b>DETECTIVE MIGUEL BORJA</b> {(isMiguelActive ? "<color=yellow>[ACTIVE]</color>" : "")}\n" +
-                    $"Role: Lead Digital Forensics Detective | Age: 36\n" +
-                    $"Trait: Methodical & Analytical\n" +
-                    $"Specialty: Digital logs, cyber forensics, encrypted timestamps, and data trail deductions.";
-            }
 
             if (currentLevelStatusText != null)
             {
@@ -105,30 +64,6 @@ namespace CaseClosed.UI
                 string title = activeCase != null ? activeCase.caseTitle : "Level 1: The Missing Necklace";
                 currentLevelStatusText.text = $"CURRENT CASE: LEVEL {levelNum} - {title}";
             }
-        }
-
-        /// <summary>
-        /// Handles selecting an investigator by index (0 for Kyle, 1 for Miguel).
-        /// </summary>
-        /// <param name="index">The 0-based index of the investigator.</param>
-        private void OnSelectInvestigatorByIndex(int index)
-        {
-            var list = CaseManager.Instance?.availableInvestigators;
-            if (list != null && index >= 0 && index < list.Count)
-            {
-                CaseManager.Instance.SetSelectedInvestigator(list[index]);
-            }
-            else
-            {
-                GameBootstrap bootstrap = FindFirstObjectByType<GameBootstrap>();
-                if (bootstrap != null)
-                {
-                    bootstrap.SelectInvestigator(index);
-                }
-            }
-
-            AudioManager.Instance?.PlayButtonClick();
-            RefreshUI();
         }
 
         /// <summary>

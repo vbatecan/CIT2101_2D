@@ -22,7 +22,6 @@ namespace CaseClosed.Prototype
         private Case03Initializer level3;
 
         private CharacterProfileSO investigatorKyle;
-        private CharacterProfileSO investigatorMiguel;
 
         /// <summary>
         /// Ensures all singleton managers exist, sets up fixed camera, registers investigators, and registers level initializers.
@@ -50,11 +49,11 @@ namespace CaseClosed.Prototype
         }
 
         /// <summary>
-        /// Instantiates and registers the 2 investigator characters: Detective Kyle Gabriel Pastrana and Detective Miguel Borja.
+        /// Instantiates and registers the investigator character: Detective Kyle Gabriel Pastrana.
         /// </summary>
         private void SetupInvestigators()
         {
-            // Investigator 1: Detective Kyle Gabriel Pastrana
+            // Investigator: Detective Kyle Gabriel Pastrana
             investigatorKyle = ScriptableObject.CreateInstance<CharacterProfileSO>();
             investigatorKyle.characterId = "CHAR_KYLE_PASTRANA";
             investigatorKyle.fullName = "Detective Kyle Gabriel Pastrana";
@@ -63,19 +62,9 @@ namespace CaseClosed.Prototype
             investigatorKyle.personalityTrait = PersonalityTrait.Observant;
             investigatorKyle.background = "Veteran lead field detective with sharp intuition for physical clues, crime scenes, and catching suspect contradictions.";
 
-            // Investigator 2: Detective Miguel Borja
-            investigatorMiguel = ScriptableObject.CreateInstance<CharacterProfileSO>();
-            investigatorMiguel.characterId = "CHAR_MIGUEL_BORJA";
-            investigatorMiguel.fullName = "Detective Miguel Borja";
-            investigatorMiguel.age = 36;
-            investigatorMiguel.occupation = "Lead Digital Forensics Detective";
-            investigatorMiguel.personalityTrait = PersonalityTrait.Methodical;
-            investigatorMiguel.background = "Analytical cyber forensics specialist skilled in digital trails, encrypted logs, and meticulous investigative deduction.";
-
             if (CaseManager.Instance != null)
             {
                 CaseManager.Instance.RegisterAvailableInvestigator(investigatorKyle);
-                CaseManager.Instance.RegisterAvailableInvestigator(investigatorMiguel);
                 CaseManager.Instance.SetSelectedInvestigator(investigatorKyle);
             }
         }
@@ -118,7 +107,7 @@ namespace CaseClosed.Prototype
 
         /// <summary>
         /// Listens for number key presses (1, 2, 3) to dynamically switch active cases / levels,
-        /// (Esc / M) to return to Main Menu, and (I / C) to switch active investigator character.
+        /// and (Esc / M) to return to Main Menu.
         /// </summary>
         private void Update()
         {
@@ -146,14 +135,6 @@ namespace CaseClosed.Prototype
                     UIManager.Instance?.ToggleInGameMenu();
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.I))
-            {
-                UIManager.Instance?.ToggleInvestigatorSelectPanel();
-            }
-            else if (Input.GetKeyDown(KeyCode.C))
-            {
-                ToggleInvestigator();
-            }
         }
 
         /// <summary>
@@ -171,38 +152,6 @@ namespace CaseClosed.Prototype
             else
             {
                 LoadLevel(caseIndex);
-            }
-        }
-
-        /// <summary>
-        /// Toggles between the 2 available investigator characters (Kyle Pastrana <-> Miguel Borja).
-        /// </summary>
-        public void ToggleInvestigator()
-        {
-            if (CaseManager.Instance == null) return;
-            if (CaseManager.Instance.selectedInvestigator == investigatorKyle)
-            {
-                SelectInvestigator(1);
-            }
-            else
-            {
-                SelectInvestigator(0);
-            }
-        }
-
-        /// <summary>
-        /// Selects an investigator by index: 0 for Kyle Pastrana, 1 for Miguel Borja.
-        /// </summary>
-        /// <param name="index">Investigator index (0 or 1).</param>
-        public void SelectInvestigator(int index)
-        {
-            if (CaseManager.Instance == null) return;
-
-            CharacterProfileSO target = (index == 1) ? investigatorMiguel : investigatorKyle;
-            if (target != null)
-            {
-                CaseManager.Instance.SetSelectedInvestigator(target);
-                Debug.Log($"[Prototype:Bootstrap] Selected investigator: '{target.fullName}'");
             }
         }
 
