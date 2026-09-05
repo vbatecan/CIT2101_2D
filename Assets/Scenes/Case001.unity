@@ -3458,9 +3458,6 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 701587288}
-  enableIdleBreathing: 1
-  breathingSpeed: 2
-  breathingAmount: 0.03
 --- !u!212 &701587288
 SpriteRenderer:
   serializedVersion: 2
@@ -4489,7 +4486,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 15
   m_MaskInteraction: 0
   m_Sprite: {fileID: -9036354060889954212, guid: 24b6ffe27ff2940cc8d5b297b026a681, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4584,9 +4581,6 @@ MonoBehaviour:
   explicitCharacterId: 
   characterPortraitImage: {fileID: 0}
   characterSpriteRenderer: {fileID: 1082013777}
-  enableIdleBreathing: 1
-  breathingSpeed: 2
-  breathingAmount: 0.03
 --- !u!212 &1082013777
 SpriteRenderer:
   serializedVersion: 2
