@@ -2399,7 +2399,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -670, y: 18.17}
+  m_AnchoredPosition: {x: -670, y: 18.169998}
   m_SizeDelta: {x: 325.12, y: 77.16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &954620437
@@ -3701,7 +3701,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.Case01Initializer
   initializeOnStart: 1
   maleSuspectSprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
-  femaleSuspectSprite: {fileID: 5116858983636987760, guid: c42eeca521716ff4c88e7ad6a89b3906, type: 3}
+  femaleSuspectSprite: {fileID: 762338069729248364, guid: 0ab5235ab3832964ab41f407745817f4, type: 3}
   photoTableSprite: {fileID: -1129675804575292397, guid: d49fb24437f6de1f288cc16b54a4711f, type: 3}
   teacupTableSprite: {fileID: -3429926949459235691, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
   kitchenLogTableSprite: {fileID: -9036354060889954212, guid: 24b6ffe27ff2940cc8d5b297b026a681, type: 3}
