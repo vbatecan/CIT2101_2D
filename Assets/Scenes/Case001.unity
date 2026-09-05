@@ -5845,6 +5845,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3360537595847097932, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.000015258789
+      objectReference: {fileID: 0}
     - target: {fileID: 3867847721109873040, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
       propertyPath: m_Name
       value: Panel_CaseFileNotebook
@@ -5927,6 +5931,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3886131156690765982, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4155920524302547587, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4155920524302547587, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4155920524302547587, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4155920524302547587, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4155920524302547587, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7355359415330634257, guid: 59d355be0b2a68843bb72d59c77fbe6b, type: 3}
