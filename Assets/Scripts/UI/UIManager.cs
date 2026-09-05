@@ -25,6 +25,8 @@ namespace CaseClosed.UI
         public GameObject resultsScreenPanel;
         public GameObject investigatorSelectPanel;
         public GameObject gameOverPanel;
+        public GameObject inGameMenuPanel;
+        public GameObject mainMenuConfirmPanel;
 
         [Header("Header Navigation Elements")]
         public GameObject timerContainer;
@@ -34,7 +36,14 @@ namespace CaseClosed.UI
         public GameObject investigatorSelectButton;
         public GameObject returnToMenuButton;
 
+        [Header("In-Game Menu Buttons")]
+        public Button resumeGameButton;
+        public Button inGameMainMenuButton;
+        public Button confirmMainMenuYesButton;
+        public Button confirmMainMenuNoButton;
+
         private UIPanelType _currentPanel = UIPanelType.MainMenu;
+        private UIPanelType _panelBeforeInGameMenu = UIPanelType.InvestigationTable;
 
         /// <summary>The currently active UI panel type.</summary>
         public UIPanelType currentPanel => _currentPanel;
@@ -81,7 +90,27 @@ namespace CaseClosed.UI
             if (returnToMenuButton != null)
             {
                 Button btn = returnToMenuButton.GetComponent<Button>();
-                if (btn != null) btn.onClick.AddListener(ReturnToMainMenu);
+                if (btn != null) btn.onClick.AddListener(ToggleInGameMenu);
+            }
+
+            if (resumeGameButton != null)
+            {
+                resumeGameButton.onClick.AddListener(CloseInGameMenu);
+            }
+
+            if (inGameMainMenuButton != null)
+            {
+                inGameMainMenuButton.onClick.AddListener(OpenMainMenuConfirmation);
+            }
+
+            if (confirmMainMenuYesButton != null)
+            {
+                confirmMainMenuYesButton.onClick.AddListener(ConfirmReturnToMainMenu);
+            }
+
+            if (confirmMainMenuNoButton != null)
+            {
+                confirmMainMenuNoButton.onClick.AddListener(CloseMainMenuConfirmation);
             }
 
             if (investigatorSelectButton != null)
@@ -167,6 +196,7 @@ namespace CaseClosed.UI
             bool isInspect = (panelType == UIPanelType.InspectModal);
             bool isGameOver = (panelType == UIPanelType.GameOver);
             bool isResults = (panelType == UIPanelType.ResultsScreen);
+            bool isInGameMenu = (panelType == UIPanelType.InGameMenu);
 
             if (gameOverPanel == null)
             {
@@ -175,13 +205,15 @@ namespace CaseClosed.UI
             }
 
             if (mainMenuPanel != null) mainMenuPanel.SetActive(isMainMenu);
-            if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && panelType == UIPanelType.InvestigationTable);
+            if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && (panelType == UIPanelType.InvestigationTable || isInGameMenu));
             if (inspectModalPanel != null) inspectModalPanel.SetActive(isInspect);
             if (notebookPanel != null) notebookPanel.SetActive(panelType == UIPanelType.CaseFileNotebook);
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
             if (resultsScreenPanel != null) resultsScreenPanel.SetActive(isResults);
             if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(panelType == UIPanelType.InvestigatorSelect);
+            if (inGameMenuPanel != null) inGameMenuPanel.SetActive(isInGameMenu);
+            if (mainMenuConfirmPanel != null && !isInGameMenu) mainMenuConfirmPanel.SetActive(false);
             if (gameOverPanel != null)
             {
                 gameOverPanel.SetActive(isGameOver);
@@ -192,7 +224,7 @@ namespace CaseClosed.UI
             }
 
             // Toggle in-game header navigation visibility (hidden during MainMenu, Evidence Inspection, Results, and GameOver)
-            bool showHeaderNav = !isMainMenu && !isInspect && !isGameOver && !isResults;
+            bool showHeaderNav = !isMainMenu && !isInspect && !isGameOver && !isResults && !isInGameMenu;
             if (timerContainer != null) timerContainer.SetActive(showHeaderNav);
             if (notebookButton != null) notebookButton.SetActive(showHeaderNav);
             if (deductionBoardButton != null) deductionBoardButton.SetActive(showHeaderNav);
@@ -201,7 +233,7 @@ namespace CaseClosed.UI
             if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
 
             // Control countdown timer state across panels
-            if (isMainMenu || isResults || isGameOver)
+            if (isMainMenu || isResults || isGameOver || isInGameMenu)
             {
                 CaseManager.Instance?.PauseTimer();
             }
@@ -231,6 +263,52 @@ namespace CaseClosed.UI
                 ShowPanel(UIPanelType.MainMenu);
                 AudioManager.Instance?.PlayMenuBGM();
             }
+        }
+
+        /// <summary>Opens or closes the in-game menu without unloading the active case.</summary>
+        public void ToggleInGameMenu()
+        {
+            if (currentPanel == UIPanelType.InGameMenu)
+            {
+                CloseInGameMenu();
+                return;
+            }
+
+            _panelBeforeInGameMenu = currentPanel == UIPanelType.MainMenu
+                ? UIPanelType.InvestigationTable
+                : currentPanel;
+            ShowPanel(UIPanelType.InGameMenu);
+        }
+
+        /// <summary>Returns from the in-game menu to the panel that was open before it.</summary>
+        public void CloseInGameMenu()
+        {
+            if (currentPanel != UIPanelType.InGameMenu) return;
+            ShowPanel(_panelBeforeInGameMenu);
+        }
+
+        /// <summary>Displays the confirmation prompt before leaving the active case.</summary>
+        public void OpenMainMenuConfirmation()
+        {
+            if (currentPanel != UIPanelType.InGameMenu) return;
+            if (mainMenuConfirmPanel != null)
+            {
+                mainMenuConfirmPanel.SetActive(true);
+                mainMenuConfirmPanel.transform.SetAsLastSibling();
+            }
+        }
+
+        /// <summary>Closes the leave-case confirmation and keeps the in-game menu open.</summary>
+        public void CloseMainMenuConfirmation()
+        {
+            if (mainMenuConfirmPanel != null) mainMenuConfirmPanel.SetActive(false);
+        }
+
+        /// <summary>Leaves the active case after the player confirms the main-menu navigation.</summary>
+        public void ConfirmReturnToMainMenu()
+        {
+            CloseMainMenuConfirmation();
+            ReturnToMainMenu();
         }
 
         /// <summary>

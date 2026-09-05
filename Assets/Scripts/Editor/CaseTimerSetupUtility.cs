@@ -100,6 +100,8 @@ namespace CaseClosed.Editor
                 Debug.LogWarning("[CaseTimerSetup] Panel_HeaderNav not found in scene.");
             }
 
+                EnsureInGameMenuUI(canvas.transform, headerNav, uiManager, defaultFont);
+
             // 2. Ensure GameOver Panel under Canvas
             GameObject gameOverObj = EnsureGameOverUI(canvas.transform, defaultFont);
             if (gameOverObj != null)

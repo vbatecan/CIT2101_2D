@@ -11,6 +11,9 @@ namespace CaseClosed.Enums
         /// <summary>Main investigation desk with suspect sitting across table and inspectable items.</summary>
         InvestigationTable,
 
+        /// <summary>In-game menu overlay that keeps the active case loaded.</summary>
+        InGameMenu,
+
         /// <summary>Detailed zoomed modal for rotating and inspecting individual evidence items.</summary>
         InspectModal,
 

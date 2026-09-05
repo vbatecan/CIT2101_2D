@@ -50,6 +50,12 @@ namespace CaseClosed.Tests
             uiManager.conclusionQuizPanel = new GameObject("Test_ConclusionQuizPanel");
             uiManager.conclusionQuizPanel.transform.SetParent(testRoot.transform);
 
+            uiManager.inGameMenuPanel = new GameObject("Test_InGameMenuPanel");
+            uiManager.inGameMenuPanel.transform.SetParent(testRoot.transform);
+
+            uiManager.mainMenuConfirmPanel = new GameObject("Test_MainMenuConfirmPanel");
+            uiManager.mainMenuConfirmPanel.transform.SetParent(testRoot.transform);
+
             // Setup Header Buttons
             GameObject nbBtn = new GameObject("Test_NotebookBtn", typeof(Button));
             nbBtn.transform.SetParent(testRoot.transform);
@@ -160,6 +166,30 @@ namespace CaseClosed.Tests
             // Open Conclusion Quiz panel directly
             uiManager.ShowPanel(UIPanelType.ConclusionQuiz);
             Assert.AreEqual(UIPanelType.ConclusionQuiz, uiManager.currentPanel);
+        }
+
+        [Test]
+        public void UIManager_InGameMenu_OpensWithoutLeavingCaseAndRequiresConfirmation()
+        {
+            uiManager.ShowPanel(UIPanelType.InvestigationTable);
+
+            uiManager.ToggleInGameMenu();
+
+            Assert.AreEqual(UIPanelType.InGameMenu, uiManager.currentPanel);
+            Assert.IsTrue(uiManager.mainTablePanel.activeSelf);
+            Assert.IsTrue(uiManager.inGameMenuPanel.activeSelf);
+
+            uiManager.OpenMainMenuConfirmation();
+
+            Assert.IsTrue(uiManager.mainMenuConfirmPanel.activeSelf);
+            Assert.AreEqual(UIPanelType.InGameMenu, uiManager.currentPanel);
+
+            uiManager.CloseMainMenuConfirmation();
+            Assert.IsFalse(uiManager.mainMenuConfirmPanel.activeSelf);
+            Assert.AreEqual(UIPanelType.InGameMenu, uiManager.currentPanel);
+
+            uiManager.CloseInGameMenu();
+            Assert.AreEqual(UIPanelType.InvestigationTable, uiManager.currentPanel);
         }
 
         [Test]

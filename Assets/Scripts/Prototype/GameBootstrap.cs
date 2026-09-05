@@ -127,7 +127,7 @@ namespace CaseClosed.Prototype
             else if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchToCaseSceneOrLevel(3);
             else if (Input.GetKeyDown(KeyCode.M))
             {
-                UIManager.Instance?.ReturnToMainMenu();
+                UIManager.Instance?.ToggleInGameMenu();
             }
             else if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -143,7 +143,7 @@ namespace CaseClosed.Prototype
                 }
                 else
                 {
-                    UIManager.Instance?.ReturnToMainMenu();
+                    UIManager.Instance?.ToggleInGameMenu();
                 }
             }
             else if (Input.GetKeyDown(KeyCode.I))
@@ -266,10 +266,6 @@ namespace CaseClosed.Prototype
                 mainCam.gameObject.AddComponent<FixedInvestigationCamera>();
             }
 
-            if (mainCam.GetComponent<UnityEngine.EventSystems.Physics2DRaycaster>() == null)
-            {
-                mainCam.gameObject.AddComponent<UnityEngine.EventSystems.Physics2DRaycaster>();
-            }
         }
 
         /// <summary>
