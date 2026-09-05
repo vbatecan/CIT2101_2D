@@ -17,6 +17,7 @@ namespace CaseClosed.Editor
             "Assets/Scenes/MainMenu.unity",
             "Assets/Scenes/Case001.unity",
             "Assets/Scenes/Case002.unity",
+            "Assets/Scenes/Case003.unity",
             "Assets/Scenes/Main.unity"
         };
 

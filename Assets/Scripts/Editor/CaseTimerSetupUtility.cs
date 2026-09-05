@@ -17,7 +17,8 @@ namespace CaseClosed.Editor
         {
             "Assets/Scenes/Main.unity",
             "Assets/Scenes/Case001.unity",
-            "Assets/Scenes/Case002.unity"
+            "Assets/Scenes/Case002.unity",
+            "Assets/Scenes/Case003.unity"
         };
 
         [MenuItem("Case Closed/UI/Configure Case Timer and Game Over in All Scenes", false, 15)]

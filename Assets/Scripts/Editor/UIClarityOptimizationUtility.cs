@@ -18,7 +18,8 @@ namespace CaseClosed.Editor
             "Assets/Scenes/MainMenu.unity",
             "Assets/Scenes/Main.unity",
             "Assets/Scenes/Case001.unity",
-            "Assets/Scenes/Case002.unity"
+            "Assets/Scenes/Case002.unity",
+            "Assets/Scenes/Case003.unity"
         };
 
         [MenuItem("Case Closed/UI/Optimize All Game Text & Canvas Clarity", false, 10)]
