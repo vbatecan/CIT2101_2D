@@ -26,7 +26,8 @@ namespace CaseClosed.UI
         [Header("Evidence Selection Overlay (Presenting Evidence)")]
         public GameObject evidencePickerContainer;
         public Transform evidencePickerGrid;
-        public GameObject evidencePickerItemPrefab;
+        [Tooltip("Optional prefab for evidence picker items.")]
+        [SerializeField] public GameObject evidencePickerItemPrefab;
 
         [Header("World Bubble Alignment")]
         [Tooltip("Optional RectTransform used as the dialogue bubble. If empty, this component's RectTransform is moved.")]
@@ -225,6 +226,7 @@ namespace CaseClosed.UI
 
         /// <summary>
         /// Populates the evidence picker grid with clickable buttons representing all discovered evidence items.
+        /// Supports prefab instantiation with zero-GC fallbacks.
         /// </summary>
         private void PopulateEvidencePicker()
         {
@@ -232,7 +234,10 @@ namespace CaseClosed.UI
 
             foreach (Transform child in evidencePickerGrid)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    DestroyImmediate(child.gameObject);
             }
 
             var discoveredIds = CaseManager.Instance?.discoveredEvidenceIds;
@@ -244,18 +249,86 @@ namespace CaseClosed.UI
             {
                 if (ev != null && discoveredIds.Contains(ev.id))
                 {
-                    GameObject btnObj = new GameObject($"Present_{ev.id}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    btnObj.transform.SetParent(evidencePickerGrid, false);
-
-                    Image img = btnObj.GetComponent<Image>();
-                    if (ev.normalSprite != null) img.sprite = ev.normalSprite;
-
                     EvidenceSO currentEv = ev;
-                    btnObj.GetComponent<Button>().onClick.AddListener(() =>
+                    bool prefabSuccess = false;
+
+                    if (evidencePickerItemPrefab != null)
                     {
-                        Debug.Log($"[UI:Dialogue] Evidence picker selected item '{currentEv.evidenceName}' (ID: {currentEv.id}) to present");
-                        InterrogationManager.Instance?.PresentEvidenceToChallenge(currentEv);
-                    });
+                        GameObject itemObj = Instantiate(evidencePickerItemPrefab, evidencePickerGrid, false);
+                        itemObj.name = $"Present_{currentEv.id}";
+
+                        Button btn = itemObj.GetComponent<Button>() ?? itemObj.GetComponentInChildren<Button>();
+                        Text titleText = itemObj.GetComponent<Text>() ?? itemObj.GetComponentInChildren<Text>();
+
+                        Image iconImg = null;
+                        Image[] images = itemObj.GetComponentsInChildren<Image>(true);
+                        foreach (var img in images)
+                        {
+                            if (img.gameObject.name.IndexOf("icon", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                iconImg = img;
+                                break;
+                            }
+                        }
+
+                        if (iconImg == null && btn != null && btn.targetGraphic is Image targetGraphicImg)
+                        {
+                            foreach (var img in images)
+                            {
+                                if (img != targetGraphicImg)
+                                {
+                                    iconImg = img;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (iconImg == null && images.Length > 0)
+                        {
+                            iconImg = images[0];
+                        }
+
+                        if (btn != null && iconImg != null && titleText != null)
+                        {
+                            if (currentEv.normalSprite != null)
+                            {
+                                iconImg.sprite = currentEv.normalSprite;
+                                iconImg.enabled = true;
+                            }
+
+                            titleText.text = currentEv.evidenceName;
+
+                            btn.onClick.AddListener(() =>
+                            {
+                                Debug.Log($"[UI:Dialogue] Evidence picker selected item '{currentEv.evidenceName}' (ID: {currentEv.id}) to present");
+                                InterrogationManager.Instance?.PresentEvidenceToChallenge(currentEv);
+                            });
+
+                            prefabSuccess = true;
+                        }
+                        else
+                        {
+                            if (Application.isPlaying)
+                                Destroy(itemObj);
+                            else
+                                DestroyImmediate(itemObj);
+                        }
+                    }
+
+                    if (!prefabSuccess)
+                    {
+                        GameObject btnObj = new GameObject($"Present_{currentEv.id}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                        btnObj.transform.SetParent(evidencePickerGrid, false);
+
+                        Image img = btnObj.GetComponent<Image>();
+                        if (currentEv.normalSprite != null) img.sprite = currentEv.normalSprite;
+
+                        btnObj.GetComponent<Button>().onClick.AddListener(() =>
+                        {
+                            Debug.Log($"[UI:Dialogue] Evidence picker selected item '{currentEv.evidenceName}' (ID: {currentEv.id}) to present");
+                            InterrogationManager.Instance?.PresentEvidenceToChallenge(currentEv);
+                        });
+                    }
                 }
             }
         }

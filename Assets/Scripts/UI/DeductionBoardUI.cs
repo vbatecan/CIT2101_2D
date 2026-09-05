@@ -21,7 +21,8 @@ namespace CaseClosed.UI
 
         [Header("Clue Selection Grid")]
         public Transform cluesContainer;
-        public GameObject clueCardPrefab;
+        [Tooltip("Optional prefab for clue cards on the deduction board.")]
+        [SerializeField] public GameObject clueCardPrefab;
         public Text selectionStatusText;
 
         [Header("Deduction Feedback Banner")]
@@ -31,6 +32,9 @@ namespace CaseClosed.UI
         [Header("Completed Deductions List")]
         public Transform deductionsContainer;
         public Text completedDeductionsBody;
+
+        private static readonly Color SelectedCardColor = new Color(0.9f, 0.7f, 0.1f, 0.9f);
+        private static readonly Color NormalCardColor = new Color(0.2f, 0.22f, 0.28f, 0.85f);
 
         private void Awake()
         {
@@ -112,6 +116,7 @@ namespace CaseClosed.UI
 
         /// <summary>
         /// Dynamically renders clickable cards/buttons for all unlocked clues and discovered evidence base clues.
+        /// Supports clueCardPrefab instantiation with zero-GC fallbacks.
         /// </summary>
         /// <param name="activeCase">The currently active case.</param>
         private void RenderClueCards(CaseSO activeCase)
@@ -120,7 +125,10 @@ namespace CaseClosed.UI
 
             foreach (Transform child in cluesContainer)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    DestroyImmediate(child.gameObject);
             }
 
             var unlockedClues = CaseManager.Instance?.unlockedCluesText;
@@ -167,18 +175,78 @@ namespace CaseClosed.UI
                 string currentId = entry.id;
                 bool isSelected = (selectedA == currentId);
 
-                GameObject cardObj = new GameObject($"ClueCard_{currentId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                cardObj.transform.SetParent(cluesContainer, false);
+                if (clueCardPrefab != null)
+                {
+                    GameObject cardObj = Instantiate(clueCardPrefab, cluesContainer, false);
+                    cardObj.name = $"ClueCard_{currentId}";
 
-                RectTransform rt = cardObj.GetComponent<RectTransform>();
+                    Button btn = cardObj.GetComponent<Button>() ?? cardObj.GetComponentInChildren<Button>();
+                    if (btn == null) btn = cardObj.AddComponent<Button>();
+
+                    Image img = cardObj.GetComponent<Image>() ?? (btn.targetGraphic as Image) ?? cardObj.GetComponentInChildren<Image>();
+                    if (img != null)
+                    {
+                        img.color = isSelected ? SelectedCardColor : NormalCardColor;
+                    }
+
+                    Text[] texts = cardObj.GetComponentsInChildren<Text>(true);
+                    if (texts.Length == 1)
+                    {
+                        texts[0].text = $"<b>{entry.title}</b>\n{entry.text}";
+                        texts[0].color = isSelected ? Color.black : Color.white;
+                    }
+                    else if (texts.Length > 1)
+                    {
+                        Text titleText = null;
+                        Text bodyText = null;
+
+                        foreach (var textComp in texts)
+                        {
+                            string tName = textComp.gameObject.name.ToLowerInvariant();
+                            if (titleText == null && (tName.Contains("title") || tName.Contains("header") || tName.Contains("name")))
+                            {
+                                titleText = textComp;
+                            }
+                            else if (bodyText == null && (tName.Contains("body") || tName.Contains("desc") || tName.Contains("detail") || tName.Contains("text")))
+                            {
+                                bodyText = textComp;
+                            }
+                        }
+
+                        if (titleText == null || bodyText == null)
+                        {
+                            titleText = texts[0];
+                            bodyText = texts[1];
+                        }
+
+                        titleText.text = entry.title;
+                        bodyText.text = entry.text;
+                        titleText.color = isSelected ? Color.black : Color.white;
+                        bodyText.color = isSelected ? Color.black : Color.white;
+                    }
+
+                    btn.onClick.AddListener(() =>
+                    {
+                        Debug.Log($"[UI:DeductionBoard] Clue card clicked: '{entry.title}' (ID: {currentId})");
+                        AudioManager.Instance?.PlayButtonClick();
+                        DeductionBoardController.Instance?.SelectClue(currentId);
+                    });
+                    continue;
+                }
+
+                // Procedural fallback
+                GameObject fallbackObj = new GameObject($"ClueCard_{currentId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                fallbackObj.transform.SetParent(cluesContainer, false);
+
+                RectTransform rt = fallbackObj.GetComponent<RectTransform>();
                 rt.sizeDelta = new Vector2(280f, 60f);
 
-                Image img = cardObj.GetComponent<Image>();
-                img.color = isSelected ? new Color(0.9f, 0.7f, 0.1f, 0.9f) : new Color(0.2f, 0.22f, 0.28f, 0.85f);
+                Image fallbackImg = fallbackObj.GetComponent<Image>();
+                fallbackImg.color = isSelected ? SelectedCardColor : NormalCardColor;
 
                 // Add text child
                 GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                textObj.transform.SetParent(cardObj.transform, false);
+                textObj.transform.SetParent(fallbackObj.transform, false);
 
                 RectTransform textRt = textObj.GetComponent<RectTransform>();
                 textRt.anchorMin = Vector2.zero;
@@ -186,14 +254,14 @@ namespace CaseClosed.UI
                 textRt.offsetMin = new Vector2(10f, 5f);
                 textRt.offsetMax = new Vector2(-10f, -5f);
 
-                Text t = textObj.GetComponent<Text>();
-                t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                t.fontSize = 12;
-                t.color = isSelected ? Color.black : Color.white;
-                t.text = $"<b>{entry.title}</b>\n{entry.text}";
-                t.alignment = TextAnchor.MiddleLeft;
+                Text cardText = textObj.GetComponent<Text>();
+                cardText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                cardText.fontSize = 12;
+                cardText.color = isSelected ? Color.black : Color.white;
+                cardText.text = $"<b>{entry.title}</b>\n{entry.text}";
+                cardText.alignment = TextAnchor.MiddleLeft;
 
-                cardObj.GetComponent<Button>().onClick.AddListener(() =>
+                fallbackObj.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     Debug.Log($"[UI:DeductionBoard] Clue card clicked: '{entry.title}' (ID: {currentId})");
                     AudioManager.Instance?.PlayButtonClick();

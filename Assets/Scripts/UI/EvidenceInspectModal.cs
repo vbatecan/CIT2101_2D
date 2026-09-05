@@ -22,7 +22,12 @@ namespace CaseClosed.UI
         public Image evidenceZoomImage;
         public RectTransform viewportRectTransform;
         public RectTransform hotspotsContainer;
+        [Tooltip("Optional prefab for interactive hotspot markers on the inspected evidence.")]
+        [SerializeField] public GameObject hotspotMarkerPrefab;
         public Text clueUnlockedNotificationText;
+
+        private static readonly Color DiscoveredHotspotColor = new Color(0.2f, 0.8f, 0.2f, 0.6f);
+        private static readonly Color UndiscoveredHotspotColor = new Color(0.9f, 0.7f, 0.1f, 0.8f);
 
         [Header("Rotation Settings")]
         public float rotationSensitivity = 0.45f;
@@ -555,6 +560,7 @@ namespace CaseClosed.UI
 
         /// <summary>
         /// Dynamically creates interactive hotspot buttons positioned over normalized coordinates of the evidence sprite.
+        /// Supports hotspotMarkerPrefab instantiation with zero-GC fallbacks.
         /// </summary>
         /// <param name="evidence">The evidence item containing hotspot data.</param>
         private void PopulateHotspots(EvidenceSO evidence)
@@ -563,30 +569,73 @@ namespace CaseClosed.UI
 
             foreach (Transform child in hotspotsContainer)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    DestroyImmediate(child.gameObject);
             }
 
             if (evidence.hotspots == null || evidence.hotspots.Count == 0) return;
 
             foreach (var spot in evidence.hotspots)
             {
-                GameObject spotObj = new GameObject($"Hotspot_{spot.hotspotId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                spotObj.transform.SetParent(hotspotsContainer, false);
-
-                RectTransform rt = spotObj.GetComponent<RectTransform>();
-                rt.anchorMin = spot.normalizedPosition;
-                rt.anchorMax = spot.normalizedPosition;
-                rt.sizeDelta = new Vector2(40f, 40f);
-
-                Image img = spotObj.GetComponent<Image>();
-                img.color = spot.isDiscovered ? new Color(0.2f, 0.8f, 0.2f, 0.6f) : new Color(0.9f, 0.7f, 0.1f, 0.8f);
+                if (spot == null) continue;
 
                 EvidenceHotspot currentSpot = spot;
-                spotObj.GetComponent<Button>().onClick.AddListener(() =>
+
+                if (hotspotMarkerPrefab != null)
                 {
-                    Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
-                    EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
-                });
+                    GameObject spotObj = Instantiate(hotspotMarkerPrefab, hotspotsContainer, false);
+                    spotObj.name = $"Hotspot_{currentSpot.hotspotId}";
+
+                    RectTransform rt = spotObj.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        rt.anchorMin = currentSpot.normalizedPosition;
+                        rt.anchorMax = currentSpot.normalizedPosition;
+                        rt.anchoredPosition = Vector2.zero;
+                    }
+
+                    Image img = spotObj.GetComponent<Image>() ?? spotObj.GetComponentInChildren<Image>();
+                    if (img != null)
+                    {
+                        img.color = currentSpot.isDiscovered ? DiscoveredHotspotColor : UndiscoveredHotspotColor;
+                    }
+
+                    Text labelText = spotObj.GetComponentInChildren<Text>();
+                    if (labelText != null)
+                    {
+                        labelText.text = currentSpot.hotspotTitle;
+                    }
+
+                    Button btn = spotObj.GetComponent<Button>() ?? spotObj.GetComponentInChildren<Button>();
+                    if (btn == null) btn = spotObj.AddComponent<Button>();
+
+                    btn.onClick.AddListener(() =>
+                    {
+                        Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
+                        EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
+                    });
+                }
+                else
+                {
+                    GameObject spotObj = new GameObject($"Hotspot_{currentSpot.hotspotId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    spotObj.transform.SetParent(hotspotsContainer, false);
+
+                    RectTransform rt = spotObj.GetComponent<RectTransform>();
+                    rt.anchorMin = currentSpot.normalizedPosition;
+                    rt.anchorMax = currentSpot.normalizedPosition;
+                    rt.sizeDelta = new Vector2(40f, 40f);
+
+                    Image img = spotObj.GetComponent<Image>();
+                    img.color = currentSpot.isDiscovered ? DiscoveredHotspotColor : UndiscoveredHotspotColor;
+
+                    spotObj.GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
+                        EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
+                    });
+                }
             }
         }
 

@@ -18,7 +18,14 @@ namespace CaseClosed.UI
         public GameObject quizContainer;
         public Text questionTitleText;
         public Transform optionsGrid;
+        [Tooltip("Optional prefab for conclusion question header.")]
+        [SerializeField] public GameObject questionHeaderPrefab;
+        [Tooltip("Optional prefab for conclusion option clickable item.")]
+        [SerializeField] public GameObject optionItemPrefab;
         public Button submitConclusionButton;
+
+        private static readonly Color HeaderGoldColor = new Color(0.95f, 0.82f, 0.45f, 1f);
+        private static readonly Color ShadowBlackColor = new Color(0f, 0f, 0f, 0.85f);
 
         [Header("Results Screen Overlay")]
         public GameObject resultsContainer;
@@ -97,6 +104,7 @@ namespace CaseClosed.UI
 
         /// <summary>
         /// Dynamically builds the UI hierarchy for question headers and clickable option choices.
+        /// Supports questionHeaderPrefab and optionItemPrefab instantiation with zero-GC fallbacks.
         /// </summary>
         /// <param name="activeCase">The active case containing conclusion questions.</param>
         private void RenderQuestionOptions(CaseSO activeCase)
@@ -105,48 +113,137 @@ namespace CaseClosed.UI
 
             foreach (Transform child in optionsGrid)
             {
-                Destroy(child.gameObject);
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    DestroyImmediate(child.gameObject);
             }
 
             for (int qIdx = 0; qIdx < activeCase.conclusionQuestions.Count; qIdx++)
             {
                 var q = activeCase.conclusionQuestions[qIdx];
-
-                GameObject headerObj = new GameObject($"Header_Q{qIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                headerObj.transform.SetParent(optionsGrid, false);
-                Text hText = headerObj.GetComponent<Text>();
-                hText.text = $"\n{qIdx + 1}. {q.questionText}";
-                hText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                hText.fontSize = 18;
-                hText.fontStyle = FontStyle.Bold;
-                hText.color = new Color(0.95f, 0.82f, 0.45f, 1f); // Crisp Gold
-                Shadow hShadow = headerObj.AddComponent<Shadow>();
-                hShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                hShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
-
                 int questionIndex = qIdx;
+
+                // 1. Question Header
+                bool headerCreated = false;
+                if (questionHeaderPrefab != null)
+                {
+                    GameObject headerObj = Instantiate(questionHeaderPrefab, optionsGrid, false);
+                    headerObj.name = $"Header_Q{qIdx}";
+
+                    Text hText = headerObj.GetComponent<Text>() ?? headerObj.GetComponentInChildren<Text>();
+                    if (hText != null)
+                    {
+                        hText.text = $"{qIdx + 1}. {q.questionText}";
+                        headerCreated = true;
+                    }
+                    else
+                    {
+                        if (Application.isPlaying)
+                            Destroy(headerObj);
+                        else
+                            DestroyImmediate(headerObj);
+                    }
+                }
+
+                if (!headerCreated)
+                {
+                    GameObject headerObj = new GameObject($"Header_Q{qIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    headerObj.transform.SetParent(optionsGrid, false);
+                    Text hText = headerObj.GetComponent<Text>();
+                    hText.text = $"\n{qIdx + 1}. {q.questionText}";
+                    hText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    hText.fontSize = 18;
+                    hText.fontStyle = FontStyle.Bold;
+                    hText.color = HeaderGoldColor;
+                    Shadow hShadow = headerObj.AddComponent<Shadow>();
+                    hShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                    hShadow.effectColor = ShadowBlackColor;
+                }
+
+                // 2. Question Options
+                var optionTextsForQuestion = new List<Text>();
+
                 for (int optIdx = 0; optIdx < q.options.Count; optIdx++)
                 {
                     int optionIndex = optIdx;
-                    GameObject optObj = new GameObject($"Opt_Q{qIdx}_O{optIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Button));
-                    optObj.transform.SetParent(optionsGrid, false);
+                    bool optionCreated = false;
 
-                    Text optText = optObj.GetComponent<Text>();
-                    optText.text = $"   [ ] {q.options[optIdx]}";
-                    optText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                    optText.fontSize = 16;
-                    optText.color = Color.white;
-                    Shadow optShadow = optObj.AddComponent<Shadow>();
-                    optShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                    optShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
-
-                    optObj.GetComponent<Button>().onClick.AddListener(() =>
+                    if (optionItemPrefab != null)
                     {
-                        Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
-                        playerAnswers[questionIndex] = optionIndex;
-                        optText.text = $"   [X] {q.options[optionIndex]}";
-                        AudioManager.Instance?.PlayButtonClick();
-                    });
+                        GameObject optObj = Instantiate(optionItemPrefab, optionsGrid, false);
+                        optObj.name = $"Opt_Q{qIdx}_O{optIdx}";
+
+                        Text optText = optObj.GetComponent<Text>() ?? optObj.GetComponentInChildren<Text>();
+                        Button btn = optObj.GetComponent<Button>() ?? optObj.GetComponentInChildren<Button>();
+
+                        if (btn != null)
+                        {
+                            if (optText != null)
+                            {
+                                optText.text = $"   [ ] {q.options[optionIndex]}";
+                                optionTextsForQuestion.Add(optText);
+                            }
+                            else
+                            {
+                                optionTextsForQuestion.Add(null);
+                            }
+
+                            btn.onClick.AddListener(() =>
+                            {
+                                Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
+                                playerAnswers[questionIndex] = optionIndex;
+                                for (int i = 0; i < optionTextsForQuestion.Count; i++)
+                                {
+                                    if (optionTextsForQuestion[i] != null && i < q.options.Count)
+                                    {
+                                        optionTextsForQuestion[i].text = (i == optionIndex) ? $"   [X] {q.options[i]}" : $"   [ ] {q.options[i]}";
+                                    }
+                                }
+                                AudioManager.Instance?.PlayButtonClick();
+                            });
+
+                            optionCreated = true;
+                        }
+                        else
+                        {
+                            if (Application.isPlaying)
+                                Destroy(optObj);
+                            else
+                                DestroyImmediate(optObj);
+                        }
+                    }
+
+                    if (!optionCreated)
+                    {
+                        GameObject optObj = new GameObject($"Opt_Q{qIdx}_O{optIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Button));
+                        optObj.transform.SetParent(optionsGrid, false);
+
+                        Text optText = optObj.GetComponent<Text>();
+                        optText.text = $"   [ ] {q.options[optIdx]}";
+                        optText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                        optText.fontSize = 16;
+                        optText.color = Color.white;
+                        Shadow optShadow = optObj.AddComponent<Shadow>();
+                        optShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                        optShadow.effectColor = ShadowBlackColor;
+
+                        optionTextsForQuestion.Add(optText);
+
+                        optObj.GetComponent<Button>().onClick.AddListener(() =>
+                        {
+                            Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
+                            playerAnswers[questionIndex] = optionIndex;
+                            for (int i = 0; i < optionTextsForQuestion.Count; i++)
+                            {
+                                if (optionTextsForQuestion[i] != null && i < q.options.Count)
+                                {
+                                    optionTextsForQuestion[i].text = (i == optionIndex) ? $"   [X] {q.options[i]}" : $"   [ ] {q.options[i]}";
+                                }
+                            }
+                            AudioManager.Instance?.PlayButtonClick();
+                        });
+                    }
                 }
             }
         }
