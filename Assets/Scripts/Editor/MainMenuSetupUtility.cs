@@ -243,7 +243,7 @@ namespace CaseClosed.Editor
             // 3 Dossier Cards
             CreateCaseCard(cont.transform, 1, "CASE 01: THE STOLEN NECKLACE", "Suspect: Victoria Sterling | Crime Scene: Grand Manor", new Vector2(0, 100), out menuUI.case01Button, out menuUI.case01TitleText, out menuUI.case01StatusText);
             CreateCaseCard(cont.transform, 2, "CASE 02: THE SHATTERED MIRROR", "Suspects: Museum Guard & Owner | Crime Scene: Art Gallery", new Vector2(0, 0), out menuUI.case02Button, out menuUI.case02TitleText, out menuUI.case02StatusText);
-            CreateCaseCard(cont.transform, 3, "CASE 03: THE MIDNIGHT ALIBI", "Suspect: Corporate Executive | Crime Scene: Executive Suite", new Vector2(0, -100), out menuUI.case03Button, out menuUI.case03TitleText, out menuUI.case03StatusText);
+            CreateCaseCard(cont.transform, 3, "CASE 03: THE LAST CALL", "Suspect: Shanaia Ortega | Crime Scene: Downtown Cafe Office", new Vector2(0, -100), out menuUI.case03Button, out menuUI.case03TitleText, out menuUI.case03StatusText);
 
             // Back button
             menuUI.backFromCaseSelectButton = CreateMenuButton(cont.transform, "Button_Back", "BACK TO MENU", new Vector2(0, -220), new Vector2(280, 46), new Color(0.20f, 0.25f, 0.34f, 1f), Color.white, 16);

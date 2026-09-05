@@ -16,6 +16,20 @@ namespace CaseClosed.Prototype
         /// <summary>Whether to automatically initialize and load Case 03 on Start.</summary>
         public bool initializeOnStart = false;
 
+        [Header("Character Portraits")]
+        public Sprite shanaiaSuspectSprite;
+        public Sprite shanWitnessSprite;
+
+        [Header("Evidence Sprites - Table POV")]
+        public Sprite phoneLogTableSprite;
+        public Sprite cctvTableSprite;
+        public Sprite terminationTableSprite;
+
+        [Header("Evidence Sprites - Top POV (Inspect / Zoomed)")]
+        public Sprite phoneLogZoomedSprite;
+        public Sprite cctvZoomedSprite;
+        public Sprite terminationZoomedSprite;
+
         /// <summary>
         /// Automatically loads Case 03 on start if <see cref="initializeOnStart"/> is enabled.
         /// </summary>
@@ -68,6 +82,7 @@ namespace CaseClosed.Prototype
             shanaia.personalityTrait = PersonalityTrait.Calm;
             shanaia.alibi = "Claims she went straight home at 5:30 PM and never contacted Kurt or returned to the cafe.";
             shanaia.possibleMotives = "Steal proprietary code before getting fired.";
+            shanaia.defaultSittingPose = shanaiaSuspectSprite;
             c.primarySuspect = shanaia;
 
             // Secondary Witness / Key Informant: Shan Jaraba
@@ -79,6 +94,7 @@ namespace CaseClosed.Prototype
             shan.relationshipToVictim = "Cafe Manager";
             shan.personalityTrait = PersonalityTrait.Secretive;
             shan.alibi = "Working at register until 7:30 PM closing.";
+            shan.defaultSittingPose = shanWitnessSprite;
             c.additionalSuspects.Add(shan);
 
             // Register Investigator Profile: Detective Miguel Borja
@@ -97,6 +113,8 @@ namespace CaseClosed.Prototype
             evPhoneLog.id = "EVD_SMARTPHONE_LOG";
             evPhoneLog.evidenceName = "Victim's Smartphone Call Log";
             evPhoneLog.category = EvidenceCategory.DigitalRecord;
+            evPhoneLog.normalSprite = phoneLogTableSprite;
+            evPhoneLog.zoomedSprite = phoneLogZoomedSprite;
             evPhoneLog.baseDescription = "Call log extracted from Kurt Miguel Ancheta's phone.";
             evPhoneLog.detailedObservation = "Shows an unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
             evPhoneLog.unlockedClueText = "Unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
@@ -108,6 +126,8 @@ namespace CaseClosed.Prototype
             evCctv.id = "EVD_CCTV_STILL";
             evCctv.evidenceName = "Coffee Shop CCTV Frame";
             evCctv.category = EvidenceCategory.Photograph;
+            evCctv.normalSprite = cctvTableSprite;
+            evCctv.zoomedSprite = cctvZoomedSprite;
             evCctv.baseDescription = "Security footage capture from the back exit camera.";
             evCctv.detailedObservation = "Clearly shows Shanaia's distinct jacket entering the back exit door at 7:10 PM.";
             evCctv.unlockedClueText = "Shanaia's jacket captured entering cafe back exit at 7:10 PM.";
@@ -129,6 +149,8 @@ namespace CaseClosed.Prototype
             evDraft.id = "EVD_RESIGNATION_LETTER";
             evDraft.evidenceName = "Termination Notice Draft";
             evDraft.category = EvidenceCategory.Document;
+            evDraft.normalSprite = terminationTableSprite;
+            evDraft.zoomedSprite = terminationZoomedSprite;
             evDraft.baseDescription = "Drafted letter found inside Kurt's briefcase.";
             evDraft.unlockedClueText = "Kurt planned to fire Shanaia for secretly selling company data to rival firms.";
             evDraft.startsDiscovered = false;

@@ -1393,7 +1393,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 12
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -7146263275692110481, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
+  m_Sprite: {fileID: -3429926949459235691, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3081,7 +3081,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.1845, y: -0.34, z: 0}
-  m_LocalScale: {x: 0.9253101, y: 0.9253101, z: 1.0886}
+  m_LocalScale: {x: 0.059999995, y: 0.059999995, z: 0.074999996}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 36984450}
@@ -3154,7 +3154,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5192951433554000830, guid: 83c20111c171ba1a8852c4d4fc9b524f, type: 3}
+  m_Sprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4171,7 +4171,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.3672, y: -0.5668, z: 0}
-  m_LocalScale: {x: 0.61816, y: 0.61816, z: 0.7727}
+  m_LocalScale: {x: 0.07, y: 0.07, z: 0.0875}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 36984450}
@@ -4244,7 +4244,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2695760630116940890, guid: 2466b7bb4329a946c8d4366fb2d19317, type: 3}
+  m_Sprite: {fileID: 5116858983636987760, guid: c42eeca521716ff4c88e7ad6a89b3906, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4817,10 +4817,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.Case01Initializer
   initializeOnStart: 1
-  maleSuspectSprite: {fileID: 5192951433554000830, guid: 83c20111c171ba1a8852c4d4fc9b524f, type: 3}
-  femaleSuspectSprite: {fileID: 2695760630116940890, guid: 2466b7bb4329a946c8d4366fb2d19317, type: 3}
+  maleSuspectSprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
+  femaleSuspectSprite: {fileID: 5116858983636987760, guid: c42eeca521716ff4c88e7ad6a89b3906, type: 3}
   photoTableSprite: {fileID: -1129675804575292397, guid: d49fb24437f6de1f288cc16b54a4711f, type: 3}
-  teacupTableSprite: {fileID: -7146263275692110481, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
+  teacupTableSprite: {fileID: -3429926949459235691, guid: ecfd029626732611ca0c571ee5c70dc2, type: 3}
   kitchenLogTableSprite: {fileID: -9036354060889954212, guid: 24b6ffe27ff2940cc8d5b297b026a681, type: 3}
   photoZoomedSprite: {fileID: -2814718709115034861, guid: bb42deae26851e074a6d9e02e15f7eb6, type: 3}
   teacupZoomedSprite: {fileID: -7824835962962995920, guid: 5a801634c8ef8b347b6278c05b99a13a, type: 3}

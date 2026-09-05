@@ -466,7 +466,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'CASE 03: THE MIDNIGHT ALIBI'
+  m_Text: 'CASE 03: THE LAST CALL'
 --- !u!114 &76929286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8013,7 +8013,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Suspect: Corporate Executive | Crime Scene: Executive Suite'
+  m_Text: 'Suspect: Shanaia Ortega | Crime Scene: Downtown Cafe Office'
 --- !u!222 &1385587478
 CanvasRenderer:
   m_ObjectHideFlags: 0

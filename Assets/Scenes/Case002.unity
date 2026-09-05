@@ -205,7 +205,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5192951433554000830, guid: 83c20111c171ba1a8852c4d4fc9b524f, type: 3}
+  m_Sprite: {fileID: 3502997125245595844, guid: c9d21161d2a6f664986c287abfbd240f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -224,9 +224,9 @@ Transform:
   m_GameObject: {fileID: 15965236}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.99964, y: 2.32337, z: 0}
-  m_LocalScale: {x: 0.8831189, y: 0.8884749, z: 1.0163}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -3.09, y: 1.72, z: 0}
+  m_LocalScale: {x: 0.07, y: 0.07, z: 0.0875}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1217438965}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1181,8 +1181,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.Case02Initializer
   initializeOnStart: 1
-  guardSuspectSprite: {fileID: 0}
-  ownerSuspectSprite: {fileID: 0}
+  guardSuspectSprite: {fileID: 3502997125245595844, guid: c9d21161d2a6f664986c287abfbd240f, type: 3}
+  ownerSuspectSprite: {fileID: 5323409585441153239, guid: 2d473693d34fc3b4bb543b4395d1d919, type: 3}
   windowPhotoTableSprite: {fileID: 3911213246147480790, guid: b136fdbe1a6047752a83b9e04a7bc4b2, type: 3}
   securityLogTableSprite: {fileID: 1806020922566079166, guid: 25a4bc5f411be16428595d3ac36b3176, type: 3}
   insurancePolicyTableSprite: {fileID: 8746195129012609110, guid: 52ccca8ea1bb4f2969702ccf51259d8a, type: 3}
@@ -6188,7 +6188,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2695760630116940890, guid: 2466b7bb4329a946c8d4366fb2d19317, type: 3}
+  m_Sprite: {fileID: 5323409585441153239, guid: 2d473693d34fc3b4bb543b4395d1d919, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6208,7 +6208,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.8206601, y: 1.85677, z: 0}
-  m_LocalScale: {x: 0.61104006, y: 0.61104006, z: 0.7638}
+  m_LocalScale: {x: 0.07, y: 0.07, z: 0.0875}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1217438965}

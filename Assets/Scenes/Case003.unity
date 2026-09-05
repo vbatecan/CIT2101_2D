@@ -205,7 +205,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5192951433554000830, guid: 83c20111c171ba1a8852c4d4fc9b524f, type: 3}
+  m_Sprite: {fileID: -8091176254630712747, guid: 206bb27d5d32074468e845f00e1d1401, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -224,9 +224,9 @@ Transform:
   m_GameObject: {fileID: 15965236}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.99964, y: 2.32337, z: 0}
-  m_LocalScale: {x: 0.8831189, y: 0.8884749, z: 1.0163}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -3.09, y: 2.04, z: 0}
+  m_LocalScale: {x: 0.059999995, y: 0.059999995, z: 0.074999996}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1217438965}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1181,9 +1181,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.Case03Initializer
   initializeOnStart: 1
-  windowPhotoZoomedSprite: {fileID: 7034101391455836084, guid: d6ecb9b31b68d2cceb9e4ab19fc8b155, type: 3}
-  securityLogZoomedSprite: {fileID: -1726625432911974308, guid: 659f528c757600b70b290747418682e8, type: 3}
-  insurancePolicyZoomedSprite: {fileID: -4850736249340630376, guid: fce6a962d6d21811cb6639df12ac8bf9, type: 3}
 --- !u!82 &370492375
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3351,7 +3348,7 @@ GameObject:
   - component: {fileID: 842892942}
   - component: {fileID: 842892941}
   m_Layer: 0
-  m_Name: Item_WindowPhoto
+  m_Name: Item_PhoneLog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3385,7 +3382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Gameplay.TableEvidenceItem
   evidenceData: {fileID: 0}
-  evidenceId: EVD_WINDOW_PHOTO
+  evidenceId: EVD_SMARTPHONE_LOG
   openNotebookOnClick: 0
   dialogueNodeToTriggerOnInspect: 
   spriteRenderer: {fileID: 842892943}
@@ -3439,7 +3436,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 37.8, y: 12.12}
+    oldSize: {x: 33.02, y: 15.04}
     newSize: {x: 37.8, y: 12.12}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -3496,7 +3493,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 12
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3911213246147480790, guid: b136fdbe1a6047752a83b9e04a7bc4b2, type: 3}
+  m_Sprite: {fileID: -2823545479096395795, guid: f3fba1dccf705a44995f1476009b07c2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5431,7 +5428,7 @@ GameObject:
   - component: {fileID: 1479184919}
   - component: {fileID: 1479184918}
   m_Layer: 0
-  m_Name: Item_InsurancePolicy
+  m_Name: Item_TerminationNotice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5465,7 +5462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Gameplay.TableEvidenceItem
   evidenceData: {fileID: 0}
-  evidenceId: EVD_INSURANCE_POLICY
+  evidenceId: EVD_RESIGNATION_LETTER
   openNotebookOnClick: 0
   dialogueNodeToTriggerOnInspect: 
   spriteRenderer: {fileID: 1479184920}
@@ -5519,7 +5516,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 31.74, y: 14.32}
+    oldSize: {x: 36.34, y: 15.2}
     newSize: {x: 31.74, y: 14.32}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -5576,7 +5573,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 12
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 8746195129012609110, guid: 52ccca8ea1bb4f2969702ccf51259d8a, type: 3}
+  m_Sprite: {fileID: 4232438111541757452, guid: 3598578ef464dbc61b568395218889e2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6183,7 +6180,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2695760630116940890, guid: 2466b7bb4329a946c8d4366fb2d19317, type: 3}
+  m_Sprite: {fileID: -6024130588176604620, guid: 83da9ec5f75ab3641baf4911163d043b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6203,8 +6200,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.8206601, y: 1.85677, z: 0}
-  m_LocalScale: {x: 0.61104006, y: 0.61104006, z: 0.7638}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.07, y: 0.07, z: 0.0875}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1217438965}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7011,7 +7008,7 @@ GameObject:
   - component: {fileID: 1781822299}
   - component: {fileID: 1781822298}
   m_Layer: 0
-  m_Name: Item_SecurityLog
+  m_Name: Item_CctvStill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7045,7 +7042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Gameplay.TableEvidenceItem
   evidenceData: {fileID: 0}
-  evidenceId: EVD_SHIFT_LOG
+  evidenceId: EVD_CCTV_STILL
   openNotebookOnClick: 0
   dialogueNodeToTriggerOnInspect: 
   spriteRenderer: {fileID: 1781822300}
@@ -7099,7 +7096,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 35.48, y: 15.3}
+    oldSize: {x: 37.52, y: 10.36}
     newSize: {x: 35.48, y: 15.3}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -7156,7 +7153,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 12
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1806020922566079166, guid: 25a4bc5f411be16428595d3ac36b3176, type: 3}
+  m_Sprite: {fileID: 5198689355215951543, guid: 96d81a74e76427a3a8cff07024ca1fc9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Managers;
@@ -13,7 +12,7 @@ namespace CaseClosed.Gameplay
     /// single-click selection/explanation, double-click zoom inspection, and case file notebook opening triggers.
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
-    public class TableEvidenceItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+    public class TableEvidenceItem : MonoBehaviour
     {
         [Header("Evidence Data Link")]
         [Tooltip("The ScriptableObject defining this evidence item. Leave empty if this is a general book/tool prop.")]
@@ -156,9 +155,6 @@ namespace CaseClosed.Gameplay
             // Disallow desk interaction if UI modal or inspection modal is currently active
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
-
-            // Disallow desk interaction if pointer is hovering over a UI canvas element (e.g. Header buttons)
-            if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
 
             Vector3 mouseScreen = Input.mousePosition;
             Vector3 mouseWorld3D = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
@@ -391,22 +387,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Applies hover tint and highlighted sprite when the mouse pointer hovers over the item.
-        /// </summary>
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            SetHoverState(true);
-        }
-
-        /// <summary>
-        /// Restores original color and sprite when the mouse pointer exits the item boundary.
-        /// </summary>
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            SetHoverState(false);
-        }
-
         private void OnMouseEnter()
         {
             SetHoverState(true);
@@ -419,10 +399,7 @@ namespace CaseClosed.Gameplay
 
         private void OnMouseDown()
         {
-            if (!EventSystem.current || !EventSystem.current.IsPointerOverGameObject())
-            {
-                TriggerClick(false);
-            }
+            TriggerClick(false);
         }
 
         /// <summary>
@@ -450,18 +427,6 @@ namespace CaseClosed.Gameplay
             {
                 highlightGlow.SetActive(isHovered);
             }
-        }
-
-        /// <summary>
-        /// Handles click events on the table item:
-        /// - If openNotebookOnClick is enabled, toggles the Case File Notebook.
-        /// - Single click: selects evidence and triggers suspect explanation dialogue if configured.
-        /// - Double-click / Right-click: opens close-up inspect modal.
-        /// </summary>
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            bool isSecondary = eventData.clickCount >= 2 || eventData.button == PointerEventData.InputButton.Right;
-            TriggerClick(isSecondary);
         }
 
         /// <summary>
