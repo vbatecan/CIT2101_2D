@@ -113,12 +113,6 @@ namespace CaseClosed.UI
                 confirmMainMenuNoButton.onClick.AddListener(CloseMainMenuConfirmation);
             }
 
-            if (investigatorSelectButton != null)
-            {
-                Button btn = investigatorSelectButton.GetComponent<Button>();
-                if (btn != null) btn.onClick.AddListener(ToggleInvestigatorSelectPanel);
-            }
-
             if (notebookButton != null)
             {
                 Button btn = notebookButton.GetComponent<Button>();
@@ -189,6 +183,10 @@ namespace CaseClosed.UI
         /// <param name="panelType">The target <see cref="UIPanelType"/> to activate.</param>
         public void ShowPanel(UIPanelType panelType)
         {
+            // Keep old serialized navigation callbacks compatible with the retired selector.
+            if (panelType == UIPanelType.InvestigatorSelect)
+                panelType = UIPanelType.InvestigationTable;
+
             Debug.Log($"[UI:Manager] Transitioning panel from '{_currentPanel}' to '{panelType}'");
             _currentPanel = panelType;
 
@@ -211,7 +209,7 @@ namespace CaseClosed.UI
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
             if (resultsScreenPanel != null) resultsScreenPanel.SetActive(isResults);
-            if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(panelType == UIPanelType.InvestigatorSelect);
+            if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(false);
             if (inGameMenuPanel != null) inGameMenuPanel.SetActive(isInGameMenu);
             if (mainMenuConfirmPanel != null && !isInGameMenu) mainMenuConfirmPanel.SetActive(false);
             if (gameOverPanel != null)
@@ -229,7 +227,7 @@ namespace CaseClosed.UI
             if (notebookButton != null) notebookButton.SetActive(showHeaderNav);
             if (deductionBoardButton != null) deductionBoardButton.SetActive(showHeaderNav);
             if (concludeCaseButton != null) concludeCaseButton.SetActive(showHeaderNav);
-            if (investigatorSelectButton != null) investigatorSelectButton.SetActive(showHeaderNav);
+            if (investigatorSelectButton != null) investigatorSelectButton.SetActive(false);
             if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
 
             // Control countdown timer state across panels
@@ -312,15 +310,11 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Toggles the investigator selection panel on and off.
+        /// Compatibility callback for old investigator selection button bindings.
         /// </summary>
         public void ToggleInvestigatorSelectPanel()
         {
-            Debug.Log("[UI:Manager] Toggle investigator select panel clicked");
-            if (currentPanel == UIPanelType.InvestigatorSelect)
-                ShowPanel(UIPanelType.InvestigationTable);
-            else
-                ShowPanel(UIPanelType.InvestigatorSelect);
+            ShowPanel(UIPanelType.InvestigationTable);
         }
 
         /// <summary>

@@ -98,6 +98,32 @@ namespace CaseClosed.Tests
             }
         }
 
+        [TestCase(-9f, -4.5f)]
+        [TestCase(9f, -4.5f)]
+        [TestCase(0f, 2f)]
+        [TestCase(0f, -2f)]
+        public void ArmFingertipTracksCursorBeyondOldBounds(float worldX, float worldY)
+        {
+            var cameraObject = new GameObject("Test_PointerCamera", typeof(Camera));
+            cameraObject.transform.SetParent(testRoot.transform);
+            cameraObject.transform.position = new Vector3(0f, 0f, -10f);
+            Camera camera = cameraObject.GetComponent<Camera>();
+            camera.orthographic = true;
+            camera.orthographicSize = 5f;
+            armController.targetCamera = camera;
+            armController.transform.localScale = new Vector3(0.19f, 0.19f, 1f);
+            armController.transform.rotation = Quaternion.Euler(0f, 0f, 10f);
+            armController.fingertipPoint.localPosition = new Vector3(1.02f, 19f, 0f);
+            Vector3 target = new Vector3(worldX, worldY, 0f);
+
+            typeof(ArmPointerController).GetMethod("MoveFingertipToScreenPosition",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .Invoke(armController, new object[] { camera.WorldToScreenPoint(target) });
+
+            Assert.That(Vector3.Distance(armController.fingertipPoint.position, target), Is.LessThan(0.001f),
+                "The visible fingertip must reach the cursor in one frame, including beyond the old desk limits.");
+        }
+
         [Test]
         public void ArmPointerController_DetermineUIMode_TrueWhenInModalOrInspection()
         {

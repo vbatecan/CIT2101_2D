@@ -44,14 +44,8 @@ namespace CaseClosed.Gameplay
         [Tooltip("Layer mask for table evidence items.")]
         public LayerMask interactableLayers = ~0;
 
-        [Header("Movement & Table Clamping")]
-        [Tooltip("Horizontal movement range across the desk.")]
-        public Vector2 horizontalBounds = new Vector2(-6.5f, 6.5f);
-
-        [Tooltip("Vertical movement range across the desk surface.")]
-        public Vector2 verticalBounds = new Vector2(-3.8f, -0.8f);
-
-        [Tooltip("Lerp smoothing speed for following mouse movement.")]
+        [Header("Pointer Movement")]
+        [Tooltip("Smoothing speed for arm tilt. The fingertip follows the cursor directly.")]
         public float followSpeed = 18f;
 
         [Tooltip("Slight tilt angle when reaching towards screen edges.")]
@@ -205,29 +199,25 @@ namespace CaseClosed.Gameplay
 
         private void HandleArmMovement()
         {
-            if (targetCamera == null) targetCamera = Camera.main;
             if (targetCamera == null) return;
+            MoveFingertipToScreenPosition(Input.mousePosition);
+        }
 
-            Vector3 mouseScreen = Input.mousePosition;
-            Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 5f));
+        private void MoveFingertipToScreenPosition(Vector3 mouseScreen)
+        {
+            if (isTapping) return;
 
-            // Clamp within desk boundaries
-            float targetX = Mathf.Clamp(mouseWorld.x, horizontalBounds.x, horizontalBounds.y);
-            float targetY = Mathf.Clamp(mouseWorld.y, verticalBounds.x, verticalBounds.y);
+            Vector3 tipPosition = fingertipPoint != null ? fingertipPoint.position : transform.position;
+            mouseScreen.z = targetCamera.WorldToScreenPoint(tipPosition).z;
+            Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(mouseScreen);
 
-            // Compute fingertip offset so the fingertip aligns with target
-            Vector3 offset = (fingertipPoint != null) ? (fingertipPoint.position - transform.position) : Vector3.zero;
-            Vector3 desiredPos = new Vector3(targetX - offset.x, targetY - offset.y, 0f);
-
-            if (!isTapping)
-            {
-                transform.position = Vector3.Lerp(transform.position, desiredPos, Time.deltaTime * followSpeed);
-            }
-
-            // Subtle rotation tilt based on X position
-            float tiltFactor = (targetX / Mathf.Max(1f, horizontalBounds.y));
+            // Tilt first, then compensate for the rotated fingertip offset.
+            Rect viewport = targetCamera.pixelRect;
+            float tiltFactor = Mathf.Clamp((mouseScreen.x - viewport.center.x) / Mathf.Max(1f, viewport.width * 0.5f), -1f, 1f);
             float targetTilt = -tiltFactor * maxTiltAngle;
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0f, 0f, targetTilt), Time.deltaTime * followSpeed);
+            Vector3 offset = fingertipPoint != null ? fingertipPoint.position - transform.position : Vector3.zero;
+            transform.position = mouseWorld - offset;
         }
 
         private void HandleFingertipRaycast()
