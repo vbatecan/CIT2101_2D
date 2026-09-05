@@ -22,7 +22,7 @@ namespace CaseClosed.Editor
 
             // 1. Sprites
             Sprite maleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/Case001_Male.png");
-            Sprite femaleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/Case001_Female.png");
+            Sprite femaleSprite = LoadSprite("Assets/Assets/CHARACTERS/Jane Reyes.png");
             Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png", "DoorwayPOV_0");
             Sprite photoZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/DoorwayTOP.png", "DoorwayTOP_0");
             Sprite teacupSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png", "TeacupPOv_2") ?? LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TeacupPOv.png");
@@ -44,18 +44,18 @@ namespace CaseClosed.Editor
             vince.defaultSittingPose = maleSprite;
             SaveAsset(vince, $"{FolderPath}/Char_VinceBatecan.asset");
 
-            CharacterProfileSO janine = ScriptableObject.CreateInstance<CharacterProfileSO>();
-            janine.characterId = "CHAR_CASE1_FEMALE";
-            janine.fullName = "Janine Marie Sotto";
-            janine.age = 24;
-            janine.occupation = "Manor Guest & Key Witness";
-            janine.relationshipToVictim = "Family Acquaintance";
-            janine.personalityTrait = PersonalityTrait.Observant;
-            janine.alibi = "Sat in the dining room talking with guests until 9:00 PM.";
-            janine.possibleMotives = "None directly known; witnessed Vince running toward the garden.";
-            janine.knownConflicts = "Noticed Vince arguing heatedly with Uncle Kirby before dinner.";
-            janine.defaultSittingPose = femaleSprite;
-            SaveAsset(janine, $"{FolderPath}/Char_JanineSotto.asset");
+            CharacterProfileSO jane = ScriptableObject.CreateInstance<CharacterProfileSO>();
+            jane.characterId = "CHAR_CASE1_FEMALE";
+            jane.fullName = "Jane Reyes";
+            jane.age = 24;
+            jane.occupation = "Manor Guest & Key Witness";
+            jane.relationshipToVictim = "Family Acquaintance";
+            jane.personalityTrait = PersonalityTrait.Observant;
+            jane.alibi = "Sat in the dining room talking with guests until 9:00 PM.";
+            jane.possibleMotives = "None directly known; witnessed Vince running toward the garden.";
+            jane.knownConflicts = "Noticed Vince arguing heatedly with Uncle Kirby before dinner.";
+            jane.defaultSittingPose = femaleSprite;
+            SaveAsset(jane, $"{FolderPath}/Char_JaneReyes.asset");
 
             CharacterProfileSO kyle = ScriptableObject.CreateInstance<CharacterProfileSO>();
             kyle.characterId = "CHAR_KYLE_PASTRANA";
@@ -184,7 +184,7 @@ namespace CaseClosed.Editor
             case01.victimInfo = "Kirby Raymundo (Aristocrat - Proud & Demanding Owner)";
             case01.leadInvestigator = kyle;
             case01.primarySuspect = vince;
-            case01.additionalSuspects.Add(janine);
+            case01.additionalSuspects.Add(jane);
             case01.evidenceItems.Add(evPhoto);
             case01.evidenceItems.Add(evTeacup);
             case01.evidenceItems.Add(evKitchen);

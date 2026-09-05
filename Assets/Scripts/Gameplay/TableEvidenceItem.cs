@@ -434,6 +434,10 @@ namespace CaseClosed.Gameplay
         /// </summary>
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
+            // OnMouseDown can reach this handler through UI, bypassing the polling guards.
+            if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
+            if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
+
             // 1. Check if configured to open notebook (Open Case Book on desk)
             if (openNotebookOnClick)
             {

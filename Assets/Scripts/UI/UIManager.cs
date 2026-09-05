@@ -115,7 +115,7 @@ namespace CaseClosed.UI
 
             if (notebookButton != null)
             {
-                Button btn = notebookButton.GetComponent<Button>();
+                Button btn = notebookButton.GetComponentInChildren<Button>(true);
                 if (btn != null) btn.onClick.AddListener(ToggleNotebookPanel);
             }
 
