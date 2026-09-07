@@ -1146,8 +1146,8 @@ Transform:
   m_GameObject: {fileID: 409165938}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5176, y: -3.7967, z: 0}
-  m_LocalScale: {x: 0.43512666, y: 0.5533187, z: 0.42484543}
+  m_LocalPosition: {x: -0.0476, y: -3.9931, z: 0}
+  m_LocalScale: {x: 0.47189206, y: 0.60007054, z: 0.46074212}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -4182,6 +4182,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.GameBootstrap
   startOnMainMenu: 0
+  _case01Asset: {fileID: 0}
+  _case02Asset: {fileID: 0}
+  _case03Asset: {fileID: 0}
 --- !u!114 &1357520870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4194,6 +4197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af174de93e56e386fa6816dfffb23ef7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.Case01Initializer
+  _caseDataAsset: {fileID: 0}
   initializeOnStart: 1
   maleSuspectSprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
   femaleSuspectSprite: {fileID: 762338069729248364, guid: 0ab5235ab3832964ab41f407745817f4, type: 3}

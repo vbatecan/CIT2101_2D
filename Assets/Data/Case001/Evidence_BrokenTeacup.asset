@@ -23,7 +23,7 @@ MonoBehaviour:
   baseDescription: Found shattered inside the locked study, right near the safe.
   detailedObservation: 
   unlockedClueText: Teacup shattered directly in front of the safe during break-in.
-  startsDiscovered: 1
+  startsDiscovered: 0
   requiredDialogueNodeId: 
   dialogueNodeToTriggerOnInspect: 
   isExamined: 0

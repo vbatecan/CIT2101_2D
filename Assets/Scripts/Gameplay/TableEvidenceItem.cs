@@ -473,6 +473,7 @@ namespace CaseClosed.Gameplay
             {
                 Debug.Log($"[Gameplay:TableEvidence] Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
+                CaseManager.Instance?.RegisterDiscoveredEvidence(evidenceData);
                 InterrogationManager.Instance.PresentEvidenceToChallenge(evidenceData);
                 return;
             }

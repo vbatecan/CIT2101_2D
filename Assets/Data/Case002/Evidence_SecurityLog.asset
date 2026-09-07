@@ -24,7 +24,7 @@ MonoBehaviour:
     Pascual scanned at East Gate.'
   unlockedClueText: Log shows Charl was checking the East Perimeter gate at 11:00
     PM, far away from the office!
-  startsDiscovered: 1
+  startsDiscovered: 0
   isExamined: 0
   isToggledOnTable: 1
   hotspots: []

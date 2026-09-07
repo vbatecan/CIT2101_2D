@@ -87,6 +87,7 @@ namespace CaseClosed.UI
             BindSettingsButtons();
             BindExitConfirmButtons();
             BindBackButtons();
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
 
             // Subscribe to external progression changes
             if (CaseClosed.Services.CaseProgressionService.Instance != null)
@@ -135,6 +136,7 @@ namespace CaseClosed.UI
         {
             ReturnToMainView();
             AudioManager.Instance?.PlayMenuBGM();
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         private void BindMainButtons()

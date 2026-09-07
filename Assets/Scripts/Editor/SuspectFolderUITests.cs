@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Gameplay;
@@ -78,12 +79,24 @@ namespace CaseClosed.Tests
             _suspectFolderBtn = buttonGO.GetComponent<SuspectFolderButton>();
             _uiManager.suspectFolderButton = buttonGO;
 
+            RectTransform canvasRect = canvasGO.GetComponent<RectTransform>();
+            canvasRect.sizeDelta = new Vector2(1920f, 1080f);
+
+            RectTransform panelRect = folderPanelGO.GetComponent<RectTransform>();
+            panelRect.sizeDelta = new Vector2(1920f, 1080f);
+
+            _suspectFolderUI.folderRoot.sizeDelta = new Vector2(1400f, 780f);
+            _suspectFolderUI.smoothZoom = false;
+
             _uiManager.ShowPanel(UIPanelType.InvestigationTable);
+            typeof(UIManager).GetProperty("Instance")?.SetValue(null, _uiManager);
         }
 
         [TearDown]
         public void TearDown()
         {
+            typeof(UIManager).GetProperty("Instance")?.SetValue(null, null);
+
             if (_testRoot != null)
             {
                 Object.DestroyImmediate(_testRoot);
@@ -204,6 +217,177 @@ namespace CaseClosed.Tests
 
             _uiManager.ShowPanel(UIPanelType.InvestigationTable);
             Assert.IsFalse(arm.DetermineUIMode());
+        }
+
+        [Test]
+        public void SuspectFolderService_CalculateNewZoom_ClampsToMinAndMax()
+        {
+            float zoom1 = _service.CalculateNewZoom(1.0f, -2.0f, 1.0f, 3.5f, 0.15f);
+            Assert.AreEqual(1.0f, zoom1, 0.001f, "Zoom below min should clamp to minZoom.");
+
+            float zoom2 = _service.CalculateNewZoom(3.0f, 10.0f, 1.0f, 3.5f, 0.15f);
+            Assert.AreEqual(3.5f, zoom2, 0.001f, "Zoom above max should clamp to maxZoom.");
+
+            float zoom3 = _service.CalculateNewZoom(1.5f, 2.0f, 1.0f, 3.5f, 0.15f);
+            Assert.AreEqual(1.8f, zoom3, 0.001f, "Zoom should increase by scrollDelta * sensitivity.");
+        }
+
+        [Test]
+        public void SuspectFolderService_CalculateZoomFocalPosition_ScalesAroundFocalPoint()
+        {
+            Vector2 currentPos = Vector2.zero;
+            Vector2 focalPoint = new Vector2(100f, 50f);
+            float oldZoom = 1.0f;
+            float newZoom = 2.0f;
+
+            Vector2 newPos = _service.CalculateZoomFocalPosition(currentPos, focalPoint, oldZoom, newZoom);
+            // newPos = (0 - (100, 50)) * 2 + (100, 50) = (-200, -100) + (100, 50) = (-100, -50)
+            Assert.AreEqual(new Vector2(-100f, -50f), newPos);
+        }
+
+        [Test]
+        public void SuspectFolderService_ClampFolderPosition_ClampsWithinSafetyMargin()
+        {
+            Vector2 folderSize = new Vector2(1400f, 780f);
+            Vector2 parentSize = new Vector2(1920f, 1080f);
+            float zoom = 1.0f;
+            float safetyMargin = 100f;
+
+            // Half parent: 960, half folder: 700. Max = 960 + 700 - 100 = 1560
+            Vector2 clamped1 = _service.ClampFolderPosition(new Vector2(2000f, 0f), folderSize, zoom, parentSize, safetyMargin);
+            Assert.AreEqual(1560f, clamped1.x, 0.01f);
+
+            Vector2 clamped2 = _service.ClampFolderPosition(new Vector2(-2000f, 0f), folderSize, zoom, parentSize, safetyMargin);
+            Assert.AreEqual(-1560f, clamped2.x, 0.01f);
+
+            // Within range
+            Vector2 inBounds = new Vector2(100f, 50f);
+            Vector2 clamped3 = _service.ClampFolderPosition(inBounds, folderSize, zoom, parentSize, safetyMargin);
+            Assert.AreEqual(inBounds, clamped3);
+        }
+
+        [Test]
+        public void SuspectFolderUI_SetTargetZoom_ClampsAndAppliesScale()
+        {
+            _suspectFolderUI.minZoom = 1.0f;
+            _suspectFolderUI.maxZoom = 3.5f;
+
+            _suspectFolderUI.SetTargetZoom(2.5f);
+            Assert.AreEqual(2.5f, _suspectFolderUI.TargetZoom, 0.001f);
+            Assert.AreEqual(2.5f, _suspectFolderUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(2.5f, _suspectFolderUI.folderRoot.localScale.x, 0.001f);
+
+            _suspectFolderUI.SetTargetZoom(5.0f);
+            Assert.AreEqual(3.5f, _suspectFolderUI.TargetZoom, 0.001f);
+            Assert.AreEqual(3.5f, _suspectFolderUI.folderRoot.localScale.x, 0.001f);
+
+            _suspectFolderUI.SetTargetZoom(0.2f);
+            Assert.AreEqual(1.0f, _suspectFolderUI.TargetZoom, 0.001f);
+            Assert.AreEqual(1.0f, _suspectFolderUI.folderRoot.localScale.x, 0.001f);
+        }
+
+        [Test]
+        public void SuspectFolderUI_SetTargetPosition_ClampsAndAppliesPosition()
+        {
+            _suspectFolderUI.SetTargetPosition(new Vector2(50f, -30f));
+            Assert.AreEqual(new Vector2(50f, -30f), _suspectFolderUI.TargetPosition);
+            Assert.AreEqual(new Vector2(50f, -30f), _suspectFolderUI.folderRoot.anchoredPosition);
+        }
+
+        [Test]
+        public void SuspectFolderUI_ResetView_RestoresDefaultZoomAndCenter()
+        {
+            _suspectFolderUI.SetTargetZoom(3.0f);
+            _suspectFolderUI.SetTargetPosition(new Vector2(200f, 150f));
+
+            _suspectFolderUI.ResetView();
+
+            Assert.AreEqual(1.0f, _suspectFolderUI.TargetZoom, 0.001f);
+            Assert.AreEqual(1.0f, _suspectFolderUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(Vector2.zero, _suspectFolderUI.TargetPosition);
+            Assert.AreEqual(Vector2.zero, _suspectFolderUI.folderRoot.anchoredPosition);
+            Assert.AreEqual(Vector3.one, _suspectFolderUI.folderRoot.localScale);
+        }
+
+        [Test]
+        public void SuspectFolderUI_OnPointerClick_RightClickResetsView()
+        {
+            _suspectFolderUI.SetTargetZoom(2.5f);
+            _suspectFolderUI.SetTargetPosition(new Vector2(100f, 80f));
+
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Right
+            };
+
+            _suspectFolderUI.OnPointerClick(eventData);
+
+            Assert.AreEqual(1.0f, _suspectFolderUI.TargetZoom, 0.001f);
+            Assert.AreEqual(Vector2.zero, _suspectFolderUI.TargetPosition);
+            Assert.AreEqual(Vector3.one, _suspectFolderUI.folderRoot.localScale);
+        }
+
+        [Test]
+        public void SuspectFolderUI_OnScroll_AdjustsZoom()
+        {
+            _suspectFolderUI.ResetView();
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                scrollDelta = new Vector2(0f, 2.0f),
+                position = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f)
+            };
+
+            _suspectFolderUI.OnScroll(eventData);
+
+            Assert.Greater(_suspectFolderUI.TargetZoom, 1.0f);
+        }
+
+        [Test]
+        public void SuspectFolderUI_EnsureRaycastSetup_EnablesRaycastTargetOnImage()
+        {
+            _suspectFolderUI.folderDisplayImage.raycastTarget = false;
+            _suspectFolderUI.EnsureRaycastSetup();
+            Assert.IsTrue(_suspectFolderUI.folderDisplayImage.raycastTarget);
+            Assert.IsNotNull(_suspectFolderUI.folderDisplayImage.GetComponent<SuspectFolderDragTarget>());
+            Assert.IsNotNull(_suspectFolderUI.folderRoot.GetComponent<SuspectFolderDragTarget>());
+        }
+
+        [Test]
+        public void SuspectFolderUI_LeftClickOnFolder_DoesNotClose()
+        {
+            _suspectFolderUI.EnsureRaycastSetup();
+
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Left,
+                pointerCurrentRaycast = new RaycastResult
+                {
+                    gameObject = _suspectFolderUI.folderDisplayImage.gameObject
+                }
+            };
+
+            _suspectFolderUI.OnPointerClick(eventData);
+            Assert.IsFalse(_suspectFolderUI.IsClosing, "Left-clicking on the suspect folder should do nothing and not close.");
+
+            var dragTarget = _suspectFolderUI.folderDisplayImage.GetComponent<SuspectFolderDragTarget>();
+            dragTarget.OnPointerClick(eventData);
+            Assert.IsFalse(_suspectFolderUI.IsClosing, "SuspectFolderDragTarget should ignore left clicks.");
+        }
+
+        [Test]
+        public void SuspectFolderDragTarget_RightClick_ResetsView()
+        {
+            _suspectFolderUI.EnsureRaycastSetup();
+            _suspectFolderUI.SetTargetZoom(2.8f);
+
+            var dragTarget = _suspectFolderUI.folderDisplayImage.GetComponent<SuspectFolderDragTarget>();
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Right
+            };
+
+            dragTarget.OnPointerClick(eventData);
+            Assert.AreEqual(1.0f, _suspectFolderUI.TargetZoom, 0.001f);
         }
     }
 }

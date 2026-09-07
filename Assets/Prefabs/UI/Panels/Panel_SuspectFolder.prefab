@@ -138,7 +138,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -415,6 +415,12 @@ MonoBehaviour:
   slideDuration: 0.35
   hiddenPosY: -1100
   visiblePosY: 0
+  minZoom: 1
+  maxZoom: 3.5
+  scrollSensitivity: 0.15
+  smoothZoom: 1
+  zoomLerpSpeed: 15
+  safetyMargin: 100
   folderDisplayImage: {fileID: 713141702806336259}
   dossierTitleText: {fileID: 0}
   case1FolderSprite: {fileID: -4855273563588588688, guid: ed2a93bcde18f4447b7289f4dbc3bc53, type: 3}

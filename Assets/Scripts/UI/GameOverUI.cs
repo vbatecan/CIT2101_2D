@@ -42,6 +42,8 @@ namespace CaseClosed.UI
             {
                 returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
             }
+
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         private void OnEnable()

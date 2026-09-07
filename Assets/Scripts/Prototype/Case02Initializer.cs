@@ -148,7 +148,7 @@ namespace CaseClosed.Prototype
             evWindowPhoto.baseDescription = "Photograph of the shattered back office window taken from the alley.";
             evWindowPhoto.detailedObservation = "Glass shards are scattered OUTSIDE on the alley pavement, proving the window was broken from the INSIDE.";
             evWindowPhoto.unlockedClueText = "Glass shards scattered outside on pavement prove window was broken from INSIDE!";
-            evWindowPhoto.startsDiscovered = true;
+            evWindowPhoto.startsDiscovered = false;
 
             EvidenceHotspot spotGlass = new EvidenceHotspot();
             spotGlass.hotspotId = "SPOT_OUTSIDE_GLASS";

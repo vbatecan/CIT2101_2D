@@ -59,6 +59,7 @@ namespace CaseClosed.UI
             if (returnToMainMenuButton != null) returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
 
             if (resultsContainer != null) resultsContainer.SetActive(false);
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>
@@ -246,6 +247,8 @@ namespace CaseClosed.UI
                     }
                 }
             }
+
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>

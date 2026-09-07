@@ -23,7 +23,7 @@ MonoBehaviour:
   detailedObservation: 
   unlockedClueText: Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince
     could not have been inside!
-  startsDiscovered: 1
+  startsDiscovered: 0
   requiredDialogueNodeId: 
   dialogueNodeToTriggerOnInspect: 
   isExamined: 0

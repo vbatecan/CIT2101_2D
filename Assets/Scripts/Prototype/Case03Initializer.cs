@@ -147,7 +147,7 @@ namespace CaseClosed.Prototype
             evPhoneLog.baseDescription = "Call log extracted from Kurt Miguel Ancheta's phone.";
             evPhoneLog.detailedObservation = "Shows an unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
             evPhoneLog.unlockedClueText = "Unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
-            evPhoneLog.startsDiscovered = true;
+            evPhoneLog.startsDiscovered = false;
             c.evidenceItems.Add(evPhoneLog);
 
             // 2. Coffee Shop CCTV Still
