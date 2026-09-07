@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Managers;
@@ -14,7 +15,7 @@ namespace CaseClosed.UI
     /// Handles tab navigation, smooth slide transitions, right-edge tab pop-outs,
     /// and delegates text compilation to <see cref="NotebookFormattingService"/>.
     /// </summary>
-    public class CaseFileNotebookUI : MonoBehaviour
+    public class CaseFileNotebookUI : MonoBehaviour, IScrollHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
         [Header("Hierarchy & Animations")]
         [Tooltip("RectTransform of the centered clipboard to animate sliding in/out.")]
@@ -27,6 +28,25 @@ namespace CaseClosed.UI
         public float hiddenPosY = -1100f;
         [Tooltip("On-screen vertical Y position when held up in front of the detective.")]
         public float visiblePosY = 0f;
+
+        [Header("Zoom & Move Settings")]
+        [Tooltip("Minimum zoom magnification scale factor.")]
+        [Range(0.5f, 1.5f)] public float minZoom = 1.0f;
+
+        [Tooltip("Maximum zoom magnification scale factor.")]
+        [Range(2.0f, 5.0f)] public float maxZoom = 3.5f;
+
+        [Tooltip("Scroll wheel zoom sensitivity.")]
+        public float scrollSensitivity = 0.15f;
+
+        [Tooltip("Whether zoom and position interpolate smoothly.")]
+        public bool smoothZoom = true;
+
+        [Tooltip("Interpolation speed for smooth zoom and position.")]
+        public float zoomLerpSpeed = 15f;
+
+        [Tooltip("Safety margin in pixels kept inside screen bounds when moving.")]
+        public float safetyMargin = 100f;
 
         [Header("Tab Buttons")]
         public Button summaryTabButton;
@@ -87,9 +107,26 @@ namespace CaseClosed.UI
 
         private NotebookTab currentTab = NotebookTab.CaseSummary;
         private readonly NotebookFormattingService formattingService = new NotebookFormattingService();
+        private readonly NotebookZoomService _zoomService = new NotebookZoomService();
         private Coroutine slideCoroutine;
         private bool isClosing = false;
         private bool isSubscribed = false;
+
+        // Zoom & Drag state
+        private float _currentZoom = 1.0f;
+        private float _targetZoom = 1.0f;
+        private Vector2 _currentPosition = Vector2.zero;
+        private Vector2 _targetPosition = Vector2.zero;
+        private bool _isDragging = false;
+        private Vector2 _lastDragLocalPos;
+        private RectTransform _parentCanvasRect;
+
+        public float CurrentZoom => _currentZoom;
+        public float TargetZoom => _targetZoom;
+        public Vector2 CurrentPosition => _currentPosition;
+        public Vector2 TargetPosition => _targetPosition;
+        public bool IsDragging => _isDragging;
+        public bool IsClosing => isClosing;
 
         // Base X offsets for tab pop-out animation
         private float summaryBaseX = 0f;
@@ -104,11 +141,13 @@ namespace CaseClosed.UI
         {
             SetupTabButtons();
             CaptureTabBasePositions();
+            EnsureRaycastSetup();
         }
 
         private void Start()
         {
             SetupTabButtons();
+            EnsureRaycastSetup();
             SubscribeToManagerEvents();
             SwitchTab(currentTab);
         }
@@ -116,13 +155,22 @@ namespace CaseClosed.UI
         private void OnEnable()
         {
             isClosing = false;
+            _isDragging = false;
             SetupTabButtons();
+            EnsureRaycastSetup();
             CaptureTabBasePositions();
             SubscribeToManagerEvents();
             SwitchTab(currentTab);
+            ResetView();
 
             if (clipboardRoot != null)
             {
+                clipboardRoot.localScale = Vector3.one;
+                Vector2 startPos = new Vector2(0f, hiddenPosY);
+                clipboardRoot.anchoredPosition = startPos;
+                _currentPosition = startPos;
+                _targetPosition = Vector2.zero;
+
                 if (slideCoroutine != null) StopCoroutine(slideCoroutine);
                 slideCoroutine = StartCoroutine(SlideCoroutine(hiddenPosY, visiblePosY, true));
             }
@@ -137,12 +185,49 @@ namespace CaseClosed.UI
                 StopCoroutine(slideCoroutine);
                 slideCoroutine = null;
             }
+            _isDragging = false;
             UnsubscribeFromManagerEvents();
         }
 
         private void OnDestroy()
         {
             UnsubscribeFromManagerEvents();
+        }
+
+        private void Update()
+        {
+            if (isClosing) return;
+
+            // Keyboard shortcut: Escape to close
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                OnCloseClicked();
+                return;
+            }
+
+            // Keyboard shortcut: 'R' to reset view
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ResetView();
+            }
+
+            // While animating slide in/out, do not apply regular zoom/pan lerp
+            if (slideCoroutine != null) return;
+            if (clipboardRoot == null) return;
+
+            if (smoothZoom)
+            {
+                _currentZoom = Mathf.Lerp(_currentZoom, _targetZoom, Time.unscaledDeltaTime * zoomLerpSpeed);
+                _currentPosition = Vector2.Lerp(_currentPosition, _targetPosition, Time.unscaledDeltaTime * zoomLerpSpeed);
+            }
+            else
+            {
+                _currentZoom = _targetZoom;
+                _currentPosition = _targetPosition;
+            }
+
+            clipboardRoot.localScale = new Vector3(_currentZoom, _currentZoom, 1f);
+            clipboardRoot.anchoredPosition = _currentPosition;
         }
 
         public void SetupTabButtons()
@@ -177,7 +262,8 @@ namespace CaseClosed.UI
             if (backdropButton != null)
             {
                 backdropButton.onClick.RemoveListener(OnCloseClicked);
-                backdropButton.onClick.AddListener(OnCloseClicked);
+                backdropButton.onClick.RemoveListener(OnBackdropClicked);
+                backdropButton.onClick.AddListener(OnBackdropClicked);
             }
             if (prevEvidenceButton != null)
             {
@@ -807,6 +893,7 @@ namespace CaseClosed.UI
         {
             if (isClosing) return;
             isClosing = true;
+            _isDragging = false;
             Debug.Log("[UI:Notebook] Close notebook requested, animating slide-out");
 
             if (clipboardRoot != null && gameObject.activeInHierarchy)
@@ -816,6 +903,7 @@ namespace CaseClosed.UI
             }
             else
             {
+                isClosing = false;
                 UIManager.Instance?.ToggleNotebookPanel();
             }
         }
@@ -825,29 +913,328 @@ namespace CaseClosed.UI
             if (clipboardRoot == null) yield break;
 
             float elapsed = 0f;
-            Vector2 pos = clipboardRoot.anchoredPosition;
-            pos.y = fromY;
-            clipboardRoot.anchoredPosition = pos;
+            Vector2 startPos = clipboardRoot.anchoredPosition;
+            startPos.y = fromY;
+            clipboardRoot.anchoredPosition = startPos;
+
+            float startX = startPos.x;
+            float startScale = clipboardRoot.localScale.x;
 
             while (elapsed < slideDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / slideDuration);
                 float ease = 1f - Mathf.Pow(1f - t, 3f);
+
+                Vector2 pos = clipboardRoot.anchoredPosition;
+                pos.x = Mathf.Lerp(startX, 0f, ease);
                 pos.y = Mathf.Lerp(fromY, toY, ease);
                 clipboardRoot.anchoredPosition = pos;
+
+                if (!isOpening)
+                {
+                    float s = Mathf.Lerp(startScale, 1f, ease);
+                    clipboardRoot.localScale = new Vector3(s, s, 1f);
+                }
+
                 yield return null;
             }
 
-            pos.y = toY;
-            clipboardRoot.anchoredPosition = pos;
+            Vector2 finalPos = new Vector2(0f, toY);
+            clipboardRoot.anchoredPosition = finalPos;
             slideCoroutine = null;
 
-            if (!isOpening)
+            if (isOpening)
+            {
+                _currentPosition = finalPos;
+                _targetPosition = finalPos;
+                _currentZoom = 1.0f;
+                _targetZoom = 1.0f;
+                clipboardRoot.localScale = Vector3.one;
+            }
+            else
             {
                 isClosing = false;
                 UIManager.Instance?.ToggleNotebookPanel();
             }
         }
+
+        #region Zoom, Pan & Drag Event Handlers
+
+        /// <summary>
+        /// Sets target zoom scale factor clamped between minZoom and maxZoom.
+        /// </summary>
+        public void SetTargetZoom(float zoom)
+        {
+            _targetZoom = Mathf.Clamp(zoom, minZoom, maxZoom);
+            ClampTargetPosition();
+
+            if (!smoothZoom)
+            {
+                _currentZoom = _targetZoom;
+                _currentPosition = _targetPosition;
+                ApplyTransform();
+            }
+        }
+
+        /// <summary>
+        /// Sets target position clamped within allowable screen bounds.
+        /// </summary>
+        public void SetTargetPosition(Vector2 position)
+        {
+            _targetPosition = position;
+            ClampTargetPosition();
+
+            if (!smoothZoom)
+            {
+                _currentPosition = _targetPosition;
+                ApplyTransform();
+            }
+        }
+
+        /// <summary>
+        /// Resets target zoom to minZoom (1.0x) and centers position at (0, 0).
+        /// </summary>
+        public void ResetView()
+        {
+            _targetZoom = minZoom;
+            _targetPosition = Vector2.zero;
+
+            if (!smoothZoom)
+            {
+                _currentZoom = minZoom;
+                _currentPosition = Vector2.zero;
+                ApplyTransform();
+            }
+        }
+
+        /// <summary>
+        /// Directly applies current scale and position to clipboardRoot.
+        /// </summary>
+        public void ApplyTransform()
+        {
+            if (clipboardRoot != null)
+            {
+                clipboardRoot.localScale = new Vector3(_currentZoom, _currentZoom, 1f);
+                clipboardRoot.anchoredPosition = _currentPosition;
+            }
+        }
+
+        /// <summary>
+        /// Clamps target position so the notebook stays partially on screen by safetyMargin pixels.
+        /// </summary>
+        public void ClampTargetPosition()
+        {
+            _targetPosition = _zoomService.ClampNotebookPosition(_targetPosition, GetNotebookSize(), _targetZoom, GetParentSize(), safetyMargin);
+        }
+
+        public Vector2 GetNotebookSize()
+        {
+            if (clipboardRoot != null)
+            {
+                return clipboardRoot.rect.size;
+            }
+            return new Vector2(1540f, 860f);
+        }
+
+        public Vector2 GetParentSize()
+        {
+            RectTransform parent = GetParentRect();
+            if (parent != null)
+            {
+                return parent.rect.size;
+            }
+            return new Vector2(Screen.width, Screen.height);
+        }
+
+        public RectTransform GetParentRect()
+        {
+            if (_parentCanvasRect != null) return _parentCanvasRect;
+
+            if (clipboardRoot != null && clipboardRoot.parent is RectTransform p)
+            {
+                _parentCanvasRect = p;
+                return _parentCanvasRect;
+            }
+
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas != null)
+            {
+                _parentCanvasRect = canvas.GetComponent<RectTransform>();
+                return _parentCanvasRect;
+            }
+
+            return transform as RectTransform;
+        }
+
+        /// <summary>
+        /// Checks whether the mouse cursor is currently positioned over clipboardRoot or any of its children.
+        /// </summary>
+        public bool IsPointerOverClipboard()
+        {
+            if (clipboardRoot == null) return false;
+
+            if (EventSystem.current != null)
+            {
+                var pointerData = new PointerEventData(EventSystem.current)
+                {
+                    position = Input.mousePosition
+                };
+                var results = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(pointerData, results);
+                foreach (var result in results)
+                {
+                    if (result.gameObject == null) continue;
+                    if (result.gameObject.transform.IsChildOf(clipboardRoot) || result.gameObject == clipboardRoot.gameObject)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            Camera cam = GetComponentInParent<Canvas>()?.worldCamera;
+            return RectTransformUtility.RectangleContainsScreenPoint(clipboardRoot, Input.mousePosition, cam);
+        }
+
+        /// <summary>
+        /// Handles clicks on the backdrop button. If the pointer was over the clipboard, the click is ignored.
+        /// </summary>
+        public void OnBackdropClicked()
+        {
+            if (IsPointerOverClipboard())
+            {
+                return;
+            }
+            OnCloseClicked();
+        }
+
+        public void EnsureRaycastSetup()
+        {
+            if (clipboardRoot != null)
+            {
+                var img = clipboardRoot.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.raycastTarget = true;
+                }
+
+                var rootTarget = clipboardRoot.GetComponent<CaseFileNotebookDragTarget>();
+                if (rootTarget == null)
+                {
+                    rootTarget = clipboardRoot.gameObject.AddComponent<CaseFileNotebookDragTarget>();
+                }
+                rootTarget.Init(this);
+            }
+
+            if (contentScrollRect != null)
+            {
+                contentScrollRect.scrollSensitivity = 0f;
+            }
+        }
+
+        /// <summary>
+        /// Handles mouse scroll wheel events over the notebook, smoothly zooming towards cursor position.
+        /// </summary>
+        public void OnScroll(PointerEventData eventData)
+        {
+            if (isClosing || slideCoroutine != null) return;
+            if (Mathf.Abs(eventData.scrollDelta.y) < 0.001f) return;
+
+            float newZoom = _zoomService.CalculateNewZoom(_targetZoom, eventData.scrollDelta.y, minZoom, maxZoom, scrollSensitivity);
+            if (Mathf.Abs(newZoom - _targetZoom) < 0.001f) return;
+
+            RectTransform parentRect = GetParentRect();
+            if (parentRect != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out Vector2 cursorLocalPoint))
+            {
+                _targetPosition = _zoomService.CalculateZoomFocalPosition(_targetPosition, cursorLocalPoint, _targetZoom, newZoom);
+            }
+
+            _targetZoom = newZoom;
+            ClampTargetPosition();
+
+            if (!smoothZoom)
+            {
+                _currentZoom = _targetZoom;
+                _currentPosition = _targetPosition;
+                ApplyTransform();
+            }
+        }
+
+        /// <summary>
+        /// Handles beginning of drag operation on the case file notebook.
+        /// </summary>
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (isClosing || slideCoroutine != null) return;
+            if (eventData.button != PointerEventData.InputButton.Left) return;
+
+            RectTransform parentRect = GetParentRect();
+            if (parentRect != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out _lastDragLocalPos))
+            {
+                _isDragging = true;
+            }
+        }
+
+        /// <summary>
+        /// Handles continuous mouse drag, moving clipboardRoot around on screen.
+        /// </summary>
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (!_isDragging) return;
+
+            RectTransform parentRect = GetParentRect();
+            if (parentRect != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out Vector2 currentLocalPos))
+            {
+                Vector2 delta = currentLocalPos - _lastDragLocalPos;
+                _targetPosition += delta;
+                ClampTargetPosition();
+                _lastDragLocalPos = currentLocalPos;
+
+                if (!smoothZoom)
+                {
+                    _currentPosition = _targetPosition;
+                    ApplyTransform();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles end of drag operation.
+        /// </summary>
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            _isDragging = false;
+        }
+
+        /// <summary>
+        /// Handles pointer clicks:
+        /// - Right-Click anywhere resets zoom (1.0x) and position (0, 0).
+        /// - Left-Click directly on background outside clipboard dismisses the notebook.
+        /// </summary>
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                ResetView();
+                return;
+            }
+
+            if (eventData.button == PointerEventData.InputButton.Left && !eventData.dragging)
+            {
+                GameObject clicked = eventData.pointerCurrentRaycast.gameObject;
+                // Left-click on clipboard or any child of clipboardRoot does NOTHING!
+                if (clicked != null && clipboardRoot != null && (clicked == clipboardRoot.gameObject || clicked.transform.IsChildOf(clipboardRoot)))
+                {
+                    return;
+                }
+
+                if (clicked == gameObject || (backdropButton != null && clicked == backdropButton.gameObject))
+                {
+                    OnCloseClicked();
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Services;
@@ -448,6 +449,204 @@ namespace CaseClosed.Tests
             Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("Golden Master Key"));
             Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.True);
             Assert.That(notebookUI.evidenceLockedPlaceholder.activeSelf, Is.False);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_SetTargetZoom_ClampsAndAppliesScale()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.minZoom = 1.0f;
+            notebookUI.maxZoom = 3.5f;
+
+            notebookUI.SetTargetZoom(2.5f);
+            Assert.AreEqual(2.5f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(2.5f, notebookUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(2.5f, notebookUI.clipboardRoot.localScale.x, 0.001f);
+
+            notebookUI.SetTargetZoom(5.0f);
+            Assert.AreEqual(3.5f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(3.5f, notebookUI.clipboardRoot.localScale.x, 0.001f);
+
+            notebookUI.SetTargetZoom(0.2f);
+            Assert.AreEqual(1.0f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(1.0f, notebookUI.clipboardRoot.localScale.x, 0.001f);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_SetTargetPosition_ClampsAndAppliesPosition()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.SetTargetPosition(new Vector2(60f, -40f));
+            Assert.AreEqual(new Vector2(60f, -40f), notebookUI.TargetPosition);
+            Assert.AreEqual(new Vector2(60f, -40f), notebookUI.clipboardRoot.anchoredPosition);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_ResetView_RestoresDefaultZoomAndCenter()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.SetTargetZoom(3.0f);
+            notebookUI.SetTargetPosition(new Vector2(200f, 150f));
+
+            notebookUI.ResetView();
+
+            Assert.AreEqual(1.0f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(1.0f, notebookUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(Vector2.zero, notebookUI.TargetPosition);
+            Assert.AreEqual(Vector2.zero, notebookUI.clipboardRoot.anchoredPosition);
+            Assert.AreEqual(Vector3.one, notebookUI.clipboardRoot.localScale);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_OnPointerClick_RightClickResetsView()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.SetTargetZoom(2.5f);
+            notebookUI.SetTargetPosition(new Vector2(100f, 80f));
+
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Right
+            };
+
+            notebookUI.OnPointerClick(eventData);
+
+            Assert.AreEqual(1.0f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(Vector2.zero, notebookUI.TargetPosition);
+            Assert.AreEqual(Vector3.one, notebookUI.clipboardRoot.localScale);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_OnScroll_AdjustsZoom()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.ResetView();
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                scrollDelta = new Vector2(0f, 2.0f),
+                position = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f)
+            };
+
+            notebookUI.OnScroll(eventData);
+
+            Assert.Greater(notebookUI.TargetZoom, 1.0f);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_EnsureRaycastSetup_AttachesDragTargetAndZeroesScrollSensitivity()
+        {
+            GameObject scrollGO = new GameObject("Test_ScrollRect", typeof(ScrollRect));
+            scrollGO.transform.SetParent(notebookUI.clipboardRoot);
+            ScrollRect scrollRect = scrollGO.GetComponent<ScrollRect>();
+            scrollRect.scrollSensitivity = 15f;
+            notebookUI.contentScrollRect = scrollRect;
+
+            notebookUI.EnsureRaycastSetup();
+
+            var dragTarget = notebookUI.clipboardRoot.GetComponent<CaseFileNotebookDragTarget>();
+            Assert.IsNotNull(dragTarget);
+            Assert.AreEqual(0f, notebookUI.contentScrollRect.scrollSensitivity, 0.001f);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_LeftClickOnNotebook_DoesNotClose()
+        {
+            notebookUI.EnsureRaycastSetup();
+
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Left,
+                pointerCurrentRaycast = new RaycastResult
+                {
+                    gameObject = notebookUI.clipboardRoot.gameObject
+                }
+            };
+
+            notebookUI.OnPointerClick(eventData);
+            Assert.IsFalse(notebookUI.IsClosing, "Left-clicking on clipboardRoot should not trigger close.");
+
+            var dragTarget = notebookUI.clipboardRoot.GetComponent<CaseFileNotebookDragTarget>();
+            dragTarget.OnPointerClick(eventData);
+            Assert.IsFalse(notebookUI.IsClosing, "CaseFileNotebookDragTarget should ignore left clicks.");
+        }
+
+        [Test]
+        public void CaseFileNotebookDragTarget_RightClick_ResetsView()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.EnsureRaycastSetup();
+            notebookUI.SetTargetZoom(2.8f);
+
+            var dragTarget = notebookUI.clipboardRoot.GetComponent<CaseFileNotebookDragTarget>();
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Right
+            };
+
+            dragTarget.OnPointerClick(eventData);
+            Assert.AreEqual(1.0f, notebookUI.TargetZoom, 0.001f);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_SwitchTab_PreservesZoomAndPosition()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.SetTargetZoom(2.4f);
+            notebookUI.SetTargetPosition(new Vector2(150f, 75f));
+
+            Assert.AreEqual(2.4f, notebookUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.CurrentPosition);
+
+            // Switch to Suspects
+            notebookUI.SwitchTab(NotebookTab.Suspects);
+            Assert.AreEqual(2.4f, notebookUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(2.4f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.CurrentPosition);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.TargetPosition);
+
+            // Switch to Evidence
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+            Assert.AreEqual(2.4f, notebookUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(2.4f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.CurrentPosition);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.TargetPosition);
+
+            // Switch to Clues
+            notebookUI.SwitchTab(NotebookTab.Clues);
+            Assert.AreEqual(2.4f, notebookUI.CurrentZoom, 0.001f);
+            Assert.AreEqual(2.4f, notebookUI.TargetZoom, 0.001f);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.CurrentPosition);
+            Assert.AreEqual(new Vector2(150f, 75f), notebookUI.TargetPosition);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_Drag_UpdatesTargetPosition()
+        {
+            notebookUI.smoothZoom = false;
+            notebookUI.ResetView();
+
+            PointerEventData beginData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Left,
+                position = new Vector2(500f, 500f)
+            };
+            notebookUI.OnBeginDrag(beginData);
+            Assert.IsTrue(notebookUI.IsDragging);
+
+            PointerEventData dragData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Left,
+                position = new Vector2(550f, 530f)
+            };
+            notebookUI.OnDrag(dragData);
+            Assert.AreEqual(new Vector2(50f, 30f), notebookUI.TargetPosition);
+
+            PointerEventData endData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Left
+            };
+            notebookUI.OnEndDrag(endData);
+            Assert.IsFalse(notebookUI.IsDragging);
         }
     }
 }
