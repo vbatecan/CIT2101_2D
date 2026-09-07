@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Managers;
@@ -17,7 +18,7 @@ namespace CaseClosed.UI
     {
         [Header("UI Text & Visuals")]
         [Tooltip("The TextMesh or UI Text component displaying the MM:SS timer.")]
-        [SerializeField] private Text timerText;
+        [SerializeField] private TMP_Text timerText;
 
         [Tooltip("Optional icon displaying a clock/stopwatch next to the timer text.")]
         [SerializeField] private Image timerIcon;
@@ -51,7 +52,7 @@ namespace CaseClosed.UI
         {
             if (timerText == null)
             {
-                timerText = GetComponentInChildren<Text>();
+                timerText = GetComponentInChildren<TMP_Text>();
             }
             _originalScale = transform.localScale;
         }

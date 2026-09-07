@@ -47,50 +47,41 @@ namespace CaseClosed.UI
         /// <summary>
         /// Ensures both 2D physics collider and uGUI click target are ready.
         /// </summary>
-        public void EnsureClickable()
+public void EnsureClickable()
         {
-            // 1. Ensure 2D collider for physics queries
-            if (GetComponent<Collider2D>() == null)
-            {
-                BoxCollider2D col = gameObject.AddComponent<BoxCollider2D>();
-                SpriteRenderer sr = GetComponent<SpriteRenderer>();
-                if (sr != null && sr.sprite != null)
-                {
-                    col.size = sr.sprite.rect.size / sr.sprite.pixelsPerUnit;
-                }
-                else
-                {
-                    col.size = new Vector2(25f, 17f);
-                }
-            }
+            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+            Vector2 clickSize = spriteRenderer != null && spriteRenderer.sprite != null
+                ? spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit
+                : new Vector2(25f, 17f);
 
-            // 2. Ensure uGUI Button click target exists for Canvas GraphicRaycaster
-            var existingBtn = GetComponentInChildren<Button>(true);
-            if (existingBtn == null)
+            BoxCollider2D collider = GetComponent<BoxCollider2D>();
+            if (collider == null)
+            {
+                collider = gameObject.AddComponent<BoxCollider2D>();
+            }
+            collider.size = clickSize;
+
+            Button button = GetComponentInChildren<Button>(true);
+            if (button == null)
             {
                 GameObject clickTarget = new GameObject("FolderClickTarget", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
                 clickTarget.transform.SetParent(transform, false);
-                RectTransform rt = clickTarget.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(0.5f, 0.5f);
-                rt.anchorMax = new Vector2(0.5f, 0.5f);
-                rt.anchoredPosition = Vector2.zero;
 
-                SpriteRenderer sr = GetComponent<SpriteRenderer>();
-                if (sr != null && sr.sprite != null)
-                {
-                    rt.sizeDelta = sr.sprite.rect.size / sr.sprite.pixelsPerUnit * 10f;
-                }
-                else
-                {
-                    rt.sizeDelta = new Vector2(30f, 20f);
-                }
+                Image image = clickTarget.GetComponent<Image>();
+                image.color = Color.clear;
+                image.raycastTarget = true;
 
-                Image img = clickTarget.GetComponent<Image>();
-                img.color = new Color(0, 0, 0, 0); // invisible raycast receiver
-                img.raycastTarget = true;
+                button = clickTarget.GetComponent<Button>();
+                button.targetGraphic = image;
+            }
 
-                Button btn = clickTarget.GetComponent<Button>();
-                btn.targetGraphic = img;
+            RectTransform clickRect = button.GetComponent<RectTransform>();
+            if (clickRect != null)
+            {
+                clickRect.anchorMin = new Vector2(0.5f, 0.5f);
+                clickRect.anchorMax = new Vector2(0.5f, 0.5f);
+                clickRect.anchoredPosition = Vector2.zero;
+                clickRect.sizeDelta = clickSize;
             }
 
             EnsureButtonBinding();
@@ -166,10 +157,12 @@ namespace CaseClosed.UI
             }
         }
 
-        private void OnMouseDown()
+private void OnMouseDown()
         {
-            // Fallback for physics 2D colliders
-            OnClick();
+            if (_boundButton == null)
+            {
+                OnClick();
+            }
         }
     }
 }

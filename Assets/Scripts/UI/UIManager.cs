@@ -128,7 +128,7 @@ namespace CaseClosed.UI
                                    ?? GameObject.Find("ButtonFOLDER");
             }
 
-            if (suspectFolderButton != null)
+            if (suspectFolderButton != null && suspectFolderButton.GetComponent<SuspectFolderButton>() == null)
             {
                 Button btn = suspectFolderButton.GetComponentInChildren<Button>(true);
                 if (btn != null)
