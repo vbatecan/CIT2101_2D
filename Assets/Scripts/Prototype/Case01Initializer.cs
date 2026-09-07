@@ -66,7 +66,7 @@ namespace CaseClosed.Prototype
 
                 CaseManager.Instance?.LoadCase(caseData);
 
-                if (InterrogationManager.Instance != null && case01 != null && caseData.primarySuspect != null && case01.dialogueTrees != null && caseData.dialogueTrees.Count > 0)
+                if (InterrogationManager.Instance != null && caseData != null && caseData.primarySuspect != null && caseData.dialogueTrees != null && caseData.dialogueTrees.Count > 0)
                 {
                     InterrogationManager.Instance.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
                 }
