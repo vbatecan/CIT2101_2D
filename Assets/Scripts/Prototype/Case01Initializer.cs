@@ -37,12 +37,29 @@ namespace CaseClosed.Prototype
         {
             if (initializeOnStart)
             {
-                CaseSO case01 = CreateCase01Data();
-                CaseManager.Instance?.LoadCase(case01);
+                int selectedLevel = PlayerPrefs.GetInt("CaseClosed_SelectedLevel", 1);
+                CaseSO caseData = null;
 
-                if (InterrogationManager.Instance != null && case01.primarySuspect != null && case01.dialogueTrees.Count > 0)
+                if (selectedLevel == 2)
                 {
-                    InterrogationManager.Instance.SetInterrogationTarget(case01.primarySuspect, case01.dialogueTrees[0]);
+                    Case02Initializer init2 = gameObject.GetComponent<Case02Initializer>() ?? gameObject.AddComponent<Case02Initializer>();
+                    caseData = init2.CreateCase02Data();
+                }
+                else if (selectedLevel == 3)
+                {
+                    Case03Initializer init3 = gameObject.GetComponent<Case03Initializer>() ?? gameObject.AddComponent<Case03Initializer>();
+                    caseData = init3.CreateCase03Data();
+                }
+                else
+                {
+                    caseData = CreateCase01Data();
+                }
+
+                CaseManager.Instance?.LoadCase(caseData);
+
+                if (InterrogationManager.Instance != null && caseData.primarySuspect != null && caseData.dialogueTrees.Count > 0)
+                {
+                    InterrogationManager.Instance.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
                 }
 
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);

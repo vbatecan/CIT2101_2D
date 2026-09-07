@@ -285,22 +285,27 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Adjust button image alpha/color if available
+            // Folder button image: normal full color when unlocked, black shade when locked
             Image btnImg = btn.GetComponent<Image>();
             if (btnImg != null)
             {
                 if (!isUnlocked)
                 {
-                    btnImg.color = new Color(0.12f, 0.14f, 0.18f, 0.6f);
-                }
-                else if (isCompleted)
-                {
-                    btnImg.color = new Color(0.22f, 0.28f, 0.35f, 1f);
+                    // Black shade for locked folder
+                    btnImg.color = new Color(0.18f, 0.18f, 0.18f, 0.95f);
                 }
                 else
                 {
-                    btnImg.color = new Color(0.18f, 0.22f, 0.28f, 1f);
+                    // Unlocked / Completed: vivid full color folder artwork
+                    btnImg.color = Color.white;
                 }
+            }
+
+            // Optional black shade overlay child
+            Transform shadeChild = btn.transform.Find("BlackShade") ?? btn.transform.Find("Image_BlackShade") ?? btn.transform.Find("Shade");
+            if (shadeChild != null)
+            {
+                shadeChild.gameObject.SetActive(!isUnlocked);
             }
         }
 
@@ -529,6 +534,9 @@ namespace CaseClosed.UI
         {
             Debug.Log($"[UI:MainMenu] Launching Case {caseIndex}...");
             AudioManager.Instance?.PlayButtonClick();
+
+            PlayerPrefs.SetInt("CaseClosed_SelectedLevel", caseIndex);
+            PlayerPrefs.Save();
 
             string sceneName = $"Case00{caseIndex}";
             if (Application.CanStreamedLevelBeLoaded(sceneName))

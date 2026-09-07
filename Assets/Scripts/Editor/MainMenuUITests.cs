@@ -151,27 +151,42 @@ namespace CaseClosed.Tests
         [Test]
         public void RefreshCaseSelectUI_EnablesUnlockedAndDisablesLockedCases()
         {
-            // Initially Case 1 is unlocked, Cases 2 and 3 are locked
+            // Initially Case 1 is unlocked (white), Cases 2 and 3 are locked (black shade)
             _menuUI.RefreshCaseSelectUI();
 
             Assert.IsTrue(_menuUI.case01Button.interactable, "Case 01 must be interactable initially.");
+            Assert.AreEqual(Color.white, _menuUI.case01Button.GetComponent<Image>().color, "Case 01 must be full white (unshaded) initially.");
             Assert.IsFalse(_menuUI.case02Button.interactable, "Case 02 must be non-interactable initially.");
+            Assert.Less(_menuUI.case02Button.GetComponent<Image>().color.r, 0.3f, "Case 02 must have black shade when locked.");
             Assert.IsFalse(_menuUI.case03Button.interactable, "Case 03 must be non-interactable initially.");
+            Assert.Less(_menuUI.case03Button.GetComponent<Image>().color.r, 0.3f, "Case 03 must have black shade when locked.");
 
             StringAssert.Contains("AVAILABLE", _menuUI.case01StatusText.text);
             StringAssert.Contains("LOCKED", _menuUI.case02StatusText.text);
+            StringAssert.Contains("LOCKED", _menuUI.case03StatusText.text);
 
-            // Complete Case 01
+            // Complete Case 01: Case 02 unlocks and loses black shade; Case 03 remains locked
             CaseProgressionService.Instance.SetCaseCompleted(1, true);
             _menuUI.RefreshCaseSelectUI();
 
             Assert.IsTrue(_menuUI.case01Button.interactable);
+            Assert.AreEqual(Color.white, _menuUI.case01Button.GetComponent<Image>().color);
             StringAssert.Contains("SOLVED", _menuUI.case01StatusText.text);
 
             Assert.IsTrue(_menuUI.case02Button.interactable, "Case 02 must become interactable after Case 01 is completed.");
+            Assert.AreEqual(Color.white, _menuUI.case02Button.GetComponent<Image>().color, "Case 02 must lose black shade and become full white when unlocked.");
             StringAssert.Contains("AVAILABLE", _menuUI.case02StatusText.text);
 
             Assert.IsFalse(_menuUI.case03Button.interactable, "Case 03 must still be locked.");
+            Assert.Less(_menuUI.case03Button.GetComponent<Image>().color.r, 0.3f, "Case 03 must still have black shade.");
+
+            // Complete Case 02: Case 03 unlocks and loses black shade
+            CaseProgressionService.Instance.SetCaseCompleted(2, true);
+            _menuUI.RefreshCaseSelectUI();
+
+            Assert.IsTrue(_menuUI.case03Button.interactable, "Case 03 must become interactable after Case 02 is completed.");
+            Assert.AreEqual(Color.white, _menuUI.case03Button.GetComponent<Image>().color, "Case 03 must lose black shade and become full white when unlocked.");
+            StringAssert.Contains("AVAILABLE", _menuUI.case03StatusText.text);
         }
 
         [Test]
