@@ -23,7 +23,7 @@ MonoBehaviour:
     doubling coverage to $500,000.
   unlockedClueText: Paul doubled the insurance payout value of the painting just
     48 hours prior to the theft.
-  startsDiscovered: 1
+  startsDiscovered: 0
   isExamined: 0
   isToggledOnTable: 1
   hotspots: []

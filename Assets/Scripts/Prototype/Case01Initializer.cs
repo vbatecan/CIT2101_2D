@@ -157,7 +157,7 @@ namespace CaseClosed.Prototype
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
-            evPhoto.startsDiscovered = true;
+            evPhoto.startsDiscovered = false;
 
             EvidenceHotspot spotDoor = new EvidenceHotspot();
             spotDoor.hotspotId = "SPOT_DOORWAY_SILHOUETTE";

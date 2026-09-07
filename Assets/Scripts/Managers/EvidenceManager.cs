@@ -76,6 +76,8 @@ namespace CaseClosed.Managers
 
             Debug.Log($"[EvidenceManager] Opened inspect modal for: '{evidence.evidenceName}' (ID: {evidence.id})");
 
+            CaseManager.Instance?.RegisterDiscoveredEvidence(evidence);
+
             // Inspection and clue extraction processed via Service
             if (evidenceService.InspectEvidence(evidence, out string baseClueId, out string baseClueText))
             {

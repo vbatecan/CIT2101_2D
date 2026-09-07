@@ -369,5 +369,85 @@ namespace CaseClosed.Tests
             Assert.That(notebookUI.notebookTitleText.text, Is.EqualTo("EVIDENCE REPOSITORY"));
             Assert.That(notebookUI.evidenceCardSection.activeSelf, Is.True);
         }
+
+        [Test]
+        public void CaseFileNotebookUI_EvidenceRepository_SmartFocus_SelectsFirstDiscoveredWhenIndexZeroUndiscovered()
+        {
+            // EVD_01 (index 0) is undiscovered, EVD_02 (index 1) is discovered
+            notebookUI.evidenceOverride = new HashSet<string> { "EVD_02" };
+
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+
+            // Smart focus should advance to index 1 (EVD_02)
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(1));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("Torn Ledger Page"));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.True);
+            Assert.That(notebookUI.evidencePreviewImage.preserveAspect, Is.True);
+            Assert.That(notebookUI.evidenceLockedPlaceholder.activeSelf, Is.False);
+            Assert.That(notebookUI.evidenceIndexLabel.text, Does.Contain("2 / 2"));
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_EvidenceRepository_SmartFocus_FallsBackToZeroWhenNoEvidenceDiscovered()
+        {
+            // No evidence discovered yet
+            notebookUI.evidenceOverride = new HashSet<string>();
+
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+
+            // Smart focus stays at 0
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(0));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.False);
+            Assert.That(notebookUI.evidenceLockedPlaceholder.activeSelf, Is.True);
+            Assert.That(notebookUI.evidenceLockedLabel.text, Is.EqualTo("[ EVIDENCE LOCKED ]"));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("[ ??? LOCKED EVIDENCE ]"));
+            Assert.That(notebookUI.notebookContentBody.text, Does.Contain("[ ??? UNDISCOVERED EVIDENCE ]"));
+            Assert.That(notebookUI.evidenceIndexLabel.text, Does.Contain("1 / 2"));
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_EvidenceRepository_SmartFocus_PreservesCurrentlyFocusedIfAlreadyDiscovered()
+        {
+            // Both items discovered
+            notebookUI.evidenceOverride = new HashSet<string> { "EVD_01", "EVD_02" };
+            notebookUI.FocusEvidence("EVD_02");
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(1));
+
+            // Switch to Suspects and back to Evidence
+            notebookUI.SwitchTab(NotebookTab.Suspects);
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+
+            // Stays on index 1 because it's already discovered
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(1));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("Torn Ledger Page"));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.True);
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_EvidenceRepository_SmartFocus_RefocusesDiscoveredAfterNavigatingToLockedItem()
+        {
+            // Only EVD_01 (index 0) is discovered
+            notebookUI.evidenceOverride = new HashSet<string> { "EVD_01" };
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(0));
+
+            // User manually cycles to locked item (index 1)
+            notebookUI.NextEvidence();
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(1));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("[ ??? LOCKED EVIDENCE ]"));
+            Assert.That(notebookUI.evidenceLockedPlaceholder.activeSelf, Is.True);
+            Assert.That(notebookUI.evidenceLockedLabel.text, Is.EqualTo("[ EVIDENCE LOCKED ]"));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.False);
+
+            // User navigates away and returns to Evidence tab
+            notebookUI.SwitchTab(NotebookTab.Clues);
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+
+            // Smart focus detects index 1 is undiscovered, refocuses index 0 (EVD_01)
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(0));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("Golden Master Key"));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.True);
+            Assert.That(notebookUI.evidenceLockedPlaceholder.activeSelf, Is.False);
+        }
     }
 }

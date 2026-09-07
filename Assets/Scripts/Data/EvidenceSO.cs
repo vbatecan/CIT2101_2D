@@ -60,7 +60,7 @@ namespace CaseClosed.Data
         public string unlockedClueText;
 
         [Header("State Flags")]
-        public bool startsDiscovered = true;
+        public bool startsDiscovered = false;
         [Tooltip("Optional dialogue node that must be completed before this evidence appears on the investigation table.")]
         public string requiredDialogueNodeId;
         [Tooltip("Optional dialogue node to display when this evidence is inspected from the investigation table.")]

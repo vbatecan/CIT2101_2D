@@ -291,7 +291,9 @@ namespace CaseClosed.UI
         /// <summary>
         /// Switches the active notebook tab, formats case data, and updates tab highlights.
         /// </summary>
-        public void SwitchTab(NotebookTab tab)
+        /// <param name="tab">The target notebook tab to display.</param>
+        /// <param name="smartFocus">Whether to automatically focus the first discovered evidence if currently focused is undiscovered.</param>
+        public void SwitchTab(NotebookTab tab, bool smartFocus = true)
         {
             currentTab = tab;
             UpdateTabVisualStates();
@@ -332,6 +334,42 @@ namespace CaseClosed.UI
                 case NotebookTab.Evidence:
                     if (notebookTitleText != null) notebookTitleText.text = "EVIDENCE REPOSITORY";
                     var discovered = GetDiscoveredEvidenceIds();
+
+                    if (smartFocus && activeCase.evidenceItems != null && activeCase.evidenceItems.Count > 0)
+                    {
+                        bool isCurrentDiscovered = currentEvidenceIndex >= 0 &&
+                                                   currentEvidenceIndex < activeCase.evidenceItems.Count &&
+                                                   activeCase.evidenceItems[currentEvidenceIndex] != null &&
+                                                   discovered != null &&
+                                                   discovered.Contains(activeCase.evidenceItems[currentEvidenceIndex].id);
+
+                        if (!isCurrentDiscovered)
+                        {
+                            int firstDiscoveredIndex = -1;
+                            if (discovered != null)
+                            {
+                                for (int i = 0; i < activeCase.evidenceItems.Count; i++)
+                                {
+                                    var item = activeCase.evidenceItems[i];
+                                    if (item != null && discovered.Contains(item.id))
+                                    {
+                                        firstDiscoveredIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (firstDiscoveredIndex >= 0)
+                            {
+                                currentEvidenceIndex = firstDiscoveredIndex;
+                            }
+                            else
+                            {
+                                currentEvidenceIndex = 0;
+                            }
+                        }
+                    }
+
                     contentText = SetupEvidenceCard(activeCase, discovered);
                     break;
 
@@ -444,7 +482,7 @@ namespace CaseClosed.UI
                     }
                 }
             }
-            SwitchTab(NotebookTab.Evidence);
+            SwitchTab(NotebookTab.Evidence, smartFocus: false);
         }
 
         private string SetupEvidenceCard(CaseSO activeCase, HashSet<string> discovered)
@@ -563,6 +601,10 @@ namespace CaseClosed.UI
                         evidenceLockedLabel = lockTransform.GetComponentInChildren<Text>();
                     }
                 }
+            }
+            else if (evidenceLockedLabel == null)
+            {
+                evidenceLockedLabel = evidenceLockedPlaceholder.GetComponentInChildren<Text>();
             }
 
             // Dynamically construct navigation row if missing from hierarchy

@@ -24,7 +24,7 @@ MonoBehaviour:
     proving the window was broken from the INSIDE.
   unlockedClueText: Glass shards scattered outside on pavement prove window was broken
     from INSIDE!
-  startsDiscovered: 1
+  startsDiscovered: 0
   isExamined: 0
   isToggledOnTable: 1
   hotspots:
