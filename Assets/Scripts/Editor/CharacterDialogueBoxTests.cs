@@ -229,5 +229,20 @@ namespace CaseClosed.Tests
             Assert.IsFalse(_detectiveBox.activeSelf, "DetectiveDialogMessage must be deactivated after HideDialoguePanel");
             Assert.IsFalse(DialogueUI.IsDialogueOpen, "IsDialogueOpen must be false after HideDialoguePanel");
         }
+
+        [Test]
+        public void DialogueUI_AlignToWorldTarget_WithoutBubbleRect_DoesNotMoveDialogueContainer()
+        {
+            Vector3 originalPosition = _dialogueUI.transform.localPosition;
+            GameObject evidenceTarget = new GameObject("EvidenceTarget");
+            evidenceTarget.transform.position = new Vector3(12f, -8f, 0f);
+
+            _dialogueUI.bubbleRect = null;
+            _dialogueUI.AlignToWorldTarget(evidenceTarget.transform);
+
+            Assert.AreEqual(originalPosition, _dialogueUI.transform.localPosition,
+                "Evidence interaction must not move the authored dialogue container.");
+            Object.DestroyImmediate(evidenceTarget);
+        }
     }
 }

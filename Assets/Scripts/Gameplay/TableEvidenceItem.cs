@@ -796,7 +796,6 @@ namespace CaseClosed.Gameplay
             // 3. If in Challenge Mode, clicking this table item directly presents it to challenge!
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
             {
-                DialogueUI.Instance?.AlignToWorldTarget(transform);
                 Debug.Log($"[Gameplay:TableEvidence] Challenge Mode: Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode?.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
                 manager?.RegisterDiscoveredEvidence(evidenceData);
@@ -811,8 +810,6 @@ namespace CaseClosed.Gameplay
             // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
             EvidenceManager.Instance?.OpenInspectModal(evidenceData);
-
-            DialogueUI.Instance?.AlignToWorldTarget(transform);
 
             string nodeToTrigger = !string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect)
                 ? dialogueNodeToTriggerOnInspect

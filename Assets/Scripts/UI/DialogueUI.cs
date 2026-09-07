@@ -896,9 +896,9 @@ namespace CaseClosed.UI
         /// </summary>
         public void AlignToWorldTarget(Transform target)
         {
-            if (target == null) return;
+            if (target == null || bubbleRect == null) return;
 
-            RectTransform targetRect = bubbleRect != null ? bubbleRect : transform as RectTransform;
+            RectTransform targetRect = bubbleRect;
             Canvas canvas = targetRect != null ? targetRect.GetComponentInParent<Canvas>() : null;
             Camera worldCamera = Camera.main;
             Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(worldCamera, target.position) + bubbleScreenOffset;
