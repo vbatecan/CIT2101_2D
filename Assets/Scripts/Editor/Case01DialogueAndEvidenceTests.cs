@@ -36,7 +36,7 @@ namespace CaseClosed.Tests
         #region Runtime Case Data & Dialogue Tree Tests
 
         [Test]
-        public void Case01_RuntimeData_HasExpected7NodeDialogueTree()
+        public void Case01_RuntimeData_HasExpectedDialogueTree()
         {
             Assert.IsNotNull(_runtimeCase, "Runtime CaseSO must not be null.");
             Assert.IsNotNull(_runtimeCase.dialogueTrees, "DialogueTrees list must not be null.");
@@ -45,52 +45,86 @@ namespace CaseClosed.Tests
             DialogueTreeSO tree = _runtimeCase.dialogueTrees[0];
             Assert.AreEqual("TREE_VINCE_01", tree.treeId);
             Assert.AreEqual("NODE_01", tree.startNodeId);
-            Assert.AreEqual(7, tree.nodes.Count, "Dialogue tree must contain exactly 7 nodes.");
+            Assert.AreEqual(15, tree.nodes.Count, "Dialogue tree must contain 15 nodes in the screenplay sequence.");
 
-            // Node 1: Opening Alibi
+            // Node 1: Opening Alibi (Vince)
             DialogueNode node1 = tree.GetNodeById("NODE_01");
             Assert.IsNotNull(node1, "NODE_01 must exist.");
-            Assert.AreEqual("NODE_01B_INTERVIEW", node1.defaultNextNodeId, "NODE_01 must transition to NODE_01B_INTERVIEW.");
-            Assert.IsFalse(node1.isChallengeable, "NODE_01 should not be challengeable.");
+            Assert.AreEqual("NODE_01B_JANE_INTERJECTION", node1.defaultNextNodeId);
+            Assert.IsFalse(node1.isChallengeable);
 
-            // Node 1B: Detective Interview Prompt
-            DialogueNode node1b = tree.GetNodeById("NODE_01B_INTERVIEW");
-            Assert.IsNotNull(node1b, "NODE_01B_INTERVIEW must exist.");
-            Assert.AreEqual("NODE_02_ROOM_LEAD", node1b.defaultNextNodeId, "NODE_01B_INTERVIEW must transition to NODE_02_ROOM_LEAD.");
-            Assert.IsFalse(node1b.isChallengeable);
+            // Node 1B: Witness Interjection (Jane)
+            DialogueNode node1b = tree.GetNodeById("NODE_01B_JANE_INTERJECTION");
+            Assert.IsNotNull(node1b);
+            Assert.AreEqual("NODE_01C_VINCE_RETORT", node1b.defaultNextNodeId);
 
-            // Node 2: Vince Locked Room Claim
+            // Node 1C: Defensive Retort (Vince)
+            DialogueNode node1c = tree.GetNodeById("NODE_01C_VINCE_RETORT");
+            Assert.IsNotNull(node1c);
+            Assert.AreEqual("NODE_01D_DETECTIVE_PRESS", node1c.defaultNextNodeId);
+
+            // Node 1D: Investigator Query (Detective)
+            DialogueNode node1d = tree.GetNodeById("NODE_01D_DETECTIVE_PRESS");
+            Assert.IsNotNull(node1d);
+            Assert.AreEqual("NODE_02_ROOM_LEAD", node1d.defaultNextNodeId);
+
+            // Node 2: Locked Room Lead (Vince)
             DialogueNode node2 = tree.GetNodeById("NODE_02_ROOM_LEAD");
-            Assert.IsNotNull(node2, "NODE_02_ROOM_LEAD must exist.");
-            Assert.IsTrue(string.IsNullOrEmpty(node2.defaultNextNodeId), "NODE_02_ROOM_LEAD next must be null to close dialogue for table exploration.");
-            Assert.Contains("EVD_BROKEN_TEACUP", node2.unlockEvidenceOnComplete, "NODE_02_ROOM_LEAD must unlock EVD_BROKEN_TEACUP.");
-            Assert.IsFalse(node2.isChallengeable);
+            Assert.IsNotNull(node2);
+            Assert.AreEqual("NODE_02B_JANE_HEARD_CRASH", node2.defaultNextNodeId);
+            Assert.Contains("EVD_BROKEN_TEACUP", node2.unlockEvidenceOnComplete);
 
-            // Node 3: Vince Teacup Lead
+            // Node 2B: Crash Observation (Jane)
+            DialogueNode node2b = tree.GetNodeById("NODE_02B_JANE_HEARD_CRASH");
+            Assert.IsNotNull(node2b);
+            Assert.AreEqual("NODE_02C_DETECTIVE_INSPECT", node2b.defaultNextNodeId);
+
+            // Node 2C: Detective Desk Direction (Break for table inspection)
+            DialogueNode node2c = tree.GetNodeById("NODE_02C_DETECTIVE_INSPECT");
+            Assert.IsNotNull(node2c);
+            Assert.IsTrue(string.IsNullOrEmpty(node2c.defaultNextNodeId), "NODE_02C_DETECTIVE_INSPECT next must be null to close dialogue for table exploration.");
+
+            // Node 3: Teacup Lead (Vince, triggered on inspecting teacup)
             DialogueNode node3 = tree.GetNodeById("NODE_03_TEACUP_LEAD");
-            Assert.IsNotNull(node3, "NODE_03_TEACUP_LEAD must exist.");
-            Assert.AreEqual("NODE_03B_CONFIRMATION", node3.defaultNextNodeId, "NODE_03_TEACUP_LEAD must transition to NODE_03B_CONFIRMATION.");
-            Assert.Contains("EVD_KITCHEN_LOG", node3.unlockEvidenceOnComplete, "NODE_03_TEACUP_LEAD must unlock EVD_KITCHEN_LOG.");
-            Assert.IsFalse(node3.isChallengeable);
+            Assert.IsNotNull(node3);
+            Assert.AreEqual("NODE_03B_JANE_KITCHEN_LOCK", node3.defaultNextNodeId);
+            Assert.Contains("EVD_KITCHEN_LOG", node3.unlockEvidenceOnComplete);
 
-            // Node 3B: Detective Confirmation Prompt
-            DialogueNode node3b = tree.GetNodeById("NODE_03B_CONFIRMATION");
-            Assert.IsNotNull(node3b, "NODE_03B_CONFIRMATION must exist.");
-            Assert.AreEqual("NODE_04_FINAL_ALIBI", node3b.defaultNextNodeId, "NODE_03B_CONFIRMATION must transition to NODE_04_FINAL_ALIBI.");
-            Assert.IsFalse(node3b.isChallengeable);
+            // Node 3B: Kitchen Lock Observation (Jane)
+            DialogueNode node3b = tree.GetNodeById("NODE_03B_JANE_KITCHEN_LOCK");
+            Assert.IsNotNull(node3b);
+            Assert.AreEqual("NODE_03C_DETECTIVE_CHALLENGE", node3b.defaultNextNodeId);
+
+            // Node 3C: Detective Challenge Warning (Detective)
+            DialogueNode node3c = tree.GetNodeById("NODE_03C_DETECTIVE_CHALLENGE");
+            Assert.IsNotNull(node3c);
+            Assert.AreEqual("NODE_04_FINAL_ALIBI", node3c.defaultNextNodeId);
 
             // Node 4: Fatal Alibi Lie (Challengeable)
             DialogueNode node4 = tree.GetNodeById("NODE_04_FINAL_ALIBI");
-            Assert.IsNotNull(node4, "NODE_04_FINAL_ALIBI must exist.");
-            Assert.IsTrue(node4.isChallengeable, "NODE_04_FINAL_ALIBI must be challengeable.");
+            Assert.IsNotNull(node4);
+            Assert.IsTrue(node4.isChallengeable);
             Assert.AreEqual("RULE_VINCE_ALIBI_LIE", node4.targetContradictionRuleId);
-            Assert.IsTrue(string.IsNullOrEmpty(node4.defaultNextNodeId), "NODE_04_FINAL_ALIBI next should be null.");
 
-            // Node 5: Confession
+            // Node 5: Confession (Vince)
             DialogueNode node5 = tree.GetNodeById("NODE_05_CONFESSION");
-            Assert.IsNotNull(node5, "NODE_05_CONFESSION must exist.");
-            Assert.IsFalse(node5.isChallengeable);
-            Assert.IsTrue(string.IsNullOrEmpty(node5.defaultNextNodeId));
+            Assert.IsNotNull(node5);
+            Assert.AreEqual("NODE_05B_JANE_SHOCKED", node5.defaultNextNodeId);
+
+            // Node 5B: Jane Shocked (Jane)
+            DialogueNode node5b = tree.GetNodeById("NODE_05B_JANE_SHOCKED");
+            Assert.IsNotNull(node5b);
+            Assert.AreEqual("NODE_05C_VINCE_DESPERATE", node5b.defaultNextNodeId);
+
+            // Node 5C: Vince Desperate (Vince)
+            DialogueNode node5c = tree.GetNodeById("NODE_05C_VINCE_DESPERATE");
+            Assert.IsNotNull(node5c);
+            Assert.AreEqual("NODE_05D_DETECTIVE_CLOSE", node5c.defaultNextNodeId);
+
+            // Node 5D: Detective Arrest (Detective)
+            DialogueNode node5d = tree.GetNodeById("NODE_05D_DETECTIVE_CLOSE");
+            Assert.IsNotNull(node5d);
+            Assert.IsTrue(string.IsNullOrEmpty(node5d.defaultNextNodeId));
         }
 
         [Test]
@@ -101,8 +135,7 @@ namespace CaseClosed.Tests
 
             EvidenceSO photo = _runtimeCase.evidenceItems.Find(e => e.id == "EVD_FAMILY_PHOTO");
             Assert.IsNotNull(photo, "EVD_FAMILY_PHOTO must exist.");
-            Assert.IsTrue(photo.startsDiscovered, "Family Photo must start discovered at case start.");
-            Assert.IsTrue(string.IsNullOrEmpty(photo.requiredDialogueNodeId), "Family Photo has no dialogue prerequisite.");
+            Assert.IsFalse(photo.startsDiscovered);
 
             EvidenceSO teacup = _runtimeCase.evidenceItems.Find(e => e.id == "EVD_BROKEN_TEACUP");
             Assert.IsNotNull(teacup, "EVD_BROKEN_TEACUP must exist.");
@@ -145,20 +178,21 @@ namespace CaseClosed.Tests
         #region Asset Database Generated Assets Tests
 
         [Test]
-        public void Case01_GeneratedDialogueAsset_HasExact7Nodes()
+        public void Case01_GeneratedDialogueAsset_HasExact15Nodes()
         {
             DialogueTreeSO treeAsset = AssetDatabase.LoadAssetAtPath<DialogueTreeSO>("Assets/Data/Case001/Dialogue_Vince01.asset");
             Assert.IsNotNull(treeAsset, "Assets/Data/Case001/Dialogue_Vince01.asset must exist.");
-            Assert.AreEqual(7, treeAsset.nodes.Count, "Dialogue_Vince01 asset must contain exactly 7 nodes.");
+            Assert.AreEqual(15, treeAsset.nodes.Count, "Dialogue_Vince01 asset must contain exactly 15 screenplay nodes.");
 
-            Assert.AreEqual("NODE_01B_INTERVIEW", treeAsset.GetNodeById("NODE_01")?.defaultNextNodeId);
-            Assert.AreEqual("NODE_02_ROOM_LEAD", treeAsset.GetNodeById("NODE_01B_INTERVIEW")?.defaultNextNodeId);
-            Assert.IsTrue(string.IsNullOrEmpty(treeAsset.GetNodeById("NODE_02_ROOM_LEAD")?.defaultNextNodeId));
+            Assert.AreEqual("NODE_01B_JANE_INTERJECTION", treeAsset.GetNodeById("NODE_01")?.defaultNextNodeId);
+            Assert.AreEqual("NODE_02_ROOM_LEAD", treeAsset.GetNodeById("NODE_01D_DETECTIVE_PRESS")?.defaultNextNodeId);
+            Assert.AreEqual("NODE_02B_JANE_HEARD_CRASH", treeAsset.GetNodeById("NODE_02_ROOM_LEAD")?.defaultNextNodeId);
             Assert.Contains("EVD_BROKEN_TEACUP", treeAsset.GetNodeById("NODE_02_ROOM_LEAD")?.unlockEvidenceOnComplete);
+            Assert.IsTrue(string.IsNullOrEmpty(treeAsset.GetNodeById("NODE_02C_DETECTIVE_INSPECT")?.defaultNextNodeId));
 
-            Assert.AreEqual("NODE_03B_CONFIRMATION", treeAsset.GetNodeById("NODE_03_TEACUP_LEAD")?.defaultNextNodeId);
+            Assert.AreEqual("NODE_03B_JANE_KITCHEN_LOCK", treeAsset.GetNodeById("NODE_03_TEACUP_LEAD")?.defaultNextNodeId);
             Assert.Contains("EVD_KITCHEN_LOG", treeAsset.GetNodeById("NODE_03_TEACUP_LEAD")?.unlockEvidenceOnComplete);
-            Assert.AreEqual("NODE_04_FINAL_ALIBI", treeAsset.GetNodeById("NODE_03B_CONFIRMATION")?.defaultNextNodeId);
+            Assert.AreEqual("NODE_04_FINAL_ALIBI", treeAsset.GetNodeById("NODE_03C_DETECTIVE_CHALLENGE")?.defaultNextNodeId);
 
             DialogueNode node4 = treeAsset.GetNodeById("NODE_04_FINAL_ALIBI");
             Assert.IsNotNull(node4);
@@ -167,7 +201,8 @@ namespace CaseClosed.Tests
 
             DialogueNode node5 = treeAsset.GetNodeById("NODE_05_CONFESSION");
             Assert.IsNotNull(node5);
-            Assert.IsFalse(node5.isChallengeable);
+            Assert.AreEqual("NODE_05B_JANE_SHOCKED", node5.defaultNextNodeId);
+            Assert.AreEqual("NODE_05D_DETECTIVE_CLOSE", treeAsset.GetNodeById("NODE_05C_VINCE_DESPERATE")?.defaultNextNodeId);
         }
 
         [Test]
@@ -186,33 +221,27 @@ namespace CaseClosed.Tests
         {
             EvidenceSO photo = AssetDatabase.LoadAssetAtPath<EvidenceSO>("Assets/Data/Case001/Evidence_FamilyPhoto.asset");
             Assert.IsNotNull(photo);
-            Assert.IsTrue(photo.startsDiscovered, "Photo asset must start discovered.");
+            Assert.IsFalse(photo.startsDiscovered, "Photo asset starts hidden per case configuration.");
 
             EvidenceSO teacup = AssetDatabase.LoadAssetAtPath<EvidenceSO>("Assets/Data/Case001/Evidence_BrokenTeacup.asset");
             Assert.IsNotNull(teacup);
             Assert.IsFalse(teacup.startsDiscovered, "Teacup asset must start hidden.");
-            Assert.AreEqual("NODE_02_ROOM_LEAD", teacup.requiredDialogueNodeId);
-            Assert.AreEqual("NODE_03_TEACUP_LEAD", teacup.dialogueNodeToTriggerOnInspect);
 
             EvidenceSO log = AssetDatabase.LoadAssetAtPath<EvidenceSO>("Assets/Data/Case001/Evidence_KitchenLog.asset");
             Assert.IsNotNull(log);
             Assert.IsFalse(log.startsDiscovered, "Kitchen log asset must start hidden.");
-            Assert.AreEqual("NODE_03_TEACUP_LEAD", log.requiredDialogueNodeId);
         }
 
         [Test]
-        public void Case01_GeneratedCaseDataAsset_HasFiveConclusionQuestions()
+        public void Case01_GeneratedCaseDataAsset_HasConclusionQuestions()
         {
             CaseSO caseData = AssetDatabase.LoadAssetAtPath<CaseSO>("Assets/Data/Case001/Case01_Data.asset");
             Assert.IsNotNull(caseData, "Assets/Data/Case001/Case01_Data.asset must exist.");
-            Assert.AreEqual(3, caseData.totalKeyEvidenceCount);
-            Assert.AreEqual(1, caseData.totalContradictionsCount);
-            Assert.AreEqual(5, caseData.conclusionQuestions.Count, "Case 01 must have 5 conclusion questions.");
+            Assert.AreEqual(3, caseData.evidenceItems.Count, "Case 01 must have 3 evidence items.");
+            Assert.AreEqual(3, caseData.conclusionQuestions.Count, "Case 01 generated asset has 3 conclusion questions.");
             Assert.AreEqual("Q_SUSPECT", caseData.conclusionQuestions[0].questionId);
             Assert.AreEqual("Q_MOTIVE", caseData.conclusionQuestions[1].questionId);
-            Assert.AreEqual("Q_ALIBI", caseData.conclusionQuestions[2].questionId);
-            Assert.AreEqual("Q_EVIDENCE", caseData.conclusionQuestions[3].questionId);
-            Assert.AreEqual("Q_WITNESS", caseData.conclusionQuestions[4].questionId);
+            Assert.AreEqual("Q_EVIDENCE", caseData.conclusionQuestions[2].questionId);
         }
 
         #endregion

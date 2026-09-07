@@ -20,19 +20,41 @@ MonoBehaviour:
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 6
-    statementText: I never went near the study. I stayed in the kitchen from 8:30
+    statementText: I never went near the study! I stayed in the kitchen from 8:30
       PM until everyone started shouting!
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
-    defaultNextNodeId: NODE_01B_INTERVIEW
+    defaultNextNodeId: NODE_01B_JANE_INTERJECTION
     unlockEvidenceOnComplete: []
-  - nodeId: NODE_01B_INTERVIEW
-    speakerId: PLAYER
+  - nodeId: NODE_01B_JANE_INTERJECTION
+    speakerId: CHAR_CASE1_FEMALE
+    speakerName: Jane Reyes
+    expression: 1
+    statementText: Wait, Vince... that isn't true. I was walking past the corridor
+      at 8:40 PM, and I saw you arguing heatedly with Uncle Kirby near the study.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01C_VINCE_RETORT
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01C_VINCE_RETORT
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 3
+    statementText: Stay out of this, Jane! You were drinking wine with guests in
+      the dining hall! You couldn't possibly see who was in the corridor!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01D_DETECTIVE_PRESS
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01D_DETECTIVE_PRESS
+    speakerId: 
     speakerName: Detective
     expression: 0
-    statementText: Nobody mentioned picking locks, Vince. But you're very quick to
-      establish an alibi. Let's talk about the study itself.
+    statementText: Both of you, calm down. Vince, Ms. Reyes places you outside the
+      study right before the safe was breached. Explain your presence there.
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
@@ -42,33 +64,66 @@ MonoBehaviour:
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 6
-    statementText: The study was locked, Detective. There is nothing there that connects
-      me to the necklace.
+    statementText: The study was locked, Detective! Even if I walked through the
+      hallway, there is nothing in that room connecting me to the necklace.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02B_JANE_HEARD_CRASH
+    unlockEvidenceOnComplete:
+    - EVD_BROKEN_TEACUP
+  - nodeId: NODE_02B_JANE_HEARD_CRASH
+    speakerId: CHAR_CASE1_FEMALE
+    speakerName: Jane Reyes
+    expression: 8
+    statementText: Actually, Detective... while we were in the dining hall, everyone
+      heard a loud porcelain crash from inside the study at 8:45 PM.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02C_DETECTIVE_INSPECT
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_02C_DETECTIVE_INSPECT
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: A porcelain crash inside a locked study... We should examine that
+      broken teacup on the table.
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
     defaultNextNodeId: 
-    unlockEvidenceOnComplete:
-    - EVD_BROKEN_TEACUP
+    unlockEvidenceOnComplete: []
   - nodeId: NODE_03_TEACUP_LEAD
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 2
-    statementText: That broken cup? I heard it fall, but I was nowhere near the safe.
-      The pantry log will prove I was in the kitchen.
+    statementText: That broken cup? Alright, so I heard it fall too! But I was nowhere
+      near the safe! The pantry log will prove I was in the kitchen.
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
-    defaultNextNodeId: NODE_03B_CONFIRMATION
+    defaultNextNodeId: NODE_03B_JANE_KITCHEN_LOCK
     unlockEvidenceOnComplete:
     - EVD_KITCHEN_LOG
-  - nodeId: NODE_03B_CONFIRMATION
-    speakerId: PLAYER
+  - nodeId: NODE_03B_JANE_KITCHEN_LOCK
+    speakerId: CHAR_CASE1_FEMALE
+    speakerName: Jane Reyes
+    expression: 8
+    statementText: Vince, don't you remember? The butler locked the kitchen pantry
+      before 8:30 PM to prepare for the late tea service.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03C_DETECTIVE_CHALLENGE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03C_DETECTIVE_CHALLENGE
+    speakerId: 
     speakerName: Detective
     expression: 0
-    statementText: A shattered teacup right next to the open safe. You claim you
-      heard it fall from down the hall, yet your story insists you were secluded
-      in the kitchen. Let's test that timeline against the staff records.
+    statementText: The kitchen log is on the desk, Vince. If you were truly locked
+      in that pantry, the staff records will verify it. Are you certain that is your
+      story?
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
@@ -78,7 +133,8 @@ MonoBehaviour:
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 6
-    statementText: I stayed in that kitchen the entire time. You cannot prove otherwise.
+    statementText: "I stayed in that kitchen the entire time! Inspect the pantry
+      log yourself\u2014you cannot prove otherwise!"
     isChallengeable: 1
     targetContradictionRuleId: RULE_VINCE_ALIBI_LIE
     choices: []
@@ -88,8 +144,42 @@ MonoBehaviour:
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 2
-    statementText: W-what?! The kitchen pantry log? Fine! I needed money to clear
-      my debts, so I took the necklace!
+    statementText: W-what?! The kitchen pantry was locked by staff from 8:30 to 9:15
+      PM?! Fine! I needed money to clear my gambling debts, so I took the necklace!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05B_JANE_SHOCKED
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05B_JANE_SHOCKED
+    speakerId: CHAR_CASE1_FEMALE
+    speakerName: Jane Reyes
+    expression: 4
+    statementText: Vince... Uncle Kirby took you in and paid your tuition! How could
+      you betray our family like this?!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05C_VINCE_DESPERATE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05C_VINCE_DESPERATE
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 2
+    statementText: He was cutting off my allowance, Jane! The loan sharks gave me
+      until midnight! I panicked and grabbed the necklace from the safe!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05D_DETECTIVE_CLOSE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05D_DETECTIVE_CLOSE
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: That's enough. You broke the teacup during the theft, and the
+      pantry log shattered your false alibi. Vince Angelo Batecan, you are under
+      arrest.
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
