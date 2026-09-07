@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using CaseClosed.Data;
 using CaseClosed.Gameplay;
+using CaseClosed.Managers;
 
 namespace CaseClosed.Tests
 {
@@ -13,6 +14,7 @@ namespace CaseClosed.Tests
         private SpriteRenderer spriteRenderer;
         private BoxCollider2D boxCollider;
         private Sprite testSprite;
+        private GameObject caseManagerObj;
 
         [SetUp]
         public void SetUp()
@@ -35,6 +37,10 @@ namespace CaseClosed.Tests
             if (testItemObj != null)
             {
                 Object.DestroyImmediate(testItemObj);
+            }
+            if (caseManagerObj != null)
+            {
+                Object.DestroyImmediate(caseManagerObj);
             }
             if (testSprite != null && testSprite.texture != null)
             {
@@ -110,6 +116,157 @@ namespace CaseClosed.Tests
             SpriteRenderer haloRenderer = haloChild.GetComponent<SpriteRenderer>();
             Assert.IsNotNull(haloRenderer, "Glow_Halo child must have a SpriteRenderer");
             Assert.AreEqual(9, haloRenderer.sortingOrder, "Halo sorting order should be behind the main item (order 9 vs 10)");
+        }
+
+        [Test]
+        public void OpenNotebookProp_AlwaysVisibleAndInteractive()
+        {
+            tableItem.openNotebookOnClick = true;
+            tableItem.UpdateVisibilityState();
+
+            Assert.IsTrue(tableItem.IsItemVisible);
+            Assert.IsTrue(spriteRenderer.enabled);
+            Assert.IsTrue(boxCollider.enabled);
+        }
+
+        [Test]
+        public void EvidenceItem_StartsHidden_WhenNotDiscovered()
+        {
+            EvidenceSO evidenceSO = ScriptableObject.CreateInstance<EvidenceSO>();
+            evidenceSO.id = "EVD_BROKEN_TEACUP";
+            evidenceSO.startsDiscovered = false;
+            tableItem.evidenceData = evidenceSO;
+            tableItem.evidenceId = evidenceSO.id;
+            tableItem.openNotebookOnClick = false;
+
+            tableItem.UpdateVisibilityState();
+
+            Assert.IsFalse(tableItem.IsDiscovered);
+            Assert.IsFalse(tableItem.IsItemVisible);
+            Assert.IsFalse(spriteRenderer.enabled);
+            Assert.IsFalse(boxCollider.enabled);
+
+            Object.DestroyImmediate(evidenceSO);
+        }
+
+        [Test]
+        public void EvidenceItem_StartsVisible_WhenStartsDiscovered()
+        {
+            EvidenceSO evidenceSO = ScriptableObject.CreateInstance<EvidenceSO>();
+            evidenceSO.id = "EVD_FAMILY_PHOTO";
+            evidenceSO.startsDiscovered = true;
+            tableItem.evidenceData = evidenceSO;
+            tableItem.evidenceId = evidenceSO.id;
+
+            tableItem.UpdateVisibilityState();
+
+            Assert.IsTrue(tableItem.IsDiscovered);
+            Assert.IsTrue(tableItem.IsItemVisible);
+            Assert.IsTrue(spriteRenderer.enabled);
+            Assert.IsTrue(boxCollider.enabled);
+
+            Object.DestroyImmediate(evidenceSO);
+        }
+
+        [Test]
+        public void HandleEvidenceDiscovered_RevealsItemAndTriggersDiscoveryGlow()
+        {
+            EvidenceSO evidenceSO = ScriptableObject.CreateInstance<EvidenceSO>();
+            evidenceSO.id = "EVD_BROKEN_TEACUP";
+            evidenceSO.startsDiscovered = false;
+            tableItem.evidenceData = evidenceSO;
+            tableItem.evidenceId = evidenceSO.id;
+
+            tableItem.UpdateVisibilityState();
+            Assert.IsFalse(spriteRenderer.enabled);
+            Assert.IsFalse(boxCollider.enabled);
+
+            tableItem.HandleEvidenceDiscovered(evidenceSO);
+
+            Assert.IsTrue(spriteRenderer.enabled);
+            Assert.IsTrue(boxCollider.enabled);
+            Assert.IsTrue(tableItem.IsDiscoveryCueActive);
+            Assert.AreEqual(tableItem.discoveryGlowIntensity, tableItem.CurrentGlowIntensity, 0.001f);
+
+            Transform haloChild = testItemObj.transform.Find("Glow_Halo");
+            Assert.IsNotNull(haloChild);
+            Assert.IsTrue(haloChild.gameObject.activeSelf);
+
+            Object.DestroyImmediate(evidenceSO);
+        }
+
+        [Test]
+        public void TriggerDiscoveryCue_And_StopDiscoveryCue_StateTransitions()
+        {
+            tableItem.TriggerDiscoveryCue(3.0f);
+            Assert.IsTrue(tableItem.IsDiscoveryCueActive);
+            Assert.Greater(tableItem.CurrentGlowIntensity, 0f);
+
+            Transform haloChild = testItemObj.transform.Find("Glow_Halo");
+            Assert.IsNotNull(haloChild);
+            Assert.IsTrue(haloChild.gameObject.activeSelf);
+
+            tableItem.StopDiscoveryCue();
+            Assert.IsFalse(tableItem.IsDiscoveryCueActive);
+            Assert.AreEqual(0f, tableItem.CurrentGlowIntensity, 0.001f);
+            Assert.IsFalse(haloChild.gameObject.activeSelf);
+        }
+
+        [Test]
+        public void CaseManager_EvidenceDiscovery_EventTriggersTableItemReveal()
+        {
+            caseManagerObj = new GameObject("Test_CaseManager");
+            CaseManager caseManager = caseManagerObj.AddComponent<CaseManager>();
+
+            CaseSO caseSO = ScriptableObject.CreateInstance<CaseSO>();
+            EvidenceSO teacupSO = ScriptableObject.CreateInstance<EvidenceSO>();
+            teacupSO.id = "EVD_BROKEN_TEACUP";
+            teacupSO.evidenceName = "Broken Teacup";
+            teacupSO.startsDiscovered = false;
+            caseSO.evidenceItems.Add(teacupSO);
+
+            caseManager.LoadCase(caseSO);
+
+            tableItem.evidenceId = "EVD_BROKEN_TEACUP";
+            tableItem.SubscribeToCaseManager();
+            tableItem.UpdateVisibilityState();
+
+            Assert.IsFalse(tableItem.IsDiscovered);
+            Assert.IsFalse(spriteRenderer.enabled);
+            Assert.IsFalse(boxCollider.enabled);
+
+            caseManager.RegisterDiscoveredEvidence(teacupSO);
+
+            Assert.IsTrue(tableItem.IsDiscovered);
+            Assert.IsTrue(spriteRenderer.enabled);
+            Assert.IsTrue(boxCollider.enabled);
+            Assert.IsTrue(tableItem.IsDiscoveryCueActive);
+
+            Object.DestroyImmediate(teacupSO);
+            Object.DestroyImmediate(caseSO);
+        }
+
+        [Test]
+        public void HiddenItem_IgnoresHoverAndClick()
+        {
+            EvidenceSO evidenceSO = ScriptableObject.CreateInstance<EvidenceSO>();
+            evidenceSO.id = "EVD_SECRET";
+            evidenceSO.startsDiscovered = false;
+            tableItem.evidenceData = evidenceSO;
+            tableItem.evidenceId = evidenceSO.id;
+
+            tableItem.UpdateVisibilityState();
+            Assert.IsFalse(spriteRenderer.enabled);
+
+            // Attempt hover
+            tableItem.SetHoverState(true);
+            Assert.IsFalse(tableItem.IsHovered);
+
+            // Attempt click
+            tableItem.TriggerClick(false);
+            Assert.IsFalse(tableItem.IsHovered);
+
+            Object.DestroyImmediate(evidenceSO);
         }
     }
 }

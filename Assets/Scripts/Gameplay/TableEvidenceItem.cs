@@ -66,9 +66,21 @@ namespace CaseClosed.Gameplay
         [Tooltip("Optional custom external glow GameObject (e.g. inspector light or particle aura).")]
         public GameObject highlightGlow;
 
+        [Header("Discovery Flash & Pulse Cue")]
+        [Tooltip("Duration in seconds of the discovery glow cue when an item is revealed on the desk.")]
+        public float discoveryCueDuration = 2.5f;
+
+        [Tooltip("Peak glow intensity multiplier during discovery cue.")]
+        public float discoveryGlowIntensity = 1.6f;
+
+        [ColorUsage(true, true)]
+        [Tooltip("Luminous HDR glow tint for the discovery celebration cue.")]
+        public Color discoveryGlowColor = new Color(1.0f, 0.95f, 0.35f, 1.0f);
+
         // Runtime animation state
         private bool isHovered = false;
         private float currentGlowIntensity = 0f;
+        private float discoveryCueTimer = 0f;
         [SerializeField, HideInInspector] private Vector3 baseScale = Vector3.one;
         private bool hasCachedBaseScale = false;
         private Color originalColor = Color.white;
@@ -76,13 +88,19 @@ namespace CaseClosed.Gameplay
         // Auto-generated glow halo child
         private GameObject haloObj;
         private SpriteRenderer haloRenderer;
+        private Collider2D itemCollider;
+        private CaseManager subscribedCaseManager;
 
         public bool IsHovered => isHovered;
         public float CurrentGlowIntensity => currentGlowIntensity;
+        public bool IsDiscovered => CheckIsDiscovered();
+        public bool IsItemVisible => openNotebookOnClick || (spriteRenderer != null && spriteRenderer.enabled);
+        public bool IsDiscoveryCueActive => discoveryCueTimer > 0f;
 
         private void Awake()
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
 
             EnsureBaseScaleCached();
 
@@ -99,14 +117,7 @@ namespace CaseClosed.Gameplay
         {
             EnsureBaseScaleCached();
 
-            if (CaseManager.Instance != null)
-            {
-                CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
-                if (CaseManager.Instance.activeCase != null)
-                {
-                    HandleCaseLoaded(CaseManager.Instance.activeCase);
-                }
-            }
+            SubscribeToCaseManager();
 
             ResolveEvidenceData();
             BindEvidenceData();
@@ -114,6 +125,8 @@ namespace CaseClosed.Gameplay
 
             if (highlightGlow != null) highlightGlow.SetActive(false);
             if (haloObj != null) haloObj.SetActive(false);
+
+            UpdateVisibilityState();
         }
 
         private void OnEnable()
@@ -123,9 +136,38 @@ namespace CaseClosed.Gameplay
 
         private void OnDestroy()
         {
-            if (CaseManager.Instance != null)
+            UnsubscribeFromCaseManager();
+        }
+
+        public void SubscribeToCaseManager()
+        {
+            if (CaseManager.Instance != null && subscribedCaseManager != CaseManager.Instance)
+            {
+                UnsubscribeFromCaseManager();
+
+                subscribedCaseManager = CaseManager.Instance;
+                subscribedCaseManager.OnCaseLoaded += HandleCaseLoaded;
+                subscribedCaseManager.OnEvidenceDiscovered += HandleEvidenceDiscovered;
+
+                if (subscribedCaseManager.activeCase != null)
+                {
+                    HandleCaseLoaded(subscribedCaseManager.activeCase);
+                }
+            }
+        }
+
+        public void UnsubscribeFromCaseManager()
+        {
+            if (subscribedCaseManager != null)
+            {
+                subscribedCaseManager.OnCaseLoaded -= HandleCaseLoaded;
+                subscribedCaseManager.OnEvidenceDiscovered -= HandleEvidenceDiscovered;
+                subscribedCaseManager = null;
+            }
+            else if (CaseManager.Instance != null)
             {
                 CaseManager.Instance.OnCaseLoaded -= HandleCaseLoaded;
+                CaseManager.Instance.OnEvidenceDiscovered -= HandleEvidenceDiscovered;
             }
         }
 
@@ -143,12 +185,20 @@ namespace CaseClosed.Gameplay
 
         private void Update()
         {
+            if (subscribedCaseManager == null && CaseManager.Instance != null)
+            {
+                SubscribeToCaseManager();
+                UpdateVisibilityState();
+            }
+
             UpdateGlowAnimation();
             CheckDirectMouseInteraction();
         }
 
         private void CheckDirectMouseInteraction()
         {
+            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
+
             Camera cam = Camera.main;
             if (cam == null) return;
 
@@ -160,10 +210,10 @@ namespace CaseClosed.Gameplay
             Vector3 mouseWorld3D = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
             Vector2 mouseWorld = new Vector2(mouseWorld3D.x, mouseWorld3D.y);
 
-            Collider2D col = GetComponent<Collider2D>();
-            if (col == null) return;
+            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
+            if (itemCollider == null || !itemCollider.enabled) return;
 
-            bool isOver = col.OverlapPoint(mouseWorld);
+            bool isOver = itemCollider.OverlapPoint(mouseWorld);
 
             // If arm pointer is inactive or absent, provide direct cursor hover highlights
             if (ArmPointerController.Instance == null || !ArmPointerController.Instance.isArmActive)
@@ -226,7 +276,7 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
-        /// Smoothly animates glow intensity, breathing pulse oscillation, and subtle scale lift.
+        /// Smoothly animates glow intensity, breathing pulse oscillation, discovery cue, and subtle scale lift.
         /// </summary>
         private void UpdateGlowAnimation()
         {
@@ -237,10 +287,31 @@ namespace CaseClosed.Gameplay
                 SetupGlowHalo();
             }
 
-            float targetIntensity = isHovered ? maxGlowIntensity : 0f;
+            bool isCueActive = discoveryCueTimer > 0f;
+            if (isCueActive)
+            {
+                discoveryCueTimer -= Time.deltaTime;
+                if (discoveryCueTimer < 0f)
+                {
+                    discoveryCueTimer = 0f;
+                    isCueActive = false;
+                }
+            }
+
+            float targetIntensity = 0f;
+            if (isHovered)
+            {
+                targetIntensity = maxGlowIntensity;
+            }
+            else if (isCueActive)
+            {
+                float cueProgress = Mathf.Clamp01(discoveryCueTimer / discoveryCueDuration);
+                targetIntensity = discoveryGlowIntensity * cueProgress;
+            }
+
             currentGlowIntensity = Mathf.MoveTowards(currentGlowIntensity, targetIntensity, Time.deltaTime * glowFadeSpeed);
 
-            if (currentGlowIntensity > 0.001f)
+            if (currentGlowIntensity > 0.001f || isCueActive)
             {
                 if (haloObj != null && !haloObj.activeSelf)
                 {
@@ -249,22 +320,41 @@ namespace CaseClosed.Gameplay
 
                 if (haloRenderer != null)
                 {
-                    if (haloRenderer.sprite != spriteRenderer.sprite)
+                    if (spriteRenderer != null && haloRenderer.sprite != spriteRenderer.sprite)
                     {
                         haloRenderer.sprite = spriteRenderer.sprite;
                     }
 
-                    float pulse = (pulseGlow && isHovered) ? (1.0f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmplitude) : 1.0f;
-                    float alpha = Mathf.Clamp01(currentGlowIntensity * pulse * glowColor.a);
-                    haloRenderer.color = new Color(glowColor.r, glowColor.g, glowColor.b, alpha);
+                    Color activeColor = glowColor;
+                    float pulse = 1.0f;
 
-                    float scaleFactor = haloBaseScale + ((pulse - 1.0f) * 0.5f);
+                    if (isCueActive)
+                    {
+                        float cueProgress = Mathf.Clamp01(discoveryCueTimer / discoveryCueDuration);
+                        activeColor = Color.Lerp(glowColor, discoveryGlowColor, cueProgress);
+                        pulse = 1.0f + Mathf.Sin(Time.time * 8.0f) * 0.12f;
+                    }
+                    else if (pulseGlow && isHovered)
+                    {
+                        pulse = 1.0f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmplitude;
+                    }
+
+                    float alpha = Mathf.Clamp01(Mathf.Max(currentGlowIntensity, isCueActive ? 0.35f : 0f) * pulse * activeColor.a);
+                    haloRenderer.color = new Color(activeColor.r, activeColor.g, activeColor.b, alpha);
+
+                    float scaleFactor = (haloBaseScale + ((pulse - 1.0f) * 0.5f)) * (isCueActive ? 1.05f : 1.0f);
                     haloObj.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
                 }
 
                 if (spriteRenderer != null)
                 {
-                    spriteRenderer.color = Color.Lerp(originalColor, hoverColor, currentGlowIntensity);
+                    Color targetTint = isCueActive ? Color.Lerp(hoverColor, discoveryGlowColor, 0.4f) : hoverColor;
+                    spriteRenderer.color = Color.Lerp(originalColor, targetTint, Mathf.Clamp01(currentGlowIntensity));
+                }
+
+                if (highlightGlow != null)
+                {
+                    highlightGlow.SetActive(isHovered || isCueActive);
                 }
             }
             else
@@ -278,11 +368,18 @@ namespace CaseClosed.Gameplay
                 {
                     spriteRenderer.color = originalColor;
                 }
+
+                if (highlightGlow != null && !isHovered)
+                {
+                    highlightGlow.SetActive(false);
+                }
             }
 
             if (scaleOnHover && hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f)
             {
-                Vector3 targetScale = isHovered ? (baseScale * hoverScaleMultiplier) : baseScale;
+                bool shouldScale = isHovered || isCueActive;
+                float scaleMul = isHovered ? hoverScaleMultiplier : 1.025f;
+                Vector3 targetScale = shouldScale ? (baseScale * scaleMul) : baseScale;
                 transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * glowFadeSpeed);
             }
         }
@@ -360,19 +457,174 @@ namespace CaseClosed.Gameplay
 
         private void HandleCaseLoaded(CaseSO activeCase)
         {
-            if (activeCase == null || string.IsNullOrEmpty(evidenceId)) return;
+            if (activeCase == null) return;
 
-            if (activeCase.evidenceItems != null)
+            ResolveEvidenceData();
+
+            string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
+
+            if (activeCase.evidenceItems != null && !string.IsNullOrEmpty(effectiveId))
             {
                 foreach (var ev in activeCase.evidenceItems)
                 {
-                    if (ev != null && ev.id == evidenceId)
+                    if (ev != null && (ev.id == effectiveId || ev.id.Equals(effectiveId, System.StringComparison.OrdinalIgnoreCase)))
                     {
                         evidenceData = ev;
+                        evidenceId = ev.id;
                         BindEvidenceData();
                         AdjustColliderToSprite();
                         break;
                     }
+                }
+            }
+
+            UpdateVisibilityState();
+        }
+
+        /// <summary>
+        /// Evaluates whether this item has been discovered yet based on initial case data or runtime CaseManager.
+        /// </summary>
+        public bool CheckIsDiscovered()
+        {
+            if (openNotebookOnClick) return true;
+
+            ResolveEvidenceData();
+
+            string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
+            bool isDiscovered = (evidenceData != null && evidenceData.startsDiscovered) ||
+                                (CaseManager.Instance != null && !string.IsNullOrEmpty(effectiveId) && CaseManager.Instance.discoveredEvidenceIds.Contains(effectiveId));
+            return isDiscovered;
+        }
+
+        /// <summary>
+        /// Updates sprite visibility, collider responsiveness, and halo state based on current discovery status.
+        /// </summary>
+        public void UpdateVisibilityState()
+        {
+            if (openNotebookOnClick)
+            {
+                SetItemVisibility(true);
+                return;
+            }
+
+            bool isDiscovered = CheckIsDiscovered();
+            SetItemVisibility(isDiscovered);
+        }
+
+        /// <summary>
+        /// Enables or disables the visual SpriteRenderer and physical Collider2D components.
+        /// </summary>
+        public void SetItemVisibility(bool visible)
+        {
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.enabled = visible;
+            }
+
+            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
+            if (itemCollider != null)
+            {
+                itemCollider.enabled = visible;
+            }
+
+            if (!visible)
+            {
+                SetHoverState(false);
+                StopDiscoveryCue();
+            }
+        }
+
+        /// <summary>
+        /// Callback invoked when any evidence is discovered in CaseManager.
+        /// If this item matches the discovered evidence, reveals it on desk and triggers the discovery glow cue.
+        /// </summary>
+        public void HandleEvidenceDiscovered(EvidenceSO ev)
+        {
+            if (ev == null || openNotebookOnClick) return;
+
+            ResolveEvidenceData();
+
+            string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
+            bool isMatch = (evidenceData != null && evidenceData == ev) ||
+                           (!string.IsNullOrEmpty(effectiveId) && (ev.id == effectiveId || ev.id.Equals(effectiveId, System.StringComparison.OrdinalIgnoreCase)));
+
+            if (!isMatch && evidenceData == null && !string.IsNullOrEmpty(ev.id))
+            {
+                string cleanObjName = gameObject.name.ToUpper();
+                string cleanEvId = ev.id.ToUpper();
+                if (cleanObjName.Contains(cleanEvId) || cleanEvId.Contains(cleanObjName))
+                {
+                    isMatch = true;
+                }
+            }
+
+            if (isMatch)
+            {
+                if (evidenceData == null)
+                {
+                    evidenceData = ev;
+                    if (string.IsNullOrEmpty(evidenceId)) evidenceId = ev.id;
+                    BindEvidenceData();
+                    AdjustColliderToSprite();
+                }
+
+                SetItemVisibility(true);
+                TriggerDiscoveryCue();
+            }
+        }
+
+        /// <summary>
+        /// Triggers a luminous discovery flash and pulse glow cue to draw player focus to newly placed clues.
+        /// </summary>
+        public void TriggerDiscoveryCue(float duration = -1f)
+        {
+            discoveryCueTimer = duration > 0f ? duration : discoveryCueDuration;
+            if (discoveryCueTimer <= 0f) discoveryCueTimer = 2.5f;
+
+            currentGlowIntensity = discoveryGlowIntensity;
+
+            EnsureBaseScaleCached();
+            if (haloObj == null) SetupGlowHalo();
+
+            if (haloObj != null)
+            {
+                haloObj.SetActive(true);
+                if (haloRenderer != null)
+                {
+                    if (spriteRenderer != null && haloRenderer.sprite != spriteRenderer.sprite)
+                    {
+                        haloRenderer.sprite = spriteRenderer.sprite;
+                    }
+                    haloRenderer.color = new Color(discoveryGlowColor.r, discoveryGlowColor.g, discoveryGlowColor.b, discoveryGlowColor.a);
+                    float initialScale = haloBaseScale * 1.15f;
+                    haloObj.transform.localScale = new Vector3(initialScale, initialScale, 1f);
+                }
+            }
+
+            if (highlightGlow != null)
+            {
+                highlightGlow.SetActive(true);
+            }
+
+            Debug.Log($"[Gameplay:TableEvidence] Triggered discovery glow cue on '{gameObject.name}' (Duration: {discoveryCueTimer:F1}s)");
+        }
+
+        /// <summary>
+        /// Stops any active discovery cue immediately.
+        /// </summary>
+        public void StopDiscoveryCue()
+        {
+            discoveryCueTimer = 0f;
+            if (!isHovered)
+            {
+                currentGlowIntensity = 0f;
+                if (haloObj != null) haloObj.SetActive(false);
+                if (spriteRenderer != null) spriteRenderer.color = originalColor;
+                if (highlightGlow != null) highlightGlow.SetActive(false);
+                if (hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f)
+                {
+                    transform.localScale = baseScale;
                 }
             }
         }
@@ -389,6 +641,7 @@ namespace CaseClosed.Gameplay
 
         private void OnMouseEnter()
         {
+            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
             SetHoverState(true);
         }
 
@@ -399,6 +652,7 @@ namespace CaseClosed.Gameplay
 
         private void OnMouseDown()
         {
+            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
             TriggerClick(false);
         }
 
@@ -408,6 +662,11 @@ namespace CaseClosed.Gameplay
         /// </summary>
         public void SetHoverState(bool isHovered)
         {
+            if (isHovered && !openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled)
+            {
+                isHovered = false;
+            }
+
             this.isHovered = isHovered;
 
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
@@ -425,7 +684,7 @@ namespace CaseClosed.Gameplay
 
             if (highlightGlow != null)
             {
-                highlightGlow.SetActive(isHovered);
+                highlightGlow.SetActive(isHovered || IsDiscoveryCueActive);
             }
         }
 
@@ -434,6 +693,9 @@ namespace CaseClosed.Gameplay
         /// </summary>
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
+            // Disallow interaction if item is not visible on desk
+            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
+
             // OnMouseDown can reach this handler through UI, bypassing the polling guards.
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
@@ -471,6 +733,7 @@ namespace CaseClosed.Gameplay
             // 3. If dialogue is currently active with a statement, clicking this table item directly presents it to challenge!
             if (DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.currentNode != null)
             {
+                DialogueUI.Instance?.AlignToWorldTarget(transform);
                 Debug.Log($"[Gameplay:TableEvidence] Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
                 CaseManager.Instance?.RegisterDiscoveredEvidence(evidenceData);
@@ -482,13 +745,14 @@ namespace CaseClosed.Gameplay
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
             EvidenceManager.Instance?.OpenInspectModal(evidenceData);
 
+            DialogueUI.Instance?.AlignToWorldTarget(transform);
+
             string nodeToTrigger = !string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect)
                 ? dialogueNodeToTriggerOnInspect
                 : evidenceData.dialogueNodeToTriggerOnInspect;
             if (!string.IsNullOrEmpty(nodeToTrigger))
             {
                 Debug.Log($"[Gameplay:TableEvidence] Triggering suspect explanation dialogue node '{nodeToTrigger}' for '{evidenceData.evidenceName}'");
-                DialogueUI.Instance?.AlignToWorldTarget(transform);
                 InterrogationManager.Instance?.JumpToNode(nodeToTrigger);
             }
         }
