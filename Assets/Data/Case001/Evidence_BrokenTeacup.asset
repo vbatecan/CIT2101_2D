@@ -24,8 +24,8 @@ MonoBehaviour:
   detailedObservation: 
   unlockedClueText: Teacup shattered directly in front of the safe during break-in.
   startsDiscovered: 0
-  requiredDialogueNodeId: 
-  dialogueNodeToTriggerOnInspect: 
+  requiredDialogueNodeId: NODE_02_ROOM_LEAD
+  dialogueNodeToTriggerOnInspect: NODE_03_TEACUP_LEAD
   isExamined: 0
   isToggledOnTable: 1
   hotspots: []

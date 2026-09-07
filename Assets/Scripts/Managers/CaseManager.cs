@@ -15,8 +15,17 @@ namespace CaseClosed.Managers
     /// </summary>
     public class CaseManager : MonoBehaviour
     {
+        private static CaseManager _instance;
         /// <summary>Singleton instance of the CaseManager.</summary>
-        public static CaseManager Instance { get; private set; }
+        public static CaseManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = FindFirstObjectByType<CaseManager>(FindObjectsInactive.Include);
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         private readonly CaseTimerService timerService = new CaseTimerService();
 
@@ -97,14 +106,14 @@ namespace CaseClosed.Managers
         /// </summary>
         private void Awake()
         {
-            Instance = this;
+            _instance = this;
         }
 
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
             }
         }
 

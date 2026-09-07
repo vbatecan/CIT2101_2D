@@ -86,7 +86,7 @@ namespace CaseClosed.Editor
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
-            evPhoto.startsDiscovered = false;
+            evPhoto.startsDiscovered = true;
             EvidenceHotspot spotDoor = new EvidenceHotspot
             {
                 hotspotId = "SPOT_DOORWAY_SILHOUETTE",
@@ -108,6 +108,8 @@ namespace CaseClosed.Editor
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
             evTeacup.startsDiscovered = false;
+            evTeacup.requiredDialogueNodeId = "NODE_02_ROOM_LEAD";
+            evTeacup.dialogueNodeToTriggerOnInspect = "NODE_03_TEACUP_LEAD";
             SaveAsset(evTeacup, $"{FolderPath}/Evidence_BrokenTeacup.asset");
 
             EvidenceSO evKitchen = ScriptableObject.CreateInstance<EvidenceSO>();
@@ -120,6 +122,7 @@ namespace CaseClosed.Editor
             evKitchen.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchen.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchen.startsDiscovered = false;
+            evKitchen.requiredDialogueNodeId = "NODE_03_TEACUP_LEAD";
             SaveAsset(evKitchen, $"{FolderPath}/Evidence_KitchenLog.asset");
 
             // 4. Dialogue Tree

@@ -97,6 +97,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.UI.DialogueUI
   speakerNameText: {fileID: 7996894289546290669}
   dialogueBodyText: {fileID: 8834795826093464643}
+  tmpSpeakerNameText: {fileID: 0}
+  tmpDialogueText: {fileID: 0}
   nextButton: {fileID: 9148304435479754528}
   challengeButton: {fileID: 8082516665512442025}
   closeDialogueButton: {fileID: 1683387326197150433}
@@ -106,6 +108,16 @@ MonoBehaviour:
   evidencePickerItemPrefab: {fileID: 2499408938633893027, guid: e7478717718987f2fb54a8e480e39f75, type: 3}
   bubbleRect: {fileID: 0}
   bubbleScreenOffset: {x: 0, y: 90}
+  characterDialogBoxes: []
+  vinceDialogBox: {fileID: 7465877765585733284, guid: d27b1b20ac23d844683dc4ef1d8a8f34, type: 3}
+  janeDialogBox: {fileID: 7465877765585733284, guid: d21527dc630c2dfe28da39452df17b97, type: 3}
+  paulDialogBox: {fileID: 7465877765585733284, guid: a30c5e25663258ed0b3fd2b85ba34a59, type: 3}
+  vonnDialogBox: {fileID: 7465877765585733284, guid: 9d294374d5a612cfeb7cef0a9a2c0a56, type: 3}
+  shanDialogBox: {fileID: 7465877765585733284, guid: 2555c709f071ab29fa0acb5a403a0d87, type: 3}
+  shaniaDialogBox: {fileID: 7465877765585733284, guid: ae1c82ffb78abb9d2a1a95317a8647d5, type: 3}
+  detectiveDialogBox: {fileID: 858532432059796437, guid: d2d696b6e00832f4aaddf25c21ee9ba4, type: 3}
+  defaultDialogBox: {fileID: 0}
+  dialogBoxContainer: {fileID: 0}
   charactersPerSecond: 35
 --- !u!1 &3809975568056646475
 GameObject:

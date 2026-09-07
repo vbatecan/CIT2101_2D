@@ -156,6 +156,12 @@ namespace CaseClosed.Gameplay
         /// </summary>
         public bool DetermineUIMode()
         {
+            // Check if Dialogue is actively displayed
+            if (DialogueUI.IsDialogueOpen && DialogueUI.Instance != null && DialogueUI.Instance.gameObject.activeInHierarchy)
+            {
+                return true;
+            }
+
             // Check if any modal panel is open in UIManager
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable)
             {
@@ -164,12 +170,6 @@ namespace CaseClosed.Gameplay
 
             // Check if Evidence Inspection is open
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen)
-            {
-                return true;
-            }
-
-            // Check if Dialogue is actively displayed
-            if (DialogueUI.IsDialogueOpen)
             {
                 return true;
             }
@@ -199,6 +199,7 @@ namespace CaseClosed.Gameplay
 
         private void HandleArmMovement()
         {
+            if (targetCamera == null) targetCamera = Camera.main;
             if (targetCamera == null) return;
             MoveFingertipToScreenPosition(Input.mousePosition);
         }
@@ -207,8 +208,10 @@ namespace CaseClosed.Gameplay
         {
             if (isTapping) return;
 
-            Vector3 tipPosition = fingertipPoint != null ? fingertipPoint.position : transform.position;
-            mouseScreen.z = targetCamera.WorldToScreenPoint(tipPosition).z;
+            if (targetCamera == null) targetCamera = Camera.main;
+            if (targetCamera == null) return;
+
+            mouseScreen.z = Mathf.Abs(targetCamera.transform.position.z - transform.position.z);
             Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(mouseScreen);
 
             // Tilt first, then compensate for the rotated fingertip offset.
@@ -303,9 +306,12 @@ namespace CaseClosed.Gameplay
         {
             Vector2 checkPos = (fingertipPoint != null) ? (Vector2)fingertipPoint.position : (Vector2)transform.position;
             Collider2D hit = Physics2D.OverlapCircle(checkPos, interactionRadius, interactableLayers);
+            if (targetCamera == null) targetCamera = Camera.main;
             if (hit == null && targetCamera != null)
             {
-                Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(Input.mousePosition);
+                Vector3 mouseScreen = Input.mousePosition;
+                mouseScreen.z = Mathf.Abs(targetCamera.transform.position.z - transform.position.z);
+                Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(mouseScreen);
                 hit = Physics2D.OverlapPoint(new Vector2(mouseWorld.x, mouseWorld.y), interactableLayers);
             }
             return hit != null ? hit.GetComponentInParent<TableEvidenceItem>() : null;
@@ -360,7 +366,7 @@ namespace CaseClosed.Gameplay
             else
             {
                 Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.lockState = CursorLockMode.None;
             }
         }
     }

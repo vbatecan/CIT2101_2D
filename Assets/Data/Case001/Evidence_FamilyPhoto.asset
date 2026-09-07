@@ -24,7 +24,7 @@ MonoBehaviour:
   detailedObservation: A distinct silhouette matching Vince is visible standing near
     the study door.
   unlockedClueText: Vince silhouette spotted near study doorway at 8:45 PM.
-  startsDiscovered: 0
+  startsDiscovered: 1
   requiredDialogueNodeId: 
   dialogueNodeToTriggerOnInspect: 
   isExamined: 0

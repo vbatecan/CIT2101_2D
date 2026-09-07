@@ -13,8 +13,17 @@ namespace CaseClosed.Managers
     /// </summary>
     public class InterrogationManager : MonoBehaviour
     {
+        private static InterrogationManager _instance;
         /// <summary>Singleton instance of the InterrogationManager.</summary>
-        public static InterrogationManager Instance { get; private set; }
+        public static InterrogationManager Instance
+        {
+            get
+            {
+                if (_instance == null) _instance = FindFirstObjectByType<InterrogationManager>(FindObjectsInactive.Include);
+                return _instance;
+            }
+            private set => _instance = value;
+        }
 
         [Header("State")]
         /// <summary>The current suspect or witness being interrogated.</summary>
@@ -61,14 +70,14 @@ namespace CaseClosed.Managers
         /// </summary>
         private void Awake()
         {
-            Instance = this;
+            _instance = this;
         }
 
         private void OnDestroy()
         {
-            if (Instance == this)
+            if (_instance == this)
             {
-                Instance = null;
+                _instance = null;
             }
         }
 
