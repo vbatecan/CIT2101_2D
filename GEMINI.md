@@ -17,6 +17,29 @@ This guide establishes the mandatory coding standards, architectural patterns, a
 
 ---
 
+## MANDATORY AGENT RULES
+### Preserve Hand-Authored Layouts
+
+- Existing scenes and prefabs are the source of truth for UI layout and object placement.
+- Do not create, restore, or execute bulk UI/layout generators, scene rebuilders, or automatic layout-repair scripts unless the user explicitly requests that exact operation.
+- Make only specifically requested, targeted layout edits; preserve all other Inspector values and prefab overrides.
+- Tests must never regenerate or save production scenes, prefabs, or assets. Use temporary test objects or read-only asset validation instead.
+
+1. **Verify Unity APIs First**:
+   - Unity 6 and URP/Cinemachine 3 APIs differ significantly from older Unity versions (e.g. `CinemachineCamera` vs `CinemachineVirtualCamera`, `linearVelocity` vs `velocity`).
+   - Use `unity_reflect` and `unity_docs` or Context7 to verify exact type signatures and namespaces before writing C# code.
+2. **Never Break Script Compilation**:
+   - Unity will stop updating its domain reload if any script has compilation errors.
+   - After creating or editing scripts, immediately call `refresh_unity(compile=true, wait_for_ready=true)` and inspect `read_console(types=["Error"])`.
+3. **Strict Layer Separation**:
+   - Never put business logic (scoring algorithms, string formatting, contradiction matching) inside `MonoBehaviour` Update loops or UI scripts. Place it in `Assets/Scripts/Services/` as pure C# classes.
+   - Controllers in `Assets/Scripts/Managers/` instantiate their respective service classes in `Awake()`.
+4. **Clean Serialization**:
+   - Use `[SerializeField] private Type _fieldName;` and expose public readonly properties.
+   - Add `[Header("...")]` and `[Tooltip("...")]` for inspector fields.
+   - Never expose public mutable fields (`public int score;` is prohibited; use `public int Score => _score;`).
+
+
 ## 2. Architectural Philosophy: Separation of Concerns (SoC) & YAGNI
 
 ```
