@@ -50,7 +50,7 @@ namespace CaseClosed.Tests
             _vonnBox = CreateMockDialogBox("VonnDialog", out _);
             _shanBox = CreateMockDialogBox("ShanDialog", out _);
             _shaniaBox = CreateMockDialogBox("ShaniaDialog", out _);
-            _detectiveBox = CreateMockDialogBox("DetectiveDialog", out _);
+            _detectiveBox = CreateMockDialogBox("DetectiveDialogMessage", out _);
 
             _dialogueUI.vinceDialogBox = _vinceBox;
             _dialogueUI.janeDialogBox = _janeBox;
@@ -154,7 +154,7 @@ namespace CaseClosed.Tests
             _dialogueUI.DisplayNode(detNode);
             _dialogueUI.CompleteTypingImmediately();
 
-            Assert.IsTrue(_detectiveBox.activeSelf, "DetectiveDialog must be active when Detective speaks");
+            Assert.IsTrue(_detectiveBox.activeSelf, "DetectiveDialogMessage must be active when Detective speaks");
             Assert.IsFalse(_vinceBox.activeSelf, "VinceDialog must be inactive when Detective speaks");
             Assert.IsFalse(_janeBox.activeSelf, "JaneDialog must be inactive when Detective speaks");
         }
@@ -226,7 +226,7 @@ namespace CaseClosed.Tests
 
             Assert.IsFalse(_vinceBox.activeSelf, "VinceDialog must be deactivated after HideDialoguePanel");
             Assert.IsFalse(_janeBox.activeSelf, "JaneDialog must be deactivated after HideDialoguePanel");
-            Assert.IsFalse(_detectiveBox.activeSelf, "DetectiveDialog must be deactivated after HideDialoguePanel");
+            Assert.IsFalse(_detectiveBox.activeSelf, "DetectiveDialogMessage must be deactivated after HideDialoguePanel");
             Assert.IsFalse(DialogueUI.IsDialogueOpen, "IsDialogueOpen must be false after HideDialoguePanel");
         }
     }

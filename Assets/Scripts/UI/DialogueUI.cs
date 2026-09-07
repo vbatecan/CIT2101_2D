@@ -502,10 +502,10 @@ namespace CaseClosed.UI
             if (string.Equals(key, "Detective", StringComparison.OrdinalIgnoreCase))
             {
                 if (detectiveDialogBox != null)
-                    return EnsureInstance(ref detectiveDialogBox, "DetectiveDialog");
+                    return EnsureInstance(ref detectiveDialogBox, "DetectiveDialogMessage");
                 if (defaultDialogBox != null)
                     return EnsureInstance(ref defaultDialogBox, "DialogBLACK");
-                return null;
+                return EnsureInstance(ref detectiveDialogBox, "DetectiveDialogMessage");
             }
 
             if (characterDialogBoxes != null)
@@ -641,6 +641,11 @@ namespace CaseClosed.UI
                 {
                     string path = $"Assets/Prefabs/UI/Dialog Boxes/{fallbackName}.prefab";
                     boxRef = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    if (boxRef == null && (fallbackName == "DetectiveDialogMessage" || fallbackName == "DetectiveDialog"))
+                    {
+                        boxRef = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Dialog Boxes/DetectiveDialogMessage.prefab") ??
+                                 UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Panels/DialogMessage.prefab");
+                    }
                 }
 #endif
             }
@@ -818,6 +823,9 @@ namespace CaseClosed.UI
             TryAssignFromHierarchy(ref vonnDialogBox, "VonnDialog");
             TryAssignFromHierarchy(ref shanDialogBox, "ShanDialog");
             TryAssignFromHierarchy(ref shaniaDialogBox, "ShaniaDialog");
+            TryAssignFromHierarchy(ref detectiveDialogBox, "DetectiveDialogMessage");
+            TryAssignFromHierarchy(ref detectiveDialogBox, "DetectiveDialogueMessage");
+            TryAssignFromHierarchy(ref detectiveDialogBox, "DialogMessage");
             TryAssignFromHierarchy(ref detectiveDialogBox, "DetectiveDialog");
             TryAssignFromHierarchy(ref detectiveDialogBox, "DialogBLACK");
         }
@@ -857,6 +865,9 @@ namespace CaseClosed.UI
                 shanDialogBox = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Dialog Boxes/ShanDialog.prefab");
             if (shaniaDialogBox == null)
                 shaniaDialogBox = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Dialog Boxes/ShaniaDialog.prefab");
+            if (detectiveDialogBox == null)
+                detectiveDialogBox = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Dialog Boxes/DetectiveDialogMessage.prefab") ??
+                                     UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Panels/DialogMessage.prefab");
         }
 #endif
 
