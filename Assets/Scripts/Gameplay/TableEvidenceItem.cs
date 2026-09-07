@@ -139,13 +139,14 @@ namespace CaseClosed.Gameplay
             UnsubscribeFromCaseManager();
         }
 
-        public void SubscribeToCaseManager()
+        public void SubscribeToCaseManager(CaseManager customManager = null)
         {
-            if (CaseManager.Instance != null && subscribedCaseManager != CaseManager.Instance)
+            CaseManager targetManager = customManager != null ? customManager : CaseManager.Instance;
+            if (targetManager != null && subscribedCaseManager != targetManager)
             {
                 UnsubscribeFromCaseManager();
 
-                subscribedCaseManager = CaseManager.Instance;
+                subscribedCaseManager = targetManager;
                 subscribedCaseManager.OnCaseLoaded += HandleCaseLoaded;
                 subscribedCaseManager.OnEvidenceDiscovered += HandleEvidenceDiscovered;
 
@@ -414,9 +415,10 @@ namespace CaseClosed.Gameplay
                 return evidenceData;
             }
 
-            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
+            CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
+            if (manager != null && manager.activeCase != null)
             {
-                var evList = CaseManager.Instance.activeCase.evidenceItems;
+                var evList = manager.activeCase.evidenceItems;
                 if (evList != null)
                 {
                     // 1. Exact ID match
@@ -491,8 +493,9 @@ namespace CaseClosed.Gameplay
             ResolveEvidenceData();
 
             string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
+            CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
             bool isDiscovered = (evidenceData != null && evidenceData.startsDiscovered) ||
-                                (CaseManager.Instance != null && !string.IsNullOrEmpty(effectiveId) && CaseManager.Instance.discoveredEvidenceIds.Contains(effectiveId));
+                                (manager != null && !string.IsNullOrEmpty(effectiveId) && manager.discoveredEvidenceIds.Contains(effectiveId));
             return isDiscovered;
         }
 
@@ -709,11 +712,12 @@ namespace CaseClosed.Gameplay
             }
 
             ResolveEvidenceData();
+            CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
             if (evidenceData == null)
             {
-                if (CaseManager.Instance?.activeCase != null && CaseManager.Instance.activeCase.evidenceItems != null && CaseManager.Instance.activeCase.evidenceItems.Count > 0)
+                if (manager?.activeCase != null && manager.activeCase.evidenceItems != null && manager.activeCase.evidenceItems.Count > 0)
                 {
-                    evidenceData = CaseManager.Instance.activeCase.evidenceItems[0];
+                    evidenceData = manager.activeCase.evidenceItems[0];
                     BindEvidenceData();
                 }
             }
@@ -736,7 +740,7 @@ namespace CaseClosed.Gameplay
                 DialogueUI.Instance?.AlignToWorldTarget(transform);
                 Debug.Log($"[Gameplay:TableEvidence] Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
-                CaseManager.Instance?.RegisterDiscoveredEvidence(evidenceData);
+                manager?.RegisterDiscoveredEvidence(evidenceData);
                 InterrogationManager.Instance.PresentEvidenceToChallenge(evidenceData);
                 return;
             }

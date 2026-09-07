@@ -228,7 +228,7 @@ namespace CaseClosed.Tests
             caseManager.LoadCase(caseSO);
 
             tableItem.evidenceId = "EVD_BROKEN_TEACUP";
-            tableItem.SubscribeToCaseManager();
+            tableItem.SubscribeToCaseManager(caseManager);
             tableItem.UpdateVisibilityState();
 
             Assert.IsFalse(tableItem.IsDiscovered);
