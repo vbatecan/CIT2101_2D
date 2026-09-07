@@ -128,6 +128,7 @@ namespace CaseClosed.Editor
             tree.characterId = vince.characterId;
             tree.startNodeId = "NODE_01";
 
+            // Node 1 (Opening Alibi - Vince)
             DialogueNode node1 = new DialogueNode
             {
                 nodeId = "NODE_01",
@@ -135,32 +136,181 @@ namespace CaseClosed.Editor
                 speakerName = vince.fullName,
                 expression = CharacterExpression.Defensive,
                 statementText = "I never went near the study! I stayed in the kitchen from 8:30 PM until everyone started shouting!",
-                isChallengeable = true,
-                targetContradictionRuleId = "RULE_VINCE_ALIBI_LIE"
+                defaultNextNodeId = "NODE_01B_JANE_INTERJECTION"
             };
             tree.nodes.Add(node1);
 
+            // Node 1B (Witness Interjection - Jane)
+            DialogueNode node1b = new DialogueNode
+            {
+                nodeId = "NODE_01B_JANE_INTERJECTION",
+                speakerId = jane.characterId,
+                speakerName = jane.fullName,
+                expression = CharacterExpression.Observant,
+                statementText = "Wait, Vince... that isn't true. I was walking past the corridor at 8:40 PM, and I saw you arguing heatedly with Uncle Kirby near the study.",
+                defaultNextNodeId = "NODE_01C_VINCE_RETORT"
+            };
+            tree.nodes.Add(node1b);
+
+            // Node 1C (Defensive Retort - Vince)
+            DialogueNode node1c = new DialogueNode
+            {
+                nodeId = "NODE_01C_VINCE_RETORT",
+                speakerId = vince.characterId,
+                speakerName = vince.fullName,
+                expression = CharacterExpression.Angry,
+                statementText = "Stay out of this, Jane! You were drinking wine with guests in the dining hall! You couldn't possibly see who was in the corridor!",
+                defaultNextNodeId = "NODE_01D_DETECTIVE_PRESS"
+            };
+            tree.nodes.Add(node1c);
+
+            // Node 1D (Investigator Query - Detective)
+            DialogueNode node1d = new DialogueNode
+            {
+                nodeId = "NODE_01D_DETECTIVE_PRESS",
+                speakerName = "Detective",
+                statementText = "Both of you, calm down. Vince, Ms. Reyes places you outside the study right before the safe was breached. Explain your presence there.",
+                defaultNextNodeId = "NODE_02_ROOM_LEAD"
+            };
+            tree.nodes.Add(node1d);
+
+            // Node 2 (First Evidence Lead - Vince)
             DialogueNode node2 = new DialogueNode
             {
-                nodeId = "NODE_02_CONFESSION",
+                nodeId = "NODE_02_ROOM_LEAD",
+                speakerId = vince.characterId,
+                speakerName = vince.fullName,
+                expression = CharacterExpression.Defensive,
+                statementText = "The study was locked, Detective! Even if I walked through the hallway, there is nothing in that room connecting me to the necklace.",
+                defaultNextNodeId = "NODE_02B_JANE_HEARD_CRASH"
+            };
+            node2.unlockEvidenceOnComplete.Add("EVD_BROKEN_TEACUP");
+            tree.nodes.Add(node2);
+
+            // Node 2B (Crash Observation - Jane)
+            DialogueNode node2b = new DialogueNode
+            {
+                nodeId = "NODE_02B_JANE_HEARD_CRASH",
+                speakerId = jane.characterId,
+                speakerName = jane.fullName,
+                expression = CharacterExpression.Thoughtful,
+                statementText = "Actually, Detective... while we were in the dining hall, everyone heard a loud porcelain crash from inside the study at 8:45 PM.",
+                defaultNextNodeId = "NODE_02C_DETECTIVE_INSPECT"
+            };
+            tree.nodes.Add(node2b);
+
+            // Node 2C (Detective Table Direction)
+            DialogueNode node2c = new DialogueNode
+            {
+                nodeId = "NODE_02C_DETECTIVE_INSPECT",
+                speakerName = "Detective",
+                statementText = "A porcelain crash inside a locked study... We should examine that broken teacup on the table."
+            };
+            tree.nodes.Add(node2c);
+
+            // Node 3 (Teacup Lead - Vince)
+            DialogueNode node3 = new DialogueNode
+            {
+                nodeId = "NODE_03_TEACUP_LEAD",
                 speakerId = vince.characterId,
                 speakerName = vince.fullName,
                 expression = CharacterExpression.Nervous,
-                statementText = "W-what?! The kitchen pantry log? Fine! The kitchen was locked... I needed money to clear my debts, so I took the necklace!",
-                isChallengeable = false
+                statementText = "That broken cup? Alright, so I heard it fall too! But I was nowhere near the safe! The pantry log will prove I was in the kitchen.",
+                defaultNextNodeId = "NODE_03B_JANE_KITCHEN_LOCK"
             };
-            tree.nodes.Add(node2);
+            node3.unlockEvidenceOnComplete.Add("EVD_KITCHEN_LOG");
+            tree.nodes.Add(node3);
+
+            // Node 3B (Kitchen Lock Observation - Jane)
+            DialogueNode node3b = new DialogueNode
+            {
+                nodeId = "NODE_03B_JANE_KITCHEN_LOCK",
+                speakerId = jane.characterId,
+                speakerName = jane.fullName,
+                expression = CharacterExpression.Observant,
+                statementText = "Vince, don't you remember? The butler locked the kitchen pantry before 8:30 PM to prepare for the late tea service.",
+                defaultNextNodeId = "NODE_03C_DETECTIVE_CHALLENGE"
+            };
+            tree.nodes.Add(node3b);
+
+            // Node 3C (Detective Warning - Detective)
+            DialogueNode node3c = new DialogueNode
+            {
+                nodeId = "NODE_03C_DETECTIVE_CHALLENGE",
+                speakerName = "Detective",
+                statementText = "The kitchen log is on the desk, Vince. If you were truly locked in that pantry, the staff records will verify it. Are you certain that is your story?",
+                defaultNextNodeId = "NODE_04_FINAL_ALIBI"
+            };
+            tree.nodes.Add(node3c);
+
+            // Node 4 (Contradictory Alibi - Vince)
+            DialogueNode node4 = new DialogueNode
+            {
+                nodeId = "NODE_04_FINAL_ALIBI",
+                speakerId = vince.characterId,
+                speakerName = vince.fullName,
+                expression = CharacterExpression.Defensive,
+                statementText = "I stayed in that kitchen the entire time! Inspect the pantry log yourself—you cannot prove otherwise!",
+                isChallengeable = true,
+                targetContradictionRuleId = "RULE_VINCE_ALIBI_LIE"
+            };
+            tree.nodes.Add(node4);
+
+            // Node 5 (Confession - Vince)
+            DialogueNode node5 = new DialogueNode
+            {
+                nodeId = "NODE_05_CONFESSION",
+                speakerId = vince.characterId,
+                speakerName = vince.fullName,
+                expression = CharacterExpression.Nervous,
+                statementText = "W-what?! The kitchen pantry was locked by staff from 8:30 to 9:15 PM?! Fine! I needed money to clear my gambling debts, so I took the necklace!",
+                defaultNextNodeId = "NODE_05B_JANE_SHOCKED"
+            };
+            tree.nodes.Add(node5);
+
+            // Node 5B (Jane Shocked)
+            DialogueNode node5b = new DialogueNode
+            {
+                nodeId = "NODE_05B_JANE_SHOCKED",
+                speakerId = jane.characterId,
+                speakerName = jane.fullName,
+                expression = CharacterExpression.Sad,
+                statementText = "Vince... Uncle Kirby took you in and paid your tuition! How could you betray our family like this?!",
+                defaultNextNodeId = "NODE_05C_VINCE_DESPERATE"
+            };
+            tree.nodes.Add(node5b);
+
+            // Node 5C (Vince Desperate)
+            DialogueNode node5c = new DialogueNode
+            {
+                nodeId = "NODE_05C_VINCE_DESPERATE",
+                speakerId = vince.characterId,
+                speakerName = vince.fullName,
+                expression = CharacterExpression.Nervous,
+                statementText = "He was cutting off my allowance, Jane! The loan sharks gave me until midnight! I panicked and grabbed the necklace from the safe!",
+                defaultNextNodeId = "NODE_05D_DETECTIVE_CLOSE"
+            };
+            tree.nodes.Add(node5c);
+
+            // Node 5D (Detective Conclusion)
+            DialogueNode node5d = new DialogueNode
+            {
+                nodeId = "NODE_05D_DETECTIVE_CLOSE",
+                speakerName = "Detective",
+                statementText = "That's enough. You broke the teacup during the theft, and the pantry log shattered your false alibi. Vince Angelo Batecan, you are under arrest."
+            };
+            tree.nodes.Add(node5d);
             SaveAsset(tree, $"{FolderPath}/Dialogue_Vince01.asset");
 
             // 5. Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_VINCE_ALIBI_LIE";
             rule1.ruleTitle = "Locked Kitchen Contradiction";
-            rule1.targetStatementNodeId = "NODE_01";
+            rule1.targetStatementNodeId = "NODE_04_FINAL_ALIBI";
             rule1.requiredEvidenceId = "EVD_KITCHEN_LOG";
             rule1.reactionExpression = CharacterExpression.Nervous;
             rule1.reactionDialogue = "Vince shifts nervously and stammers: \"Wait... the kitchen log shows it was locked by staff? I... I...\"";
-            rule1.unlockedDialogueNodeId = "NODE_02_CONFESSION";
+            rule1.unlockedDialogueNodeId = "NODE_05_CONFESSION";
             rule1.unlockedClueId = "CLUE_VINCE_STAGED_BREAKIN";
             rule1.unlockedClueText = "Vince Angelo Batecan confessed to staging the break-in for debt money!";
             SaveAsset(rule1, $"{FolderPath}/Rule_VinceAlibiLie.asset");

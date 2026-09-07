@@ -35,6 +35,7 @@ namespace CaseClosed.Gameplay
             {
                 InterrogationManager.Instance.OnSuspectChanged += HandleSuspectChanged;
                 InterrogationManager.Instance.OnExpressionChanged += HandleExpressionChanged;
+                InterrogationManager.Instance.OnDialogueNodeDisplayed += HandleDialogueNodeDisplayed;
             }
 
             if (CaseManager.Instance != null)
@@ -61,6 +62,7 @@ namespace CaseClosed.Gameplay
             {
                 InterrogationManager.Instance.OnSuspectChanged -= HandleSuspectChanged;
                 InterrogationManager.Instance.OnExpressionChanged -= HandleExpressionChanged;
+                InterrogationManager.Instance.OnDialogueNodeDisplayed -= HandleDialogueNodeDisplayed;
             }
 
             if (CaseManager.Instance != null)
@@ -151,6 +153,23 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
+        /// Handles dialogue node display event to dynamically update expressions for the speaking character.
+        /// </summary>
+        /// <param name="node">The currently displayed dialogue node.</param>
+        private void HandleDialogueNodeDisplayed(DialogueNode node)
+        {
+            if (node == null || activeSuspect == null) return;
+
+            bool isCurrentSpeaker = (!string.IsNullOrEmpty(node.speakerId) && node.speakerId == activeSuspect.characterId)
+                || (!string.IsNullOrEmpty(node.speakerName) && (node.speakerName == activeSuspect.fullName || node.speakerName.Contains(activeSuspect.fullName)));
+
+            if (isCurrentSpeaker)
+            {
+                SetExpression(node.expression);
+            }
+        }
+
+        /// <summary>
         /// Handles character expression change event.
         /// </summary>
         /// <param name="expression">The new expression state.</param>
@@ -158,7 +177,17 @@ namespace CaseClosed.Gameplay
         {
             if (activeSuspect != null)
             {
-                // Only react if this display corresponds to the active suspect being interrogated
+                DialogueNode currentNode = InterrogationManager.Instance?.currentNode;
+                if (currentNode != null && !string.IsNullOrEmpty(currentNode.speakerId))
+                {
+                    if (currentNode.speakerId == activeSuspect.characterId)
+                    {
+                        SetExpression(expression);
+                    }
+                    return;
+                }
+
+                // Fallback: only react if this display corresponds to the active suspect being interrogated
                 CharacterProfileSO currentInterrogated = InterrogationManager.Instance?.currentSuspect;
                 if (characterSlot == CharacterSlot.AutoDetect || currentInterrogated == null || currentInterrogated.characterId == activeSuspect.characterId)
                 {

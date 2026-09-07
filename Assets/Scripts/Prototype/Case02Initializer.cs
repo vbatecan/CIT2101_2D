@@ -190,58 +190,106 @@ namespace CaseClosed.Prototype
             evInsurance.requiredDialogueNodeId = "NODE_03_SHIFT_LEAD";
             c.evidenceItems.Add(evInsurance);
 
-            // Dialogue Tree for Charl Vonn Pascual
+            // Dialogue Tree for Charl Vonn Pascual and Paul Gabriel Camacho
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_CHARL_01";
             tree.characterId = charl.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Guard Statement)
+            // Node 1 (Opening Guard Statement - Charl)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = charl.characterId;
             node1.speakerName = charl.fullName;
             node1.expression = CharacterExpression.Calm;
             node1.statementText = "I was standing right outside the office door when I heard the window shatter from the alley at 11:00 PM.";
-            node1.defaultNextNodeId = "NODE_01B_INTERVIEW";
+            node1.defaultNextNodeId = "NODE_01B_PAUL_DEFENDS";
             tree.nodes.Add(node1);
 
+            // Node 1B (Gallery Owner Backing - Paul)
             DialogueNode node1b = new DialogueNode();
-            node1b.nodeId = "NODE_01B_INTERVIEW";
-            node1b.speakerName = "Detective";
-            node1b.statementText = "You heard the break at exactly 11:00 PM. Describe where you were standing, and what you saw on each side of the window.";
-            node1b.defaultNextNodeId = "NODE_02_WINDOW_LEAD";
+            node1b.nodeId = "NODE_01B_PAUL_DEFENDS";
+            node1b.speakerId = paul.characterId;
+            node1b.speakerName = paul.fullName;
+            node1b.expression = CharacterExpression.Calm;
+            node1b.statementText = "Officer Pascual has guarded my gallery for three years, Detective. A street thief broke through that back alley window to steal my prize painting!";
+            node1b.defaultNextNodeId = "NODE_01C_DETECTIVE_INTERVIEW";
             tree.nodes.Add(node1b);
 
-            // Node 2 (Window Lead)
+            // Node 1C (Detective Pressing)
+            DialogueNode node1c = new DialogueNode();
+            node1c.nodeId = "NODE_01C_DETECTIVE_INTERVIEW";
+            node1c.speakerName = "Detective";
+            node1c.statementText = "Mr. Camacho, you claim you were at home when the alarm rang. Let the guard speak. Charl, describe exactly what you saw around that window.";
+            node1c.defaultNextNodeId = "NODE_02_WINDOW_LEAD";
+            tree.nodes.Add(node1c);
+
+            // Node 2 (Window Lead - Charl)
             DialogueNode node2 = new DialogueNode();
             node2.nodeId = "NODE_02_WINDOW_LEAD";
             node2.speakerId = charl.characterId;
             node2.speakerName = charl.fullName;
             node2.expression = CharacterExpression.Calm;
-            node2.statementText = "The alley window was broken from outside. Check the frame if you doubt me.";
+            node2.statementText = "The alley window was broken from outside. Check the crime scene photo of the window frame if you doubt me.";
             node2.unlockEvidenceOnComplete.Add("EVD_SHIFT_LOG");
+            node2.defaultNextNodeId = "NODE_02B_PAUL_DIVERT";
             tree.nodes.Add(node2);
 
-            // Node 3 (Shift Lead)
+            // Node 2B (Paul Diverting Attention - Paul)
+            DialogueNode node2b = new DialogueNode();
+            node2b.nodeId = "NODE_02B_PAUL_DIVERT";
+            node2b.speakerId = paul.characterId;
+            node2b.speakerName = paul.fullName;
+            node2b.expression = CharacterExpression.Secretive;
+            node2b.statementText = "Don't waste time harassing my staff, Detective! We should be tracking the black market, not inspecting window glass!";
+            node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_PHOTO";
+            tree.nodes.Add(node2b);
+
+            // Node 2C (Detective Table Direction)
+            DialogueNode node2c = new DialogueNode();
+            node2c.nodeId = "NODE_02C_DETECTIVE_PHOTO";
+            node2c.speakerName = "Detective";
+            node2c.statementText = "We follow the physical evidence. The window frame photo and the guard's keycard shift log will reveal who was present at 11:00 PM.";
+            tree.nodes.Add(node2c);
+
+            // Node 3 (Shift Lead - Charl)
             DialogueNode node3 = new DialogueNode();
             node3.nodeId = "NODE_03_SHIFT_LEAD";
             node3.speakerId = charl.characterId;
             node3.speakerName = charl.fullName;
             node3.expression = CharacterExpression.Nervous;
             node3.statementText = "The shift log is routine. It will show I was near the office, exactly as I said.";
-            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
             node3.unlockEvidenceOnComplete.Add("EVD_INSURANCE_POLICY");
+            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
             tree.nodes.Add(node3);
 
+            // Node 3B (Detective Evidence Confrontation)
             DialogueNode node3b = new DialogueNode();
             node3b.nodeId = "NODE_03B_CONFIRMATION";
             node3b.speakerName = "Detective";
-            node3b.statementText = "The glass pattern raises one question. If the window was broken from inside, why does your story place you outside the office?";
-            node3b.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
+            node3b.statementText = "The crime scene photo shows glass shards scattered OUTSIDE into the alley. That window was smashed from INSIDE the gallery. Why does your story place you outside?";
+            node3b.defaultNextNodeId = "NODE_03C_PAUL_DEFENSIVE";
             tree.nodes.Add(node3b);
 
-            // Node 4 (Final Guard Statement)
+            // Node 3C (Paul Defensive on Motive - Paul)
+            DialogueNode node3c = new DialogueNode();
+            node3c.nodeId = "NODE_03C_PAUL_DEFENSIVE";
+            node3c.speakerId = paul.characterId;
+            node3c.speakerName = paul.fullName;
+            node3c.expression = CharacterExpression.Defensive;
+            node3c.statementText = "Broken from inside?! That's preposterous! What reason would anyone here have to damage my own gallery?!";
+            node3c.defaultNextNodeId = "NODE_03D_DETECTIVE_POLICY";
+            tree.nodes.Add(node3c);
+
+            // Node 3D (Detective Stamping Policy)
+            DialogueNode node3d = new DialogueNode();
+            node3d.nodeId = "NODE_03D_DETECTIVE_POLICY";
+            node3d.speakerName = "Detective";
+            node3d.statementText = "A half-million dollar insurance policy rider stamped two days ago might answer that question, Mr. Camacho. Charl, one final chance: where were you?";
+            node3d.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
+            tree.nodes.Add(node3d);
+
+            // Node 4 (Final Guard Statement - Charl)
             DialogueNode node4 = new DialogueNode();
             node4.nodeId = "NODE_04_FINAL_STATEMENT";
             node4.speakerId = charl.characterId;
@@ -252,14 +300,42 @@ namespace CaseClosed.Prototype
             node4.targetContradictionRuleId = "RULE_CHARL_LOCATION_LIE";
             tree.nodes.Add(node4);
 
-            // Node 5 (Exposed Guard Confession)
+            // Node 5 (Exposed Guard Confession - Charl)
             DialogueNode node5 = new DialogueNode();
             node5.nodeId = "NODE_05_CONFESSION";
             node5.speakerId = charl.characterId;
             node5.speakerName = charl.fullName;
             node5.expression = CharacterExpression.Nervous;
-            node5.statementText = "Fine! The shift log doesn't lie. I was at the East Gate. Mr. Paul Camacho paid me 2,000 credits to stage the break-in!";
+            node5.statementText = "Fine! The shift log doesn't lie. I was at the East Gate. Mr. Paul Camacho paid me 2,000 credits to stage the break-in from inside!";
+            node5.defaultNextNodeId = "NODE_05B_PAUL_OUTRAGED";
             tree.nodes.Add(node5);
+
+            // Node 5B (Paul Panicking & Furious - Paul)
+            DialogueNode node5b = new DialogueNode();
+            node5b.nodeId = "NODE_05B_PAUL_OUTRAGED";
+            node5b.speakerId = paul.characterId;
+            node5b.speakerName = paul.fullName;
+            node5b.expression = CharacterExpression.Angry;
+            node5b.statementText = "You incompetent fool, Pascual! Shut your mouth! Detective, he's fabricating lies to cover for his own negligence!";
+            node5b.defaultNextNodeId = "NODE_05C_CHARL_EVIDENCE";
+            tree.nodes.Add(node5b);
+
+            // Node 5C (Charl Countering Paul - Charl)
+            DialogueNode node5c = new DialogueNode();
+            node5c.nodeId = "NODE_05C_CHARL_EVIDENCE";
+            node5c.speakerId = charl.characterId;
+            node5c.speakerName = charl.fullName;
+            node5c.expression = CharacterExpression.Defensive;
+            node5c.statementText = "I kept your encrypted wire transfer receipt, Paul! You told me you needed the 500,000 insurance payout to save the gallery from bankruptcy!";
+            node5c.defaultNextNodeId = "NODE_05D_DETECTIVE_CLOSE";
+            tree.nodes.Add(node5c);
+
+            // Node 5D (Detective Conclusion)
+            DialogueNode node5d = new DialogueNode();
+            node5d.nodeId = "NODE_05D_DETECTIVE_CLOSE";
+            node5d.speakerName = "Detective";
+            node5d.statementText = "Glass on the alley cobblestones, a fraudulent shift alibi, and a doubled insurance policy. Paul Camacho and Charl Pascual, you are both under arrest for conspiracy and insurance fraud.";
+            tree.nodes.Add(node5d);
 
             c.dialogueTrees.Add(tree);
 

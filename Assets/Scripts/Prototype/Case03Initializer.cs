@@ -188,58 +188,116 @@ namespace CaseClosed.Prototype
             evDraft.requiredDialogueNodeId = "NODE_03_CCTV_LEAD";
             c.evidenceItems.Add(evDraft);
 
-            // Dialogue Tree for Shanaia Ortega
+            // Dialogue Tree for Shanaia Ortega and Shan Jaraba
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_SHANAIA_01";
             tree.characterId = shanaia.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Statement)
+            // Node 1 (Opening Statement - Shanaia)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = shanaia.characterId;
             node1.speakerName = shanaia.fullName;
             node1.expression = CharacterExpression.Calm;
             node1.statementText = "Once our 5:30 PM meeting wrapped up, I went straight home. I didn't contact Kurt or return to the cafe for the rest of the night.";
-            node1.defaultNextNodeId = "NODE_01B_INTERVIEW";
+            node1.defaultNextNodeId = "NODE_01B_SHAN_STATEMENT";
             tree.nodes.Add(node1);
 
+            // Node 1B (Manager Testimony - Shan)
             DialogueNode node1b = new DialogueNode();
-            node1b.nodeId = "NODE_01B_INTERVIEW";
-            node1b.speakerName = "Detective";
-            node1b.statementText = "You left immediately after the meeting. Tell me what you did next, and why Kurt's phone should not be part of that timeline.";
-            node1b.defaultNextNodeId = "NODE_02_PHONE_LEAD";
+            node1b.nodeId = "NODE_01B_SHAN_STATEMENT";
+            node1b.speakerId = shan.characterId;
+            node1b.speakerName = shan.fullName;
+            node1b.expression = CharacterExpression.Thoughtful;
+            node1b.statementText = "Detective, as cafe manager on duty until 7:30 PM closing, I heard the back exit service chime ring around 7:10 PM. Someone returned through the alley.";
+            node1b.defaultNextNodeId = "NODE_01C_SHANAIA_DISMISS";
             tree.nodes.Add(node1b);
 
-            // Node 2 (Phone Lead)
+            // Node 1C (Shanaia Dismissive - Shanaia)
+            DialogueNode node1c = new DialogueNode();
+            node1c.nodeId = "NODE_01C_SHANAIA_DISMISS";
+            node1c.speakerId = shanaia.characterId;
+            node1c.speakerName = shanaia.fullName;
+            node1c.expression = CharacterExpression.Defensive;
+            node1c.statementText = "Shan, mind your own business! You were balancing the cash register at the front counter. You couldn't see through the back corridor!";
+            node1c.defaultNextNodeId = "NODE_01D_DETECTIVE_INTERVIEW";
+            tree.nodes.Add(node1c);
+
+            // Node 1D (Detective Interview)
+            DialogueNode node1d = new DialogueNode();
+            node1d.nodeId = "NODE_01D_DETECTIVE_INTERVIEW";
+            node1d.speakerName = "Detective";
+            node1d.statementText = "Let Shan finish, Shanaia. Kurt's smartphone call log and the security captures will establish whether anyone returned.";
+            node1d.defaultNextNodeId = "NODE_02_PHONE_LEAD";
+            tree.nodes.Add(node1d);
+
+            // Node 2 (Phone Lead - Shanaia)
             DialogueNode node2 = new DialogueNode();
             node2.nodeId = "NODE_02_PHONE_LEAD";
             node2.speakerId = shanaia.characterId;
             node2.speakerName = shanaia.fullName;
             node2.expression = CharacterExpression.Calm;
-            node2.statementText = "Kurt's phone contains nothing useful. You should focus on the meeting, not his private calls.";
+            node2.statementText = "Kurt's phone contains nothing useful. You should focus on the afternoon meeting, not his private calls.";
             node2.unlockEvidenceOnComplete.Add("EVD_CCTV_STILL");
+            node2.defaultNextNodeId = "NODE_02B_SHAN_ALARMED";
             tree.nodes.Add(node2);
 
-            // Node 3 (CCTV Lead)
+            // Node 2B (Shan Mentioning Call - Shan)
+            DialogueNode node2b = new DialogueNode();
+            node2b.nodeId = "NODE_02B_SHAN_ALARMED";
+            node2b.speakerId = shan.characterId;
+            node2b.speakerName = shan.fullName;
+            node2b.expression = CharacterExpression.Nervous;
+            node2b.statementText = "Actually, Kurt seemed frantic right after an encrypted incoming call at 7:15 PM. He slammed his office door and locked it.";
+            node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_CCTV";
+            tree.nodes.Add(node2b);
+
+            // Node 2C (Detective Table Direction)
+            DialogueNode node2c = new DialogueNode();
+            node2c.nodeId = "NODE_02C_DETECTIVE_CCTV";
+            node2c.speakerName = "Detective";
+            node2c.statementText = "An encrypted call at 7:15 PM... The security still from the cafe's back exit camera should verify who arrived right before that call.";
+            tree.nodes.Add(node2c);
+
+            // Node 3 (CCTV Lead - Shanaia)
             DialogueNode node3 = new DialogueNode();
             node3.nodeId = "NODE_03_CCTV_LEAD";
             node3.speakerId = shanaia.characterId;
             node3.speakerName = shanaia.fullName;
             node3.expression = CharacterExpression.Nervous;
             node3.statementText = "The back exit camera is unreliable. It could not possibly show me there after I left.";
-            node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
             node3.unlockEvidenceOnComplete.Add("EVD_RESIGNATION_LETTER");
+            node3.defaultNextNodeId = "NODE_03B_SHAN_JACKET";
             tree.nodes.Add(node3);
 
+            // Node 3B (Shan Identifying Jacket - Shan)
             DialogueNode node3b = new DialogueNode();
-            node3b.nodeId = "NODE_03B_CONFIRMATION";
-            node3b.speakerName = "Detective";
-            node3b.statementText = "The call log puts a contact at 7:15 PM, and the camera tests your return at 7:10 PM. I am giving you one chance to correct the timeline.";
-            node3b.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
+            node3b.nodeId = "NODE_03B_SHAN_JACKET";
+            node3b.speakerId = shan.characterId;
+            node3b.speakerName = shan.fullName;
+            node3b.expression = CharacterExpression.Observant;
+            node3b.statementText = "Shanaia, that embroidered denim jacket in the camera still... you wore that exact jacket to work today. No one else has one.";
+            node3b.defaultNextNodeId = "NODE_03C_CONFIRMATION";
             tree.nodes.Add(node3b);
 
-            // Node 4 (Final Statement)
+            // Node 3C (Detective Confirmation)
+            DialogueNode node3c = new DialogueNode();
+            node3c.nodeId = "NODE_03C_CONFIRMATION";
+            node3c.speakerName = "Detective";
+            node3c.statementText = "The call log records a 10-minute incoming call from your phone at 7:15 PM, and the camera captures your return at 7:10 PM. What were you doing in Kurt's office?";
+            node3c.defaultNextNodeId = "NODE_03D_DETECTIVE_DRAFT";
+            tree.nodes.Add(node3c);
+
+            // Node 3D (Detective Termination Notice Draft)
+            DialogueNode node3d = new DialogueNode();
+            node3d.nodeId = "NODE_03D_DETECTIVE_DRAFT";
+            node3d.speakerName = "Detective";
+            node3d.statementText = "And why did Kurt have a termination notice drafted in his briefcase accusing you of data theft?";
+            node3d.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
+            tree.nodes.Add(node3d);
+
+            // Node 4 (Final Statement - Shanaia)
             DialogueNode node4 = new DialogueNode();
             node4.nodeId = "NODE_04_FINAL_STATEMENT";
             node4.speakerId = shanaia.characterId;
@@ -250,14 +308,42 @@ namespace CaseClosed.Prototype
             node4.targetContradictionRuleId = "RULE_SHANAIA_TIMELINE_LIE";
             tree.nodes.Add(node4);
 
-            // Node 5 (Angry / Shocked Confession)
+            // Node 5 (Angry / Shocked Confession - Shanaia)
             DialogueNode node5 = new DialogueNode();
             node5.nodeId = "NODE_05_CONFESSION";
             node5.speakerId = shanaia.characterId;
             node5.speakerName = shanaia.fullName;
             node5.expression = CharacterExpression.Angry;
-            node5.statementText = "What?! You found the CCTV footage? Kurt was going to fire me and take my code! I snuck back in at 7:10 PM to take what belongs to me!";
+            node5.statementText = "Fine! Kurt discovered I was exporting our proprietary ordering code to a competitor! He drafted that notice to ruin me, so I broke in at 7:10 PM to wipe his drive!";
+            node5.defaultNextNodeId = "NODE_05B_SHAN_DISAPPOINTED";
             tree.nodes.Add(node5);
+
+            // Node 5B (Shan Disappointed - Shan)
+            DialogueNode node5b = new DialogueNode();
+            node5b.nodeId = "NODE_05B_SHAN_DISAPPOINTED";
+            node5b.speakerId = shan.characterId;
+            node5b.speakerName = shan.fullName;
+            node5b.expression = CharacterExpression.Sad;
+            node5b.statementText = "Shanaia... Kurt gave you your start in tech. How could you steal his life's work for rival money?";
+            node5b.defaultNextNodeId = "NODE_05C_SHANAIA_BITTER";
+            tree.nodes.Add(node5b);
+
+            // Node 5C (Shanaia Bitter - Shanaia)
+            DialogueNode node5c = new DialogueNode();
+            node5c.nodeId = "NODE_05C_SHANAIA_BITTER";
+            node5c.speakerId = shanaia.characterId;
+            node5c.speakerName = shanaia.fullName;
+            node5c.expression = CharacterExpression.Angry;
+            node5c.statementText = "He took credit for all my software optimizations while paying me barista wages! I took back what was mine!";
+            node5c.defaultNextNodeId = "NODE_05D_DETECTIVE_CLOSE";
+            tree.nodes.Add(node5c);
+
+            // Node 5D (Detective Conclusion)
+            DialogueNode node5d = new DialogueNode();
+            node5d.nodeId = "NODE_05D_DETECTIVE_CLOSE";
+            node5d.speakerName = "Detective";
+            node5d.statementText = "Your digital footprint betrayed your timeline. Shanaia Ortega, you are under arrest for commercial espionage, cyber theft, and unlawful entry.";
+            tree.nodes.Add(node5d);
 
             c.dialogueTrees.Add(tree);
 
