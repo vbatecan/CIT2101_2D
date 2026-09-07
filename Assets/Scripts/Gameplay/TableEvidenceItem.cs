@@ -150,9 +150,9 @@ namespace CaseClosed.Gameplay
                 subscribedCaseManager.OnCaseLoaded += HandleCaseLoaded;
                 subscribedCaseManager.OnEvidenceDiscovered += HandleEvidenceDiscovered;
 
-                if (subscribedCaseManager.activeCase != null)
+                if (subscribedCaseManager.ActiveCase != null)
                 {
-                    HandleCaseLoaded(subscribedCaseManager.activeCase);
+                    HandleCaseLoaded(subscribedCaseManager.ActiveCase);
                 }
             }
         }
@@ -206,7 +206,7 @@ namespace CaseClosed.Gameplay
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
 
             // If dialogue is open but challenge mode is NOT active, ignore direct clicks so dialogue input advances text instead
-            if (DialogueUI.IsDialogueOpen && (InterrogationManager.Instance == null || !InterrogationManager.Instance.isChallengeModeActive)) return;
+            if (DialogueUI.IsDialogueOpen && (InterrogationManager.Instance == null || !InterrogationManager.Instance.IsChallengeModeActive)) return;
 
             Vector3 mouseScreen = Input.mousePosition;
             Vector3 mouseWorld3D = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
@@ -314,7 +314,7 @@ namespace CaseClosed.Gameplay
                 }
             }
 
-            bool isChallengeActive = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
+            bool isChallengeActive = InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive;
 
             float targetIntensity = 0f;
             if (isChallengeActive)
@@ -451,9 +451,9 @@ namespace CaseClosed.Gameplay
             }
 
             CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
-            if (manager != null && manager.activeCase != null)
+            if (manager != null && manager.ActiveCase != null)
             {
-                var evList = manager.activeCase.evidenceItems;
+                var evList = manager.ActiveCase.evidenceItems;
                 if (evList != null)
                 {
                     // 1. Exact ID match
@@ -530,7 +530,7 @@ namespace CaseClosed.Gameplay
             string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
             CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
             bool isDiscovered = (evidenceData != null && evidenceData.startsDiscovered) ||
-                                (manager != null && !string.IsNullOrEmpty(effectiveId) && manager.discoveredEvidenceIds.Contains(effectiveId));
+                                (manager != null && !string.IsNullOrEmpty(effectiveId) && manager.IsEvidenceDiscovered(effectiveId));
             return isDiscovered;
         }
 
@@ -738,7 +738,7 @@ namespace CaseClosed.Gameplay
 
             if (highlightGlow != null)
             {
-                bool isChallengeActive = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
+                bool isChallengeActive = InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive;
                 highlightGlow.SetActive(isHovered || IsDiscoveryCueActive || isChallengeActive);
             }
         }
@@ -774,9 +774,9 @@ namespace CaseClosed.Gameplay
             CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
             if (evidenceData == null)
             {
-                if (manager?.activeCase != null && manager.activeCase.evidenceItems != null && manager.activeCase.evidenceItems.Count > 0)
+                if (manager?.ActiveCase != null && manager.ActiveCase.evidenceItems != null && manager.ActiveCase.evidenceItems.Count > 0)
                 {
-                    evidenceData = manager.activeCase.evidenceItems[0];
+                    evidenceData = manager.ActiveCase.evidenceItems[0];
                     BindEvidenceData();
                 }
             }
@@ -794,9 +794,9 @@ namespace CaseClosed.Gameplay
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
             // 3. If in Challenge Mode, clicking this table item directly presents it to challenge!
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
-                Debug.Log($"[Gameplay:TableEvidence] Challenge Mode: Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode?.nodeId}'");
+                Debug.Log($"[Gameplay:TableEvidence] Challenge Mode: Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.CurrentNode?.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
                 manager?.RegisterDiscoveredEvidence(evidenceData);
                 InterrogationManager.Instance.ToggleChallengeMode(false);

@@ -76,13 +76,14 @@ namespace CaseClosed.Managers
 
             Debug.Log($"[EvidenceManager] Opened inspect modal for: '{evidence.evidenceName}' (ID: {evidence.id})");
 
-            CaseManager.Instance?.RegisterDiscoveredEvidence(evidence);
+            CaseManager caseManager = CaseManager.Instance;
+            caseManager?.RegisterDiscoveredEvidence(evidence);
 
             // Inspection and clue extraction processed via Service
-            if (evidenceService.InspectEvidence(evidence, out string baseClueId, out string baseClueText))
+            if (caseManager != null && evidenceService.InspectEvidence(caseManager.SessionState, evidence, out string baseClueId, out string baseClueText))
             {
                 Debug.Log($"[EvidenceManager] Extracted base clue from '{evidence.evidenceName}': '[{baseClueId}]' - \"{baseClueText}\"");
-                CaseManager.Instance?.UnlockClue(baseClueId, baseClueText);
+                caseManager.UnlockClue(baseClueId, baseClueText);
             }
 
             OnInspectModalOpened?.Invoke(evidence);
@@ -105,18 +106,29 @@ namespace CaseClosed.Managers
         /// <param name="hotspot">The hotspot being discovered.</param>
         public void DiscoverHotspot(EvidenceHotspot hotspot)
         {
-            if (hotspot == null || hotspot.isDiscovered) return;
+            DiscoverHotspot(ResolveEvidenceForHotspot(hotspot), hotspot);
+        }
+
+        /// <summary>
+        /// Processes an interactive hotspot for a known evidence item. This overload is used by
+        /// the inspection modal so discovery never relies on a mutable flag in the asset.
+        /// </summary>
+        public void DiscoverHotspot(EvidenceSO evidence, EvidenceHotspot hotspot)
+        {
+            if (evidence == null || hotspot == null) return;
+
+            CaseManager caseManager = CaseManager.Instance;
+            if (caseManager == null || caseManager.ActiveCase == null) return;
 
             Debug.Log($"[EvidenceManager] Discovering hotspot: '{hotspot.hotspotTitle}' (ID: {hotspot.hotspotId})");
 
             // Hotspot validation and clue derivation processed via Service
-            if (evidenceService.DiscoverHotspot(hotspot, out string clueId, out string clueText))
+            if (!evidenceService.DiscoverHotspot(caseManager.SessionState, evidence, hotspot, out string clueId, out string clueText)) return;
+
+            if (!string.IsNullOrEmpty(clueId))
             {
-                if (!string.IsNullOrEmpty(clueId))
-                {
-                    Debug.Log($"[EvidenceManager] Hotspot unlocked clue: '[{clueId}]' - \"{clueText}\"");
-                    CaseManager.Instance?.UnlockClue(clueId, clueText);
-                }
+                Debug.Log($"[EvidenceManager] Hotspot unlocked clue: '[{clueId}]' - \"{clueText}\"");
+                caseManager.UnlockClue(clueId, clueText);
             }
 
             OnHotspotDiscovered?.Invoke(hotspot);
@@ -128,8 +140,32 @@ namespace CaseClosed.Managers
         /// <param name="evidence">The evidence item to toggle.</param>
         public void ToggleEvidenceOnTable(EvidenceSO evidence)
         {
-            bool newState = evidenceService.ToggleTablePresence(evidence);
+            CaseManager caseManager = CaseManager.Instance;
+            bool newState = caseManager != null && evidenceService.ToggleTablePresence(caseManager.SessionState, evidence);
             Debug.Log($"[EvidenceManager] Toggled table presence for '{(evidence != null ? evidence.evidenceName : "NULL")}': {newState}");
+        }
+
+        private EvidenceSO ResolveEvidenceForHotspot(EvidenceHotspot hotspot)
+        {
+            if (hotspot == null) return null;
+
+            if (currentlySelectedEvidence != null && currentlySelectedEvidence.hotspots != null && currentlySelectedEvidence.hotspots.Contains(hotspot))
+            {
+                return currentlySelectedEvidence;
+            }
+
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            if (activeCase == null || activeCase.evidenceItems == null) return null;
+
+            foreach (EvidenceSO evidence in activeCase.evidenceItems)
+            {
+                if (evidence != null && evidence.hotspots != null && evidence.hotspots.Contains(hotspot))
+                {
+                    return evidence;
+                }
+            }
+
+            return null;
         }
     }
 }

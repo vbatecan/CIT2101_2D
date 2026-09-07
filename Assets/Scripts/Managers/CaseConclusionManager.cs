@@ -45,7 +45,7 @@ namespace CaseClosed.Managers
         /// <returns>A populated <see cref="CaseEvaluationResult"/>, or null if no case is active.</returns>
         public CaseEvaluationResult EvaluateCase(List<int> playerSelectedOptionIndices)
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase == null)
             {
                 Debug.LogWarning("[CaseConclusion] Cannot evaluate case: activeCase is null");
@@ -58,8 +58,8 @@ namespace CaseClosed.Managers
                 return null;
             }
 
-            int evidenceFoundCount = CaseManager.Instance.discoveredEvidenceIds.Count;
-            int contradictionsCaughtCount = CaseManager.Instance.exposedContradictionIds.Count;
+            int evidenceFoundCount = CaseManager.Instance.DiscoveredEvidenceIds.Count;
+            int contradictionsCaughtCount = CaseManager.Instance.ExposedContradictionIds.Count;
             float elapsedTime = CaseManager.Instance.ElapsedTime;
 
             Debug.Log($"[CaseConclusion] Evaluating case '{activeCase.caseTitle}' (DiscoveredEv: {evidenceFoundCount}, Contradictions: {contradictionsCaughtCount}, ElapsedTime: {elapsedTime:F1}s)");

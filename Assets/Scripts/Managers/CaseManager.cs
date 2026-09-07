@@ -9,13 +9,13 @@ using CaseClosed.UI;
 namespace CaseClosed.Managers
 {
     /// <summary>
-    /// Central state coordinator MonoBehaviour tracking the active case, discovered evidence,
-    /// unlocked clue logs, exposed contradictions, and investigation countdown timer.
-    /// Can be dragged directly onto a GameObject in the Unity Inspector.
+    /// Unity-facing coordinator for a case session. Authored ScriptableObjects provide immutable
+    /// case configuration; <see cref="CaseSessionState"/> owns all mutable play-session state.
     /// </summary>
     public class CaseManager : MonoBehaviour
     {
         private static CaseManager _instance;
+
         /// <summary>Singleton instance of the CaseManager.</summary>
         public static CaseManager Instance
         {
@@ -28,54 +28,73 @@ namespace CaseClosed.Managers
         }
 
         private readonly CaseTimerService timerService = new CaseTimerService();
+        private readonly CaseSessionState sessionState = new CaseSessionState();
+        private bool hasStartedSession;
 
         /// <summary>Pure domain service for timer and urgency calculations.</summary>
         public CaseTimerService TimerService => timerService;
 
+        /// <summary>Internal runtime-state seam used by pure domain services in the gameplay assembly.</summary>
+        internal CaseSessionState SessionState => sessionState;
+
         [Header("Current Active Case")]
-        /// <summary>The currently loaded case ScriptableObject.</summary>
-        public CaseSO activeCase;
+        [Tooltip("Initial authored case configuration. Runtime loading is held in CaseSessionState.")]
+        [SerializeField] private CaseSO activeCase;
 
         [Header("Active Player Investigator")]
-        /// <summary>The investigator character selected by the player to solve the case.</summary>
-        public CharacterProfileSO selectedInvestigator;
+        [Tooltip("Initial investigator selection. Runtime selection is held in CaseSessionState.")]
+        [SerializeField] private CharacterProfileSO selectedInvestigator;
 
-        /// <summary>Registered investigator characters available for player selection.</summary>
-        public List<CharacterProfileSO> availableInvestigators = new List<CharacterProfileSO>();
+        [Tooltip("Registered investigator characters available for player selection.")]
+        [SerializeField] private List<CharacterProfileSO> availableInvestigators = new List<CharacterProfileSO>();
 
-        [Header("Runtime State Tracking")]
-        /// <summary>Set of evidence IDs that have been discovered during the current investigation.</summary>
-        public HashSet<string> discoveredEvidenceIds = new HashSet<string>();
+        [SerializeField, HideInInspector]
+        [Tooltip("Legacy serialized timestamp retained for existing scenes. Session timing now lives in CaseSessionState.")]
+        private float investigationStartTime;
 
-        /// <summary>Set of clue IDs that have been unlocked during the current investigation.</summary>
-        public HashSet<string> unlockedClueIds = new HashSet<string>();
+        /// <summary>Current case configuration for this running session.</summary>
+        public CaseSO ActiveCase => hasStartedSession ? sessionState.ActiveCase : activeCase;
 
-        /// <summary>Dictionary mapping unlocked clue IDs to their descriptive observation text.</summary>
-        public Dictionary<string, string> unlockedCluesText = new Dictionary<string, string>();
+        /// <summary>Player-selected investigator for this session, if one is selected.</summary>
+        public CharacterProfileSO SelectedInvestigator => hasStartedSession ? sessionState.SelectedInvestigator : selectedInvestigator;
 
-        /// <summary>Set of contradiction rule IDs that have been successfully challenged.</summary>
-        public HashSet<string> exposedContradictionIds = new HashSet<string>();
+        /// <summary>Selected investigator or the case's authored default investigator.</summary>
+        public CharacterProfileSO EffectiveInvestigator => hasStartedSession
+            ? sessionState.EffectiveInvestigator
+            : selectedInvestigator ?? activeCase?.leadInvestigator;
 
-        /// <summary>The timestamp when the investigation began.</summary>
-        public float investigationStartTime;
+        /// <summary>Read-only investigator choices registered with the manager.</summary>
+        public IReadOnlyList<CharacterProfileSO> AvailableInvestigators => availableInvestigators;
 
-        private float _accumulatedElapsedTime = 0f;
-        private float _lastResumeTimestamp = 0f;
+        /// <summary>Evidence discovered during this session. The collection cannot be mutated externally.</summary>
+        public IReadOnlyCollection<string> DiscoveredEvidenceIds => sessionState.DiscoveredEvidenceIds;
+
+        /// <summary>Clue identifiers unlocked during this session. The collection cannot be mutated externally.</summary>
+        public IReadOnlyCollection<string> UnlockedClueIds => sessionState.UnlockedClueIds;
+
+        /// <summary>Read-only clue text indexed by clue identifier for the current session.</summary>
+        public IReadOnlyDictionary<string, string> UnlockedCluesText => sessionState.UnlockedClues;
+
+        /// <summary>Contradictions exposed during this session. The collection cannot be mutated externally.</summary>
+        public IReadOnlyCollection<string> ExposedContradictionIds => sessionState.ExposedContradictionIds;
+
+        /// <summary>The timestamp when the active session began.</summary>
+        public float InvestigationStartTime => sessionState.InvestigationStartedAt;
 
         /// <summary>Whether the active case has a countdown time limit configured.</summary>
-        public bool HasActiveTimeLimit => activeCase != null && activeCase.hasTimeLimit && activeCase.timeLimitSeconds > 0f;
+        public bool HasActiveTimeLimit => ActiveCase != null && ActiveCase.hasTimeLimit && ActiveCase.timeLimitSeconds > 0f;
 
         /// <summary>Configured time limit in seconds for the current case.</summary>
-        public float CaseTimeLimit => activeCase != null ? activeCase.timeLimitSeconds : 0f;
+        public float CaseTimeLimit => ActiveCase != null ? ActiveCase.timeLimitSeconds : 0f;
 
         /// <summary>Whether the investigation timer is actively running.</summary>
-        public bool IsTimerRunning { get; private set; }
+        public bool IsTimerRunning => sessionState.IsTimerRunning;
 
         /// <summary>Whether the case countdown time has expired (Game Over).</summary>
-        public bool HasTimeExpired { get; private set; }
+        public bool HasTimeExpired => sessionState.HasTimeExpired;
 
         /// <summary>Total elapsed active investigation time in seconds.</summary>
-        public float ElapsedTime => _accumulatedElapsedTime + (IsTimerRunning ? (Time.time - _lastResumeTimestamp) : 0f);
+        public float ElapsedTime => sessionState.GetElapsedTime(Time.time);
 
         /// <summary>Remaining investigation time in seconds before game over.</summary>
         public float RemainingTime => timerService.CalculateRemainingTime(CaseTimeLimit, ElapsedTime);
@@ -101,9 +120,6 @@ namespace CaseClosed.Managers
         /// <summary>Event raised when the case investigation time expires (Game Over).</summary>
         public event Action OnTimeExpired;
 
-        /// <summary>
-        /// Initializes the singleton instance.
-        /// </summary>
         private void Awake()
         {
             _instance = this;
@@ -117,200 +133,220 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>
-        /// <summary>
-        /// Automatically loads activeCase on Start if assigned in the Inspector.
-        /// </summary>
+        /// <summary>Automatically loads the inspector-configured case once at startup.</summary>
         private void Start()
         {
-            if (activeCase != null && discoveredEvidenceIds.Count == 0)
+            if (!hasStartedSession && activeCase != null)
             {
                 LoadCase(activeCase);
             }
         }
 
-        /// <summary>
-        /// Frame update driving countdown ticks and checking for timer expiry.
-        /// </summary>
+        /// <summary>Drives countdown ticks and checks for timer expiry.</summary>
         private void Update()
         {
-            if (IsTimerRunning && HasActiveTimeLimit && !HasTimeExpired)
-            {
-                float remaining = RemainingTime;
-                float elapsed = ElapsedTime;
-                OnTimerTick?.Invoke(remaining, elapsed);
+            if (!IsTimerRunning || !HasActiveTimeLimit || HasTimeExpired) return;
 
-                if (remaining <= 0f || timerService.IsTimeExpired(activeCase.timeLimitSeconds, elapsed))
-                {
-                    TriggerTimeExpired();
-                }
+            float remaining = RemainingTime;
+            float elapsed = ElapsedTime;
+            OnTimerTick?.Invoke(remaining, elapsed);
+
+            if (remaining <= 0f || timerService.IsTimeExpired(CaseTimeLimit, elapsed))
+            {
+                TriggerTimeExpired();
             }
         }
 
         /// <summary>
-        /// Loads a new case into runtime, resetting discovery state sets, starting the investigation timer,
-        /// assigning the active investigator, and registering initially discovered evidence items.
+        /// Loads a new case into an isolated runtime session without changing its authored assets.
         /// </summary>
         /// <param name="newCase">The case ScriptableObject to load.</param>
         public void LoadCase(CaseSO newCase)
         {
-            activeCase = newCase;
-            discoveredEvidenceIds.Clear();
-            unlockedClueIds.Clear();
-            unlockedCluesText.Clear();
-            exposedContradictionIds.Clear();
-            _accumulatedElapsedTime = 0f;
-            _lastResumeTimestamp = Time.time;
-            investigationStartTime = Time.time;
-            HasTimeExpired = false;
-            IsTimerRunning = HasActiveTimeLimit;
+            CharacterProfileSO investigator = SelectedInvestigator;
+            sessionState.Begin(newCase, investigator, Time.time);
+            hasStartedSession = true;
 
-            if (activeCase != null && selectedInvestigator != null)
+            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (Level: {newCase?.levelNumber}, ID: {newCase?.caseId}, TimeLimit: {(HasActiveTimeLimit ? $"{CaseTimeLimit}s" : "Untimed")}, Investigator: '{EffectiveInvestigator?.fullName ?? "Unassigned"}')");
+
+            if (ActiveCase != null && ActiveCase.evidenceItems != null)
             {
-                activeCase.leadInvestigator = selectedInvestigator;
-            }
-
-            Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (Level: {newCase?.levelNumber}, ID: {newCase?.caseId}, TimeLimit: {(HasActiveTimeLimit ? $"{CaseTimeLimit}s" : "Untimed")}, Investigator: '{selectedInvestigator?.fullName ?? "Unassigned"}')");
-
-            if (activeCase != null && activeCase.evidenceItems != null)
-            {
-                foreach (var ev in activeCase.evidenceItems)
+                foreach (EvidenceSO evidence in ActiveCase.evidenceItems)
                 {
-                    if (ev != null)
+                    if (evidence != null && evidence.startsDiscovered)
                     {
-                        ev.ResetRuntimeState();
-                        if (ev.startsDiscovered)
-                        {
-                            RegisterDiscoveredEvidence(ev);
-                        }
+                        RegisterDiscoveredEvidence(evidence);
                     }
                 }
             }
 
-            OnCaseLoaded?.Invoke(activeCase);
+            OnCaseLoaded?.Invoke(ActiveCase);
             OnTimerTick?.Invoke(RemainingTime, 0f);
         }
 
-        /// <summary>
-        /// Pauses the investigation countdown timer (e.g. during Main Menu or Results screen).
-        /// </summary>
+        /// <summary>Pauses the investigation countdown timer.</summary>
         public void PauseTimer()
         {
-            if (IsTimerRunning)
-            {
-                _accumulatedElapsedTime += Time.time - _lastResumeTimestamp;
-                IsTimerRunning = false;
-                Debug.Log($"[CaseManager] Timer paused. Total active elapsed time: {_accumulatedElapsedTime:F1}s");
-            }
+            if (!IsTimerRunning) return;
+
+            sessionState.PauseTimer(Time.time);
+            Debug.Log($"[CaseManager] Timer paused. Total active elapsed time: {ElapsedTime:F1}s");
         }
 
-        /// <summary>
-        /// Resumes the countdown timer if the case is active and has not expired.
-        /// </summary>
+        /// <summary>Resumes the countdown timer if the active case has not expired.</summary>
         public void ResumeTimer()
         {
-            if (!IsTimerRunning && !HasTimeExpired && HasActiveTimeLimit)
-            {
-                _lastResumeTimestamp = Time.time;
-                IsTimerRunning = true;
-                Debug.Log($"[CaseManager] Timer resumed. Remaining time: {RemainingTime:F1}s");
-            }
+            if (!sessionState.ResumeTimer(Time.time)) return;
+
+            Debug.Log($"[CaseManager] Timer resumed. Remaining time: {RemainingTime:F1}s");
         }
 
-        /// <summary>
-        /// Triggers investigation failure due to time expiration (Game Over).
-        /// </summary>
+        /// <summary>Triggers investigation failure due to time expiration (Game Over).</summary>
         public void TriggerTimeExpired()
         {
-            if (HasTimeExpired) return;
+            if (!sessionState.ExpireTimer()) return;
 
-            HasTimeExpired = true;
-            IsTimerRunning = false;
-            _accumulatedElapsedTime = CaseTimeLimit;
-
-            Debug.Log($"[CaseManager] Investigation time expired for case '{(activeCase != null ? activeCase.caseTitle : "Unknown")}'. Game Over!");
+            Debug.Log($"[CaseManager] Investigation time expired for case '{(ActiveCase != null ? ActiveCase.caseTitle : "Unknown")}'. Game Over!");
             AudioManager.Instance?.PlayCaseFailed();
             OnTimeExpired?.Invoke();
             UIManager.Instance?.ShowPanel(UIPanelType.GameOver);
         }
 
-        /// <summary>
-        /// Restarts the current case investigation from the beginning with a fresh countdown.
-        /// </summary>
+        /// <summary>Restarts the current case investigation with a fresh session state.</summary>
         public void RetryCurrentCase()
         {
-            if (activeCase != null)
-            {
-                Debug.Log($"[CaseManager] Retrying case '{activeCase.caseTitle}'...");
-                LoadCase(activeCase);
-            }
+            CaseSO caseToRetry = ActiveCase;
+            if (caseToRetry == null) return;
+
+            Debug.Log($"[CaseManager] Retrying case '{caseToRetry.caseTitle}'...");
+            LoadCase(caseToRetry);
         }
 
-        /// <summary>
-        /// Sets the active investigator character for the player and updates the current case.
-        /// </summary>
-        /// <param name="investigator">The character profile of the investigator chosen by the player.</param>
+        /// <summary>Sets the active investigator without mutating the authored case asset.</summary>
+        /// <param name="investigator">The character profile chosen by the player.</param>
         public void SetSelectedInvestigator(CharacterProfileSO investigator)
         {
             if (investigator == null) return;
-            selectedInvestigator = investigator;
 
-            if (activeCase != null)
+            if (hasStartedSession)
             {
-                activeCase.leadInvestigator = investigator;
+                sessionState.SetSelectedInvestigator(investigator);
+            }
+            else
+            {
+                selectedInvestigator = investigator;
             }
 
             Debug.Log($"[CaseManager] Active investigator changed to: '{investigator.fullName}' ({investigator.occupation})");
             OnInvestigatorChanged?.Invoke(investigator);
         }
 
-        /// <summary>
-        /// Registers a selectable investigator character if not already in the available list.
-        /// </summary>
-        /// <param name="investigator">The investigator profile to register.</param>
+        /// <summary>Clears the runtime investigator selection and falls back to the authored case default.</summary>
+        public void ClearSelectedInvestigator()
+        {
+            if (hasStartedSession)
+            {
+                sessionState.SetSelectedInvestigator(null);
+            }
+            else
+            {
+                selectedInvestigator = null;
+            }
+
+            OnInvestigatorChanged?.Invoke(null);
+        }
+
+        /// <summary>Registers a selectable investigator character if not already in the available list.</summary>
         public void RegisterAvailableInvestigator(CharacterProfileSO investigator)
         {
             if (investigator == null) return;
+
             if (!availableInvestigators.Contains(investigator))
             {
                 availableInvestigators.Add(investigator);
             }
-            if (selectedInvestigator == null)
+
+            if (SelectedInvestigator == null)
             {
                 SetSelectedInvestigator(investigator);
             }
         }
 
-        /// <summary>
-        /// Registers a piece of evidence as discovered if not already recorded, toggling its table presence and playing an audio cue.
-        /// </summary>
-        /// <param name="evidence">The discovered evidence item.</param>
+        /// <summary>Registers a piece of evidence as discovered and notifies existing listeners once.</summary>
         public void RegisterDiscoveredEvidence(EvidenceSO evidence)
         {
-            if (evidence == null) return;
-            if (!discoveredEvidenceIds.Contains(evidence.id))
-            {
-                discoveredEvidenceIds.Add(evidence.id);
-                evidence.isToggledOnTable = true;
-                Debug.Log($"[CaseManager] Registered new evidence discovery: '{evidence.evidenceName}' (ID: {evidence.id}). Total discovered: {discoveredEvidenceIds.Count}");
-                OnEvidenceDiscovered?.Invoke(evidence);
-                AudioManager.Instance?.PlayClueDiscovered();
-            }
+            if (!sessionState.TryDiscoverEvidence(evidence)) return;
+
+            Debug.Log($"[CaseManager] Registered new evidence discovery: '{evidence.evidenceName}' (ID: {evidence.id}). Total discovered: {sessionState.DiscoveredEvidenceCount}");
+            OnEvidenceDiscovered?.Invoke(evidence);
+            AudioManager.Instance?.PlayClueDiscovered();
         }
 
-        /// <summary>
-        /// Returns true only after every evidence item in the active case has been opened in inspection.
-        /// </summary>
+        /// <summary>Returns whether evidence has been discovered during this session.</summary>
+        public bool IsEvidenceDiscovered(EvidenceSO evidence)
+        {
+            return sessionState.IsEvidenceDiscovered(evidence);
+        }
+
+        /// <summary>Returns whether an evidence ID has been discovered during this session.</summary>
+        public bool IsEvidenceDiscovered(string evidenceId)
+        {
+            return sessionState.IsEvidenceDiscovered(evidenceId);
+        }
+
+        /// <summary>Returns whether evidence has been examined during this session.</summary>
+        public bool IsEvidenceExamined(EvidenceSO evidence)
+        {
+            return sessionState.IsEvidenceExamined(evidence);
+        }
+
+        /// <summary>Records evidence examination, returning false when it was already examined.</summary>
+        public bool TryMarkEvidenceExamined(EvidenceSO evidence)
+        {
+            return sessionState.TryMarkEvidenceExamined(evidence);
+        }
+
+        /// <summary>Records a hotspot discovery, returning false when it was already discovered.</summary>
+        public bool TryDiscoverHotspot(EvidenceSO evidence, EvidenceHotspot hotspot)
+        {
+            return sessionState.TryDiscoverHotspot(evidence, hotspot);
+        }
+
+        /// <summary>Returns whether a hotspot has been discovered during this session.</summary>
+        public bool IsHotspotDiscovered(EvidenceSO evidence, EvidenceHotspot hotspot)
+        {
+            return sessionState.IsHotspotDiscovered(evidence, hotspot);
+        }
+
+        /// <summary>Returns how many hotspots of an evidence item were discovered in this session.</summary>
+        public int GetDiscoveredHotspotCount(EvidenceSO evidence)
+        {
+            return sessionState.GetDiscoveredHotspotCount(evidence);
+        }
+
+        /// <summary>Toggles runtime table presence and returns the new state.</summary>
+        public bool ToggleEvidenceTablePresence(EvidenceSO evidence)
+        {
+            return sessionState.ToggleEvidenceTablePresence(evidence);
+        }
+
+        /// <summary>Returns whether evidence is currently present on the investigation table.</summary>
+        public bool IsEvidenceOnTable(EvidenceSO evidence)
+        {
+            return sessionState.IsEvidenceOnTable(evidence);
+        }
+
+        /// <summary>Returns true only after every active-case evidence item has been examined.</summary>
         public bool AreAllEvidenceExamined()
         {
-            if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count < 3)
+            if (ActiveCase == null || ActiveCase.evidenceItems == null || ActiveCase.evidenceItems.Count < 3)
             {
                 return false;
             }
 
-            foreach (EvidenceSO evidence in activeCase.evidenceItems)
+            foreach (EvidenceSO evidence in ActiveCase.evidenceItems)
             {
-                if (evidence == null || !evidence.isExamined)
+                if (evidence == null || !sessionState.IsEvidenceExamined(evidence))
                 {
                     return false;
                 }
@@ -319,25 +355,21 @@ namespace CaseClosed.Managers
             return true;
         }
 
-        /// <summary>
-        /// Returns true when the player has completed the investigation breakthrough and can confront the culprit.
-        /// </summary>
+        /// <summary>Returns true when the player can confront the culprit.</summary>
         public bool IsReadyForConclusion()
         {
             if (!AreAllEvidenceExamined()) return false;
-            if (activeCase == null || activeCase.totalContradictionsCount <= 0) return false;
-            return exposedContradictionIds.Count >= activeCase.totalContradictionsCount;
+            return ActiveCase != null
+                && ActiveCase.totalContradictionsCount > 0
+                && sessionState.ExposedContradictionCount >= ActiveCase.totalContradictionsCount;
         }
 
-        /// <summary>
-        /// Unlocks a case evidence item by ID after a story or dialogue requirement is completed.
-        /// </summary>
-        /// <param name="evidenceId">The evidence ID configured on the active case.</param>
+        /// <summary>Unlocks an authored case evidence item by identifier.</summary>
         public void UnlockEvidence(string evidenceId)
         {
-            if (string.IsNullOrEmpty(evidenceId) || activeCase == null || activeCase.evidenceItems == null) return;
+            if (string.IsNullOrEmpty(evidenceId) || ActiveCase == null || ActiveCase.evidenceItems == null) return;
 
-            foreach (EvidenceSO evidence in activeCase.evidenceItems)
+            foreach (EvidenceSO evidence in ActiveCase.evidenceItems)
             {
                 if (evidence != null && evidence.id == evidenceId)
                 {
@@ -347,46 +379,30 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>
-        /// Unlocks a clue and registers its description in the notebook dictionary, notifying listeners.
-        /// </summary>
-        /// <param name="clueId">The unique clue identifier.</param>
-        /// <param name="clueText">The descriptive text of the clue.</param>
+        /// <summary>Unlocks a clue and notifies existing listeners once.</summary>
         public void UnlockClue(string clueId, string clueText)
         {
-            if (string.IsNullOrEmpty(clueId)) return;
+            if (!sessionState.TryUnlockClue(clueId, clueText)) return;
 
-            if (!unlockedClueIds.Contains(clueId))
-            {
-                unlockedClueIds.Add(clueId);
-                unlockedCluesText[clueId] = clueText;
-                Debug.Log($"[CaseManager] Unlocked new clue: '[{clueId}]' - \"{clueText}\". Total clues: {unlockedClueIds.Count}");
-                OnClueUnlocked?.Invoke(clueId, clueText);
-                AudioManager.Instance?.PlayClueDiscovered();
-            }
+            Debug.Log($"[CaseManager] Unlocked new clue: '[{clueId}]' - \"{clueText}\". Total clues: {sessionState.UnlockedClueIds.Count}");
+            OnClueUnlocked?.Invoke(clueId, clueText);
+            AudioManager.Instance?.PlayClueDiscovered();
         }
 
-        /// <summary>
-        /// Registers an exposed contradiction rule, unlocking any associated reward clues and playing an audio cue.
-        /// </summary>
-        /// <param name="rule">The contradiction rule that was exposed.</param>
+        /// <summary>Registers an exposed contradiction and any associated reward clue.</summary>
         public void RegisterContradictionExposed(ContradictionRuleSO rule)
         {
-            if (rule == null) return;
+            if (!sessionState.TryExposeContradiction(rule)) return;
 
-            if (!exposedContradictionIds.Contains(rule.ruleId))
+            Debug.Log($"[CaseManager] Registered contradiction exposed: '{rule.ruleTitle}' (ID: {rule.ruleId}). Total contradictions caught: {sessionState.ExposedContradictionCount}");
+
+            if (!string.IsNullOrEmpty(rule.unlockedClueId))
             {
-                exposedContradictionIds.Add(rule.ruleId);
-                Debug.Log($"[CaseManager] Registered contradiction exposed: '{rule.ruleTitle}' (ID: {rule.ruleId}). Total contradictions caught: {exposedContradictionIds.Count}");
-
-                if (!string.IsNullOrEmpty(rule.unlockedClueId))
-                {
-                    UnlockClue(rule.unlockedClueId, rule.unlockedClueText);
-                }
-
-                OnContradictionExposed?.Invoke(rule);
-                AudioManager.Instance?.PlayContradictionFound();
+                UnlockClue(rule.unlockedClueId, rule.unlockedClueText);
             }
+
+            OnContradictionExposed?.Invoke(rule);
+            AudioManager.Instance?.PlayContradictionFound();
         }
     }
 }

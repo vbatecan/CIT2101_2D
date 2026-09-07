@@ -75,7 +75,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void SetupQuiz()
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase == null || activeCase.conclusionQuestions == null) return;
 
             Debug.Log($"[UI:Conclusion] Setting up conclusion quiz for '{activeCase.caseTitle}' with {activeCase.conclusionQuestions.Count} questions");
@@ -298,8 +298,8 @@ namespace CaseClosed.UI
                 resultTitleText.gameObject.SetActive(!result.isCaseSolved);
             }
 
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
-            CharacterProfileSO investigator = activeCase?.leadInvestigator ?? CaseManager.Instance?.selectedInvestigator;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            CharacterProfileSO investigator = CaseManager.Instance?.EffectiveInvestigator;
             string investigatorName = investigator != null ? investigator.fullName : "Unknown Investigator";
             int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
 
@@ -371,7 +371,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnContinueClicked()
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
             Debug.Log($"[UI:Conclusion] Restarting failed Level {currentLevel} from the beginning");
 
@@ -391,7 +391,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnNextLevelClicked()
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
             int nextLevel = currentLevel + 1;
 

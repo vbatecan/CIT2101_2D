@@ -185,7 +185,7 @@ namespace CaseClosed.Tests
 
             CharacterProfileSO detective = ScriptableObject.CreateInstance<CharacterProfileSO>();
             detective.fullName = "Kyle Pastrana";
-            caseManager.selectedInvestigator = detective;
+            caseManager.SetSelectedInvestigator(detective);
 
             caseManager.LoadCase(testCase);
 
@@ -276,8 +276,6 @@ namespace CaseClosed.Tests
         {
             Case01Initializer init = testRoot.AddComponent<Case01Initializer>();
             init.CaseDataAsset = null;
-            caseManager.activeCase = null;
-
             CaseSO result = init.CreateCase01Data();
 
             Assert.IsNotNull(result);
@@ -298,7 +296,7 @@ namespace CaseClosed.Tests
             bootstrap.Case01Asset = customAsset;
             bootstrap.LoadLevel(1);
 
-            Assert.AreSame(customAsset, caseManager.activeCase);
+            Assert.AreSame(customAsset, caseManager.ActiveCase);
             Assert.AreEqual(600f, caseManager.CaseTimeLimit);
             Assert.AreEqual(600f, caseManager.RemainingTime);
         }

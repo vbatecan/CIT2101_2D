@@ -82,17 +82,17 @@ namespace CaseClosed.UI
         /// </summary>
         public void PopulateGameOverDetails()
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
-            CharacterProfileSO investigator = activeCase?.leadInvestigator ?? CaseManager.Instance?.selectedInvestigator;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            CharacterProfileSO investigator = CaseManager.Instance?.EffectiveInvestigator;
             string investigatorName = investigator != null ? investigator.fullName : "Unknown Detective";
 
             int levelNumber = activeCase != null ? activeCase.levelNumber : 1;
             string caseTitle = activeCase != null ? activeCase.caseTitle : "Unknown Case";
 
-            int evFound = CaseManager.Instance != null ? CaseManager.Instance.discoveredEvidenceIds.Count : 0;
+            int evFound = CaseManager.Instance != null ? CaseManager.Instance.DiscoveredEvidenceIds.Count : 0;
             int totalEv = activeCase != null ? (activeCase.totalKeyEvidenceCount > 0 ? activeCase.totalKeyEvidenceCount : activeCase.evidenceItems.Count) : 0;
 
-            int contraFound = CaseManager.Instance != null ? CaseManager.Instance.exposedContradictionIds.Count : 0;
+            int contraFound = CaseManager.Instance != null ? CaseManager.Instance.ExposedContradictionIds.Count : 0;
             int totalContra = activeCase != null ? (activeCase.totalContradictionsCount > 0 ? activeCase.totalContradictionsCount : activeCase.contradictionRules.Count) : 0;
 
             float timeLapsed = CaseManager.Instance != null ? CaseManager.Instance.ElapsedTime : 0f;

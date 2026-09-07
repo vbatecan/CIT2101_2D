@@ -15,14 +15,14 @@ namespace CaseClosed.Services
         /// <param name="baseClueId">Output identifier for the unlocked base clue.</param>
         /// <param name="baseClueText">Output descriptive observation text for the unlocked clue.</param>
         /// <returns>True if a valid base clue was extracted upon examination; otherwise, false.</returns>
-        public bool InspectEvidence(EvidenceSO evidence, out string baseClueId, out string baseClueText)
+        public bool InspectEvidence(CaseSessionState session, EvidenceSO evidence, out string baseClueId, out string baseClueText)
         {
             baseClueId = null;
             baseClueText = null;
 
-            if (evidence == null) return false;
+            if (session == null || evidence == null) return false;
 
-            evidence.isExamined = true;
+            session.TryMarkEvidenceExamined(evidence);
 
             if (!string.IsNullOrEmpty(evidence.unlockedClueText))
             {
@@ -41,14 +41,17 @@ namespace CaseClosed.Services
         /// <param name="clueId">Output identifier for the unlocked clue.</param>
         /// <param name="clueText">Output observation text for the unlocked clue.</param>
         /// <returns>True if a new hotspot was successfully discovered; otherwise, false.</returns>
-        public bool DiscoverHotspot(EvidenceHotspot hotspot, out string clueId, out string clueText)
+        public bool DiscoverHotspot(
+            CaseSessionState session,
+            EvidenceSO evidence,
+            EvidenceHotspot hotspot,
+            out string clueId,
+            out string clueText)
         {
             clueId = null;
             clueText = null;
 
-            if (hotspot == null || hotspot.isDiscovered) return false;
-
-            hotspot.isDiscovered = true;
+            if (session == null || evidence == null || hotspot == null || !session.TryDiscoverHotspot(evidence, hotspot)) return false;
 
             if (!string.IsNullOrEmpty(hotspot.clueUnlockedId))
             {
@@ -65,11 +68,9 @@ namespace CaseClosed.Services
         /// </summary>
         /// <param name="evidence">The evidence item to toggle.</param>
         /// <returns>The new visibility state on the investigation table.</returns>
-        public bool ToggleTablePresence(EvidenceSO evidence)
+        public bool ToggleTablePresence(CaseSessionState session, EvidenceSO evidence)
         {
-            if (evidence == null) return false;
-            evidence.isToggledOnTable = !evidence.isToggledOnTable;
-            return evidence.isToggledOnTable;
+            return session != null && session.ToggleEvidenceTablePresence(evidence);
         }
     }
 }

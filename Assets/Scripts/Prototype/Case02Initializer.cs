@@ -67,20 +67,12 @@ namespace CaseClosed.Prototype
         {
             if (_caseDataAsset != null)
             {
-                if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
-                {
-                    _caseDataAsset.leadInvestigator = CaseManager.Instance.selectedInvestigator;
-                }
                 return _caseDataAsset;
             }
 
-            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == 2)
+            if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null && CaseManager.Instance.ActiveCase.levelNumber == 2)
             {
-                if (CaseManager.Instance.selectedInvestigator != null)
-                {
-                    CaseManager.Instance.activeCase.leadInvestigator = CaseManager.Instance.selectedInvestigator;
-                }
-                return CaseManager.Instance.activeCase;
+                return CaseManager.Instance.ActiveCase;
             }
 
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
@@ -95,11 +87,6 @@ namespace CaseClosed.Prototype
             c.totalContradictionsCount = 1;
             c.hasTimeLimit = true;
             c.timeLimitSeconds = 300f; // 5 mins default
-            if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
-            {
-                c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
-            }
-
             // Primary Witness / Suspect: Charl Vonn Pascual (Night Security Guard)
             CharacterProfileSO charl = ScriptableObject.CreateInstance<CharacterProfileSO>();
             charl.characterId = "CHAR_CHARL_PASCUAL";

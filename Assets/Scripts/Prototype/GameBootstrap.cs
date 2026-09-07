@@ -107,7 +107,7 @@ namespace CaseClosed.Prototype
             }
 
             // If a case is already loaded matching this level, keep it
-            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == targetLevel)
+            if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null && CaseManager.Instance.ActiveCase.levelNumber == targetLevel)
             {
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
                 ArmPointerController.Instance?.ForceSyncState();

@@ -171,9 +171,9 @@ namespace CaseClosed.UI
 
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
 
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.currentNode != null)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.CurrentNode != null)
             {
-                DisplayNode(InterrogationManager.Instance.currentNode);
+                DisplayNode(InterrogationManager.Instance.CurrentNode);
             }
             else if (!IsDialogueOpen)
             {
@@ -192,7 +192,7 @@ namespace CaseClosed.UI
         {
             if (!IsDialogueOpen || !gameObject.activeInHierarchy) return;
 
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
@@ -325,7 +325,7 @@ namespace CaseClosed.UI
                 return;
             }
 
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
                 return;
             }
@@ -401,7 +401,7 @@ namespace CaseClosed.UI
             string resolvedSpeakerName = node.speakerName;
             if (isDetective)
             {
-                string investigatorName = CaseManager.Instance?.selectedInvestigator?.fullName;
+                string investigatorName = CaseManager.Instance?.EffectiveInvestigator?.fullName;
                 if (!string.IsNullOrWhiteSpace(investigatorName))
                 {
                     resolvedSpeakerName = investigatorName;
@@ -537,9 +537,9 @@ namespace CaseClosed.UI
                 return true;
             }
 
-            if (CaseManager.Instance?.selectedInvestigator != null)
+            if (CaseManager.Instance?.EffectiveInvestigator != null)
             {
-                string invName = CaseManager.Instance.selectedInvestigator.fullName;
+                string invName = CaseManager.Instance.EffectiveInvestigator.fullName;
                 if (!string.IsNullOrEmpty(invName) && !string.IsNullOrEmpty(speakerName) &&
                     (speakerName.IndexOf(invName, StringComparison.OrdinalIgnoreCase) >= 0 ||
                      invName.IndexOf(speakerName, StringComparison.OrdinalIgnoreCase) >= 0))
@@ -596,10 +596,10 @@ namespace CaseClosed.UI
                 return "Vonn";
 
             // Fallback to active suspect profile
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.currentSuspect != null)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.CurrentSuspect != null)
             {
-                string suspectName = InterrogationManager.Instance.currentSuspect.fullName ?? "";
-                string suspectId = InterrogationManager.Instance.currentSuspect.characterId ?? "";
+                string suspectName = InterrogationManager.Instance.CurrentSuspect.fullName ?? "";
+                string suspectId = InterrogationManager.Instance.CurrentSuspect.characterId ?? "";
 
                 if (ContainsIgnoreCase(suspectId, "shania") || ContainsIgnoreCase(suspectName, "shania"))
                     return "Shania";
@@ -971,7 +971,7 @@ namespace CaseClosed.UI
                 challengeButton.gameObject.SetActive(canChallenge);
                 challengeButton.interactable = canChallenge;
             }
-            else if (canChallenge && InterrogationManager.Instance != null && !InterrogationManager.Instance.isChallengeModeActive)
+            else if (canChallenge && InterrogationManager.Instance != null && !InterrogationManager.Instance.IsChallengeModeActive)
             {
                 // Character-specific dialogue boxes have no challenge button. Once a
                 // challengeable line is readable, immediately enable evidence selection.
@@ -997,7 +997,7 @@ namespace CaseClosed.UI
                 return;
             }
 
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
                 return;
             }
@@ -1010,7 +1010,7 @@ namespace CaseClosed.UI
         /// </summary>
         private void OnChallengeButtonClicked()
         {
-            bool currentState = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
+            bool currentState = InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive;
             bool newState = !currentState;
             Debug.Log($"[UI:Dialogue] Challenge button clicked (Switching to: {newState})");
             InterrogationManager.Instance?.ToggleChallengeMode(newState);
@@ -1062,14 +1062,14 @@ namespace CaseClosed.UI
                     DestroyImmediate(child.gameObject);
             }
 
-            var discoveredIds = CaseManager.Instance?.discoveredEvidenceIds;
-            var activeCase = CaseManager.Instance?.activeCase;
+            CaseManager caseManager = CaseManager.Instance;
+            CaseSO activeCase = caseManager?.ActiveCase;
 
-            if (activeCase == null || discoveredIds == null) return;
+            if (activeCase == null || caseManager == null) return;
 
             foreach (var ev in activeCase.evidenceItems)
             {
-                if (ev != null && discoveredIds.Contains(ev.id))
+                if (ev != null && caseManager.IsEvidenceDiscovered(ev))
                 {
                     EvidenceSO currentEv = ev;
                     bool prefabSuccess = false;
@@ -1212,7 +1212,7 @@ namespace CaseClosed.UI
             ArmPointerController.Instance?.ForceSyncState();
             Debug.Log($"[UI:Dialogue] Received challenge result (Success: {success}, FailureReaction: {isShowingFailureReaction}, MessageLength: {reactionMessage?.Length ?? 0})");
 
-            CharacterProfileSO suspect = InterrogationManager.Instance?.currentSuspect;
+            CharacterProfileSO suspect = InterrogationManager.Instance?.CurrentSuspect;
             string speakerName = suspect != null && !string.IsNullOrEmpty(suspect.fullName) ? suspect.fullName : "Suspect";
             SetSpeakerName(speakerName);
 

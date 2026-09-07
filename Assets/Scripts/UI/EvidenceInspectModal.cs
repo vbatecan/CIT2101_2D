@@ -666,7 +666,7 @@ namespace CaseClosed.UI
                     Image img = spotObj.GetComponent<Image>() ?? spotObj.GetComponentInChildren<Image>();
                     if (img != null)
                     {
-                        img.color = currentSpot.isDiscovered ? DiscoveredHotspotColor : UndiscoveredHotspotColor;
+                        img.color = IsHotspotDiscovered(evidence, currentSpot) ? DiscoveredHotspotColor : UndiscoveredHotspotColor;
                     }
 
                     Text labelText = spotObj.GetComponentInChildren<Text>();
@@ -681,7 +681,7 @@ namespace CaseClosed.UI
                     btn.onClick.AddListener(() =>
                     {
                         Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
-                        EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
+                        EvidenceManager.Instance?.DiscoverHotspot(evidence, currentSpot);
                     });
                 }
                 else
@@ -695,12 +695,12 @@ namespace CaseClosed.UI
                     rt.sizeDelta = new Vector2(40f, 40f);
 
                     Image img = spotObj.GetComponent<Image>();
-                    img.color = currentSpot.isDiscovered ? DiscoveredHotspotColor : UndiscoveredHotspotColor;
+                    img.color = IsHotspotDiscovered(evidence, currentSpot) ? DiscoveredHotspotColor : UndiscoveredHotspotColor;
 
                     spotObj.GetComponent<Button>().onClick.AddListener(() =>
                     {
                         Debug.Log($"[UI:InspectModal] Hotspot clicked '{currentSpot.hotspotTitle}' (ID: {currentSpot.hotspotId}) on evidence '{evidence.evidenceName}'");
-                        EvidenceManager.Instance?.DiscoverHotspot(currentSpot);
+                        EvidenceManager.Instance?.DiscoverHotspot(evidence, currentSpot);
                     });
                 }
             }
@@ -724,6 +724,12 @@ namespace CaseClosed.UI
             {
                 PopulateHotspots(currentEvidence);
             }
+        }
+
+        private static bool IsHotspotDiscovered(EvidenceSO evidence, EvidenceHotspot hotspot)
+        {
+            CaseManager caseManager = CaseManager.Instance;
+            return caseManager != null && caseManager.IsHotspotDiscovered(evidence, hotspot);
         }
 
         /// <summary>

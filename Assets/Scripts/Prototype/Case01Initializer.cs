@@ -75,9 +75,9 @@ namespace CaseClosed.Prototype
 
                 // Replay the opening node only when no dialogue view received the initial
                 // interrogation event during cold-start initialization.
-                if (!DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.currentNode != null)
+                if (!DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.CurrentNode != null)
                 {
-                    DialogueUI.Instance?.DisplayNode(InterrogationManager.Instance.currentNode);
+                    DialogueUI.Instance?.DisplayNode(InterrogationManager.Instance.CurrentNode);
                 }
             }
         }
@@ -91,20 +91,12 @@ namespace CaseClosed.Prototype
         {
             if (_caseDataAsset != null)
             {
-                if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
-                {
-                    _caseDataAsset.leadInvestigator = CaseManager.Instance.selectedInvestigator;
-                }
                 return _caseDataAsset;
             }
 
-            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == 1)
+            if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null && CaseManager.Instance.ActiveCase.levelNumber == 1)
             {
-                if (CaseManager.Instance.selectedInvestigator != null)
-                {
-                    CaseManager.Instance.activeCase.leadInvestigator = CaseManager.Instance.selectedInvestigator;
-                }
-                return CaseManager.Instance.activeCase;
+                return CaseManager.Instance.ActiveCase;
             }
 
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
@@ -119,11 +111,6 @@ namespace CaseClosed.Prototype
             c.totalContradictionsCount = 1;
             c.hasTimeLimit = true;
             c.timeLimitSeconds = 300f; // 5 mins default
-            if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
-            {
-                c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
-            }
-
             // Primary Suspect: Vince Angelo Batecan (Nephew)
             CharacterProfileSO vince = ScriptableObject.CreateInstance<CharacterProfileSO>();
             vince.characterId = "CHAR_VINCE_BATECAN";

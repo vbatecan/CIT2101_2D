@@ -18,6 +18,7 @@ namespace CaseClosed.Data
         [TextArea(2, 5)]
         public string observationText;
         public string clueUnlockedId;
+        [Tooltip("Legacy serialized compatibility value. Runtime hotspot discovery is tracked by CaseSessionState.")]
         public bool isDiscovered;
     }
 
@@ -59,35 +60,28 @@ namespace CaseClosed.Data
         [TextArea(2, 4)]
         public string unlockedClueText;
 
-        [Header("State Flags")]
+        [Header("Authored Availability")]
         public bool startsDiscovered = false;
         [Tooltip("Optional dialogue node that must be completed before this evidence appears on the investigation table.")]
         public string requiredDialogueNodeId;
         [Tooltip("Optional dialogue node to display when this evidence is inspected from the investigation table.")]
         public string dialogueNodeToTriggerOnInspect;
+        [Header("Legacy Runtime State (Serialized Compatibility Only)")]
+        [Tooltip("Retained to preserve existing serialized assets. Runtime examination state lives in CaseSessionState.")]
         public bool isExamined = false;
+        [Tooltip("Retained to preserve existing serialized assets. Runtime table presence lives in CaseSessionState.")]
         public bool isToggledOnTable = true;
 
         [Header("Inspectable Hotspots")]
         public List<EvidenceHotspot> hotspots = new List<EvidenceHotspot>();
 
         /// <summary>
-        /// Resets the runtime examination flags and hotspot discovery states back to initial defaults.
+        /// Legacy no-op retained for source compatibility. Runtime session state is reset by
+        /// <see cref="CaseClosed.Services.CaseSessionState.Begin"/> instead of mutating this asset.
         /// </summary>
+        [Obsolete("Runtime evidence state belongs to CaseSessionState. Load a new case session instead.")]
         public void ResetRuntimeState()
         {
-            isExamined = false;
-            isToggledOnTable = startsDiscovered;
-            if (hotspots != null)
-            {
-                foreach (var spot in hotspots)
-                {
-                    if (spot != null)
-                    {
-                        spot.isDiscovered = false;
-                    }
-                }
-            }
         }
     }
 }

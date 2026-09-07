@@ -158,7 +158,7 @@ namespace CaseClosed.Gameplay
         public bool DetermineUIMode()
         {
             // When Challenge Mode is active during dialogue, the arm pointer MUST be active over the desk!
-            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
                 return false;
             }
@@ -298,7 +298,7 @@ namespace CaseClosed.Gameplay
             else if (Input.GetMouseButtonDown(1)) // Right Click
             {
                 // Right-click cancels Challenge Mode
-                if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+                if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
                 {
                     Debug.Log("[ArmPointer] Right-click cancelled challenge mode.");
                     InterrogationManager.Instance.ToggleChallengeMode(false);

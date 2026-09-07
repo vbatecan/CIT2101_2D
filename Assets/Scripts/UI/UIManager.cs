@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using CaseClosed.Data;
 using CaseClosed.Enums;
 using CaseClosed.Gameplay;
 using CaseClosed.Managers;
@@ -46,6 +47,8 @@ namespace CaseClosed.UI
 
         private UIPanelType _currentPanel = UIPanelType.MainMenu;
         private UIPanelType _panelBeforeInGameMenu = UIPanelType.InvestigationTable;
+        private EvidenceManager _subscribedEvidenceManager;
+        private CaseManager _subscribedCaseManager;
 
         /// <summary>The currently active UI panel type.</summary>
         public UIPanelType currentPanel => _currentPanel;
@@ -73,10 +76,7 @@ namespace CaseClosed.UI
 
         private void OnDestroy()
         {
-            if (CaseManager.Instance != null)
-            {
-                CaseManager.Instance.OnTimeExpired -= HandleTimeExpired;
-            }
+            UnregisterEvents();
 
             if (Instance == this)
             {
@@ -178,16 +178,73 @@ namespace CaseClosed.UI
             UIButtonHighlightSystem.ApplyToAllButtonsInScene();
         }
 
+        private void OnEnable()
+        {
+            RegisterEvents();
+        }
+
+        private void OnDisable()
+        {
+            UnregisterEvents();
+        }
+
         /// <summary>
         /// Registers event handlers for modal transitions and case expiration notifications.
         /// </summary>
         private void RegisterEvents()
         {
-            if (EvidenceManager.Instance != null)
+            EvidenceManager evidenceManager = EvidenceManager.Instance;
+            if (_subscribedEvidenceManager != evidenceManager)
             {
-                EvidenceManager.Instance.OnInspectModalOpened += (ev) => ShowPanel(UIPanelType.InspectModal);
-                EvidenceManager.Instance.OnInspectModalClosed += HandleInspectModalClosed;
+                if (_subscribedEvidenceManager != null)
+                {
+                    _subscribedEvidenceManager.OnInspectModalOpened -= HandleInspectModalOpened;
+                    _subscribedEvidenceManager.OnInspectModalClosed -= HandleInspectModalClosed;
+                }
+
+                _subscribedEvidenceManager = evidenceManager;
+                if (_subscribedEvidenceManager != null)
+                {
+                    _subscribedEvidenceManager.OnInspectModalOpened += HandleInspectModalOpened;
+                    _subscribedEvidenceManager.OnInspectModalClosed += HandleInspectModalClosed;
+                }
             }
+
+            CaseManager caseManager = CaseManager.Instance;
+            if (_subscribedCaseManager != caseManager)
+            {
+                if (_subscribedCaseManager != null)
+                {
+                    _subscribedCaseManager.OnTimeExpired -= HandleTimeExpired;
+                }
+
+                _subscribedCaseManager = caseManager;
+                if (_subscribedCaseManager != null)
+                {
+                    _subscribedCaseManager.OnTimeExpired += HandleTimeExpired;
+                }
+            }
+        }
+
+        private void UnregisterEvents()
+        {
+            if (_subscribedEvidenceManager != null)
+            {
+                _subscribedEvidenceManager.OnInspectModalOpened -= HandleInspectModalOpened;
+                _subscribedEvidenceManager.OnInspectModalClosed -= HandleInspectModalClosed;
+                _subscribedEvidenceManager = null;
+            }
+
+            if (_subscribedCaseManager != null)
+            {
+                _subscribedCaseManager.OnTimeExpired -= HandleTimeExpired;
+                _subscribedCaseManager = null;
+            }
+        }
+
+        private void HandleInspectModalOpened(EvidenceSO evidence)
+        {
+            ShowPanel(UIPanelType.InspectModal);
         }
 
         private void HandleInspectModalClosed()
@@ -206,10 +263,7 @@ namespace CaseClosed.UI
                 button.interactable = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
             }
 
-            if (CaseManager.Instance != null)
-            {
-                CaseManager.Instance.OnTimeExpired += HandleTimeExpired;
-            }
+            RegisterEvents();
         }
 
         private void HandleTimeExpired()
@@ -224,6 +278,8 @@ namespace CaseClosed.UI
         /// <param name="panelType">The target <see cref="UIPanelType"/> to activate.</param>
         public void ShowPanel(UIPanelType panelType)
         {
+            RegisterEvents();
+
             // Keep old serialized navigation callbacks compatible with the retired selector.
             if (panelType == UIPanelType.InvestigatorSelect)
                 panelType = UIPanelType.InvestigationTable;

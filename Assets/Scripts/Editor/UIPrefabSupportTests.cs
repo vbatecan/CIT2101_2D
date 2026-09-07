@@ -57,8 +57,8 @@ namespace CaseClosed.Tests
             GameObject caseMgrObj = new GameObject("CaseManager");
             caseMgrObj.transform.SetParent(testRoot.transform);
             caseManager = caseMgrObj.AddComponent<CaseManager>();
-            caseManager.activeCase = testCase;
-            caseManager.discoveredEvidenceIds.Add(testEvidence.id);
+            caseManager.LoadCase(testCase);
+            caseManager.RegisterDiscoveredEvidence(testEvidence);
 
             PropertyInfo instProp = typeof(CaseManager).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
             instProp?.SetValue(null, caseManager);

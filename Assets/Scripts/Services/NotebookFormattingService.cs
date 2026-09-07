@@ -17,14 +17,23 @@ namespace CaseClosed.Services
         /// <returns>A formatted synopsis string.</returns>
         public string FormatCaseSummary(CaseSO activeCase)
         {
+            return FormatCaseSummary(activeCase, activeCase != null ? activeCase.leadInvestigator : null);
+        }
+
+        /// <summary>
+        /// Formats a case summary using the investigator effective for the current session without
+        /// changing the investigator reference authored on the case asset.
+        /// </summary>
+        public string FormatCaseSummary(CaseSO activeCase, CharacterProfileSO effectiveInvestigator)
+        {
             if (activeCase == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"<size=22><b>CASE FILE #{activeCase.levelNumber}</b></size>");
             sb.AppendLine($"<size=18><b>{activeCase.caseTitle}</b></size>\n");
-            if (activeCase.leadInvestigator != null)
+            if (effectiveInvestigator != null)
             {
-                sb.AppendLine($"<b>Lead Investigator:</b> {activeCase.leadInvestigator.fullName} ({activeCase.leadInvestigator.occupation})");
+                sb.AppendLine($"<b>Lead Investigator:</b> {effectiveInvestigator.fullName} ({effectiveInvestigator.occupation})");
             }
             sb.AppendLine($"<b>Date & Location:</b> {activeCase.dateAndLocation}");
             sb.AppendLine($"<b>Victim:</b> {activeCase.victimInfo}\n");
@@ -90,7 +99,20 @@ namespace CaseClosed.Services
         /// <param name="activeCase">The active case containing evidence definitions.</param>
         /// <param name="discoveredIds">Set of evidence IDs that have been found by the player.</param>
         /// <returns>A formatted list of discovered evidence items.</returns>
-        public string FormatDiscoveredEvidence(CaseSO activeCase, HashSet<string> discoveredIds)
+        public string FormatDiscoveredEvidence(CaseSO activeCase, IReadOnlyCollection<string> discoveredIds)
+        {
+            return FormatDiscoveredEvidence(activeCase, discoveredIds, null);
+        }
+
+        /// <summary>
+        /// Formats discovered evidence from an explicit session-state examination predicate.
+        /// Supplying the predicate prevents this presentation service from reading legacy runtime
+        /// flags retained on authored evidence assets for serialized-data compatibility.
+        /// </summary>
+        public string FormatDiscoveredEvidence(
+            CaseSO activeCase,
+            IReadOnlyCollection<string> discoveredIds,
+            System.Func<EvidenceSO, bool> isEvidenceExamined)
         {
             if (activeCase == null || activeCase.evidenceItems == null) return string.Empty;
 
@@ -98,12 +120,13 @@ namespace CaseClosed.Services
             bool any = false;
             foreach (var ev in activeCase.evidenceItems)
             {
-                if (ev != null && discoveredIds != null && discoveredIds.Contains(ev.id))
+                if (ev != null && Contains(discoveredIds, ev.id))
                 {
                     any = true;
                     sb.AppendLine($"<size=18><b>• {ev.evidenceName}</b></size> <color=#475569>[{ev.category}]</color>");
                     sb.AppendLine($"  {ev.baseDescription}");
-                    if (ev.isExamined && !string.IsNullOrEmpty(ev.detailedObservation))
+                    bool examined = isEvidenceExamined != null ? isEvidenceExamined(ev) : ev.isExamined;
+                    if (examined && !string.IsNullOrEmpty(ev.detailedObservation))
                     {
                         sb.AppendLine($"  <color=#0F766E><b>[EXAMINED]:</b> {ev.detailedObservation}</color>");
                     }
@@ -131,6 +154,36 @@ namespace CaseClosed.Services
         /// <returns>Rich text formatted dossier entry.</returns>
         public string FormatEvidenceDossier(EvidenceSO evidence, bool isDiscovered, int index = 0, int totalCount = 0)
         {
+            int legacyDiscoveredHotspotCount = 0;
+            if (evidence != null && evidence.hotspots != null)
+            {
+                foreach (EvidenceHotspot hotspot in evidence.hotspots)
+                {
+                    if (hotspot != null && hotspot.isDiscovered) legacyDiscoveredHotspotCount++;
+                }
+            }
+
+            return FormatEvidenceDossier(
+                evidence,
+                isDiscovered,
+                evidence != null && evidence.isExamined,
+                legacyDiscoveredHotspotCount,
+                index,
+                totalCount);
+        }
+
+        /// <summary>
+        /// Formats an evidence dossier from explicit runtime session state rather than mutable
+        /// fields on the authored evidence object.
+        /// </summary>
+        public string FormatEvidenceDossier(
+            EvidenceSO evidence,
+            bool isDiscovered,
+            bool isExamined,
+            int discoveredHotspotCount,
+            int index,
+            int totalCount)
+        {
             if (evidence == null)
             {
                 return "<i>No evidence selected.</i>";
@@ -148,7 +201,7 @@ namespace CaseClosed.Services
                 sb.AppendLine("<size=15><b>[ PHYSICAL DESCRIPTION ]</b></size>");
                 sb.AppendLine(evidence.baseDescription + "\n");
 
-                if (evidence.isExamined && !string.IsNullOrEmpty(evidence.detailedObservation))
+                if (isExamined && !string.IsNullOrEmpty(evidence.detailedObservation))
                 {
                     sb.AppendLine("<size=15><b>[ EXAMINATION FINDINGS ]</b></size>");
                     sb.AppendLine($"<color=#0F766E>{evidence.detailedObservation}</color>\n");
@@ -167,12 +220,7 @@ namespace CaseClosed.Services
 
                 if (evidence.hotspots != null && evidence.hotspots.Count > 0)
                 {
-                    int discoveredSpots = 0;
-                    foreach (var h in evidence.hotspots)
-                    {
-                        if (h != null && h.isDiscovered) discoveredSpots++;
-                    }
-                    sb.AppendLine($"<b>Forensic Hotspots Discovered:</b> {discoveredSpots} / {evidence.hotspots.Count}");
+                    sb.AppendLine($"<b>Forensic Hotspots Discovered:</b> {discoveredHotspotCount} / {evidence.hotspots.Count}");
                 }
             }
             else
@@ -194,7 +242,7 @@ namespace CaseClosed.Services
         /// </summary>
         /// <param name="unlockedClues">Dictionary of clue IDs and their unlocked description text.</param>
         /// <returns>A formatted string of all unlocked clues, or an empty prompt message.</returns>
-        public string FormatUnlockedClues(Dictionary<string, string> unlockedClues)
+        public string FormatUnlockedClues(IReadOnlyDictionary<string, string> unlockedClues)
         {
             if (unlockedClues == null || unlockedClues.Count == 0)
             {
@@ -210,6 +258,17 @@ namespace CaseClosed.Services
             }
 
             return sb.ToString();
+        }
+
+        private static bool Contains(IReadOnlyCollection<string> values, string value)
+        {
+            if (values == null) return false;
+
+            foreach (string candidate in values)
+            {
+                if (candidate == value) return true;
+            }
+            return false;
         }
     }
 }

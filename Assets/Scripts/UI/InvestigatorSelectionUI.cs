@@ -56,7 +56,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void RefreshUI()
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
 
             if (currentLevelStatusText != null)
             {

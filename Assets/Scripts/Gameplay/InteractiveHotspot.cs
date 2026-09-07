@@ -21,7 +21,7 @@ namespace CaseClosed.Gameplay
         {
             if (hotspotData != null)
             {
-                Debug.Log($"[Gameplay:Hotspot] Clicked hotspot '{hotspotData.hotspotTitle}' (ID: {hotspotData.hotspotId}, Discovered: {hotspotData.isDiscovered})");
+                Debug.Log($"[Gameplay:Hotspot] Clicked hotspot '{hotspotData.hotspotTitle}' (ID: {hotspotData.hotspotId})");
                 EvidenceManager.Instance?.DiscoverHotspot(hotspotData);
             }
         }

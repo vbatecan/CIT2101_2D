@@ -35,7 +35,7 @@ namespace CaseClosed.Tests
             _investigatorProfile = ScriptableObject.CreateInstance<CharacterProfileSO>();
             _investigatorProfile.characterId = "CHAR_VALENTINE";
             _investigatorProfile.fullName = "Detective Valentine";
-            _caseManager.selectedInvestigator = _investigatorProfile;
+            _caseManager.SetSelectedInvestigator(_investigatorProfile);
 
             PropertyInfo caseManagerInst = typeof(CaseManager).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
             caseManagerInst?.SetValue(null, _caseManager);
@@ -63,7 +63,7 @@ namespace CaseClosed.Tests
             CaseSO testCase = ScriptableObject.CreateInstance<CaseSO>();
             testCase.caseTitle = "Test Case";
             testCase.contradictionRules = new List<ContradictionRuleSO>();
-            _caseManager.activeCase = testCase;
+            _caseManager.LoadCase(testCase);
 
             // Setup Dialogue Tree
             _dialogueTree = ScriptableObject.CreateInstance<DialogueTreeSO>();
@@ -175,10 +175,10 @@ namespace CaseClosed.Tests
             _interrogationManager.SetInterrogationTarget(_suspectProfile, _dialogueTree);
             _dialogueUI.challengeButton = null;
 
-            _dialogueUI.DisplayNode(_interrogationManager.currentNode);
+            _dialogueUI.DisplayNode(_interrogationManager.CurrentNode);
             _dialogueUI.CompleteTypingImmediately();
 
-            Assert.IsTrue(_interrogationManager.isChallengeModeActive,
+            Assert.IsTrue(_interrogationManager.IsChallengeModeActive,
                 "Buttonless character dialogue must enable evidence selection after a challengeable line finishes.");
         }
 
@@ -197,7 +197,7 @@ namespace CaseClosed.Tests
             Assert.AreEqual("Detective Valentine", _dialogueUI.speakerNameText.text);
 
             // When selected investigator is null, fallback to Detective
-            _caseManager.selectedInvestigator = null;
+            _caseManager.ClearSelectedInvestigator();
             _dialogueUI.DisplayNode(detectiveNode);
             Assert.AreEqual("Detective", _dialogueUI.speakerNameText.text);
         }
@@ -205,7 +205,7 @@ namespace CaseClosed.Tests
         [Test]
         public void DialogueUI_TracksChallengeFailureReaction()
         {
-            _interrogationManager.currentSuspect = _suspectProfile;
+            _interrogationManager.SetInterrogationTarget(_suspectProfile, _dialogueTree);
 
             MethodInfo handleChallengeResultMethod = typeof(DialogueUI).GetMethod("HandleChallengeResult", BindingFlags.NonPublic | BindingFlags.Instance);
             Assert.IsNotNull(handleChallengeResultMethod);
@@ -230,16 +230,16 @@ namespace CaseClosed.Tests
         {
             _interrogationManager.SetInterrogationTarget(_suspectProfile, _dialogueTree);
 
-            Assert.AreEqual("NODE_CHALLENGEABLE", _interrogationManager.currentNode.nodeId);
-            Assert.IsFalse(_interrogationManager.isShowingFailureReaction);
+            Assert.AreEqual("NODE_CHALLENGEABLE", _interrogationManager.CurrentNode.nodeId);
+            Assert.IsFalse(_interrogationManager.IsShowingFailureReaction);
 
             // Present irrelevant evidence -> mismatch failure
             _interrogationManager.PresentEvidenceToChallenge(_testEvidence);
 
-            Assert.IsTrue(_interrogationManager.isShowingFailureReaction, "isShowingFailureReaction must be true on challenge mismatch");
+            Assert.IsTrue(_interrogationManager.IsShowingFailureReaction, "isShowingFailureReaction must be true on challenge mismatch");
             Assert.IsNotNull(_interrogationManager.LastChallengeableNode, "_lastChallengeableNode must remember the statement node");
             Assert.AreEqual("NODE_CHALLENGEABLE", _interrogationManager.LastChallengeableNode.nodeId);
-            Assert.IsFalse(_interrogationManager.isChallengeModeActive, "Challenge mode must be deactivated when evidence is presented");
+            Assert.IsFalse(_interrogationManager.IsChallengeModeActive, "Challenge mode must be deactivated when evidence is presented");
         }
 
         [Test]
@@ -249,14 +249,14 @@ namespace CaseClosed.Tests
 
             // Fail challenge
             _interrogationManager.PresentEvidenceToChallenge(_testEvidence);
-            Assert.IsTrue(_interrogationManager.isShowingFailureReaction);
+            Assert.IsTrue(_interrogationManager.IsShowingFailureReaction);
 
             // Calling AdvanceDialogue while showing failure reaction should loop back to challengeable node
             _interrogationManager.AdvanceDialogue();
 
-            Assert.IsFalse(_interrogationManager.isShowingFailureReaction, "AdvanceDialogue must clear isShowingFailureReaction");
-            Assert.IsNotNull(_interrogationManager.currentNode, "currentNode must not be null");
-            Assert.AreEqual("NODE_CHALLENGEABLE", _interrogationManager.currentNode.nodeId, "Must loop back to the challengeable statement node instead of advancing past it");
+            Assert.IsFalse(_interrogationManager.IsShowingFailureReaction, "AdvanceDialogue must clear isShowingFailureReaction");
+            Assert.IsNotNull(_interrogationManager.CurrentNode, "currentNode must not be null");
+            Assert.AreEqual("NODE_CHALLENGEABLE", _interrogationManager.CurrentNode.nodeId, "Must loop back to the challengeable statement node instead of advancing past it");
         }
     }
 }

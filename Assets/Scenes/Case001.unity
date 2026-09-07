@@ -2485,7 +2485,6 @@ RectTransform:
   - {fileID: 1936733749}
   - {fileID: 1057426693}
   - {fileID: 203977180}
-  - {fileID: 8075807349974325153}
   - {fileID: 330160357}
   - {fileID: 1760191832}
   - {fileID: 472950826}
@@ -6038,6 +6037,7 @@ RectTransform:
   m_Children:
   - {fileID: 33612051}
   - {fileID: 1482746552}
+  - {fileID: 8075807349974325153}
   m_Father: {fileID: 725922391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6055,7 +6055,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 061c85dc891f9f61693e94c33d7f1b99, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.UI.DialogueUI
   speakerNameText: {fileID: 0}
   dialogueBodyText: {fileID: 0}
@@ -7047,15 +7047,27 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 725922391}
+    m_TransformParent: {fileID: 1936733749}
     m_Modifications:
     - target: {fileID: 21746568448768881, guid: 3feedc338db2c82ebb8fe58648509bcd, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 45.14804
+      objectReference: {fileID: 0}
+    - target: {fileID: 21746568448768881, guid: 3feedc338db2c82ebb8fe58648509bcd, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 40.84281
+      objectReference: {fileID: 0}
+    - target: {fileID: 21746568448768881, guid: 3feedc338db2c82ebb8fe58648509bcd, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 118.06323
+      objectReference: {fileID: 0}
+    - target: {fileID: 21746568448768881, guid: 3feedc338db2c82ebb8fe58648509bcd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -230
+      value: -48.72
       objectReference: {fileID: 0}
     - target: {fileID: 21746568448768881, guid: 3feedc338db2c82ebb8fe58648509bcd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -438
+      value: -418.52
       objectReference: {fileID: 0}
     - target: {fileID: 21746568448768881, guid: 3feedc338db2c82ebb8fe58648509bcd, type: 3}
       propertyPath: m_LocalPosition.z

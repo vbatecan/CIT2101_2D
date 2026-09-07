@@ -102,7 +102,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void RefreshBoard()
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase == null) return;
 
             if (boardTitleText != null)
@@ -132,18 +132,18 @@ namespace CaseClosed.UI
                     DestroyImmediate(child.gameObject);
             }
 
-            var unlockedClues = CaseManager.Instance?.unlockedCluesText;
-            var discoveredEvIds = CaseManager.Instance?.discoveredEvidenceIds;
+            CaseManager caseManager = CaseManager.Instance;
+            var unlockedClues = caseManager?.UnlockedCluesText;
 
             // Collect unique clue entries: (ClueID, DisplayTitle, BodyText)
             var clueEntries = new List<(string id, string title, string text)>();
 
             // 1. Evidence base clues
-            if (activeCase.evidenceItems != null && discoveredEvIds != null)
+            if (activeCase.evidenceItems != null && caseManager != null)
             {
                 foreach (var ev in activeCase.evidenceItems)
                 {
-                    if (ev != null && discoveredEvIds.Contains(ev.id))
+                    if (ev != null && caseManager.IsEvidenceDiscovered(ev))
                     {
                         string baseClueId = $"{ev.id}_BASE_CLUE";
                         string clueText = !string.IsNullOrEmpty(ev.unlockedClueText) ? ev.unlockedClueText : ev.baseDescription;
@@ -168,7 +168,7 @@ namespace CaseClosed.UI
                 }
             }
 
-            string selectedA = DeductionBoardController.Instance?.selectedClueA;
+            string selectedA = DeductionBoardController.Instance?.FirstSelectedClueId;
 
             // Instantiate buttons for each clue entry
             foreach (var entry in clueEntries)
@@ -284,7 +284,7 @@ namespace CaseClosed.UI
         {
             if (completedDeductionsBody == null) return;
 
-            var unlockedClues = CaseManager.Instance?.unlockedCluesText;
+            var unlockedClues = CaseManager.Instance?.UnlockedCluesText;
             if (activeCase.clueConnections == null || unlockedClues == null)
             {
                 completedDeductionsBody.text = "No deductions formed yet.";
@@ -342,7 +342,7 @@ namespace CaseClosed.UI
         private void HandleClueSelected(string clueId)
         {
             UpdateSelectionStatus();
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase != null)
             {
                 RenderClueCards(activeCase);
@@ -353,7 +353,7 @@ namespace CaseClosed.UI
         {
             if (selectionStatusText == null) return;
 
-            string selectedA = DeductionBoardController.Instance?.selectedClueA;
+            string selectedA = DeductionBoardController.Instance?.FirstSelectedClueId;
             if (string.IsNullOrEmpty(selectedA))
             {
                 selectionStatusText.text = "Select first clue to connect...";

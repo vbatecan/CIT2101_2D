@@ -6,8 +6,8 @@ using CaseClosed.Services;
 namespace CaseClosed.Managers
 {
     /// <summary>
-    /// Controller MonoBehaviour managing deduction board user interaction and clue selection state,
-    /// delegating connection matching logic to <see cref="DeductionService"/>.
+    /// Unity adapter for deduction board interaction. Pair-selection state lives in
+    /// <see cref="DeductionSelectionState"/> and connection matching lives in <see cref="DeductionService"/>.
     /// Can be dragged directly onto a GameObject in the Unity Inspector.
     /// </summary>
     public class DeductionBoardController : MonoBehaviour
@@ -15,11 +15,12 @@ namespace CaseClosed.Managers
         /// <summary>Singleton instance of the DeductionBoardController.</summary>
         public static DeductionBoardController Instance { get; private set; }
 
-        /// <summary>The first selected clue ID on the board.</summary>
-        public string selectedClueA;
+        [Header("Legacy Selection Defaults")]
+        [Tooltip("Retained to deserialize existing scenes. Runtime selection is held in DeductionSelectionState.")]
+        [SerializeField] private string selectedClueA;
 
-        /// <summary>The second selected clue ID on the board.</summary>
-        public string selectedClueB;
+        [Tooltip("Retained to deserialize existing scenes. Runtime selection is held in DeductionSelectionState.")]
+        [SerializeField] private string selectedClueB;
 
         /// <summary>Event raised when a clue is selected or deselected for connection.</summary>
         public event Action<string> OnClueSelectedForConnection;
@@ -28,6 +29,13 @@ namespace CaseClosed.Managers
         public event Action<bool, ClueConnectionSO> OnConnectionResult;
 
         private readonly DeductionService deductionService = new DeductionService();
+        private readonly DeductionSelectionState selectionState = new DeductionSelectionState();
+
+        /// <summary>The first clue selected for the current runtime connection attempt.</summary>
+        public string FirstSelectedClueId => selectionState.FirstSelectedClueId;
+
+        /// <summary>The second clue selected for the current runtime connection attempt.</summary>
+        public string SecondSelectedClueId => selectionState.SecondSelectedClueId;
 
         /// <summary>
         /// Initializes the singleton instance.
@@ -35,6 +43,7 @@ namespace CaseClosed.Managers
         private void Awake()
         {
             Instance = this;
+            selectionState.Restore(selectedClueA, selectedClueB);
         }
 
         private void OnDestroy()
@@ -51,26 +60,23 @@ namespace CaseClosed.Managers
         /// <param name="clueId">The unique identifier of the clicked clue.</param>
         public void SelectClue(string clueId)
         {
-            if (string.IsNullOrEmpty(clueId)) return;
+            DeductionSelectionState.Transition transition = selectionState.Select(clueId);
+            switch (transition)
+            {
+                case DeductionSelectionState.Transition.FirstClueSelected:
+                    Debug.Log($"[DeductionBoard] Selected first clue for pairing: '{FirstSelectedClueId}'");
+                    OnClueSelectedForConnection?.Invoke(FirstSelectedClueId);
+                    return;
 
-            if (string.IsNullOrEmpty(selectedClueA))
-            {
-                selectedClueA = clueId;
-                Debug.Log($"[DeductionBoard] Selected first clue for pairing: '{selectedClueA}'");
-                OnClueSelectedForConnection?.Invoke(selectedClueA);
-            }
-            else if (selectedClueA == clueId)
-            {
-                // Deselect if clicking the already selected clue
-                Debug.Log($"[DeductionBoard] Deselected clue: '{selectedClueA}'");
-                selectedClueA = null;
-                OnClueSelectedForConnection?.Invoke(null);
-            }
-            else
-            {
-                selectedClueB = clueId;
-                Debug.Log($"[DeductionBoard] Selected second clue for pairing: '{selectedClueB}'. Attempting deduction connection...");
-                AttemptConnection(selectedClueA, selectedClueB);
+                case DeductionSelectionState.Transition.FirstClueDeselected:
+                    Debug.Log($"[DeductionBoard] Deselected clue: '{clueId}'");
+                    OnClueSelectedForConnection?.Invoke(null);
+                    return;
+
+                case DeductionSelectionState.Transition.PairReady:
+                    Debug.Log($"[DeductionBoard] Selected second clue for pairing: '{SecondSelectedClueId}'. Attempting deduction connection...");
+                    AttemptConnection(FirstSelectedClueId, SecondSelectedClueId);
+                    return;
             }
         }
 
@@ -80,8 +86,7 @@ namespace CaseClosed.Managers
         public void ClearSelection()
         {
             Debug.Log("[DeductionBoard] Selection cleared");
-            selectedClueA = null;
-            selectedClueB = null;
+            selectionState.Clear();
             OnClueSelectedForConnection?.Invoke(null);
         }
 
@@ -92,7 +97,8 @@ namespace CaseClosed.Managers
         /// <param name="clueB">Second clue ID in the connection.</param>
         private void AttemptConnection(string clueA, string clueB)
         {
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseManager caseManager = CaseManager.Instance;
+            CaseSO activeCase = caseManager != null ? caseManager.ActiveCase : null;
             if (activeCase == null)
             {
                 Debug.LogWarning("[DeductionBoard] Cannot attempt connection: activeCase is null");
@@ -105,7 +111,7 @@ namespace CaseClosed.Managers
             if (matchedRule != null)
             {
                 Debug.Log($"[DeductionBoard] Successful deduction! Matched '{matchedRule.connectionTitle}' -> Unlocks '{matchedRule.resultClueTitle}' (ID: {matchedRule.resultClueId})");
-                CaseManager.Instance?.UnlockClue(matchedRule.resultClueId, matchedRule.deductionText);
+                caseManager.UnlockClue(matchedRule.resultClueId, matchedRule.deductionText);
                 AudioManager.Instance?.PlayDeductionLinked();
                 OnConnectionResult?.Invoke(true, matchedRule);
             }

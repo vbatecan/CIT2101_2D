@@ -42,13 +42,13 @@ namespace CaseClosed.Gameplay
             {
                 CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
                 CaseManager.Instance.OnInvestigatorChanged += HandleInvestigatorChanged;
-                if (CaseManager.Instance.activeCase != null)
+                if (CaseManager.Instance.ActiveCase != null)
                 {
-                    HandleCaseLoaded(CaseManager.Instance.activeCase);
+                    HandleCaseLoaded(CaseManager.Instance.ActiveCase);
                 }
-                else if (characterSlot == CharacterSlot.Investigator && CaseManager.Instance.selectedInvestigator != null)
+                else if (characterSlot == CharacterSlot.Investigator && CaseManager.Instance.EffectiveInvestigator != null)
                 {
-                    UpdateSuspectProfile(CaseManager.Instance.selectedInvestigator);
+                    UpdateSuspectProfile(CaseManager.Instance.EffectiveInvestigator);
                 }
             }
         }
@@ -119,11 +119,11 @@ namespace CaseClosed.Gameplay
                     break;
 
                 case CharacterSlot.AutoDetect:
-                    UpdateSuspectProfile(InterrogationManager.Instance?.currentSuspect ?? activeCase.primarySuspect);
+                    UpdateSuspectProfile(InterrogationManager.Instance?.CurrentSuspect ?? activeCase.primarySuspect);
                     break;
 
                 case CharacterSlot.Investigator:
-                    UpdateSuspectProfile(activeCase.leadInvestigator ?? CaseManager.Instance?.selectedInvestigator);
+                    UpdateSuspectProfile(CaseManager.Instance != null ? CaseManager.Instance.EffectiveInvestigator : activeCase.leadInvestigator);
                     break;
             }
         }
@@ -177,7 +177,7 @@ namespace CaseClosed.Gameplay
         {
             if (activeSuspect != null)
             {
-                DialogueNode currentNode = InterrogationManager.Instance?.currentNode;
+                DialogueNode currentNode = InterrogationManager.Instance?.CurrentNode;
                 if (currentNode != null && !string.IsNullOrEmpty(currentNode.speakerId))
                 {
                     if (currentNode.speakerId == activeSuspect.characterId)
@@ -188,7 +188,7 @@ namespace CaseClosed.Gameplay
                 }
 
                 // Fallback: only react if this display corresponds to the active suspect being interrogated
-                CharacterProfileSO currentInterrogated = InterrogationManager.Instance?.currentSuspect;
+                CharacterProfileSO currentInterrogated = InterrogationManager.Instance?.CurrentSuspect;
                 if (characterSlot == CharacterSlot.AutoDetect || currentInterrogated == null || currentInterrogated.characterId == activeSuspect.characterId)
                 {
                     SetExpression(expression);

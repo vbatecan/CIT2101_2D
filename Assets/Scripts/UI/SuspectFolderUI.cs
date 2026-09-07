@@ -278,7 +278,7 @@ namespace CaseClosed.UI
             CaseSO activeCase = activeCaseOverride;
             if (activeCase == null && CaseManager.Instance != null)
             {
-                activeCase = CaseManager.Instance.activeCase;
+                activeCase = CaseManager.Instance.ActiveCase;
             }
 
             string sceneName = SceneManager.GetActiveScene().name;

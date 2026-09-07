@@ -7,13 +7,13 @@ using CaseClosed.Services;
 namespace CaseClosed.Managers
 {
     /// <summary>
-    /// Controller MonoBehaviour managing interrogation game flow, dialogue progression, and challenge mode presentation,
-    /// delegating contradiction rule matching and failure reactions to <see cref="InterrogationService"/>.
-    /// Can be dragged directly onto a GameObject in the Unity Inspector.
+    /// Unity-facing adapter for interrogation flow. Inspector defaults remain serialized on this
+    /// component while <see cref="InterrogationSessionState"/> owns mutable conversation state.
     /// </summary>
     public class InterrogationManager : MonoBehaviour
     {
         private static InterrogationManager _instance;
+
         /// <summary>Singleton instance of the InterrogationManager.</summary>
         public static InterrogationManager Instance
         {
@@ -25,25 +25,37 @@ namespace CaseClosed.Managers
             private set => _instance = value;
         }
 
-        [Header("State")]
+        [Header("Initial Interrogation Defaults")]
+        [Tooltip("Optional Inspector default used to start an interrogation.")]
+        [SerializeField] private CharacterProfileSO currentSuspect;
+        [Tooltip("Optional Inspector default used to start an interrogation.")]
+        [SerializeField] private DialogueTreeSO currentDialogueTree;
+        [Tooltip("Optional Inspector node used only when restoring a preconfigured interrogation.")]
+        [SerializeField] private DialogueNode currentNode;
+        [SerializeField] private bool isChallengeModeActive;
+        [SerializeField] private bool isShowingFailureReaction;
+
+        private readonly InterrogationSessionState sessionState = new InterrogationSessionState();
+        private readonly InterrogationService interrogationService = new InterrogationService();
+        private bool hasStartedSession;
+
         /// <summary>The current suspect or witness being interrogated.</summary>
-        public CharacterProfileSO currentSuspect;
+        public CharacterProfileSO CurrentSuspect => hasStartedSession ? sessionState.CurrentSuspect : currentSuspect;
 
         /// <summary>The active dialogue tree.</summary>
-        public DialogueTreeSO currentDialogueTree;
+        public DialogueTreeSO CurrentDialogueTree => hasStartedSession ? sessionState.CurrentDialogueTree : currentDialogueTree;
 
         /// <summary>The current active dialogue statement node.</summary>
-        public DialogueNode currentNode;
+        public DialogueNode CurrentNode => hasStartedSession ? sessionState.CurrentNode : currentNode;
 
-        /// <summary>Flag indicating whether challenge mode is active (awaiting evidence presentation).</summary>
-        public bool isChallengeModeActive = false;
+        /// <summary>Whether challenge mode is active and awaiting evidence presentation.</summary>
+        public bool IsChallengeModeActive => hasStartedSession ? sessionState.IsChallengeModeActive : isChallengeModeActive;
 
-        /// <summary>Flag indicating whether a failed challenge reaction is currently being displayed.</summary>
-        public bool isShowingFailureReaction = false;
+        /// <summary>Whether the failure reaction is currently being displayed.</summary>
+        public bool IsShowingFailureReaction => hasStartedSession ? sessionState.IsShowingFailureReaction : isShowingFailureReaction;
 
-        /// <summary>Cached reference to the last challengeable statement node before a failed challenge.</summary>
-        private DialogueNode _lastChallengeableNode;
-        public DialogueNode LastChallengeableNode => _lastChallengeableNode;
+        /// <summary>The last challengeable statement node before a failed challenge.</summary>
+        public DialogueNode LastChallengeableNode => hasStartedSession ? sessionState.LastChallengeableNode : null;
 
         /// <summary>Event raised when the interrogated suspect changes.</summary>
         public event Action<CharacterProfileSO> OnSuspectChanged;
@@ -63,11 +75,6 @@ namespace CaseClosed.Managers
         /// <summary>Event raised when dialogue is dismissed or completed.</summary>
         public event Action OnDialogueClosed;
 
-        private readonly InterrogationService interrogationService = new InterrogationService();
-
-        /// <summary>
-        /// Initializes the singleton instance.
-        /// </summary>
         private void Awake()
         {
             _instance = this;
@@ -81,182 +88,153 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>
-        /// Automatically sets interrogation target on Start if assigned in the Inspector.
-        /// </summary>
+        /// <summary>Starts from optional Inspector defaults when both a suspect and tree are configured.</summary>
         private void Start()
         {
-            if (currentSuspect != null && currentDialogueTree != null && currentNode == null)
+            if (!hasStartedSession && currentSuspect != null && currentDialogueTree != null && currentNode == null)
             {
                 SetInterrogationTarget(currentSuspect, currentDialogueTree);
             }
-        }
-
-        /// <summary>
-        /// Sets the active suspect and dialogue tree for an interrogation session.
-        /// </summary>
-        /// <param name="suspect">The character profile of the suspect.</param>
-        /// <param name="dialogueTree">The initial dialogue tree.</param>
-        public void SetInterrogationTarget(CharacterProfileSO suspect, DialogueTreeSO dialogueTree)
-        {
-            currentSuspect = suspect;
-            currentDialogueTree = dialogueTree;
-            isChallengeModeActive = false;
-            isShowingFailureReaction = false;
-            _lastChallengeableNode = null;
-
-            Debug.Log($"[Interrogation] Set interrogation target: '{suspect?.fullName}' (Tree: '{dialogueTree?.treeId}')");
-
-            OnSuspectChanged?.Invoke(currentSuspect);
-
-            if (currentDialogueTree != null && !string.IsNullOrEmpty(currentDialogueTree.startNodeId))
+            else if (!hasStartedSession && currentDialogueTree != null)
             {
-                JumpToNode(currentDialogueTree.startNodeId);
+                EnsureSessionState();
             }
         }
 
-        /// <summary>
-        /// Navigates to a specific dialogue node by its identifier.
-        /// </summary>
-        /// <param name="nodeId">The target node ID to navigate to.</param>
+        /// <summary>Sets the active suspect and dialogue tree for a new interrogation session.</summary>
+        public void SetInterrogationTarget(CharacterProfileSO suspect, DialogueTreeSO dialogueTree)
+        {
+            sessionState.Begin(suspect, dialogueTree);
+            hasStartedSession = true;
+
+            Debug.Log($"[Interrogation] Set interrogation target: '{suspect?.fullName}' (Tree: '{dialogueTree?.treeId}')");
+            OnSuspectChanged?.Invoke(CurrentSuspect);
+
+            if (CurrentDialogueTree != null && !string.IsNullOrEmpty(CurrentDialogueTree.startNodeId))
+            {
+                JumpToNode(CurrentDialogueTree.startNodeId);
+            }
+        }
+
+        /// <summary>Navigates to a specific dialogue node by its identifier.</summary>
         public void JumpToNode(string nodeId)
         {
-            if (currentDialogueTree == null)
+            DialogueTreeSO dialogueTree = CurrentDialogueTree;
+            if (dialogueTree == null)
             {
                 Debug.LogWarning("[Interrogation] Cannot jump to node: currentDialogueTree is null");
                 return;
             }
 
-            DialogueNode targetNode = currentDialogueTree.GetNodeById(nodeId);
-            if (targetNode != null)
+            DialogueNode targetNode = dialogueTree.GetNodeById(nodeId);
+            if (targetNode == null)
             {
-                currentNode = targetNode;
-                Debug.Log($"[Interrogation] Jumped to node '{nodeId}' (Speaker: '{targetNode.speakerName}', Expr: {targetNode.expression}, Challengeable: {targetNode.isChallengeable})");
-                OnDialogueNodeDisplayed?.Invoke(currentNode);
-                OnExpressionChanged?.Invoke(currentNode.expression);
-            }
-            else
-            {
-                Debug.LogWarning($"[Interrogation] Dialogue node '{nodeId}' not found in tree '{currentDialogueTree.treeId}'");
-            }
-        }
-
-        /// <summary>
-        /// Advances the dialogue to the default next node if no choices or active challenge block it.
-        /// </summary>
-        public void AdvanceDialogue()
-        {
-            if (currentNode == null || isChallengeModeActive) return;
-
-            if (isShowingFailureReaction)
-            {
-                isShowingFailureReaction = false;
-                if (_lastChallengeableNode != null)
-                {
-                    Debug.Log($"[Interrogation] Looping back to challengeable node '{_lastChallengeableNode.nodeId}' after failure reaction.");
-                    JumpToNode(_lastChallengeableNode.nodeId);
-                    return;
-                }
-            }
-
-            CompleteCurrentNode();
-
-            if (currentNode.choices != null && currentNode.choices.Count > 0)
-            {
-                // Branching choices UI handles navigation
+                Debug.LogWarning($"[Interrogation] Dialogue node '{nodeId}' not found in tree '{dialogueTree.treeId}'");
                 return;
             }
 
-            if (!string.IsNullOrEmpty(currentNode.defaultNextNodeId))
+            EnsureSessionState();
+            sessionState.SetCurrentNode(targetNode);
+            Debug.Log($"[Interrogation] Jumped to node '{nodeId}' (Speaker: '{targetNode.speakerName}', Expr: {targetNode.expression}, Challengeable: {targetNode.isChallengeable})");
+            OnDialogueNodeDisplayed?.Invoke(CurrentNode);
+            OnExpressionChanged?.Invoke(CurrentNode.expression);
+        }
+
+        /// <summary>Advances the dialogue to its default next node when no challenge is active.</summary>
+        public void AdvanceDialogue()
+        {
+            EnsureSessionState();
+            DialogueNode node = CurrentNode;
+            if (node == null || IsChallengeModeActive) return;
+
+            if (IsShowingFailureReaction && sessionState.TryResumeAfterFailure(out DialogueNode challengeableNode))
             {
-                Debug.Log($"[Interrogation] Advancing dialogue from '{currentNode.nodeId}' to default next '{currentNode.defaultNextNodeId}'");
-                JumpToNode(currentNode.defaultNextNodeId);
+                Debug.Log($"[Interrogation] Looping back to challengeable node '{challengeableNode.nodeId}' after failure reaction.");
+                JumpToNode(challengeableNode.nodeId);
+                return;
+            }
+
+            CompleteCurrentNode(node);
+
+            if (node.choices != null && node.choices.Count > 0)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(node.defaultNextNodeId))
+            {
+                Debug.Log($"[Interrogation] Advancing dialogue from '{node.nodeId}' to default next '{node.defaultNextNodeId}'");
+                JumpToNode(node.defaultNextNodeId);
             }
             else
             {
-                Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{currentNode.nodeId}'. Closing dialogue.");
+                Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{node.nodeId}'. Closing dialogue.");
                 CloseDialogue();
             }
         }
 
-        /// <summary>
-        /// Applies story rewards when the player finishes reading the current dialogue node.
-        /// </summary>
-        private void CompleteCurrentNode()
+        /// <summary>Applies story evidence rewards after the player finishes a dialogue node.</summary>
+        private static void CompleteCurrentNode(DialogueNode node)
         {
-            if (currentNode == null || CaseManager.Instance == null) return;
+            if (node == null || CaseManager.Instance == null || node.unlockEvidenceOnComplete == null) return;
 
-            if (currentNode.unlockEvidenceOnComplete != null)
+            foreach (string evidenceId in node.unlockEvidenceOnComplete)
             {
-                foreach (string evidenceId in currentNode.unlockEvidenceOnComplete)
-                {
-                    CaseManager.Instance.UnlockEvidence(evidenceId);
-                }
+                CaseManager.Instance.UnlockEvidence(evidenceId);
             }
         }
 
-        /// <summary>
-        /// Closes the active dialogue window and returns to table exploration.
-        /// </summary>
+        /// <summary>Closes the active dialogue window and resets transient challenge state.</summary>
         public void CloseDialogue()
         {
-            currentNode = null;
-            isChallengeModeActive = false;
-            isShowingFailureReaction = false;
-            _lastChallengeableNode = null;
+            EnsureSessionState();
+            sessionState.Close();
             OnChallengeModeToggled?.Invoke(false);
             OnDialogueClosed?.Invoke();
         }
 
-        /// <summary>
-        /// Toggles challenge mode on the current node if challengeable.
-        /// </summary>
-        /// <param name="enable">True to activate challenge mode; false to cancel.</param>
+        /// <summary>Toggles challenge mode on the current node if that node is challengeable.</summary>
         public void ToggleChallengeMode(bool enable)
         {
-            if (currentNode == null || !currentNode.isChallengeable)
+            DialogueNode node = CurrentNode;
+            if (node == null || !node.isChallengeable)
             {
-                Debug.Log($"[Interrogation] Current node '{(currentNode != null ? currentNode.nodeId : "NULL")}' is not challengeable.");
+                Debug.Log($"[Interrogation] Current node '{(node != null ? node.nodeId : "NULL")}' is not challengeable.");
                 OnChallengeModeToggled?.Invoke(false);
                 return;
             }
 
-            isChallengeModeActive = enable;
-            Debug.Log($"[Interrogation] Challenge mode toggled: {isChallengeModeActive} for node '{currentNode.nodeId}'");
-            OnChallengeModeToggled?.Invoke(isChallengeModeActive);
+            EnsureSessionState();
+            sessionState.SetChallengeMode(enable);
+            Debug.Log($"[Interrogation] Challenge mode toggled: {IsChallengeModeActive} for node '{node.nodeId}'");
+            OnChallengeModeToggled?.Invoke(IsChallengeModeActive);
         }
 
-        /// <summary>
-        /// Presents a piece of evidence to challenge the current statement, evaluating contradictions via <see cref="InterrogationService"/>.
-        /// </summary>
-        /// <param name="presentedEvidence">The evidence item presented by the player.</param>
+        /// <summary>Evaluates evidence presented against the current challengeable statement.</summary>
         public void PresentEvidenceToChallenge(EvidenceSO presentedEvidence)
         {
-            if (currentNode == null || presentedEvidence == null) return;
+            EnsureSessionState();
+            DialogueNode node = CurrentNode;
+            if (node == null || presentedEvidence == null) return;
 
-            CaseSO activeCase = CaseManager.Instance?.activeCase;
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase == null) return;
 
-            Debug.Log($"[Interrogation] Presenting evidence '{presentedEvidence.evidenceName}' (ID: {presentedEvidence.id}) against statement node '{currentNode.nodeId}'");
+            Debug.Log($"[Interrogation] Presenting evidence '{presentedEvidence.evidenceName}' (ID: {presentedEvidence.id}) against statement node '{node.nodeId}'");
 
-            // Contradiction verification delegated to Service
             ContradictionRuleSO matchingRule = interrogationService.FindMatchingContradiction(
                 activeCase,
-                currentNode.nodeId,
-                presentedEvidence.id
-            );
+                node.nodeId,
+                presentedEvidence.id);
 
             if (matchingRule != null)
             {
-                // Contradiction successfully exposed
                 Debug.Log($"[Interrogation] Contradiction exposed! Rule: '{matchingRule.ruleTitle}' (Reaction: {matchingRule.reactionExpression})");
                 CaseManager.Instance?.RegisterContradictionExposed(matchingRule);
                 OnExpressionChanged?.Invoke(matchingRule.reactionExpression);
                 OnChallengeResult?.Invoke(true, matchingRule.reactionDialogue);
 
-                _lastChallengeableNode = null;
-                isShowingFailureReaction = false;
-                isChallengeModeActive = false;
+                sessionState.RecordSuccessfulChallenge();
                 OnChallengeModeToggled?.Invoke(false);
 
                 if (!string.IsNullOrEmpty(matchingRule.unlockedDialogueNodeId))
@@ -266,21 +244,30 @@ namespace CaseClosed.Managers
             }
             else
             {
-                // Challenge failed / No contradiction with this evidence
-                _lastChallengeableNode = currentNode;
-                isShowingFailureReaction = true;
-
-                isChallengeModeActive = false;
+                sessionState.RecordFailedChallenge();
                 OnChallengeModeToggled?.Invoke(false);
 
-                CharacterExpression failExpression = interrogationService.GetFailureExpression(currentSuspect);
-                string responseText = interrogationService.GetFailureResponseText(currentSuspect, presentedEvidence);
+                CharacterExpression failExpression = interrogationService.GetFailureExpression(CurrentSuspect);
+                string responseText = interrogationService.GetFailureResponseText(CurrentSuspect, presentedEvidence);
 
                 Debug.Log($"[Interrogation] Challenge failed. Suspect reaction expression: {failExpression}. Response: \"{responseText}\"");
-
                 OnExpressionChanged?.Invoke(failExpression);
                 OnChallengeResult?.Invoke(false, responseText);
             }
+        }
+
+        private void EnsureSessionState()
+        {
+            if (hasStartedSession) return;
+
+            sessionState.Begin(currentSuspect, currentDialogueTree);
+            sessionState.SetCurrentNode(currentNode);
+            sessionState.SetChallengeMode(isChallengeModeActive);
+            if (isShowingFailureReaction)
+            {
+                sessionState.RecordFailedChallenge();
+            }
+            hasStartedSession = true;
         }
     }
 }

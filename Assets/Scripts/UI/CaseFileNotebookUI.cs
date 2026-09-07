@@ -350,28 +350,43 @@ namespace CaseClosed.UI
         private CaseSO GetActiveCase()
         {
             if (activeCaseData != null) return activeCaseData;
-            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null)
-                return CaseManager.Instance.activeCase;
+            if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null)
+                return CaseManager.Instance.ActiveCase;
             var mgr = FindFirstObjectByType<CaseManager>();
-            if (mgr != null && mgr.activeCase != null)
-                return mgr.activeCase;
+            if (mgr != null && mgr.ActiveCase != null)
+                return mgr.ActiveCase;
             return null;
         }
 
-        private HashSet<string> GetDiscoveredEvidenceIds()
+        private bool IsEvidenceDiscovered(string evidenceId)
         {
-            if (evidenceOverride != null) return evidenceOverride;
-            if (CaseManager.Instance != null) return CaseManager.Instance.discoveredEvidenceIds;
+            if (evidenceOverride != null) return evidenceOverride.Contains(evidenceId);
+            if (CaseManager.Instance != null) return CaseManager.Instance.IsEvidenceDiscovered(evidenceId);
             var mgr = FindFirstObjectByType<CaseManager>();
-            return mgr != null ? mgr.discoveredEvidenceIds : null;
+            return mgr != null && mgr.IsEvidenceDiscovered(evidenceId);
         }
 
-        private Dictionary<string, string> GetUnlockedClues()
+        private IReadOnlyDictionary<string, string> GetUnlockedClues()
         {
             if (cluesOverride != null) return cluesOverride;
-            if (CaseManager.Instance != null) return CaseManager.Instance.unlockedCluesText;
+            if (CaseManager.Instance != null) return CaseManager.Instance.UnlockedCluesText;
             var mgr = FindFirstObjectByType<CaseManager>();
-            return mgr != null ? mgr.unlockedCluesText : null;
+            return mgr != null ? mgr.UnlockedCluesText : null;
+        }
+
+        private CaseManager GetSessionManager(CaseSO caseData)
+        {
+            CaseManager manager = CaseManager.Instance;
+            if (manager != null && manager.ActiveCase == caseData) return manager;
+
+            manager = FindFirstObjectByType<CaseManager>();
+            return manager != null && manager.ActiveCase == caseData ? manager : null;
+        }
+
+        private CharacterProfileSO GetEffectiveInvestigator(CaseSO caseData)
+        {
+            CaseManager manager = GetSessionManager(caseData);
+            return manager != null ? manager.EffectiveInvestigator : caseData?.leadInvestigator;
         }
 
         /// <summary>
@@ -407,7 +422,7 @@ namespace CaseClosed.UI
             {
                 case NotebookTab.CaseSummary:
                     if (notebookTitleText != null) notebookTitleText.text = activeCase.caseTitle;
-                    contentText = formattingService.FormatCaseSummary(activeCase);
+                    contentText = formattingService.FormatCaseSummary(activeCase, GetEffectiveInvestigator(activeCase));
                     SetupSummaryCard(activeCase);
                     break;
 
@@ -419,29 +434,23 @@ namespace CaseClosed.UI
 
                 case NotebookTab.Evidence:
                     if (notebookTitleText != null) notebookTitleText.text = "EVIDENCE REPOSITORY";
-                    var discovered = GetDiscoveredEvidenceIds();
-
                     if (smartFocus && activeCase.evidenceItems != null && activeCase.evidenceItems.Count > 0)
                     {
                         bool isCurrentDiscovered = currentEvidenceIndex >= 0 &&
                                                    currentEvidenceIndex < activeCase.evidenceItems.Count &&
                                                    activeCase.evidenceItems[currentEvidenceIndex] != null &&
-                                                   discovered != null &&
-                                                   discovered.Contains(activeCase.evidenceItems[currentEvidenceIndex].id);
+                                                   IsEvidenceDiscovered(activeCase.evidenceItems[currentEvidenceIndex].id);
 
                         if (!isCurrentDiscovered)
                         {
                             int firstDiscoveredIndex = -1;
-                            if (discovered != null)
+                            for (int i = 0; i < activeCase.evidenceItems.Count; i++)
                             {
-                                for (int i = 0; i < activeCase.evidenceItems.Count; i++)
+                                var item = activeCase.evidenceItems[i];
+                                if (item != null && IsEvidenceDiscovered(item.id))
                                 {
-                                    var item = activeCase.evidenceItems[i];
-                                    if (item != null && discovered.Contains(item.id))
-                                    {
-                                        firstDiscoveredIndex = i;
-                                        break;
-                                    }
+                                    firstDiscoveredIndex = i;
+                                    break;
                                 }
                             }
 
@@ -456,7 +465,7 @@ namespace CaseClosed.UI
                         }
                     }
 
-                    contentText = SetupEvidenceCard(activeCase, discovered);
+                    contentText = SetupEvidenceCard(activeCase);
                     break;
 
                 case NotebookTab.Clues:
@@ -486,7 +495,8 @@ namespace CaseClosed.UI
             }
             if (summaryCaseMetaLabel != null)
             {
-                string lead = activeCase.leadInvestigator != null ? activeCase.leadInvestigator.fullName : "Detective Bureau";
+                CharacterProfileSO investigator = GetEffectiveInvestigator(activeCase);
+                string lead = investigator != null ? investigator.fullName : "Detective Bureau";
                 summaryCaseMetaLabel.text = $"<b>CASE #{activeCase.levelNumber}</b>\n\n<b>Lead:</b> {lead}\n<b>Location:</b> {activeCase.dateAndLocation}\n<b>Victim:</b> {activeCase.victimInfo}\n\n<b>STATUS:</b> <color=#166534><b>ACTIVE FILE</b></color>";
             }
         }
@@ -523,8 +533,7 @@ namespace CaseClosed.UI
             if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count <= 1) return;
             currentEvidenceIndex = (currentEvidenceIndex + 1) % activeCase.evidenceItems.Count;
             AudioManager.Instance?.PlayPaperFlip();
-            var discovered = GetDiscoveredEvidenceIds();
-            string text = SetupEvidenceCard(activeCase, discovered);
+            string text = SetupEvidenceCard(activeCase);
             if (notebookContentBody != null)
             {
                 notebookContentBody.supportRichText = true;
@@ -541,8 +550,7 @@ namespace CaseClosed.UI
             if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count <= 1) return;
             currentEvidenceIndex = (currentEvidenceIndex - 1 + activeCase.evidenceItems.Count) % activeCase.evidenceItems.Count;
             AudioManager.Instance?.PlayPaperFlip();
-            var discovered = GetDiscoveredEvidenceIds();
-            string text = SetupEvidenceCard(activeCase, discovered);
+            string text = SetupEvidenceCard(activeCase);
             if (notebookContentBody != null)
             {
                 notebookContentBody.supportRichText = true;
@@ -571,7 +579,7 @@ namespace CaseClosed.UI
             SwitchTab(NotebookTab.Evidence, smartFocus: false);
         }
 
-        private string SetupEvidenceCard(CaseSO activeCase, HashSet<string> discovered)
+        private string SetupEvidenceCard(CaseSO activeCase)
         {
             if (evidenceCardSection == null) return string.Empty;
 
@@ -588,7 +596,7 @@ namespace CaseClosed.UI
             currentEvidenceIndex = Mathf.Clamp(currentEvidenceIndex, 0, count - 1);
             EvidenceSO currentEv = activeCase.evidenceItems[currentEvidenceIndex];
 
-            bool isDiscovered = currentEv != null && discovered != null && discovered.Contains(currentEv.id);
+            bool isDiscovered = currentEv != null && IsEvidenceDiscovered(currentEv.id);
 
             // Update Page Indicator
             if (evidenceIndexLabel != null)
@@ -647,7 +655,18 @@ namespace CaseClosed.UI
                 }
             }
 
-            string dossierText = formattingService.FormatEvidenceDossier(currentEv, isDiscovered, currentEvidenceIndex + 1, count);
+            CaseManager manager = GetSessionManager(activeCase);
+            bool isExamined = manager != null
+                ? manager.IsEvidenceExamined(currentEv)
+                : currentEv != null && currentEv.isExamined;
+            int discoveredHotspotCount = manager != null ? manager.GetDiscoveredHotspotCount(currentEv) : 0;
+            string dossierText = formattingService.FormatEvidenceDossier(
+                currentEv,
+                isDiscovered,
+                isExamined,
+                discoveredHotspotCount,
+                currentEvidenceIndex + 1,
+                count);
             return dossierText;
         }
 
@@ -841,7 +860,7 @@ namespace CaseClosed.UI
             }
         }
 
-        private void SetupCluesCard(CaseSO activeCase, Dictionary<string, string> cluesDict)
+        private void SetupCluesCard(CaseSO activeCase, IReadOnlyDictionary<string, string> cluesDict)
         {
             if (cluesCardSection == null) return;
             cluesCardSection.SetActive(true);
