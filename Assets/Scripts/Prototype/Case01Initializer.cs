@@ -218,7 +218,7 @@ namespace CaseClosed.Prototype
             node1b.nodeId = "NODE_01B_JANE_INTERJECTION";
             node1b.speakerId = witnessFemale.characterId;
             node1b.speakerName = witnessFemale.fullName;
-            node1b.expression = CharacterExpression.Observant;
+            node1b.expression = CharacterExpression.Curious;
             node1b.statementText = "Wait, Vince... that isn't true. I was walking past the corridor at 8:40 PM, and I saw you arguing heatedly with Uncle Kirby near the study.";
             node1b.defaultNextNodeId = "NODE_01C_VINCE_RETORT";
             tree.nodes.Add(node1b);
@@ -257,7 +257,7 @@ namespace CaseClosed.Prototype
             node2b.nodeId = "NODE_02B_JANE_HEARD_CRASH";
             node2b.speakerId = witnessFemale.characterId;
             node2b.speakerName = witnessFemale.fullName;
-            node2b.expression = CharacterExpression.Thoughtful;
+            node2b.expression = CharacterExpression.Thinking;
             node2b.statementText = "Actually, Detective... while we were in the dining hall, everyone heard a loud porcelain crash from inside the study at 8:45 PM.";
             node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_INSPECT";
             tree.nodes.Add(node2b);
@@ -285,7 +285,7 @@ namespace CaseClosed.Prototype
             node3b.nodeId = "NODE_03B_JANE_KITCHEN_LOCK";
             node3b.speakerId = witnessFemale.characterId;
             node3b.speakerName = witnessFemale.fullName;
-            node3b.expression = CharacterExpression.Observant;
+            node3b.expression = CharacterExpression.Thinking;
             node3b.statementText = "Vince, don't you remember? The butler locked the kitchen pantry before 8:30 PM to prepare for the late tea service.";
             node3b.defaultNextNodeId = "NODE_03C_DETECTIVE_CHALLENGE";
             tree.nodes.Add(node3b);

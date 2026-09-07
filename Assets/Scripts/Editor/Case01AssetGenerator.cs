@@ -146,7 +146,7 @@ namespace CaseClosed.Editor
                 nodeId = "NODE_01B_JANE_INTERJECTION",
                 speakerId = jane.characterId,
                 speakerName = jane.fullName,
-                expression = CharacterExpression.Observant,
+                expression = CharacterExpression.Curious,
                 statementText = "Wait, Vince... that isn't true. I was walking past the corridor at 8:40 PM, and I saw you arguing heatedly with Uncle Kirby near the study.",
                 defaultNextNodeId = "NODE_01C_VINCE_RETORT"
             };
@@ -193,7 +193,7 @@ namespace CaseClosed.Editor
                 nodeId = "NODE_02B_JANE_HEARD_CRASH",
                 speakerId = jane.characterId,
                 speakerName = jane.fullName,
-                expression = CharacterExpression.Thoughtful,
+                expression = CharacterExpression.Thinking,
                 statementText = "Actually, Detective... while we were in the dining hall, everyone heard a loud porcelain crash from inside the study at 8:45 PM.",
                 defaultNextNodeId = "NODE_02C_DETECTIVE_INSPECT"
             };
@@ -227,7 +227,7 @@ namespace CaseClosed.Editor
                 nodeId = "NODE_03B_JANE_KITCHEN_LOCK",
                 speakerId = jane.characterId,
                 speakerName = jane.fullName,
-                expression = CharacterExpression.Observant,
+                expression = CharacterExpression.Thinking,
                 statementText = "Vince, don't you remember? The butler locked the kitchen pantry before 8:30 PM to prepare for the late tea service.",
                 defaultNextNodeId = "NODE_03C_DETECTIVE_CHALLENGE"
             };

@@ -240,7 +240,7 @@ namespace CaseClosed.Prototype
             node2b.nodeId = "NODE_02B_PAUL_DIVERT";
             node2b.speakerId = paul.characterId;
             node2b.speakerName = paul.fullName;
-            node2b.expression = CharacterExpression.Secretive;
+            node2b.expression = CharacterExpression.Defensive;
             node2b.statementText = "Don't waste time harassing my staff, Detective! We should be tracking the black market, not inspecting window glass!";
             node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_PHOTO";
             tree.nodes.Add(node2b);

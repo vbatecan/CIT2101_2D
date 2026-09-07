@@ -209,7 +209,7 @@ namespace CaseClosed.Prototype
             node1b.nodeId = "NODE_01B_SHAN_STATEMENT";
             node1b.speakerId = shan.characterId;
             node1b.speakerName = shan.fullName;
-            node1b.expression = CharacterExpression.Thoughtful;
+            node1b.expression = CharacterExpression.Thinking;
             node1b.statementText = "Detective, as cafe manager on duty until 7:30 PM closing, I heard the back exit service chime ring around 7:10 PM. Someone returned through the alley.";
             node1b.defaultNextNodeId = "NODE_01C_SHANAIA_DISMISS";
             tree.nodes.Add(node1b);
@@ -276,7 +276,7 @@ namespace CaseClosed.Prototype
             node3b.nodeId = "NODE_03B_SHAN_JACKET";
             node3b.speakerId = shan.characterId;
             node3b.speakerName = shan.fullName;
-            node3b.expression = CharacterExpression.Observant;
+            node3b.expression = CharacterExpression.Thinking;
             node3b.statementText = "Shanaia, that embroidered denim jacket in the camera still... you wore that exact jacket to work today. No one else has one.";
             node3b.defaultNextNodeId = "NODE_03C_CONFIRMATION";
             tree.nodes.Add(node3b);
