@@ -173,5 +173,86 @@ namespace CaseClosed.Tests
             Object.DestroyImmediate(itemsObj);
             Object.DestroyImmediate(testEvidence);
         }
+
+        [Test]
+        public void DisplayEvidence_SetsTableTopViewBackground()
+        {
+            GameObject bgObj = new GameObject("Image_Background", typeof(RectTransform), typeof(Image));
+            bgObj.transform.SetParent(modalObj.transform);
+            Image bgImage = bgObj.GetComponent<Image>();
+            inspectModal.backgroundImage = bgImage;
+
+            Sprite mockTableTop = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), Vector2.zero);
+            inspectModal.tableTopViewSprite = mockTableTop;
+
+            EvidenceSO testEvidence = ScriptableObject.CreateInstance<EvidenceSO>();
+            testEvidence.id = "EVD_TOP_TEST";
+            testEvidence.evidenceName = "Doorway Photo";
+
+            inspectModal.DisplayEvidence(testEvidence);
+
+            Assert.AreEqual(mockTableTop, bgImage.sprite, "Background image should be populated with tableTopViewSprite.");
+            Assert.AreEqual(Color.white, bgImage.color, "Background image should have white tint so sprite is fully visible.");
+            Assert.IsTrue(bgImage.enabled, "Background image component should be enabled.");
+            Assert.IsTrue(bgImage.raycastTarget, "Background image should be a raycast target to catch dismissal clicks.");
+
+            Object.DestroyImmediate(bgObj);
+            Object.DestroyImmediate(mockTableTop);
+            Object.DestroyImmediate(testEvidence);
+        }
+
+        [Test]
+        public void DisplayEvidence_UsesCustomBackground_WhenSpecifiedOnEvidence()
+        {
+            GameObject bgObj = new GameObject("Image_Background", typeof(RectTransform), typeof(Image));
+            bgObj.transform.SetParent(modalObj.transform);
+            Image bgImage = bgObj.GetComponent<Image>();
+            inspectModal.backgroundImage = bgImage;
+
+            Sprite mockTableTop = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 4, 4), Vector2.zero);
+            Sprite mockCustomBg = Sprite.Create(Texture2D.blackTexture, new Rect(0, 0, 4, 4), Vector2.zero);
+            inspectModal.tableTopViewSprite = mockTableTop;
+
+            EvidenceSO testEvidence = ScriptableObject.CreateInstance<EvidenceSO>();
+            testEvidence.id = "EVD_CUSTOM_BG";
+            testEvidence.customInspectBackground = mockCustomBg;
+
+            inspectModal.DisplayEvidence(testEvidence);
+
+            Assert.AreEqual(mockCustomBg, bgImage.sprite, "Custom background should override default tableTopViewSprite.");
+
+            Object.DestroyImmediate(bgObj);
+            Object.DestroyImmediate(mockTableTop);
+            Object.DestroyImmediate(mockCustomBg);
+            Object.DestroyImmediate(testEvidence);
+        }
+
+        [Test]
+        public void PointerClick_OnBackgroundImage_ClosesInspection()
+        {
+            GameObject bgObj = new GameObject("Image_Background", typeof(RectTransform), typeof(Image));
+            bgObj.transform.SetParent(modalObj.transform);
+            Image bgImage = bgObj.GetComponent<Image>();
+            inspectModal.backgroundImage = bgImage;
+
+            EvidenceSO testEvidence = ScriptableObject.CreateInstance<EvidenceSO>();
+            testEvidence.id = "EVD_CLICK_TEST";
+            inspectModal.DisplayEvidence(testEvidence);
+            Assert.IsTrue(inspectModal.IsInspecting);
+
+            // Simulate clicking on the background image outside the evidence
+            PointerEventData eventData = new PointerEventData(EventSystem.current)
+            {
+                button = PointerEventData.InputButton.Left,
+                pointerCurrentRaycast = new RaycastResult { gameObject = bgObj }
+            };
+
+            inspectModal.OnPointerClick(eventData);
+
+            Assert.IsFalse(inspectModal.IsInspecting, "Clicking on background image outside evidence should close inspection.");
+
+            Object.DestroyImmediate(bgObj);
+            Object.DestroyImmediate(testEvidence);
+        }
     }
 }

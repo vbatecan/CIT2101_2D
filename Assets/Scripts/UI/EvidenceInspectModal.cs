@@ -26,6 +26,12 @@ namespace CaseClosed.UI
         [SerializeField] public GameObject hotspotMarkerPrefab;
         public Text clueUnlockedNotificationText;
 
+        [Header("Background Configuration")]
+        [Tooltip("Background Image displaying the top-down view of the table during evidence inspection.")]
+        public Image backgroundImage;
+        [Tooltip("Sprite for the top-down view of the table (TableTOPVIEW).")]
+        public Sprite tableTopViewSprite;
+
         private static readonly Color DiscoveredHotspotColor = new Color(0.2f, 0.8f, 0.2f, 0.6f);
         private static readonly Color UndiscoveredHotspotColor = new Color(0.9f, 0.7f, 0.1f, 0.8f);
 
@@ -93,13 +99,7 @@ namespace CaseClosed.UI
 
         private void Awake()
         {
-            // Ensure no dark background image is rendered on the inspect panel container, but allow transparent clicks
-            Image panelBg = GetComponent<Image>();
-            if (panelBg != null)
-            {
-                panelBg.color = Color.clear;
-                panelBg.raycastTarget = true;
-            }
+            EnsureBackgroundSetup();
 
             if (evidenceZoomImage != null && evidenceZoomImage.sprite == null)
             {
@@ -110,6 +110,54 @@ namespace CaseClosed.UI
             if (clueUnlockedNotificationText != null)
             {
                 clueUnlockedNotificationText.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Automatically resolves and configures the background image and TableTOPVIEW sprite.
+        /// </summary>
+        public void EnsureBackgroundSetup()
+        {
+            if (backgroundImage == null)
+            {
+                var bgChild = transform.Find("Image_Background") ?? transform.Find("Background");
+                if (bgChild != null)
+                {
+                    backgroundImage = bgChild.GetComponent<Image>();
+                }
+                if (backgroundImage == null)
+                {
+                    backgroundImage = GetComponent<Image>();
+                }
+            }
+
+#if UNITY_EDITOR
+            if (tableTopViewSprite == null)
+            {
+                tableTopViewSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/TableTOPVIEW.png");
+                if (tableTopViewSprite == null)
+                {
+                    var allSubAssets = UnityEditor.AssetDatabase.LoadAllAssetsAtPath("Assets/Assets/BACKGROUNDS/TableTOPVIEW.png");
+                    foreach (var sub in allSubAssets)
+                    {
+                        if (sub is Sprite s)
+                        {
+                            tableTopViewSprite = s;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+
+            if (backgroundImage != null)
+            {
+                if (backgroundImage.sprite == null && tableTopViewSprite != null)
+                {
+                    backgroundImage.sprite = tableTopViewSprite;
+                }
+                backgroundImage.color = (backgroundImage.sprite != null) ? Color.white : Color.clear;
+                backgroundImage.raycastTarget = true;
             }
         }
 
@@ -243,8 +291,25 @@ namespace CaseClosed.UI
             if (evidenceZoomImage != null)
             {
                 evidenceZoomImage.sprite = targetSprite;
+                evidenceZoomImage.preserveAspect = true;
                 evidenceZoomImage.enabled = (targetSprite != null);
                 evidenceZoomImage.color = (targetSprite != null) ? Color.white : Color.clear;
+            }
+
+            // Configure TopPOV table background behind the evidence
+            EnsureBackgroundSetup();
+            if (backgroundImage != null)
+            {
+                Sprite bgSprite = (evidence.customInspectBackground != null) 
+                    ? evidence.customInspectBackground 
+                    : tableTopViewSprite;
+
+                if (bgSprite != null)
+                {
+                    backgroundImage.sprite = bgSprite;
+                    backgroundImage.color = Color.white;
+                    backgroundImage.enabled = true;
+                }
             }
 
             // Reset view state upon opening evidence
@@ -495,9 +560,11 @@ namespace CaseClosed.UI
 
             if (eventData.button == PointerEventData.InputButton.Left && !eventData.dragging)
             {
-                // If the clicked object is this background panel/viewport (outside the evidence image itself)
-                if (eventData.pointerCurrentRaycast.gameObject == gameObject || 
-                    (viewportRectTransform != null && eventData.pointerCurrentRaycast.gameObject == viewportRectTransform.gameObject))
+                // If the clicked object is this background panel/viewport/backgroundImage (outside the evidence image itself)
+                GameObject clicked = eventData.pointerCurrentRaycast.gameObject;
+                if (clicked == gameObject || 
+                    (viewportRectTransform != null && clicked == viewportRectTransform.gameObject) ||
+                    (backgroundImage != null && clicked == backgroundImage.gameObject))
                 {
                     Debug.Log("[UI:InspectModal] Background clicked outside evidence - closing inspect mode");
                     CloseInspect();

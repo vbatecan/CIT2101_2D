@@ -36,6 +36,8 @@ namespace CaseClosed.Data
         public Sprite normalSprite;
         public Sprite highlightedSprite;
         public Sprite zoomedSprite;
+        [Tooltip("Optional custom background sprite for top-down inspection. If null, defaults to TableTOPVIEW.")]
+        public Sprite customInspectBackground;
 
         [Header("Multi-Stage Descriptions")]
         [TextArea(2, 4)]

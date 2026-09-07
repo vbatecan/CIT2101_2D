@@ -61,14 +61,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 5257866192857963963, guid: 0f8d0dfc60fcd9c438aed6611f4da2d0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -95,6 +95,8 @@ MonoBehaviour:
   hotspotsContainer: {fileID: 5117207838139778068}
   hotspotMarkerPrefab: {fileID: 5162814604417788006, guid: ee4747e689541cbd989a9f7dc4efc16b, type: 3}
   clueUnlockedNotificationText: {fileID: 8136317086210540636}
+  backgroundImage: {fileID: 362623435079570304}
+  tableTopViewSprite: {fileID: 5257866192857963963, guid: 0f8d0dfc60fcd9c438aed6611f4da2d0, type: 3}
   rotationSensitivity: 0.45
   smoothRotation: 1
   rotationLerpSpeed: 16
