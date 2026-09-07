@@ -170,6 +170,19 @@ namespace CaseClosed.Tests
         }
 
         [Test]
+        public void DialogueUI_ButtonlessChallengeableLine_EnablesChallengeModeWhenTypingCompletes()
+        {
+            _interrogationManager.SetInterrogationTarget(_suspectProfile, _dialogueTree);
+            _dialogueUI.challengeButton = null;
+
+            _dialogueUI.DisplayNode(_interrogationManager.currentNode);
+            _dialogueUI.CompleteTypingImmediately();
+
+            Assert.IsTrue(_interrogationManager.isChallengeModeActive,
+                "Buttonless character dialogue must enable evidence selection after a challengeable line finishes.");
+        }
+
+        [Test]
         public void DialogueUI_DynamicDetectiveName_ResolvesSelectedInvestigator()
         {
             DialogueNode detectiveNode = new DialogueNode

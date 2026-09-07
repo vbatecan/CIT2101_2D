@@ -941,13 +941,7 @@ namespace CaseClosed.UI
             }
 
             isTyping = false;
-            SetNextButtonInteractable(true);
-            if (challengeButton != null)
-            {
-                bool showChallenge = isCurrentNodeChallengeable && !isShowingFailureReaction;
-                challengeButton.gameObject.SetActive(showChallenge);
-                challengeButton.interactable = showChallenge;
-            }
+            EnableCompletedLineInteraction();
         }
 
         /// <summary>
@@ -964,12 +958,24 @@ namespace CaseClosed.UI
             SetBodyText(currentFullText);
 
             isTyping = false;
+            EnableCompletedLineInteraction();
+        }
+
+        private void EnableCompletedLineInteraction()
+        {
             SetNextButtonInteractable(true);
+            bool canChallenge = isCurrentNodeChallengeable && !isShowingFailureReaction;
+
             if (challengeButton != null)
             {
-                bool showChallenge = isCurrentNodeChallengeable && !isShowingFailureReaction;
-                challengeButton.gameObject.SetActive(showChallenge);
-                challengeButton.interactable = showChallenge;
+                challengeButton.gameObject.SetActive(canChallenge);
+                challengeButton.interactable = canChallenge;
+            }
+            else if (canChallenge && InterrogationManager.Instance != null && !InterrogationManager.Instance.isChallengeModeActive)
+            {
+                // Character-specific dialogue boxes have no challenge button. Once a
+                // challengeable line is readable, immediately enable evidence selection.
+                InterrogationManager.Instance.ToggleChallengeMode(true);
             }
         }
 
