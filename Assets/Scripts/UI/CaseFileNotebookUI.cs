@@ -190,6 +190,7 @@ namespace CaseClosed.UI
                 nextEvidenceButton.onClick.AddListener(NextEvidence);
             }
 
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
             buttonsConfigured = true;
         }
 

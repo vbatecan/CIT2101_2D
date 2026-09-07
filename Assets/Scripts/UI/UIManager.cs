@@ -175,6 +175,7 @@ namespace CaseClosed.UI
             ShowPanel(initialPanel);
             RegisterEvents();
             UpdateConclusionButtonState();
+            UIButtonHighlightSystem.ApplyToAllButtonsInScene();
         }
 
         /// <summary>
@@ -305,6 +306,7 @@ namespace CaseClosed.UI
 
             ArmPointerController.Instance?.ForceSyncState();
             AudioManager.Instance?.PlayPaperFlip();
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>

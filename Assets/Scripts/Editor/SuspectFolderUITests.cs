@@ -79,11 +79,14 @@ namespace CaseClosed.Tests
             _uiManager.suspectFolderButton = buttonGO;
 
             _uiManager.ShowPanel(UIPanelType.InvestigationTable);
+            typeof(UIManager).GetProperty("Instance")?.SetValue(null, _uiManager);
         }
 
         [TearDown]
         public void TearDown()
         {
+            typeof(UIManager).GetProperty("Instance")?.SetValue(null, null);
+
             if (_testRoot != null)
             {
                 Object.DestroyImmediate(_testRoot);

@@ -119,6 +119,7 @@ namespace CaseClosed.UI
                 backdropButton.onClick.AddListener(OnCloseClicked);
             }
 
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
             _buttonsConfigured = true;
         }
 

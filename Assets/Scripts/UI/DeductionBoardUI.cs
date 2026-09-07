@@ -58,6 +58,7 @@ namespace CaseClosed.UI
             }
 
             RegisterEvents();
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         private void OnEnable()
@@ -267,6 +268,11 @@ namespace CaseClosed.UI
                     AudioManager.Instance?.PlayButtonClick();
                     DeductionBoardController.Instance?.SelectClue(currentId);
                 });
+            }
+
+            if (cluesContainer != null)
+            {
+                UIButtonHighlightSystem.ApplyToHierarchy(cluesContainer.gameObject);
             }
         }
 

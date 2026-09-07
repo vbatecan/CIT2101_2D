@@ -86,6 +86,8 @@ namespace CaseClosed.UI
             {
                 charactersPerSecond = CaseClosed.Services.GameSettingsService.Instance.TextSpeed;
             }
+
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>
@@ -330,6 +332,11 @@ namespace CaseClosed.UI
                         });
                     }
                 }
+            }
+
+            if (evidencePickerContainer != null)
+            {
+                UIButtonHighlightSystem.ApplyToHierarchy(evidencePickerContainer);
             }
         }
 
