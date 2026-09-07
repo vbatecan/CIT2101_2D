@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 
 namespace CaseClosed.Services
 {
     /// <summary>
     /// Storage abstraction interface for saving and retrieving case progression data.
-    /// Allows pure in-memory mocking in unit tests without touching PlayerPrefs.
+    /// Keeps progression rules separate from the persistence backend.
     /// </summary>
     public interface IProgressionStorage
     {
@@ -29,23 +28,8 @@ namespace CaseClosed.Services
     }
 
     /// <summary>
-    /// In-memory progression storage implementation for automated NUnit test suites.
-    /// </summary>
-    public class InMemoryProgressionStorage : IProgressionStorage
-    {
-        private readonly Dictionary<string, int> _data = new Dictionary<string, int>();
-
-        public bool HasKey(string key) => _data.ContainsKey(key);
-        public int GetInt(string key, int defaultValue) => _data.TryGetValue(key, out int val) ? val : defaultValue;
-        public void SetInt(string key, int value) => _data[key] = value;
-        public void DeleteKey(string key) => _data.Remove(key);
-        public void Save() { }
-        public void Clear() => _data.Clear();
-    }
-
-    /// <summary>
     /// Pure C# domain service tracking unlocked and completed cases across the detective campaign.
-    /// Zero MonoBehaviour dependencies; 100% unit-testable.
+    /// Zero MonoBehaviour dependencies.
     /// </summary>
     public class CaseProgressionService
     {
@@ -81,7 +65,7 @@ namespace CaseClosed.Services
         }
 
         /// <summary>
-        /// Configures a new storage backend (e.g. for unit testing).
+        /// Configures a new storage backend.
         /// </summary>
         public void SetStorage(IProgressionStorage storage)
         {

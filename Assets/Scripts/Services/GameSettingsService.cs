@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CaseClosed.Services
 {
     /// <summary>
     /// Storage abstraction interface for saving and retrieving game settings.
-    /// Allows pure in-memory mocking in unit tests without touching PlayerPrefs.
+    /// Keeps settings rules separate from the persistence backend.
     /// </summary>
     public interface ISettingsStorage
     {
@@ -32,29 +31,8 @@ namespace CaseClosed.Services
     }
 
     /// <summary>
-    /// In-memory settings storage implementation for automated NUnit test suites.
-    /// </summary>
-    public class InMemorySettingsStorage : ISettingsStorage
-    {
-        private readonly Dictionary<string, float> _floats = new Dictionary<string, float>();
-        private readonly Dictionary<string, int> _ints = new Dictionary<string, int>();
-
-        public bool HasKey(string key) => _floats.ContainsKey(key) || _ints.ContainsKey(key);
-        public float GetFloat(string key, float defaultValue) => _floats.TryGetValue(key, out float val) ? val : defaultValue;
-        public void SetFloat(string key, float value) => _floats[key] = value;
-        public int GetInt(string key, int defaultValue) => _ints.TryGetValue(key, out int val) ? val : defaultValue;
-        public void SetInt(string key, int value) => _ints[key] = value;
-        public void Save() { }
-        public void Clear()
-        {
-            _floats.Clear();
-            _ints.Clear();
-        }
-    }
-
-    /// <summary>
     /// Pure C# domain service managing game audio levels, display presentation, and dialogue text pacing.
-    /// Zero MonoBehaviour dependencies; 100% unit-testable.
+    /// Zero MonoBehaviour dependencies.
     /// </summary>
     public class GameSettingsService
     {

@@ -1,187 +1,147 @@
-# AGENTS.md - Multi-Agent Operating Standard & Unity 3D/2D MCP Reference
+# AGENTS.md — Case Closed development rules
 
-This document serves as the single source of truth for all autonomous and pair-programming AI agents (Antigravity, Cursor, Windsurf, Claude Code, OpenAI Codex, Devin, Roo Code) operating in the **CIT2101_2D** repository.
+This is the canonical repository guide for AI agents working on CIT2101_2D.
+Read it before making changes. GEMINI.md is the Gemini entry point; shared rules belong here.
+Current user instructions take precedence over repository guides and bundled skills.
 
----
+## Scope and production-data protection
 
-## 1. Project Identity & Architecture
+- Work only on the requested task. Diagnosis and review do not authorize implementation.
+- **Do not touch Unity scenes unless the user explicitly requests the exact scene edit.**
+  This includes scene YAML, hierarchy, transforms, active states, component assignments, prefab overrides, saves, restores, and reverts.
+- Treat prefabs, ScriptableObject assets, existing .meta files, GUIDs, Inspector references, and hand-authored layouts as production data.
+  Code cleanup does not authorize changes to them.
+- Never run scene rebuilders, bulk layout generators, automatic UI repairs, or asset regeneration as verification.
+- Never restore a dirty scene to HEAD merely because it has a diff. It may contain user work.
+  Inspect and report unexpected changes; do not guess their author or cause.
+- Do not start/stop Play Mode, load scenes, create temporary scene objects, or execute in-editor code just to inspect code.
+  Manual gameplay checks must respect the user's editor session and scene restrictions.
+- Preserve UnityEvent-facing methods, serialized names/types, PlayerPrefs keys, scene names, scoring, unlock conditions, and event timing.
+- On “stop,” stop actions immediately. Do not resume an earlier refactor during a newly scoped task.
 
-**Project:** `CIT2101_2D` (*Case Closed* - Detective Investigation & Interrogation Game)  
-**Engine:** Unity 6 (`6000.3.20f1`)  
-**Pipeline & Tooling:** Universal Render Pipeline (URP 17.3), Input System 1.19, Cinemachine 3.1, UGUI 2.0 & UI Toolkit, MCPForUnity (`com.coplaydev.unity-mcp`).
+## Start with evidence
 
-### Architecture Pattern: Separation of Concerns (SoC) + YAGNI
+1. Read the latest request and relevant local instructions.
+2. Run `git status --short`, `git diff --stat`, and `git diff --cached --stat`.
+   Record existing changes, including staged additions and deletions.
+3. Inspect relevant code and callers before changing an API.
+4. State the small implementation scope and protected behavior.
+5. Keep changes incremental and reviewable.
 
-```
-Assets/Scripts/
-├── Enums/       -> Pure Enum declarations (One enum per file).
-├── Data/        -> ScriptableObjects & serialized data models (CaseSO, EvidenceSO, DialogueTreeSO).
-├── Services/    -> Pure C# domain logic (zero MonoBehaviour dependencies, 100% unit-testable).
-├── Managers/    -> MonoBehaviour controllers bridging engine lifecycle, audio, and state.
-├── Gameplay/    -> World-space interactive actors, cameras, and character rendering.
-├── UI/          -> Canvas views, modals, and screen coordinators.
-├── Prototype/   -> Scene bootstrappers, level switchers, and mock data initializers.
-└── Editor/      -> Custom Unity Editor tools, asset generators, and EditMode tests.
-```
+An empty `git diff` means no unstaged changes, not a clean repository.
+Check both the index and working tree before claiming a file is unchanged.
+Never stage, unstage, commit, reset, or revert user work unless requested.
+Concurrent changes belong to the user until evidence establishes otherwise.
 
----
+<!-- CODEGRAPH_START -->
+## CodeGraph
 
-## 2. Mandatory Rules of Engagement for Agents
+When .codegraph/ exists, use CodeGraph before grep/find or raw code reads to locate or understand indexed code.
 
-### Preserve Hand-Authored Layouts
+- Prefer the discovered `codegraph_explore` MCP tool, naming relevant symbols/files and the question.
+- CLI fallback: `codegraph explore "<symbols or question>"`.
+- Treat returned current source as already read. Use targeted `rg` or file reads for omitted sections, configuration, documentation, or stale/unavailable indexing.
+- Do not repeat broad queries when they omit the requested code.
+- Without .codegraph/, skip CodeGraph. Do not initialize, rebuild, or upgrade it without a request.
+<!-- CODEGRAPH_END -->
 
-- Existing scenes and prefabs are the source of truth for UI layout and object placement.
-- Do not create, restore, or execute bulk UI/layout generators, scene rebuilders, or automatic layout-repair scripts unless the user explicitly requests that exact operation.
-- Make only specifically requested, targeted layout edits; preserve all other Inspector values and prefab overrides.
-- Tests must never regenerate or save production scenes, prefabs, or assets. Use temporary test objects or read-only asset validation instead.
+## Project and architecture
 
-1. **Verify Unity APIs First**:
-   - Unity 6 and URP/Cinemachine 3 APIs differ significantly from older Unity versions (e.g. `CinemachineCamera` vs `CinemachineVirtualCamera`, `linearVelocity` vs `velocity`).
-   - Use `unity_reflect` and `unity_docs` or Context7 to verify exact type signatures and namespaces before writing C# code.
-2. **Never Break Script Compilation**:
-   - Unity will stop updating its domain reload if any script has compilation errors.
-   - After creating or editing scripts, immediately call `refresh_unity(compile=true, wait_for_ready=true)` and inspect `read_console(types=["Error"])`.
-3. **Strict Layer Separation**:
-   - Never put business logic (scoring algorithms, string formatting, contradiction matching) inside `MonoBehaviour` Update loops or UI scripts. Place it in `Assets/Scripts/Services/` as pure C# classes.
-   - Controllers in `Assets/Scripts/Managers/` instantiate their respective service classes in `Awake()`.
-4. **Clean Serialization**:
-   - Use `[SerializeField] private Type _fieldName;` and expose public readonly properties.
-   - Add `[Header("...")]` and `[Tooltip("...")]` for inspector fields.
-   - Never expose public mutable fields (`public int score;` is prohibited; use `public int Score => _score;`).
+Case Closed is a Unity 6 detective investigation and interrogation game.
+ProjectSettings/ProjectVersion.txt and Packages/manifest.json are authoritative for versions;
+Packages/packages-lock.json records resolved dependencies.
+Current editor: 6000.3.20f1; URP 17.3, Input System 1.19, Cinemachine 3.1, UGUI, and UI Toolkit.
 
----
+| Directory | Responsibility |
+| --- | --- |
+| Assets/Scripts/Enums | Shared enum declarations |
+| Assets/Scripts/Data | Authored ScriptableObjects and serialized models |
+| Assets/Scripts/Services | Domain rules, formatting, calculations, and plain C# session state |
+| Assets/Scripts/Managers | Unity lifecycle adapters and workflow coordination |
+| Assets/Scripts/Gameplay | World interaction, rendering, cameras, and pointer behavior |
+| Assets/Scripts/UI | Views, input intent, presentation, and panel coordination |
+| Assets/Scripts/Prototype | Existing case initialization and bootstrap code |
+| Assets/Scripts/Editor | Editor utilities; no project unit tests |
 
-## 3. Unity & C# Performance & Memory Best Practices
+### Runtime ownership
 
-### A. Zero-Garbage Collection (GC) in Runtime Loops
-- No object instantiations (`new`), string formatting/concatenation, boxing, or LINQ inside `Update()`, `FixedUpdate()`, or `LateUpdate()`.
-- Use pre-allocated buffers with non-allocating physics queries (`Physics2D.OverlapCircleNonAlloc`, `Physics2D.RaycastNonAlloc`).
-- Cache all `GetComponent<T>()`, `Camera.main`, `Animator.StringToHash()`, and `Shader.PropertyToID()` in `Awake()`.
+The refactor is partial. Inspect actual callers rather than assuming every boundary is enforced.
 
-### B. Event Handling & Lifecycle Safety
-- Subscribe to events in `OnEnable()` and **always unsubscribe in `OnDisable()`**.
-- Explicitly check `if (target != null)` rather than using null-conditional `?.` on `UnityEngine.Object` subclasses when destruction lifecycle is relevant.
+| State or rule | Current owner / adapter |
+| --- | --- |
+| Active case, investigator, evidence discovery/examination, hotspots, clues, contradictions, timer state | CaseSessionState through CaseManager |
+| Suspect, dialogue tree/node, challenge and failure-reaction state | InterrogationSessionState through InterrogationManager |
+| Pending deduction clue pair | DeductionSelectionState through DeductionBoardController |
+| Evidence operations and connection matching | EvidenceService and DeductionService |
+| Timer calculations, scoring, notebook formatting | CaseTimerService, CaseEvaluationService, NotebookFormattingService |
+| Persisted settings and campaign progression | GameSettingsService / CaseProgressionService and PlayerPrefs adapters |
+| Scene/UI/audio effects | Existing managers and views; migration remains incomplete |
 
-### C. UI & Rendering Best Practices
-- Segment dynamic text and animated UI into isolated sub-canvases to prevent full-canvas batch invalidations.
-- Disable `Raycast Target` on static `Image` and `TextMeshProUGUI` components.
-- Configure audio assets: `Streaming` for long BGM tracks, `Decompress On Load` for low-latency SFX.
+- ScriptableObjects supply authored configuration. Never write session progress back into them.
+  Legacy evidence flags may remain serialized for compatibility; runtime code must use session queries.
+- Expose runtime collections through read-only APIs; mutate them through named operations.
+- Preserve reset/retry boundaries, duplicate handling, and state visible to subscribers when events fire.
+- Domain rules must not depend on UI, scene searches, audio, input, or manager singletons.
+- Prefer cohesive existing services over one-method wrappers, speculative interfaces, a global event bus, or a DI framework.
+- Existing singleton access is compatibility debt. Avoid spreading it; cache dependencies at lifecycle boundaries.
+- Target changes in DialogueUI, CaseFileNotebookUI, and TableEvidenceItem carefully.
+  Extract cohesive logic only as needed; preserve components and serialized references.
+- Add assembly definitions only when dependency direction and serialized-script compatibility are verified.
 
----
+## C# and lifecycle rules
 
-## 4. Unity MCP Server Reference & Integration Protocol
+- New Inspector fields use `[SerializeField] private`, useful Header/Tooltip attributes, and read-only public properties where needed.
+- Preserve exact existing serialized names when changing visibility. Do not blanket-rename fields to add underscores.
+  Use FormerlySerializedAs for necessary, verified renames. Retain legacy fields when removal would discard serialized data.
+- Keep component filenames and class names aligned; preserve existing script GUIDs.
+- Initialize local dependencies in Awake; connect cross-object dependencies at an appropriate lifecycle boundary.
+- Subscribe in OnEnable and unsubscribe in OnDisable. Registration must be idempotent.
+  Store the actual publisher so unsubscription does not resolve a different singleton.
+  Use named handlers when later unsubscription is required; document different lifetime pairings.
+- Use Unity-aware null checks for destroyed UnityEngine.Object instances; ?. and ?? do not implement Unity's destroyed-object semantics.
+- Cache component/camera lookups and shader/animator IDs. Avoid searches, LINQ, closures, boxing, and string allocations in frame loops.
+  Update displayed text when its displayed value changes.
+- Verify unfamiliar Unity 6/package APIs through live reflection or official documentation before using them.
+  Do not blindly copy old Cinemachine or physics signatures.
+- OnValidate and editor initialization must not silently repair, reparent, regenerate, or save production objects.
+- Canvas, raycast, sorting, and audio-import optimizations require relevant task scope; advice is not permission to change assets.
 
-The Unity MCP server provides 48 tools and rich resources to inspect and control the active Unity Editor session.
+## Verification policy: no unit tests
 
-### A. Session Routing & Instance Selection
-- Query connected sessions: `mcpforunity://instances`
-- Pin active session: `set_active_instance(instance="<Name@hash>")`
-- Or pass `unity_instance="<Name@hash>"` on any individual tool call.
+The user has explicitly removed the project's unit tests.
 
-### B. State Inspection vs Mutation
-- **Use Resources to Read State:**
-  - `mcpforunity://editor/state`: Check `data.compilation.is_compiling` and `data.advice.ready_for_tools`.
-  - `mcpforunity://scene/active`: Active scene metadata and root GameObjects.
-  - `mcpforunity://scene/gameobject/{id}`: Detailed transform, layer, tag, and component list.
-  - `mcpforunity://custom-tools`: Dynamic project-specific tools.
-- **Use Tools to Mutate Engine State:**
-  - Use `manage_gameobject`, `manage_components`, `manage_prefabs`, `manage_scene`, `manage_editor`.
+- Do not create, restore, maintain, or run project NUnit, EditMode, PlayMode suites, fixtures, or test-only harnesses unless explicitly requested.
+- Do not introduce test infrastructure or launch a second Unity import to run tests.
+- Test Framework/NUnit can remain transitive dependencies of Unity tooling. Do not break unrelated packages to remove them.
+- Verify source changes through caller/reference inspection, focused diff review, compilation, and Console diagnostics.
+- After a C# batch, request refresh/compilation and wait for readiness **only when compatible with the user's scene/editor constraints**.
+  Inspect Error and Exception entries afterward. If live verification cannot safely proceed, report compilation as unverified.
+- An empty Console alone does not prove compilation succeeded. Confirm readiness and that changed scripts compiled.
+  Do not clear Console history to manufacture a clean result.
+- When authorized, manually check affected flows: load/retry, investigator selection, evidence/hotspots, notebook,
+  dialogue/challenge, deduction, conclusion, timer, settings, or progression.
+- Report exactly what was checked. Compilation alone does not prove behavior preservation.
 
-### C. Payload Paging Guidelines
-- `manage_scene(action="get_hierarchy")`: Start with `page_size: 50` and follow `next_cursor`.
-- `manage_gameobject(action="get_components")`: Start with `include_properties: false` and small `page_size: 10-25`.
-- `manage_asset(action="search")`: Use `page_size: 25-50` and keep `generate_preview: false`.
+## Unity MCP use
 
----
+- Discover actual tools/resources and schemas in the current session; do not assume a fixed tool count or historical parameter list.
+- Confirm the intended Unity project/instance before editor actions.
+- Prefer read-only resources and bounded Console queries. Page hierarchy/assets (roughly 25–50 entries);
+  request component metadata before full properties.
+- Use supported compilation and Console tools with their actual schemas. Wait for readiness where supported.
+- A timeout/disconnection during domain reload is inconclusive. Inspect current state before retrying.
+- Do not hard-code previous socket paths, instance IDs, tokens, or ports.
+  Prefer supported MCP capabilities over custom raw-socket commands.
+- Refresh can invoke project callbacks and does not authorize scene saves.
+  If unexpected scene changes appear, stop editor mutations, inspect staged/unstaged diffs, and avoid unsupported causal claims.
+- Never print access tokens, credentials, or full authenticated process arguments.
 
-## 5. Comprehensive Unity MCP Tool Reference
+## Worktree and handoff discipline
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                          UNITY MCP TOOLS MATRIX                        │
-├──────────────────────┬─────────────────────────────────────────────────┤
-│ Category             │ Available Tools                                 │
-├──────────────────────┼─────────────────────────────────────────────────┤
-│ Scripting & Code     │ create_script, script_apply_edits,               │
-│                      │ apply_text_edits, validate_script, delete_script│
-│                      │ execute_code, manage_script,                    │
-│                      │ manage_script_capabilities                      │
-├──────────────────────┼─────────────────────────────────────────────────┤
-│ Scene & Hierarchy    │ manage_scene, manage_gameobject,                │
-│                      │ find_gameobjects, manage_components,            │
-│                      │ manage_prefabs                                  │
-├──────────────────────┼─────────────────────────────────────────────────┤
-│ Assets & Data        │ manage_asset, manage_scriptable_object,         │
-│                      │ manage_material, manage_shader, manage_texture, │
-│                      │ import_model, import_model_file,                │
-│                      │ generate_model, generate_image, generate_audio  │
-├──────────────────────┼─────────────────────────────────────────────────┤
-│ Physics & Graphics   │ manage_physics, manage_graphics, manage_camera, │
-│                      │ manage_vfx, manage_animation, manage_probuilder │
-├──────────────────────┼─────────────────────────────────────────────────┤
-│ UI                   │ manage_ui                                       │
-├──────────────────────┼─────────────────────────────────────────────────┤
-│ Diagnostics & Tests  │ read_console, refresh_unity, run_tests,         │
-│                      │ get_test_job, manage_profiler, unity_reflect,   │
-│                      │ unity_docs, manage_tools, debug_request_context │
-└──────────────────────┴─────────────────────────────────────────────────┘
-```
-
-### Key Tool Definitions & Usage
-
-#### 1. Code & Compilation
-- `create_script(name, path, script_type, contents, namespace)`: Creates a C# script asset in `Assets/`.
-- `script_apply_edits(name, path, edits, options)`: Structured method/class edits. Preferred over raw string replacement:
-  - `op`: `replace_method`, `insert_method`, `delete_method`, `anchor_insert`, `anchor_replace`.
-- `validate_script(uri, level, include_diagnostics)`: Validates syntax and returns compiler diagnostics.
-- `execute_code(code, compiler, safety_checks)`: Compiles and runs arbitrary C# in-editor in memory without creating files.
-- `read_console(types, count, filter_text)`: Reads logs, warnings, and compiler errors from the Unity Editor Console.
-- `refresh_unity(compile, scope, wait_for_ready)`: Triggers AssetDatabase refresh and compilation domain reload.
-
-#### 2. GameObjects & Components
-- `find_gameobjects(name, tag, layer, component_type, path)`: Locates GameObjects by query and returns instance IDs.
-- `manage_gameobject(action, name, parent, position, rotation, scale)`: CRUD operations on GameObjects (`create`, `modify`, `delete`, `duplicate`, `move_relative`).
-- `manage_components(action, target, component_type, properties)`: Attach, remove, or configure component fields (`add`, `remove`, `set_property`).
-- `manage_scene(action, name, path, page_size, cursor)`: Scene management (`get_hierarchy`, `get_active`, `create`, `load`, `save`).
-- `manage_prefabs(action, prefab_path, target, components_to_add)`: Inspect, instantiate, or modify prefabs.
-
-#### 3. ScriptableObjects & Assets
-- `manage_scriptable_object(action, type_name, folder_path, asset_name, patches)`: Creates and mutates `.asset` ScriptableObject files via SerializedObject property paths.
-- `manage_asset(action, path, filter_type, page_size)`: Searches, creates, moves, or deletes assets in the project.
-- `manage_material(action, name, shader_name, properties)`: Creates and assigns materials and shaders.
-- `manage_texture(action, width, height, pattern, palette, as_sprite)`: Procedurally creates textures/sprites.
-
-#### 4. Graphics, Physics & Camera
-- `manage_physics(action, dimension, settings, origin, direction)`: Configures 2D/3D physics matrices and performs spatial raycasts/overlaps.
-- `manage_camera(action, preset, target, screenshot)`: Manages Cinemachine Brain, Virtual Cameras, lens properties, and captures screenshots.
-- `manage_graphics(action, volume_profile, effect_type, stats_get)`: Manages URP Volumes, post-processing overrides, lighting baking, and draw call stats.
-- `manage_vfx(action, target, properties)`: Configures ParticleSystem, VisualEffect Graph, LineRenderer, and TrailRenderer.
-- `manage_animation(action, animator_target, clip_name, controller_path)`: Creates and manages Animator Controllers, states, transitions, and AnimationClips.
-
-#### 5. Verification & Testing
-- `unity_reflect(action, class_name, member_name, query, scope)`: Reflects live C# types from loaded assemblies to prevent hallucinations.
-- `unity_docs(action, class_name, member_name, slug, queries)`: Fetches official ScriptReference and Manual documentation.
-- `run_tests(mode, test_names)`: Starts EditMode / PlayMode NUnit test runner.
-- `get_test_job(job_id)`: Checks test results, passes, and failure callstacks.
-
----
-
-## 6. Standard Execution Recipes for Agents
-
-### Recipe A: Adding a New Feature Script
-1. Write the script using standard tools or `create_script`.
-2. Call `refresh_unity(compile=true, wait_for_ready=true)`.
-3. Check `read_console(types=["Error", "Exception"], count="10")`.
-4. If errors are reported, fix them immediately.
-
-### Recipe B: Constructing a Scene Hierarchy via MCP
-1. Fetch parent ID or name: `find_gameobjects(name="_Managers")`.
-2. Create child GameObject: `manage_gameobject(action="create", name="NewSystem", parent="_Managers")`.
-3. Add component: `manage_components(action="add", target="NewSystem", component_type="NewSystemManager")`.
-4. Set serialized properties: `manage_components(action="set_property", target="NewSystem", component_type="NewSystemManager", properties={"_enabled": true})`.
-5. Save the scene: `manage_scene(action="save")`.
-
-### Recipe C: Verifying Unity APIs Before Generation
-1. Check class: `unity_reflect(action="search", query="CinemachineCamera")`.
-2. Check members: `unity_reflect(action="get_type", class_name="Unity.Cinemachine.CinemachineCamera")`.
-3. Check doc examples: `unity_docs(action="get_doc", class_name="CinemachineCamera")`.
+- Use targeted patches. Preserve unrelated edits and the Git index.
+- Before large temporary builds/imports, check disk capacity and avoid duplicate Library imports.
+  Never delete the main Library or workspace as a troubleshooting shortcut.
+- Clean up only explicitly identified task-owned temporary files; prefer recoverable operations.
+- Before handoff run `git diff --check` and inspect scoped staged/unstaged diffs for asset, scene, prefab, and GUID churn.
+- Summarize the result, key files, verification evidence, and limitations.
+  Describe this task's changes without claiming earlier staged work as new work.
