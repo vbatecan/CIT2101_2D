@@ -47,6 +47,7 @@ namespace CaseClosed.UI
         private int _lastDisplayedSecond = -1;
         private TimerUrgencyState _currentUrgency = TimerUrgencyState.Normal;
         private Vector3 _originalScale = Vector3.one;
+        private bool _isSubscribed;
 
         private void Awake()
         {
@@ -57,33 +58,69 @@ namespace CaseClosed.UI
             _originalScale = transform.localScale;
         }
 
+        private void Start()
+        {
+            TrySubscribe();
+            SyncImmediate();
+        }
+
         private void OnEnable()
         {
-            if (CaseManager.Instance != null)
-            {
-                CaseManager.Instance.OnTimerTick += HandleTimerTick;
-                CaseManager.Instance.OnTimeExpired += HandleTimeExpired;
-                CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
-
-                // Sync immediate state
-                SyncTimerState(CaseManager.Instance.RemainingTime, CaseManager.Instance.ElapsedTime);
-            }
+            TrySubscribe();
+            SyncImmediate();
         }
 
         private void OnDisable()
         {
-            if (CaseManager.Instance != null)
+            Unsubscribe();
+            transform.localScale = _originalScale;
+        }
+
+        private void TrySubscribe()
+        {
+            if (!_isSubscribed && CaseManager.Instance != null)
+            {
+                CaseManager.Instance.OnTimerTick += HandleTimerTick;
+                CaseManager.Instance.OnTimeExpired += HandleTimeExpired;
+                CaseManager.Instance.OnCaseLoaded += HandleCaseLoaded;
+                _isSubscribed = true;
+            }
+        }
+
+        private void Unsubscribe()
+        {
+            if (_isSubscribed && CaseManager.Instance != null)
             {
                 CaseManager.Instance.OnTimerTick -= HandleTimerTick;
                 CaseManager.Instance.OnTimeExpired -= HandleTimeExpired;
                 CaseManager.Instance.OnCaseLoaded -= HandleCaseLoaded;
+                _isSubscribed = false;
             }
+        }
 
-            transform.localScale = _originalScale;
+        private void SyncImmediate()
+        {
+            if (CaseManager.Instance != null)
+            {
+                SyncTimerState(CaseManager.Instance.RemainingTime, CaseManager.Instance.ElapsedTime);
+            }
         }
 
         private void Update()
         {
+            if (CaseManager.Instance != null)
+            {
+                if (!_isSubscribed)
+                {
+                    TrySubscribe();
+                }
+
+                if (CaseManager.Instance.IsTimerRunning)
+                {
+                    SyncTimerState(CaseManager.Instance.RemainingTime, CaseManager.Instance.ElapsedTime);
+                }
+            }
+
             // Zero-allocation visual pulse animation only active during urgent state
             if (_currentUrgency == TimerUrgencyState.Urgent && CaseManager.Instance != null && CaseManager.Instance.IsTimerRunning)
             {
@@ -120,6 +157,7 @@ namespace CaseClosed.UI
             {
                 timerText.text = "00:00";
                 timerText.color = urgentColor;
+                timerText.ForceMeshUpdate();
             }
             transform.localScale = _originalScale;
         }
@@ -141,6 +179,7 @@ namespace CaseClosed.UI
                 {
                     timerText.text = "UNTIMED";
                     timerText.color = normalColor;
+                    timerText.ForceMeshUpdate();
                 }
                 return;
             }
@@ -160,6 +199,7 @@ namespace CaseClosed.UI
                 if (timerText != null)
                 {
                     timerText.text = CaseManager.Instance.TimerService.FormatTimeMinutesSeconds(currentIntSecond);
+                    timerText.ForceMeshUpdate();
                 }
 
                 TimerUrgencyState newUrgency = CaseManager.Instance.TimerService.GetUrgencyState(remainingSeconds);
@@ -194,6 +234,7 @@ namespace CaseClosed.UI
             if (timerText != null)
             {
                 timerText.color = targetColor;
+                timerText.ForceMeshUpdate();
             }
 
             if (timerIcon != null)
