@@ -73,6 +73,21 @@ Each character's dossier and expressions are stored in a `CharacterProfileSO` as
 
 ## 4. Interrogation Dialogue & Contradiction Challenge Flow
 
+### Currently integrated expression art
+
+`Assets/Resources/CharacterExpressions.asset` supplies Vince's existing Defensive,
+Nervous, and Shocked sprites to `CharacterDisplay`, including profiles created by
+the case initializer at runtime. Explicit profile expression mappings take priority;
+missing expressions use the default sitting pose, with Vince's original portrait
+as a fallback when his profile has no default assigned.
+
+The sprites under `Assets/Assets/CHARACTERS/Expressions/Normalized/` are byte-identical
+copies of the existing expression PNGs. Their import PPU matches their 1192-pixel
+sprite height to the original portrait's 112.79-unit height, avoiding a size jump
+without changing scene transforms or the original sprite metadata. Expression
+events and dialogue timing are unchanged; Shocked is available whenever requested,
+while the current Case 01 contradiction uses Nervous.
+
 Interrogations follow a challenge-and-break mechanic:
 
 ```mermaid

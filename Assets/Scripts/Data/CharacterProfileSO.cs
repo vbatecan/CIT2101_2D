@@ -57,7 +57,7 @@ namespace CaseClosed.Data
             {
                 foreach (var mapping in expressions)
                 {
-                    if (mapping != null && mapping.expression == expr)
+                    if (mapping != null && mapping.expression == expr && mapping.sprite != null)
                         return mapping.sprite;
                 }
             }

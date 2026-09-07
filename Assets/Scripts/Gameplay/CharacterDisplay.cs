@@ -25,6 +25,12 @@ namespace CaseClosed.Gameplay
         public SpriteRenderer characterSpriteRenderer;
 
         private CharacterProfileSO activeSuspect;
+        private CharacterExpressionLibrarySO expressionLibrary;
+
+        private void Awake()
+        {
+            expressionLibrary = Resources.Load<CharacterExpressionLibrarySO>("CharacterExpressions");
+        }
 
         /// <summary>
         /// Subscribes to case and interrogation manager events.
@@ -51,6 +57,9 @@ namespace CaseClosed.Gameplay
                     UpdateSuspectProfile(CaseManager.Instance.EffectiveInvestigator);
                 }
             }
+            // The initializer may have displayed the opening node before this component subscribed.
+            if (InterrogationManager.Instance != null)
+                HandleDialogueNodeDisplayed(InterrogationManager.Instance.CurrentNode);
         }
 
         /// <summary>
@@ -219,11 +228,29 @@ namespace CaseClosed.Gameplay
         public void SetExpression(CharacterExpression expression)
         {
             if (activeSuspect == null) return;
-            Sprite exprSprite = activeSuspect.GetSpriteForExpression(expression);
-            if (exprSprite != null)
+            // Explicit profile mappings override the shared art library.
+            if (activeSuspect.expressions != null)
             {
-                SetSprite(exprSprite);
+                foreach (ExpressionSpriteMapping mapping in activeSuspect.expressions)
+                {
+                    if (mapping != null && mapping.expression == expression && mapping.sprite != null)
+                    {
+                        SetSprite(mapping.sprite);
+                        return;
+                    }
+                }
             }
+            if (expression == CharacterExpression.Neutral && activeSuspect.defaultSittingPose != null)
+            {
+                SetSprite(activeSuspect.defaultSittingPose);
+                return;
+            }
+            Sprite sprite = expressionLibrary != null
+                ? expressionLibrary.GetSprite(activeSuspect.characterId, expression) : null;
+            if (sprite == null) sprite = activeSuspect.defaultSittingPose;
+            if (sprite == null && expressionLibrary != null)
+                sprite = expressionLibrary.GetSprite(activeSuspect.characterId, CharacterExpression.Neutral);
+            if (sprite != null) SetSprite(sprite);
         }
 
         /// <summary>

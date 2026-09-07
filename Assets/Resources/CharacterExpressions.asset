@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2f4615116c243588925ac3fe3ffe4f7, type: 3}
+  m_Name: CharacterExpressions
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterExpressionLibrarySO
+  characters:
+  - characterId: CHAR_VINCE_BATECAN
+    expressions:
+    - expression: 0
+      sprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
+    - expression: 6
+      sprite: {fileID: -6372029884859345686, guid: a598dc8c01b544eeb7552f551ae82ab1, type: 3}
+    - expression: 2
+      sprite: {fileID: 2312496710705426280, guid: 05c8821c3e8a4e898dc30ed834cea92d, type: 3}
+    - expression: 7
+      sprite: {fileID: -5403492796577020502, guid: 650c55d69ebf405e87e7d3590cb798eb, type: 3}

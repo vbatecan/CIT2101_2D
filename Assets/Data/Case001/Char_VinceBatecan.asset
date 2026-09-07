@@ -23,4 +23,10 @@ MonoBehaviour:
   possibleMotives: Urgent gambling debts owed to local loan sharks.
   alibi: Claims he stayed in the kitchen from 8:30 PM until everyone started shouting.
   defaultSittingPose: {fileID: 0}
-  expressions: []
+  expressions:
+  - expression: 2
+    sprite: {fileID: 2312496710705426280, guid: 05c8821c3e8a4e898dc30ed834cea92d, type: 3}
+  - expression: 7
+    sprite: {fileID: -5403492796577020502, guid: a25c0b6cef4eb1bfdb69b2814606a016, type: 3}
+  - expression: 6
+    sprite: {fileID: -6372029884859345686, guid: a598dc8c01b544eeb7552f551ae82ab1, type: 3}
