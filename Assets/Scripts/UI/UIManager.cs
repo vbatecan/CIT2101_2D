@@ -20,6 +20,7 @@ namespace CaseClosed.UI
         public GameObject mainTablePanel;
         public GameObject inspectModalPanel;
         public GameObject notebookPanel;
+        public GameObject suspectFolderPanel;
         public GameObject deductionBoardPanel;
         public GameObject conclusionQuizPanel;
         public GameObject resultsScreenPanel;
@@ -31,6 +32,7 @@ namespace CaseClosed.UI
         [Header("Header Navigation Elements")]
         public GameObject timerContainer;
         public GameObject notebookButton;
+        public GameObject suspectFolderButton;
         public GameObject deductionBoardButton;
         public GameObject concludeCaseButton;
         public GameObject investigatorSelectButton;
@@ -119,6 +121,29 @@ namespace CaseClosed.UI
                 if (btn != null) btn.onClick.AddListener(ToggleNotebookPanel);
             }
 
+            if (suspectFolderButton == null)
+            {
+                suspectFolderButton = GameObject.Find("SuspectFolderButton")
+                                   ?? GameObject.Find("ButtonFOLDER_0")
+                                   ?? GameObject.Find("ButtonFOLDER");
+            }
+
+            if (suspectFolderButton != null)
+            {
+                Button btn = suspectFolderButton.GetComponentInChildren<Button>(true);
+                if (btn != null)
+                {
+                    btn.onClick.RemoveListener(ToggleSuspectFolderPanel);
+                    btn.onClick.AddListener(ToggleSuspectFolderPanel);
+                }
+            }
+
+            if (suspectFolderPanel == null)
+            {
+                var found = Object.FindFirstObjectByType<SuspectFolderUI>(FindObjectsInactive.Include);
+                if (found != null) suspectFolderPanel = found.gameObject;
+            }
+
             if (deductionBoardButton != null)
             {
                 Button btn = deductionBoardButton.GetComponent<Button>();
@@ -202,10 +227,17 @@ namespace CaseClosed.UI
                 if (foundGO != null) gameOverPanel = foundGO.gameObject;
             }
 
+            if (suspectFolderPanel == null)
+            {
+                var foundGO = Object.FindFirstObjectByType<SuspectFolderUI>(FindObjectsInactive.Include);
+                if (foundGO != null) suspectFolderPanel = foundGO.gameObject;
+            }
+
             if (mainMenuPanel != null) mainMenuPanel.SetActive(isMainMenu);
             if (mainTablePanel != null) mainTablePanel.SetActive(!isMainMenu && (panelType == UIPanelType.InvestigationTable || isInGameMenu));
             if (inspectModalPanel != null) inspectModalPanel.SetActive(isInspect);
             if (notebookPanel != null) notebookPanel.SetActive(panelType == UIPanelType.CaseFileNotebook);
+            if (suspectFolderPanel != null) suspectFolderPanel.SetActive(panelType == UIPanelType.SuspectFolder);
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
             if (resultsScreenPanel != null) resultsScreenPanel.SetActive(isResults);
@@ -225,6 +257,7 @@ namespace CaseClosed.UI
             bool showHeaderNav = !isMainMenu && !isInspect && !isGameOver && !isResults && !isInGameMenu;
             if (timerContainer != null) timerContainer.SetActive(showHeaderNav);
             if (notebookButton != null) notebookButton.SetActive(showHeaderNav);
+            if (suspectFolderButton != null) suspectFolderButton.SetActive(showHeaderNav);
             if (deductionBoardButton != null) deductionBoardButton.SetActive(showHeaderNav);
             if (concludeCaseButton != null) concludeCaseButton.SetActive(showHeaderNav);
             if (investigatorSelectButton != null) investigatorSelectButton.SetActive(false);
@@ -327,6 +360,18 @@ namespace CaseClosed.UI
                 ShowPanel(UIPanelType.InvestigationTable);
             else
                 ShowPanel(UIPanelType.CaseFileNotebook);
+        }
+
+        /// <summary>
+        /// Toggles the suspect dossier folder panel on and off.
+        /// </summary>
+        public void ToggleSuspectFolderPanel()
+        {
+            Debug.Log("[UI:Manager] Toggle suspect folder panel clicked");
+            if (currentPanel == UIPanelType.SuspectFolder)
+                ShowPanel(UIPanelType.InvestigationTable);
+            else
+                ShowPanel(UIPanelType.SuspectFolder);
         }
 
         /// <summary>

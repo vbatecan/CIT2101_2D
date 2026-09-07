@@ -26,6 +26,9 @@ namespace CaseClosed.Enums
         /// <summary>Multiple-choice interrogation conclusion quiz.</summary>
         ConclusionQuiz,
 
+        /// <summary>Suspect dossier folder displaying full suspect files and background.</summary>
+        SuspectFolder,
+
         /// <summary>Final evaluation summary card showing score, letter rank, and star rating.</summary>
         ResultsScreen,
 
