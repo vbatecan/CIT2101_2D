@@ -120,6 +120,76 @@ namespace CaseClosed.Services
         }
 
         /// <summary>
+        /// Formats a complete single evidence dossier entry for the right-hand lined page of the notebook.
+        /// If discovered, reveals full category, description, examination findings, and unlocked clues.
+        /// If undiscovered / locked, presents a redacted placeholder with guidance to keep investigating.
+        /// </summary>
+        /// <param name="evidence">The evidence item to format.</param>
+        /// <param name="isDiscovered">Whether the player has discovered this evidence item.</param>
+        /// <param name="index">Current 1-based index (e.g. 1).</param>
+        /// <param name="totalCount">Total evidence count (e.g. 3).</param>
+        /// <returns>Rich text formatted dossier entry.</returns>
+        public string FormatEvidenceDossier(EvidenceSO evidence, bool isDiscovered, int index = 0, int totalCount = 0)
+        {
+            if (evidence == null)
+            {
+                return "<i>No evidence selected.</i>";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            string countHeader = totalCount > 0 ? $"<color=#64748B>[EVIDENCE {index} OF {totalCount}]</color>\n" : string.Empty;
+
+            if (isDiscovered)
+            {
+                sb.AppendLine(countHeader + $"<size=20><b>{evidence.evidenceName.ToUpper()}</b></size>");
+                sb.AppendLine($"<color=#1E293B><b>Category:</b></color> <color=#475569>[{evidence.category}]</color>");
+                sb.AppendLine($"<color=#1E293B><b>Status:</b></color> <color=#166534><b>LOGGED & VERIFIED</b></color>\n");
+
+                sb.AppendLine("<size=15><b>[ PHYSICAL DESCRIPTION ]</b></size>");
+                sb.AppendLine(evidence.baseDescription + "\n");
+
+                if (evidence.isExamined && !string.IsNullOrEmpty(evidence.detailedObservation))
+                {
+                    sb.AppendLine("<size=15><b>[ EXAMINATION FINDINGS ]</b></size>");
+                    sb.AppendLine($"<color=#0F766E>{evidence.detailedObservation}</color>\n");
+                }
+                else
+                {
+                    sb.AppendLine("<size=15><b>[ EXAMINATION FINDINGS ]</b></size>");
+                    sb.AppendLine("<i>Item has not been closely examined on the table yet. Double-click or inspect to reveal forensic details.</i>\n");
+                }
+
+                if (!string.IsNullOrEmpty(evidence.unlockedClueText))
+                {
+                    sb.AppendLine("<size=15><b>[ UNLOCKED CLUE & DEDUCTION ]</b></size>");
+                    sb.AppendLine($"<color=#B45309>{evidence.unlockedClueText}</color>\n");
+                }
+
+                if (evidence.hotspots != null && evidence.hotspots.Count > 0)
+                {
+                    int discoveredSpots = 0;
+                    foreach (var h in evidence.hotspots)
+                    {
+                        if (h != null && h.isDiscovered) discoveredSpots++;
+                    }
+                    sb.AppendLine($"<b>Forensic Hotspots Discovered:</b> {discoveredSpots} / {evidence.hotspots.Count}");
+                }
+            }
+            else
+            {
+                sb.AppendLine(countHeader + "<size=20><b>[ ??? UNDISCOVERED EVIDENCE ]</b></size>");
+                sb.AppendLine("<color=#1E293B><b>Category:</b></color> <color=#64748B>[CLASSIFIED]</color>");
+                sb.AppendLine("<color=#1E293B><b>Status:</b></color> <color=#991B1B><b>NOT YET RECOVERED</b></color>\n");
+
+                sb.AppendLine("<size=15><b>[ EVIDENCE STATUS ]</b></size>");
+                sb.AppendLine("<i>This piece of evidence has not yet been discovered by the detective.\n\nExplore the crime scene, interrogate the suspects, and inspect contradictory statements to uncover this item.</i>\n");
+            }
+
+            sb.AppendLine("<color=#94A3B8>────────────────────────────</color>");
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// Formats unlocked clues and synthesized deduction notes into a readable log.
         /// </summary>
         /// <param name="unlockedClues">Dictionary of clue IDs and their unlocked description text.</param>

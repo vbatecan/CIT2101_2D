@@ -7,6 +7,7 @@ using CaseClosed.Enums;
 using CaseClosed.Managers;
 using CaseClosed.Services;
 using CaseClosed.UI;
+using CaseClosed.Prototype;
 
 namespace CaseClosed.Tests
 {
@@ -247,6 +248,59 @@ namespace CaseClosed.Tests
             Assert.IsFalse(tablePanel.activeSelf);
 
             typeof(UIManager).GetProperty("Instance")?.SetValue(null, null);
+        }
+
+        [Test]
+        public void Case01Initializer_WhenCaseDataAssetAssigned_UsesAssetDataAndPreservesTimeLimit()
+        {
+            Case01Initializer init = testRoot.AddComponent<Case01Initializer>();
+            CaseSO customAsset = ScriptableObject.CreateInstance<CaseSO>();
+            customAsset.levelNumber = 1;
+            customAsset.caseTitle = "Custom Authored Case 01";
+            customAsset.hasTimeLimit = true;
+            customAsset.timeLimitSeconds = 450f; // 7.5 minutes custom limit
+
+            init.CaseDataAsset = customAsset;
+            CaseSO result = init.CreateCase01Data();
+
+            Assert.AreSame(customAsset, result);
+            Assert.AreEqual(450f, result.timeLimitSeconds);
+
+            caseManager.LoadCase(result);
+            Assert.AreEqual(450f, caseManager.CaseTimeLimit);
+            Assert.AreEqual(450f, caseManager.RemainingTime);
+        }
+
+        [Test]
+        public void Case01Initializer_DefaultFallback_HasTimeLimit300Seconds()
+        {
+            Case01Initializer init = testRoot.AddComponent<Case01Initializer>();
+            init.CaseDataAsset = null;
+            caseManager.activeCase = null;
+
+            CaseSO result = init.CreateCase01Data();
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.hasTimeLimit);
+            Assert.AreEqual(300f, result.timeLimitSeconds, "Default time limit fallback should be 300 seconds (5 minutes)");
+        }
+
+        [Test]
+        public void GameBootstrap_WhenCase01AssetAssigned_UsesAssetData()
+        {
+            GameBootstrap bootstrap = testRoot.AddComponent<GameBootstrap>();
+            CaseSO customAsset = ScriptableObject.CreateInstance<CaseSO>();
+            customAsset.levelNumber = 1;
+            customAsset.caseTitle = "Bootstrap Authored Case 01";
+            customAsset.hasTimeLimit = true;
+            customAsset.timeLimitSeconds = 600f; // 10 minutes custom limit
+
+            bootstrap.Case01Asset = customAsset;
+            bootstrap.LoadLevel(1);
+
+            Assert.AreSame(customAsset, caseManager.activeCase);
+            Assert.AreEqual(600f, caseManager.CaseTimeLimit);
+            Assert.AreEqual(600f, caseManager.RemainingTime);
         }
     }
 }

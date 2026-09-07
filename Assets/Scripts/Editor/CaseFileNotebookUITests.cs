@@ -17,8 +17,10 @@ namespace CaseClosed.Tests
         private CaseSO testCase;
         private CharacterProfileSO testSuspect;
         private EvidenceSO testEvidence;
+        private EvidenceSO testEvidence2;
         private Texture2D dummyTex;
         private Sprite dummySprite;
+        private Sprite dummySpriteTop;
 
         [SetUp]
         public void SetUp()
@@ -27,6 +29,7 @@ namespace CaseClosed.Tests
 
             dummyTex = new Texture2D(32, 32);
             dummySprite = Sprite.Create(dummyTex, new Rect(0, 0, 32, 32), Vector2.zero);
+            dummySpriteTop = Sprite.Create(dummyTex, new Rect(0, 0, 16, 16), Vector2.zero);
 
             // Setup mock CaseSO
             testCase = ScriptableObject.CreateInstance<CaseSO>();
@@ -58,8 +61,21 @@ namespace CaseClosed.Tests
             testEvidence.baseDescription = "A master skeleton key fitting the royal suite.";
             testEvidence.detailedObservation = "Scratches on the key bit match fresh lock tumbler shavings.";
             testEvidence.normalSprite = dummySprite;
+            testEvidence.zoomedSprite = dummySpriteTop;
+            testEvidence.topPovSprite = dummySpriteTop;
             testEvidence.isExamined = true;
-            testCase.evidenceItems = new List<EvidenceSO> { testEvidence };
+
+            testEvidence2 = ScriptableObject.CreateInstance<EvidenceSO>();
+            testEvidence2.id = "EVD_02";
+            testEvidence2.evidenceName = "Torn Ledger Page";
+            testEvidence2.category = EvidenceCategory.Document;
+            testEvidence2.baseDescription = "A burned page from the concierge ledger.";
+            testEvidence2.normalSprite = dummySprite;
+            testEvidence2.zoomedSprite = dummySpriteTop;
+            testEvidence2.topPovSprite = dummySpriteTop;
+            testEvidence2.isExamined = false;
+
+            testCase.evidenceItems = new List<EvidenceSO> { testEvidence, testEvidence2 };
 
             // Setup UI Components
             GameObject clipboardRootGO = new GameObject("Clipboard_Root", typeof(RectTransform));
@@ -143,7 +159,9 @@ namespace CaseClosed.Tests
             if (testCase != null) Object.DestroyImmediate(testCase);
             if (testSuspect != null) Object.DestroyImmediate(testSuspect);
             if (testEvidence != null) Object.DestroyImmediate(testEvidence);
+            if (testEvidence2 != null) Object.DestroyImmediate(testEvidence2);
             if (dummySprite != null) Object.DestroyImmediate(dummySprite);
+            if (dummySpriteTop != null) Object.DestroyImmediate(dummySpriteTop);
             if (dummyTex != null) Object.DestroyImmediate(dummyTex);
         }
 
@@ -283,6 +301,73 @@ namespace CaseClosed.Tests
             notebookUI.summaryTabButton.onClick.Invoke();
             Assert.That(notebookUI.notebookTitleText.text, Is.EqualTo(testCase.caseTitle));
             Assert.That(notebookUI.summaryCardSection.activeSelf, Is.True);
+        }
+
+        [Test]
+        public void NotebookFormattingService_FormatEvidenceDossier_DiscoveredShowsDetails()
+        {
+            NotebookFormattingService service = new NotebookFormattingService();
+            string text = service.FormatEvidenceDossier(testEvidence, true, 1, 2);
+
+            Assert.That(text, Does.Contain("[EVIDENCE 1 OF 2]"));
+            Assert.That(text, Does.Contain("GOLDEN MASTER KEY"));
+            Assert.That(text, Does.Contain("LOGGED & VERIFIED"));
+            Assert.That(text, Does.Contain("Scratches on the key bit match"));
+        }
+
+        [Test]
+        public void NotebookFormattingService_FormatEvidenceDossier_LockedShowsPlaceholder()
+        {
+            NotebookFormattingService service = new NotebookFormattingService();
+            string text = service.FormatEvidenceDossier(testEvidence2, false, 2, 2);
+
+            Assert.That(text, Does.Contain("[EVIDENCE 2 OF 2]"));
+            Assert.That(text, Does.Contain("[ ??? UNDISCOVERED EVIDENCE ]"));
+            Assert.That(text, Does.Contain("NOT YET RECOVERED"));
+            Assert.That(text, Does.Contain("has not yet been discovered by the detective"));
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_EvidenceRepository_UsesTopPovSprite()
+        {
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(0));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.True);
+            Assert.That(notebookUI.evidencePreviewImage.sprite, Is.EqualTo(dummySpriteTop));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("Golden Master Key"));
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_EvidenceRepository_CyclesMultipleEvidenceWithNextAndPrev()
+        {
+            notebookUI.SwitchTab(NotebookTab.Evidence);
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(0));
+
+            // Cycle Next
+            notebookUI.NextEvidence();
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(1));
+            // Item 2 is undiscovered in override
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("[ ??? LOCKED EVIDENCE ]"));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.False);
+            Assert.That(notebookUI.evidenceIndexLabel.text, Does.Contain("2 / 2"));
+
+            // Cycle Prev (back to Item 1)
+            notebookUI.PreviousEvidence();
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(0));
+            Assert.That(notebookUI.evidenceNameLabel.text, Is.EqualTo("Golden Master Key"));
+            Assert.That(notebookUI.evidencePreviewImage.gameObject.activeSelf, Is.True);
+            Assert.That(notebookUI.evidenceIndexLabel.text, Does.Contain("1 / 2"));
+        }
+
+        [Test]
+        public void CaseFileNotebookUI_FocusEvidence_NavigatesDirectlyToTargetEvidence()
+        {
+            notebookUI.FocusEvidence("EVD_02");
+
+            Assert.That(notebookUI.CurrentEvidenceIndex, Is.EqualTo(1));
+            Assert.That(notebookUI.notebookTitleText.text, Is.EqualTo("EVIDENCE REPOSITORY"));
+            Assert.That(notebookUI.evidenceCardSection.activeSelf, Is.True);
         }
     }
 }

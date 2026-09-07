@@ -17,6 +17,18 @@ namespace CaseClosed.Prototype
         /// <summary>Whether to display the Main Menu on launch instead of auto-loading a level.</summary>
         public bool startOnMainMenu = true;
 
+        [Header("Authored Case Data Assets (Optional)")]
+        [Tooltip("Pre-configured Case 01 ScriptableObject asset (e.g. Case01_Data.asset). If assigned, loaded directly.")]
+        [SerializeField] private CaseSO _case01Asset;
+        [Tooltip("Pre-configured Case 02 ScriptableObject asset (e.g. Case02_Data.asset). If assigned, loaded directly.")]
+        [SerializeField] private CaseSO _case02Asset;
+        [Tooltip("Pre-configured Case 03 ScriptableObject asset. If assigned, loaded directly.")]
+        [SerializeField] private CaseSO _case03Asset;
+
+        public CaseSO Case01Asset { get => _case01Asset; set => _case01Asset = value; }
+        public CaseSO Case02Asset { get => _case02Asset; set => _case02Asset = value; }
+        public CaseSO Case03Asset { get => _case03Asset; set => _case03Asset = value; }
+
         private Case01Initializer level1;
         private Case02Initializer level2;
         private Case03Initializer level3;
@@ -168,23 +180,44 @@ namespace CaseClosed.Prototype
             switch (levelIndex)
             {
                 case 1:
-                    if (level1 == null) level1 = gameObject.GetComponent<Case01Initializer>() ?? FindFirstObjectByType<Case01Initializer>() ?? gameObject.AddComponent<Case01Initializer>();
-                    caseData = level1.CreateCase01Data();
+                    if (_case01Asset != null)
+                    {
+                        caseData = _case01Asset;
+                    }
+                    else
+                    {
+                        if (level1 == null) level1 = gameObject.GetComponent<Case01Initializer>() ?? FindFirstObjectByType<Case01Initializer>() ?? gameObject.AddComponent<Case01Initializer>();
+                        caseData = level1 != null ? (level1.CaseDataAsset ?? level1.CreateCase01Data()) : null;
+                    }
                     break;
                 case 2:
-                    if (level2 == null) level2 = gameObject.GetComponent<Case02Initializer>() ?? FindFirstObjectByType<Case02Initializer>() ?? gameObject.AddComponent<Case02Initializer>();
-                    caseData = level2.CreateCase02Data();
+                    if (_case02Asset != null)
+                    {
+                        caseData = _case02Asset;
+                    }
+                    else
+                    {
+                        if (level2 == null) level2 = gameObject.GetComponent<Case02Initializer>() ?? FindFirstObjectByType<Case02Initializer>() ?? gameObject.AddComponent<Case02Initializer>();
+                        caseData = level2 != null ? (level2.CaseDataAsset ?? level2.CreateCase02Data()) : null;
+                    }
                     break;
                 case 3:
-                    if (level3 == null) level3 = gameObject.GetComponent<Case03Initializer>() ?? FindFirstObjectByType<Case03Initializer>() ?? gameObject.AddComponent<Case03Initializer>();
-                    caseData = level3.CreateCase03Data();
+                    if (_case03Asset != null)
+                    {
+                        caseData = _case03Asset;
+                    }
+                    else
+                    {
+                        if (level3 == null) level3 = gameObject.GetComponent<Case03Initializer>() ?? FindFirstObjectByType<Case03Initializer>() ?? gameObject.AddComponent<Case03Initializer>();
+                        caseData = level3 != null ? (level3.CaseDataAsset ?? level3.CreateCase03Data()) : null;
+                    }
                     break;
             }
 
             if (caseData != null)
             {
                 CaseManager.Instance?.LoadCase(caseData);
-                if (InterrogationManager.Instance != null && caseData.primarySuspect != null && caseData.dialogueTrees.Count > 0)
+                if (InterrogationManager.Instance != null && caseData.primarySuspect != null && caseData.dialogueTrees != null && caseData.dialogueTrees.Count > 0)
                 {
                     InterrogationManager.Instance.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
                 }

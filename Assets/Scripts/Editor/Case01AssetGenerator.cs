@@ -82,6 +82,7 @@ namespace CaseClosed.Editor
             evPhoto.category = EvidenceCategory.Photograph;
             evPhoto.normalSprite = photoSprite;
             evPhoto.zoomedSprite = photoZoomSprite;
+            evPhoto.topPovSprite = photoZoomSprite;
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
@@ -103,6 +104,7 @@ namespace CaseClosed.Editor
             evTeacup.category = EvidenceCategory.PhysicalClue;
             evTeacup.normalSprite = teacupSprite;
             evTeacup.zoomedSprite = teacupZoomSprite;
+            evTeacup.topPovSprite = teacupZoomSprite;
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
             evTeacup.startsDiscovered = true;
@@ -114,6 +116,7 @@ namespace CaseClosed.Editor
             evKitchen.category = EvidenceCategory.Document;
             evKitchen.normalSprite = kitchenSprite;
             evKitchen.zoomedSprite = kitchenZoomSprite;
+            evKitchen.topPovSprite = kitchenZoomSprite;
             evKitchen.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchen.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchen.startsDiscovered = true;

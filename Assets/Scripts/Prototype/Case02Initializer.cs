@@ -13,6 +13,15 @@ namespace CaseClosed.Prototype
     /// </summary>
     public class Case02Initializer : MonoBehaviour
     {
+        [Header("Case Data Source (Optional)")]
+        [Tooltip("Pre-configured Case ScriptableObject asset (e.g. Case02_Data.asset). If assigned, this asset is loaded directly instead of generating procedural mock data.")]
+        [SerializeField] private CaseSO _caseDataAsset;
+        public CaseSO CaseDataAsset
+        {
+            get => _caseDataAsset;
+            set => _caseDataAsset = value;
+        }
+
         /// <summary>Whether to automatically initialize and load Case 02 on Start.</summary>
         public bool initializeOnStart = false;
 
@@ -40,7 +49,7 @@ namespace CaseClosed.Prototype
                 CaseSO case02 = CreateCase02Data();
                 CaseManager.Instance?.LoadCase(case02);
 
-                if (InterrogationManager.Instance != null && case02.primarySuspect != null && case02.dialogueTrees.Count > 0)
+                if (InterrogationManager.Instance != null && case02 != null && case02.primarySuspect != null && case02.dialogueTrees != null && case02.dialogueTrees.Count > 0)
                 {
                     InterrogationManager.Instance.SetInterrogationTarget(case02.primarySuspect, case02.dialogueTrees[0]);
                 }
@@ -50,11 +59,30 @@ namespace CaseClosed.Prototype
         }
 
         /// <summary>
-        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 2: The Shattered Mirror.
+        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 2: The Shattered Mirror,
+        /// or returns the assigned pre-configured <see cref="CaseSO"/> data asset if available.
         /// </summary>
         /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase02Data()
         {
+            if (_caseDataAsset != null)
+            {
+                if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
+                {
+                    _caseDataAsset.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+                }
+                return _caseDataAsset;
+            }
+
+            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == 2)
+            {
+                if (CaseManager.Instance.selectedInvestigator != null)
+                {
+                    CaseManager.Instance.activeCase.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+                }
+                return CaseManager.Instance.activeCase;
+            }
+
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
             c.levelNumber = 2;
             c.caseId = "LEVEL_02";
@@ -65,6 +93,8 @@ namespace CaseClosed.Prototype
             c.victimInfo = "Paul Gabriel Camacho (Gallery Owner - Secretive & Dramatic)";
             c.totalKeyEvidenceCount = 3;
             c.totalContradictionsCount = 1;
+            c.hasTimeLimit = true;
+            c.timeLimitSeconds = 300f; // 5 mins default
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
@@ -114,6 +144,7 @@ namespace CaseClosed.Prototype
             evWindowPhoto.category = EvidenceCategory.Photograph;
             evWindowPhoto.normalSprite = windowPhotoTableSprite;
             evWindowPhoto.zoomedSprite = windowPhotoZoomedSprite;
+            evWindowPhoto.topPovSprite = windowPhotoZoomedSprite;
             evWindowPhoto.baseDescription = "Photograph of the shattered back office window taken from the alley.";
             evWindowPhoto.detailedObservation = "Glass shards are scattered OUTSIDE on the alley pavement, proving the window was broken from the INSIDE.";
             evWindowPhoto.unlockedClueText = "Glass shards scattered outside on pavement prove window was broken from INSIDE!";
@@ -135,6 +166,7 @@ namespace CaseClosed.Prototype
             evShiftLog.category = EvidenceCategory.Document;
             evShiftLog.normalSprite = securityLogTableSprite;
             evShiftLog.zoomedSprite = securityLogZoomedSprite;
+            evShiftLog.topPovSprite = securityLogZoomedSprite;
             evShiftLog.baseDescription = "Electronic keycard log showing guard movements throughout the night.";
             evShiftLog.detailedObservation = "Digital badge log printout highlighting: 11:00 PM - Charl Pascual scanned at East Gate.";
             evShiftLog.unlockedClueText = "Log shows Charl was checking the East Perimeter gate at 11:00 PM, far away from the office!";
@@ -150,6 +182,7 @@ namespace CaseClosed.Prototype
             evInsurance.category = EvidenceCategory.Document;
             evInsurance.normalSprite = insurancePolicyTableSprite;
             evInsurance.zoomedSprite = insurancePolicyZoomedSprite;
+            evInsurance.topPovSprite = insurancePolicyZoomedSprite;
             evInsurance.baseDescription = "Insurance policy agreement for the stolen painting.";
             evInsurance.detailedObservation = "Policy rider with amendment stamped 48 hours before the incident doubling coverage to $500,000.";
             evInsurance.unlockedClueText = "Paul doubled the insurance payout value of the painting just 48 hours prior to the theft.";
