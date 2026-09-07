@@ -22,5 +22,5 @@ MonoBehaviour:
   knownConflicts: Frequently argued with uncle Kirby Raymundo over financial allowance.
   possibleMotives: Urgent gambling debts owed to local loan sharks.
   alibi: Claims he stayed in the kitchen from 8:30 PM until everyone started shouting.
-  defaultSittingPose: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
+  defaultSittingPose: {fileID: 0}
   expressions: []

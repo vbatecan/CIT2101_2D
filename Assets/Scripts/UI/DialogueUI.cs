@@ -40,6 +40,17 @@ namespace CaseClosed.UI
         /// <summary>Global state indicating whether the dialogue window is currently visible and active.</summary>
         public static bool IsDialogueOpen { get; private set; } = false;
 
+        /// <summary>Whether the current dialogue node allows contradiction challenges.</summary>
+        public bool isCurrentNodeChallengeable { get; private set; } = false;
+        public bool IsCurrentNodeChallengeable => isCurrentNodeChallengeable;
+
+        /// <summary>Whether a failed challenge reaction is currently being displayed.</summary>
+        public bool isShowingFailureReaction { get; private set; } = false;
+        public bool IsShowingFailureReaction => isShowingFailureReaction;
+
+        /// <summary>Whether the typewriter is currently animating text.</summary>
+        public bool IsTyping => isTyping;
+
         private Coroutine typewriterCoroutine;
         private bool isTyping = false;
         private string currentFullText = "";
@@ -56,6 +67,7 @@ namespace CaseClosed.UI
             SetNextButtonInteractable(false);
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
             if (challengeHighlight != null) challengeHighlight.SetActive(false);
+            if (challengeButton != null) challengeButton.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
 
@@ -121,19 +133,40 @@ namespace CaseClosed.UI
 
             IsDialogueOpen = true;
             gameObject.SetActive(true);
+            isShowingFailureReaction = false;
+            isCurrentNodeChallengeable = node.isChallengeable;
 
             Debug.Log($"[UI:Dialogue] Displaying node '{node.nodeId}' (Speaker: '{node.speakerName}', Challengeable: {node.isChallengeable})");
 
-            if (speakerNameText != null) speakerNameText.text = node.speakerName;
+            bool isDetective = string.Equals(node.speakerName, "Detective", System.StringComparison.OrdinalIgnoreCase) ||
+                               string.Equals(node.speakerId, "Detective", System.StringComparison.OrdinalIgnoreCase) ||
+                               string.Equals(node.speakerId, "PLAYER", System.StringComparison.OrdinalIgnoreCase) ||
+                               string.Equals(node.speakerId, "Investigator", System.StringComparison.OrdinalIgnoreCase);
 
-            if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
-            SetNextButtonInteractable(false);
-            typewriterCoroutine = StartCoroutine(TypeText(node.statementText));
+            string resolvedSpeakerName = node.speakerName;
+            if (isDetective)
+            {
+                string investigatorName = CaseManager.Instance?.selectedInvestigator?.fullName;
+                if (!string.IsNullOrWhiteSpace(investigatorName))
+                {
+                    resolvedSpeakerName = investigatorName;
+                }
+                else
+                {
+                    resolvedSpeakerName = !string.IsNullOrWhiteSpace(node.speakerName) ? node.speakerName : "Detective";
+                }
+            }
+
+            if (speakerNameText != null) speakerNameText.text = resolvedSpeakerName;
 
             if (challengeButton != null)
             {
                 challengeButton.gameObject.SetActive(false);
             }
+
+            if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+            SetNextButtonInteractable(false);
+            typewriterCoroutine = StartCoroutine(TypeText(node.statementText));
         }
 
         /// <summary>
@@ -169,19 +202,51 @@ namespace CaseClosed.UI
         {
             isTyping = true;
             SetNextButtonInteractable(false);
-            currentFullText = text;
+            if (challengeButton != null)
+            {
+                challengeButton.gameObject.SetActive(false);
+            }
+            currentFullText = text ?? "";
             if (dialogueBodyText != null) dialogueBodyText.text = "";
 
             float delay = 1f / Mathf.Max(1f, charactersPerSecond);
-            for (int i = 0; i < text.Length; i++)
+            for (int i = 0; i < currentFullText.Length; i++)
             {
-                if (dialogueBodyText != null) dialogueBodyText.text += text[i];
+                if (dialogueBodyText != null) dialogueBodyText.text += currentFullText[i];
                 if (i % 3 == 0) AudioManager.Instance?.PlayTypewriterKey();
                 yield return new WaitForSeconds(delay);
             }
 
             isTyping = false;
             SetNextButtonInteractable(true);
+            if (challengeButton != null)
+            {
+                challengeButton.gameObject.SetActive(isCurrentNodeChallengeable && !isShowingFailureReaction);
+            }
+        }
+
+        /// <summary>
+        /// Instantly finishes typing out the current dialogue text, enabling interaction and challenge buttons.
+        /// </summary>
+        public void CompleteTypingImmediately()
+        {
+            if (typewriterCoroutine != null)
+            {
+                StopCoroutine(typewriterCoroutine);
+                typewriterCoroutine = null;
+            }
+
+            if (dialogueBodyText != null)
+            {
+                dialogueBodyText.text = currentFullText;
+            }
+
+            isTyping = false;
+            SetNextButtonInteractable(true);
+            if (challengeButton != null)
+            {
+                challengeButton.gameObject.SetActive(isCurrentNodeChallengeable && !isShowingFailureReaction);
+            }
         }
 
         private void SetNextButtonInteractable(bool interactable)
@@ -357,7 +422,10 @@ namespace CaseClosed.UI
             IsDialogueOpen = false;
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
             isTyping = false;
+            isCurrentNodeChallengeable = false;
+            isShowingFailureReaction = false;
             SetNextButtonInteractable(false);
+            if (challengeButton != null) challengeButton.gameObject.SetActive(false);
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
             gameObject.SetActive(false);
         }
@@ -371,12 +439,19 @@ namespace CaseClosed.UI
         {
             IsDialogueOpen = true;
             gameObject.SetActive(true);
-            Debug.Log($"[UI:Dialogue] Received challenge result (Success: {success}, MessageLength: {reactionMessage?.Length ?? 0})");
+            isShowingFailureReaction = !success;
+            isCurrentNodeChallengeable = false;
+            Debug.Log($"[UI:Dialogue] Received challenge result (Success: {success}, FailureReaction: {isShowingFailureReaction}, MessageLength: {reactionMessage?.Length ?? 0})");
 
             if (speakerNameText != null)
             {
                 CharacterProfileSO suspect = InterrogationManager.Instance?.currentSuspect;
-                speakerNameText.text = suspect != null ? suspect.fullName : "Suspect";
+                speakerNameText.text = suspect != null && !string.IsNullOrEmpty(suspect.fullName) ? suspect.fullName : "Suspect";
+            }
+
+            if (challengeButton != null)
+            {
+                challengeButton.gameObject.SetActive(false);
             }
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);

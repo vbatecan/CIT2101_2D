@@ -18,11 +18,13 @@ MonoBehaviour:
   normalSprite: {fileID: -1129675804575292397, guid: d49fb24437f6de1f288cc16b54a4711f, type: 3}
   highlightedSprite: {fileID: 0}
   zoomedSprite: {fileID: -2814718709115034861, guid: bb42deae26851e074a6d9e02e15f7eb6, type: 3}
+  topPovSprite: {fileID: -2814718709115034861, guid: bb42deae26851e074a6d9e02e15f7eb6, type: 3}
+  customInspectBackground: {fileID: 0}
   baseDescription: A photograph taken at 8:45 PM showing the study doorway.
   detailedObservation: A distinct silhouette matching Vince is visible standing near
     the study door.
   unlockedClueText: Vince silhouette spotted near study doorway at 8:45 PM.
-  startsDiscovered: 0
+  startsDiscovered: 1
   requiredDialogueNodeId: 
   dialogueNodeToTriggerOnInspect: 
   isExamined: 0

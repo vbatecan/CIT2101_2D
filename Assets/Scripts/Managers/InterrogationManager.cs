@@ -29,6 +29,13 @@ namespace CaseClosed.Managers
         /// <summary>Flag indicating whether challenge mode is active (awaiting evidence presentation).</summary>
         public bool isChallengeModeActive = false;
 
+        /// <summary>Flag indicating whether a failed challenge reaction is currently being displayed.</summary>
+        public bool isShowingFailureReaction = false;
+
+        /// <summary>Cached reference to the last challengeable statement node before a failed challenge.</summary>
+        private DialogueNode _lastChallengeableNode;
+        public DialogueNode LastChallengeableNode => _lastChallengeableNode;
+
         /// <summary>Event raised when the interrogated suspect changes.</summary>
         public event Action<CharacterProfileSO> OnSuspectChanged;
 
@@ -86,6 +93,8 @@ namespace CaseClosed.Managers
             currentSuspect = suspect;
             currentDialogueTree = dialogueTree;
             isChallengeModeActive = false;
+            isShowingFailureReaction = false;
+            _lastChallengeableNode = null;
 
             Debug.Log($"[Interrogation] Set interrogation target: '{suspect?.fullName}' (Tree: '{dialogueTree?.treeId}')");
 
@@ -130,6 +139,17 @@ namespace CaseClosed.Managers
         {
             if (currentNode == null || isChallengeModeActive) return;
 
+            if (isShowingFailureReaction)
+            {
+                isShowingFailureReaction = false;
+                if (_lastChallengeableNode != null)
+                {
+                    Debug.Log($"[Interrogation] Looping back to challengeable node '{_lastChallengeableNode.nodeId}' after failure reaction.");
+                    JumpToNode(_lastChallengeableNode.nodeId);
+                    return;
+                }
+            }
+
             CompleteCurrentNode();
 
             if (currentNode.choices != null && currentNode.choices.Count > 0)
@@ -173,6 +193,8 @@ namespace CaseClosed.Managers
         {
             currentNode = null;
             isChallengeModeActive = false;
+            isShowingFailureReaction = false;
+            _lastChallengeableNode = null;
             OnChallengeModeToggled?.Invoke(false);
             OnDialogueClosed?.Invoke();
         }
@@ -223,6 +245,8 @@ namespace CaseClosed.Managers
                 OnExpressionChanged?.Invoke(matchingRule.reactionExpression);
                 OnChallengeResult?.Invoke(true, matchingRule.reactionDialogue);
 
+                _lastChallengeableNode = null;
+                isShowingFailureReaction = false;
                 isChallengeModeActive = false;
                 OnChallengeModeToggled?.Invoke(false);
 
@@ -234,6 +258,12 @@ namespace CaseClosed.Managers
             else
             {
                 // Challenge failed / No contradiction with this evidence
+                _lastChallengeableNode = currentNode;
+                isShowingFailureReaction = true;
+
+                isChallengeModeActive = false;
+                OnChallengeModeToggled?.Invoke(false);
+
                 CharacterExpression failExpression = interrogationService.GetFailureExpression(currentSuspect);
                 string responseText = interrogationService.GetFailureResponseText(currentSuspect, presentedEvidence);
 

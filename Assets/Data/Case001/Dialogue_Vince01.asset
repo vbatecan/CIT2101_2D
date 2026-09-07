@@ -20,19 +20,76 @@ MonoBehaviour:
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 6
-    statementText: I never went near the study! I stayed in the kitchen from 8:30
+    statementText: I never went near the study. I stayed in the kitchen from 8:30
       PM until everyone started shouting!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01B_INTERVIEW
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01B_INTERVIEW
+    speakerId: PLAYER
+    speakerName: Detective
+    expression: 0
+    statementText: Nobody mentioned picking locks, Vince. But you're very quick to
+      establish an alibi. Let's talk about the study itself.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02_ROOM_LEAD
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_02_ROOM_LEAD
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 6
+    statementText: The study was locked, Detective. There is nothing there that connects
+      me to the necklace.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: 
+    unlockEvidenceOnComplete:
+    - EVD_BROKEN_TEACUP
+  - nodeId: NODE_03_TEACUP_LEAD
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 2
+    statementText: That broken cup? I heard it fall, but I was nowhere near the safe.
+      The pantry log will prove I was in the kitchen.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03B_CONFIRMATION
+    unlockEvidenceOnComplete:
+    - EVD_KITCHEN_LOG
+  - nodeId: NODE_03B_CONFIRMATION
+    speakerId: PLAYER
+    speakerName: Detective
+    expression: 0
+    statementText: A shattered teacup right next to the open safe. You claim you
+      heard it fall from down the hall, yet your story insists you were secluded
+      in the kitchen. Let's test that timeline against the staff records.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_04_FINAL_ALIBI
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_04_FINAL_ALIBI
+    speakerId: CHAR_VINCE_BATECAN
+    speakerName: Vince Angelo Batecan
+    expression: 6
+    statementText: I stayed in that kitchen the entire time. You cannot prove otherwise.
     isChallengeable: 1
     targetContradictionRuleId: RULE_VINCE_ALIBI_LIE
     choices: []
     defaultNextNodeId: 
     unlockEvidenceOnComplete: []
-  - nodeId: NODE_02_CONFESSION
+  - nodeId: NODE_05_CONFESSION
     speakerId: CHAR_VINCE_BATECAN
     speakerName: Vince Angelo Batecan
     expression: 2
-    statementText: W-what?! The kitchen pantry log? Fine! The kitchen was locked...
-      I needed money to clear my debts, so I took the necklace!
+    statementText: W-what?! The kitchen pantry log? Fine! I needed money to clear
+      my debts, so I took the necklace!
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []

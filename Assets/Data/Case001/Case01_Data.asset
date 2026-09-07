@@ -40,28 +40,44 @@ MonoBehaviour:
     questionText: Who stole Kirby Raymundo's necklace?
     options:
     - Vince Angelo Batecan
-    - Kirby Raymundo
+    - Jane Arie Reyes
     - House Staff
     correctOptionIndex: 0
     pointValue: 250
   - questionId: Q_MOTIVE
-    questionText: What was Vince's motive?
+    questionText: What was Vince Angelo Batecan's motive?
     options:
-    - Pay Off Debts
     - Jealousy
-    - Accidental Spillage
+    - Gambling debts
+    - Revenge
+    correctOptionIndex: 1
+    pointValue: 250
+  - questionId: Q_ALIBI
+    questionText: Where did Vince claim he remained during the incident?
+    options:
+    - The Kitchen
+    - The Garden
+    - The Study
     correctOptionIndex: 0
     pointValue: 250
   - questionId: Q_EVIDENCE
-    questionText: Which evidence disproved Vince's kitchen alibi?
+    questionText: Which evidence most strongly disproved Vince's kitchen alibi?
     options:
     - Kitchen Pantry Log
     - Broken Teacup
     - Family Photograph
     correctOptionIndex: 0
     pointValue: 250
-  totalKeyEvidenceCount: 5
-  totalContradictionsCount: 3
+  - questionId: Q_WITNESS
+    questionText: Who saw Vince and Kirby arguing before dinner?
+    options:
+    - Jane Arie Reyes
+    - Charl Vonn Pascual
+    - Shan Jaraba
+    correctOptionIndex: 0
+    pointValue: 250
+  totalKeyEvidenceCount: 3
+  totalContradictionsCount: 1
   parCompletionTimeSeconds: 300
   hasTimeLimit: 1
   timeLimitSeconds: 300

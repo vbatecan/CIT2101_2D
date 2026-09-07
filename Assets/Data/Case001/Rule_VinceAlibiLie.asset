@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.ContradictionRuleSO
   ruleId: RULE_VINCE_ALIBI_LIE
   ruleTitle: Locked Kitchen Contradiction
-  targetStatementNodeId: NODE_01
+  targetStatementNodeId: NODE_04_FINAL_ALIBI
   requiredEvidenceId: EVD_KITCHEN_LOG
   requiredClueId: 
   reactionExpression: 2
   reactionDialogue: 'Vince shifts nervously and stammers: "Wait... the kitchen log
     shows it was locked by staff? I... I..."'
-  unlockedDialogueNodeId: NODE_02_CONFESSION
+  unlockedDialogueNodeId: NODE_05_CONFESSION
   unlockedClueId: CLUE_VINCE_STAGED_BREAKIN
   unlockedClueText: Vince Angelo Batecan confessed to staging the break-in for debt
     money!
