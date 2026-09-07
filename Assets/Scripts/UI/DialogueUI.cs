@@ -192,6 +192,16 @@ namespace CaseClosed.UI
         {
             if (!IsDialogueOpen || !gameObject.activeInHierarchy) return;
 
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            {
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    Debug.Log("[UI:Dialogue] Escape key pressed: Cancelling challenge mode.");
+                    InterrogationManager.Instance.ToggleChallengeMode(false);
+                    return;
+                }
+            }
+
             if (CheckAdvanceInput())
             {
                 HandleDialogueAdvanceInput();
@@ -381,6 +391,7 @@ namespace CaseClosed.UI
             gameObject.SetActive(true);
             isShowingFailureReaction = false;
             isCurrentNodeChallengeable = node.isChallengeable;
+            SetChallengeButtonText("Challenge");
             ArmPointerController.Instance?.ForceSyncState();
 
             Debug.Log($"[UI:Dialogue] Displaying node '{node.nodeId}' (Speaker: '{node.speakerName}', Challengeable: {node.isChallengeable})");
@@ -989,17 +1000,32 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Updates the visual challenge state highlight and toggles the evidence picker grid.
+        /// Updates the visual challenge state highlight, toggles challenge button text, and syncs the arm pointer.
         /// </summary>
         /// <param name="isActive">Whether challenge mode is currently enabled.</param>
         private void UpdateChallengeState(bool isActive)
         {
             if (challengeHighlight != null) challengeHighlight.SetActive(isActive);
-            if (evidencePickerContainer != null) evidencePickerContainer.SetActive(isActive);
+            if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
 
-            if (isActive)
+            SetChallengeButtonText(isActive ? "Cancel" : "Challenge");
+
+            ArmPointerController.Instance?.ForceSyncState();
+        }
+
+        private void SetChallengeButtonText(string text)
+        {
+            if (challengeButton == null) return;
+            var tmp = challengeButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null)
             {
-                PopulateEvidencePicker();
+                tmp.text = text;
+                return;
+            }
+            var legacy = challengeButton.GetComponentInChildren<Text>(true);
+            if (legacy != null)
+            {
+                legacy.text = text;
             }
         }
 
@@ -1141,7 +1167,11 @@ namespace CaseClosed.UI
             isCurrentNodeChallengeable = false;
             isShowingFailureReaction = false;
             SetNextButtonInteractable(false);
-            if (challengeButton != null) challengeButton.gameObject.SetActive(false);
+            if (challengeButton != null)
+            {
+                challengeButton.gameObject.SetActive(false);
+                SetChallengeButtonText("Challenge");
+            }
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
 
             DeactivateAllCharacterDialogBoxes();
@@ -1175,6 +1205,7 @@ namespace CaseClosed.UI
             if (challengeButton != null)
             {
                 challengeButton.gameObject.SetActive(false);
+                SetChallengeButtonText("Challenge");
             }
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);

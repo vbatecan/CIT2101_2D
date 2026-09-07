@@ -198,14 +198,15 @@ namespace CaseClosed.Gameplay
 
         private void CheckDirectMouseInteraction()
         {
-            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
-
             Camera cam = Camera.main;
             if (cam == null) return;
 
             // Disallow desk interaction if UI modal or inspection modal is currently active
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
+
+            // If dialogue is open but challenge mode is NOT active, ignore direct clicks so dialogue input advances text instead
+            if (DialogueUI.IsDialogueOpen && (InterrogationManager.Instance == null || !InterrogationManager.Instance.isChallengeModeActive)) return;
 
             Vector3 mouseScreen = Input.mousePosition;
             Vector3 mouseWorld3D = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
@@ -278,6 +279,7 @@ namespace CaseClosed.Gameplay
 
         /// <summary>
         /// Smoothly animates glow intensity, breathing pulse oscillation, discovery cue, and subtle scale lift.
+        /// When in Challenge Mode, pulses with a golden selectable aura. Undiscovered items remain black silhouettes.
         /// </summary>
         private void UpdateGlowAnimation()
         {
@@ -286,6 +288,19 @@ namespace CaseClosed.Gameplay
             if (haloObj == null)
             {
                 SetupGlowHalo();
+            }
+
+            // If undiscovered, lock to pitch black silhouette and disable glowing aura
+            if (!CheckIsDiscovered() && !openNotebookOnClick)
+            {
+                if (haloObj != null && haloObj.activeSelf) haloObj.SetActive(false);
+                if (highlightGlow != null && highlightGlow.activeSelf) highlightGlow.SetActive(false);
+                if (spriteRenderer != null) spriteRenderer.color = Color.black;
+                if (scaleOnHover && hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f)
+                {
+                    transform.localScale = baseScale;
+                }
+                return;
             }
 
             bool isCueActive = discoveryCueTimer > 0f;
@@ -299,8 +314,14 @@ namespace CaseClosed.Gameplay
                 }
             }
 
+            bool isChallengeActive = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
+
             float targetIntensity = 0f;
-            if (isHovered)
+            if (isChallengeActive)
+            {
+                targetIntensity = 0.95f;
+            }
+            else if (isHovered)
             {
                 targetIntensity = maxGlowIntensity;
             }
@@ -312,7 +333,7 @@ namespace CaseClosed.Gameplay
 
             currentGlowIntensity = Mathf.MoveTowards(currentGlowIntensity, targetIntensity, Time.deltaTime * glowFadeSpeed);
 
-            if (currentGlowIntensity > 0.001f || isCueActive)
+            if (currentGlowIntensity > 0.001f || isCueActive || isChallengeActive)
             {
                 if (haloObj != null && !haloObj.activeSelf)
                 {
@@ -329,7 +350,13 @@ namespace CaseClosed.Gameplay
                     Color activeColor = glowColor;
                     float pulse = 1.0f;
 
-                    if (isCueActive)
+                    if (isChallengeActive)
+                    {
+                        // Pulsating golden challenge aura when waiting for evidence selection
+                        activeColor = new Color(1.0f, 0.85f, 0.2f, 0.9f);
+                        pulse = 1.0f + Mathf.Sin(Time.time * 5.0f) * 0.08f;
+                    }
+                    else if (isCueActive)
                     {
                         float cueProgress = Mathf.Clamp01(discoveryCueTimer / discoveryCueDuration);
                         activeColor = Color.Lerp(glowColor, discoveryGlowColor, cueProgress);
@@ -340,7 +367,7 @@ namespace CaseClosed.Gameplay
                         pulse = 1.0f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmplitude;
                     }
 
-                    float alpha = Mathf.Clamp01(Mathf.Max(currentGlowIntensity, isCueActive ? 0.35f : 0f) * pulse * activeColor.a);
+                    float alpha = Mathf.Clamp01(Mathf.Max(currentGlowIntensity, isCueActive ? 0.35f : (isChallengeActive ? 0.45f : 0f)) * pulse * activeColor.a);
                     haloRenderer.color = new Color(activeColor.r, activeColor.g, activeColor.b, alpha);
 
                     float scaleFactor = (haloBaseScale + ((pulse - 1.0f) * 0.5f)) * (isCueActive ? 1.05f : 1.0f);
@@ -349,13 +376,21 @@ namespace CaseClosed.Gameplay
 
                 if (spriteRenderer != null)
                 {
-                    Color targetTint = isCueActive ? Color.Lerp(hoverColor, discoveryGlowColor, 0.4f) : hoverColor;
-                    spriteRenderer.color = Color.Lerp(originalColor, targetTint, Mathf.Clamp01(currentGlowIntensity));
+                    if (isChallengeActive)
+                    {
+                        Color challengeTint = Color.Lerp(originalColor, new Color(1f, 0.95f, 0.7f, 1f), (Mathf.Sin(Time.time * 5.0f) + 1f) * 0.15f);
+                        spriteRenderer.color = isHovered ? hoverColor : challengeTint;
+                    }
+                    else
+                    {
+                        Color targetTint = isCueActive ? Color.Lerp(hoverColor, discoveryGlowColor, 0.4f) : hoverColor;
+                        spriteRenderer.color = Color.Lerp(originalColor, targetTint, Mathf.Clamp01(currentGlowIntensity));
+                    }
                 }
 
                 if (highlightGlow != null)
                 {
-                    highlightGlow.SetActive(isHovered || isCueActive);
+                    highlightGlow.SetActive(isHovered || isCueActive || isChallengeActive);
                 }
             }
             else
@@ -378,8 +413,8 @@ namespace CaseClosed.Gameplay
 
             if (scaleOnHover && hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f)
             {
-                bool shouldScale = isHovered || isCueActive;
-                float scaleMul = isHovered ? hoverScaleMultiplier : 1.025f;
+                bool shouldScale = isHovered || isCueActive || isChallengeActive;
+                float scaleMul = isHovered ? hoverScaleMultiplier : (isChallengeActive ? 1.015f : 1.025f);
                 Vector3 targetScale = shouldScale ? (baseScale * scaleMul) : baseScale;
                 transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * glowFadeSpeed);
             }
@@ -515,23 +550,32 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
-        /// Enables or disables the visual SpriteRenderer and physical Collider2D components.
+        /// Updates the visual rendering and collider responsiveness of this table evidence item.
+        /// Discovered items display in full color with interactive glow; undiscovered clues appear as black silhouettes.
         /// </summary>
         public void SetItemVisibility(bool visible)
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteRenderer != null)
             {
-                spriteRenderer.enabled = visible;
+                spriteRenderer.enabled = true;
+                if (!visible && !openNotebookOnClick)
+                {
+                    spriteRenderer.color = Color.black;
+                }
+                else
+                {
+                    spriteRenderer.color = originalColor;
+                }
             }
 
             if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
             if (itemCollider != null)
             {
-                itemCollider.enabled = visible;
+                itemCollider.enabled = true;
             }
 
-            if (!visible)
+            if (!visible && !openNotebookOnClick)
             {
                 SetHoverState(false);
                 StopDiscoveryCue();
@@ -644,7 +688,6 @@ namespace CaseClosed.Gameplay
 
         private void OnMouseEnter()
         {
-            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
             SetHoverState(true);
         }
 
@@ -655,17 +698,17 @@ namespace CaseClosed.Gameplay
 
         private void OnMouseDown()
         {
-            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
             TriggerClick(false);
         }
 
         /// <summary>
         /// Programmatically sets the hover visual state (used by ArmPointerController).
         /// Triggers glowing aura, scale lift, and highlighted sprite change.
+        /// Undiscovered items do not display hover glowing highlights.
         /// </summary>
         public void SetHoverState(bool isHovered)
         {
-            if (isHovered && !openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled)
+            if (isHovered && !CheckIsDiscovered() && !openNotebookOnClick)
             {
                 isHovered = false;
             }
@@ -674,6 +717,14 @@ namespace CaseClosed.Gameplay
 
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
             if (haloObj == null) SetupGlowHalo();
+
+            if (!CheckIsDiscovered() && !openNotebookOnClick)
+            {
+                if (spriteRenderer != null) spriteRenderer.color = Color.black;
+                if (haloObj != null) haloObj.SetActive(false);
+                if (highlightGlow != null) highlightGlow.SetActive(false);
+                return;
+            }
 
             if (spriteRenderer != null && evidenceData != null)
             {
@@ -687,21 +738,29 @@ namespace CaseClosed.Gameplay
 
             if (highlightGlow != null)
             {
-                highlightGlow.SetActive(isHovered || IsDiscoveryCueActive);
+                bool isChallengeActive = InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive;
+                highlightGlow.SetActive(isHovered || IsDiscoveryCueActive || isChallengeActive);
             }
         }
 
         /// <summary>
         /// Programmatically triggers the interaction click on this table item (used by ArmPointerController).
+        /// During Challenge Mode, clicking a discovered item presents it to contradiction verification.
+        /// Undiscovered items play a subtle locked cue.
         /// </summary>
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
-            // Disallow interaction if item is not visible on desk
-            if (!openNotebookOnClick && spriteRenderer != null && !spriteRenderer.enabled) return;
-
             // OnMouseDown can reach this handler through UI, bypassing the polling guards.
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
+
+            // 0. If item is undiscovered, clicking gives a locked/dull cue and cannot be inspected or presented
+            if (!CheckIsDiscovered() && !openNotebookOnClick)
+            {
+                Debug.Log($"[Gameplay:TableEvidence] Clicked undiscovered item '{gameObject.name}'. Clue is not yet revealed.");
+                AudioManager.Instance?.PlayPaperFlip();
+                return;
+            }
 
             // 1. Check if configured to open notebook (Open Case Book on desk)
             if (openNotebookOnClick)
@@ -734,16 +793,20 @@ namespace CaseClosed.Gameplay
             // 2. Select evidence in EvidenceManager
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
-            // 3. If dialogue is currently active with a statement, clicking this table item directly presents it to challenge!
-            if (DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.currentNode != null)
+            // 3. If in Challenge Mode, clicking this table item directly presents it to challenge!
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
             {
                 DialogueUI.Instance?.AlignToWorldTarget(transform);
-                Debug.Log($"[Gameplay:TableEvidence] Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode.nodeId}'");
+                Debug.Log($"[Gameplay:TableEvidence] Challenge Mode: Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.currentNode?.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
                 manager?.RegisterDiscoveredEvidence(evidenceData);
+                InterrogationManager.Instance.ToggleChallengeMode(false);
                 InterrogationManager.Instance.PresentEvidenceToChallenge(evidenceData);
                 return;
             }
+
+            // If dialogue is open but not in challenge mode, do not inspect items
+            if (DialogueUI.IsDialogueOpen) return;
 
             // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");

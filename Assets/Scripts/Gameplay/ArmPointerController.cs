@@ -153,9 +153,16 @@ namespace CaseClosed.Gameplay
 
         /// <summary>
         /// Evaluates whether the game is currently in a UI/Dialogue/Inspection state.
+        /// When Challenge Mode is active, returns false so the detective's arm pointer remains active over the table.
         /// </summary>
         public bool DetermineUIMode()
         {
+            // When Challenge Mode is active during dialogue, the arm pointer MUST be active over the desk!
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+            {
+                return false;
+            }
+
             // Check if Dialogue is actively displayed
             if (DialogueUI.IsDialogueOpen && DialogueUI.Instance != null && DialogueUI.Instance.gameObject.activeInHierarchy)
             {
@@ -290,6 +297,14 @@ namespace CaseClosed.Gameplay
             }
             else if (Input.GetMouseButtonDown(1)) // Right Click
             {
+                // Right-click cancels Challenge Mode
+                if (InterrogationManager.Instance != null && InterrogationManager.Instance.isChallengeModeActive)
+                {
+                    Debug.Log("[ArmPointer] Right-click cancelled challenge mode.");
+                    InterrogationManager.Instance.ToggleChallengeMode(false);
+                    return;
+                }
+
                 if (currentHoveredItem != null)
                 {
                     currentHoveredItem.TriggerClick(true);
