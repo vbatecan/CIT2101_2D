@@ -141,7 +141,22 @@ namespace CaseClosed.UI
             if (suspectFolderPanel == null)
             {
                 var found = Object.FindFirstObjectByType<SuspectFolderUI>(FindObjectsInactive.Include);
-                if (found != null) suspectFolderPanel = found.gameObject;
+                if (found != null)
+                {
+                    suspectFolderPanel = found.gameObject;
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Panels/Panel_SuspectFolder.prefab");
+                    if (prefab != null)
+                    {
+                        suspectFolderPanel = Instantiate(prefab, transform);
+                        suspectFolderPanel.name = "Panel_SuspectFolder";
+                        suspectFolderPanel.SetActive(false);
+                    }
+#endif
+                }
             }
 
             if (deductionBoardButton != null)
@@ -230,7 +245,22 @@ namespace CaseClosed.UI
             if (suspectFolderPanel == null)
             {
                 var foundGO = Object.FindFirstObjectByType<SuspectFolderUI>(FindObjectsInactive.Include);
-                if (foundGO != null) suspectFolderPanel = foundGO.gameObject;
+                if (foundGO != null)
+                {
+                    suspectFolderPanel = foundGO.gameObject;
+                }
+                else if (panelType == UIPanelType.SuspectFolder)
+                {
+#if UNITY_EDITOR
+                    var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Panels/Panel_SuspectFolder.prefab");
+                    if (prefab != null)
+                    {
+                        suspectFolderPanel = Instantiate(prefab, transform);
+                        suspectFolderPanel.name = "Panel_SuspectFolder";
+                        suspectFolderPanel.SetActive(false);
+                    }
+#endif
+                }
             }
 
             if (mainMenuPanel != null) mainMenuPanel.SetActive(isMainMenu);
