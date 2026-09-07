@@ -387,8 +387,8 @@ namespace CaseClosed.UI
         {
             if (node == null) return;
 
-            IsDialogueOpen = true;
             gameObject.SetActive(true);
+            IsDialogueOpen = true;
             isShowingFailureReaction = false;
             isCurrentNodeChallengeable = node.isChallengeable;
             SetChallengeButtonText("Challenge");

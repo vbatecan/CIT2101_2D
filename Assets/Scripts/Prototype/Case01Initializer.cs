@@ -72,6 +72,13 @@ namespace CaseClosed.Prototype
                 }
 
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
+
+                // Replay the opening node only when no dialogue view received the initial
+                // interrogation event during cold-start initialization.
+                if (!DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.currentNode != null)
+                {
+                    DialogueUI.Instance?.DisplayNode(InterrogationManager.Instance.currentNode);
+                }
             }
         }
 
