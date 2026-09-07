@@ -13,6 +13,15 @@ namespace CaseClosed.Prototype
     /// </summary>
     public class Case01Initializer : MonoBehaviour
     {
+        [Header("Case Data Source (Optional)")]
+        [Tooltip("Pre-configured Case ScriptableObject asset (e.g. Case01_Data.asset). If assigned, this asset is loaded directly instead of generating procedural mock data.")]
+        [SerializeField] private CaseSO _caseDataAsset;
+        public CaseSO CaseDataAsset
+        {
+            get => _caseDataAsset;
+            set => _caseDataAsset = value;
+        }
+
         /// <summary>Whether to automatically initialize and load Case 01 on Start.</summary>
         public bool initializeOnStart = false;
 
@@ -40,7 +49,7 @@ namespace CaseClosed.Prototype
                 CaseSO case01 = CreateCase01Data();
                 CaseManager.Instance?.LoadCase(case01);
 
-                if (InterrogationManager.Instance != null && case01.primarySuspect != null && case01.dialogueTrees.Count > 0)
+                if (InterrogationManager.Instance != null && case01 != null && case01.primarySuspect != null && case01.dialogueTrees != null && case01.dialogueTrees.Count > 0)
                 {
                     InterrogationManager.Instance.SetInterrogationTarget(case01.primarySuspect, case01.dialogueTrees[0]);
                 }
@@ -50,11 +59,30 @@ namespace CaseClosed.Prototype
         }
 
         /// <summary>
-        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 1: The Missing Necklace.
+        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 1: The Missing Necklace,
+        /// or returns the assigned pre-configured <see cref="CaseSO"/> data asset if available.
         /// </summary>
         /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase01Data()
         {
+            if (_caseDataAsset != null)
+            {
+                if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
+                {
+                    _caseDataAsset.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+                }
+                return _caseDataAsset;
+            }
+
+            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == 1)
+            {
+                if (CaseManager.Instance.selectedInvestigator != null)
+                {
+                    CaseManager.Instance.activeCase.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+                }
+                return CaseManager.Instance.activeCase;
+            }
+
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
             c.levelNumber = 1;
             c.caseId = "LEVEL_01";
@@ -66,7 +94,7 @@ namespace CaseClosed.Prototype
             c.totalKeyEvidenceCount = 3;
             c.totalContradictionsCount = 1;
             c.hasTimeLimit = true;
-            c.timeLimitSeconds = 60f;
+            c.timeLimitSeconds = 300f; // 5 mins default
             if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
             {
                 c.leadInvestigator = CaseManager.Instance.selectedInvestigator;
@@ -108,6 +136,7 @@ namespace CaseClosed.Prototype
             evPhoto.category = EvidenceCategory.Photograph;
             evPhoto.normalSprite = photoTableSprite;
             evPhoto.zoomedSprite = photoZoomedSprite;
+            evPhoto.topPovSprite = photoZoomedSprite;
             evPhoto.baseDescription = "A photograph taken at 8:45 PM showing the study doorway.";
             evPhoto.detailedObservation = "A distinct silhouette matching Vince is visible standing near the study door.";
             evPhoto.unlockedClueText = "Vince silhouette spotted near study doorway at 8:45 PM.";
@@ -129,6 +158,7 @@ namespace CaseClosed.Prototype
             evTeacup.category = EvidenceCategory.PhysicalClue;
             evTeacup.normalSprite = teacupTableSprite;
             evTeacup.zoomedSprite = teacupZoomedSprite;
+            evTeacup.topPovSprite = teacupZoomedSprite;
             evTeacup.baseDescription = "Found shattered inside the locked study, right near the safe.";
             evTeacup.unlockedClueText = "Teacup shattered directly in front of the safe during break-in.";
             evTeacup.startsDiscovered = false;
@@ -143,6 +173,7 @@ namespace CaseClosed.Prototype
             evKitchenLog.category = EvidenceCategory.Document;
             evKitchenLog.normalSprite = kitchenLogTableSprite;
             evKitchenLog.zoomedSprite = kitchenLogZoomedSprite;
+            evKitchenLog.topPovSprite = kitchenLogZoomedSprite;
             evKitchenLog.baseDescription = "Logbook entry noting the kitchen pantry was locked by staff from 8:30 PM to 9:15 PM.";
             evKitchenLog.unlockedClueText = "Kitchen pantry was locked by staff from 8:30 PM to 9:15 PM; Vince could not have been inside!";
             evKitchenLog.startsDiscovered = false;

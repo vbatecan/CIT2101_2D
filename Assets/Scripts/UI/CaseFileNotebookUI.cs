@@ -52,6 +52,22 @@ namespace CaseClosed.UI
         public Image evidencePreviewImage;
         public Text evidenceNameLabel;
 
+        [Header("Evidence Navigation & Locked State")]
+        [Tooltip("Button to cycle to previous evidence item.")]
+        public Button prevEvidenceButton;
+        [Tooltip("Button to cycle to next evidence item.")]
+        public Button nextEvidenceButton;
+        [Tooltip("Label displaying evidence index/page, e.g. '[ 1 / 3 ]'.")]
+        public Text evidenceIndexLabel;
+        [Tooltip("Placeholder container shown when current evidence is locked / undiscovered.")]
+        public GameObject evidenceLockedPlaceholder;
+        [Tooltip("Text label on locked placeholder.")]
+        public Text evidenceLockedLabel;
+
+        private int currentEvidenceIndex = 0;
+        /// <summary>Index of the currently focused evidence item within activeCase.evidenceItems.</summary>
+        public int CurrentEvidenceIndex => currentEvidenceIndex;
+
         [Tooltip("Card container displaying case overview dossier card.")]
         public GameObject summaryCardSection;
         public Text summaryCaseTitleLabel;
@@ -163,6 +179,16 @@ namespace CaseClosed.UI
                 backdropButton.onClick.RemoveListener(OnCloseClicked);
                 backdropButton.onClick.AddListener(OnCloseClicked);
             }
+            if (prevEvidenceButton != null)
+            {
+                prevEvidenceButton.onClick.RemoveListener(PreviousEvidence);
+                prevEvidenceButton.onClick.AddListener(PreviousEvidence);
+            }
+            if (nextEvidenceButton != null)
+            {
+                nextEvidenceButton.onClick.RemoveListener(NextEvidence);
+                nextEvidenceButton.onClick.AddListener(NextEvidence);
+            }
 
             buttonsConfigured = true;
         }
@@ -207,8 +233,31 @@ namespace CaseClosed.UI
             isSubscribed = false;
         }
 
-        private void HandleCaseStateChanged(CaseSO c) => SwitchTab(currentTab);
-        private void HandleEvidenceDiscovered(EvidenceSO e) => SwitchTab(currentTab);
+        private void HandleCaseStateChanged(CaseSO c)
+        {
+            currentEvidenceIndex = 0;
+            SwitchTab(currentTab);
+        }
+
+        private void HandleEvidenceDiscovered(EvidenceSO e)
+        {
+            if (e != null)
+            {
+                CaseSO activeCase = GetActiveCase();
+                if (activeCase != null && activeCase.evidenceItems != null)
+                {
+                    for (int i = 0; i < activeCase.evidenceItems.Count; i++)
+                    {
+                        if (activeCase.evidenceItems[i] != null && activeCase.evidenceItems[i].id == e.id)
+                        {
+                            currentEvidenceIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            SwitchTab(currentTab);
+        }
         private void HandleClueUnlocked(string k, string v) => SwitchTab(currentTab);
 
         private CaseSO GetActiveCase()
@@ -282,8 +331,7 @@ namespace CaseClosed.UI
                 case NotebookTab.Evidence:
                     if (notebookTitleText != null) notebookTitleText.text = "EVIDENCE REPOSITORY";
                     var discovered = GetDiscoveredEvidenceIds();
-                    contentText = formattingService.FormatDiscoveredEvidence(activeCase, discovered);
-                    SetupEvidenceCard(activeCase, discovered);
+                    contentText = SetupEvidenceCard(activeCase, discovered);
                     break;
 
                 case NotebookTab.Clues:
@@ -341,39 +389,326 @@ namespace CaseClosed.UI
             }
         }
 
-        private void SetupEvidenceCard(CaseSO activeCase, HashSet<string> discovered)
+        /// <summary>
+        /// Cycles to the next evidence item in the active case file.
+        /// </summary>
+        public void NextEvidence()
         {
-            if (evidenceCardSection == null) return;
-
-            EvidenceSO firstEv = null;
-            if (activeCase.evidenceItems != null && discovered != null)
+            CaseSO activeCase = GetActiveCase();
+            if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count <= 1) return;
+            currentEvidenceIndex = (currentEvidenceIndex + 1) % activeCase.evidenceItems.Count;
+            AudioManager.Instance?.PlayPaperFlip();
+            var discovered = GetDiscoveredEvidenceIds();
+            string text = SetupEvidenceCard(activeCase, discovered);
+            if (notebookContentBody != null)
             {
-                foreach (var ev in activeCase.evidenceItems)
+                notebookContentBody.supportRichText = true;
+                notebookContentBody.text = text;
+            }
+        }
+
+        /// <summary>
+        /// Cycles to the previous evidence item in the active case file.
+        /// </summary>
+        public void PreviousEvidence()
+        {
+            CaseSO activeCase = GetActiveCase();
+            if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count <= 1) return;
+            currentEvidenceIndex = (currentEvidenceIndex - 1 + activeCase.evidenceItems.Count) % activeCase.evidenceItems.Count;
+            AudioManager.Instance?.PlayPaperFlip();
+            var discovered = GetDiscoveredEvidenceIds();
+            string text = SetupEvidenceCard(activeCase, discovered);
+            if (notebookContentBody != null)
+            {
+                notebookContentBody.supportRichText = true;
+                notebookContentBody.text = text;
+            }
+        }
+
+        /// <summary>
+        /// Focuses a specific evidence item by ID and switches to the Evidence Repository tab.
+        /// </summary>
+        /// <param name="evidenceId">The unique ID of the evidence item.</param>
+        public void FocusEvidence(string evidenceId)
+        {
+            CaseSO activeCase = GetActiveCase();
+            if (activeCase != null && activeCase.evidenceItems != null)
+            {
+                for (int i = 0; i < activeCase.evidenceItems.Count; i++)
                 {
-                    if (ev != null && discovered.Contains(ev.id) && ev.normalSprite != null)
+                    if (activeCase.evidenceItems[i] != null && activeCase.evidenceItems[i].id == evidenceId)
                     {
-                        firstEv = ev;
+                        currentEvidenceIndex = i;
                         break;
                     }
                 }
             }
+            SwitchTab(NotebookTab.Evidence);
+        }
 
-            if (firstEv != null)
+        private string SetupEvidenceCard(CaseSO activeCase, HashSet<string> discovered)
+        {
+            if (evidenceCardSection == null) return string.Empty;
+
+            EnsureEvidenceControlsExist();
+
+            if (activeCase == null || activeCase.evidenceItems == null || activeCase.evidenceItems.Count == 0)
             {
-                evidenceCardSection.SetActive(true);
+                evidenceCardSection.SetActive(false);
+                return "<i>No physical evidence defined for this case file.</i>";
+            }
+
+            evidenceCardSection.SetActive(true);
+            int count = activeCase.evidenceItems.Count;
+            currentEvidenceIndex = Mathf.Clamp(currentEvidenceIndex, 0, count - 1);
+            EvidenceSO currentEv = activeCase.evidenceItems[currentEvidenceIndex];
+
+            bool isDiscovered = currentEv != null && discovered != null && discovered.Contains(currentEv.id);
+
+            // Update Page Indicator
+            if (evidenceIndexLabel != null)
+            {
+                evidenceIndexLabel.text = $"[ {currentEvidenceIndex + 1} / {count} ]";
+            }
+
+            // Update Navigation Buttons
+            if (prevEvidenceButton != null)
+            {
+                prevEvidenceButton.interactable = count > 1;
+            }
+            if (nextEvidenceButton != null)
+            {
+                nextEvidenceButton.interactable = count > 1;
+            }
+
+            if (isDiscovered && currentEv != null)
+            {
+                if (evidenceLockedPlaceholder != null)
+                {
+                    evidenceLockedPlaceholder.SetActive(false);
+                }
+
                 if (evidencePreviewImage != null)
                 {
-                    evidencePreviewImage.sprite = firstEv.normalSprite;
+                    evidencePreviewImage.gameObject.SetActive(true);
+                    evidencePreviewImage.sprite = currentEv.GetTopPovSprite();
                     evidencePreviewImage.preserveAspect = true;
                 }
+
                 if (evidenceNameLabel != null)
                 {
-                    evidenceNameLabel.text = firstEv.evidenceName;
+                    evidenceNameLabel.text = currentEv.evidenceName;
                 }
             }
             else
             {
-                evidenceCardSection.SetActive(false);
+                if (evidencePreviewImage != null)
+                {
+                    evidencePreviewImage.gameObject.SetActive(false);
+                }
+
+                if (evidenceLockedPlaceholder != null)
+                {
+                    evidenceLockedPlaceholder.SetActive(true);
+                    if (evidenceLockedLabel != null)
+                    {
+                        evidenceLockedLabel.text = "[ EVIDENCE LOCKED ]";
+                    }
+                }
+
+                if (evidenceNameLabel != null)
+                {
+                    evidenceNameLabel.text = "[ ??? LOCKED EVIDENCE ]";
+                }
+            }
+
+            string dossierText = formattingService.FormatEvidenceDossier(currentEv, isDiscovered, currentEvidenceIndex + 1, count);
+            return dossierText;
+        }
+
+        private void EnsureEvidenceControlsExist()
+        {
+            if (evidenceCardSection == null) return;
+
+            Transform cardTransform = evidenceCardSection.transform;
+
+            // Try resolving serialized references from existing hierarchy if unassigned
+            if (prevEvidenceButton == null)
+            {
+                var prevTransform = cardTransform.Find("Evidence_Nav_Row/Button_Prev") ?? cardTransform.Find("Button_Prev");
+                if (prevTransform != null) prevEvidenceButton = prevTransform.GetComponent<Button>();
+            }
+
+            if (nextEvidenceButton == null)
+            {
+                var nextTransform = cardTransform.Find("Evidence_Nav_Row/Button_Next") ?? cardTransform.Find("Button_Next");
+                if (nextTransform != null) nextEvidenceButton = nextTransform.GetComponent<Button>();
+            }
+
+            if (evidenceIndexLabel == null)
+            {
+                var indexTransform = cardTransform.Find("Evidence_Nav_Row/Text_Index") ?? cardTransform.Find("Text_Index");
+                if (indexTransform != null) evidenceIndexLabel = indexTransform.GetComponent<Text>();
+            }
+
+            if (evidenceLockedPlaceholder == null)
+            {
+                var lockTransform = cardTransform.Find("Locked_Placeholder") ?? cardTransform.Find("Evidence_Locked_Placeholder");
+                if (lockTransform != null)
+                {
+                    evidenceLockedPlaceholder = lockTransform.gameObject;
+                    if (evidenceLockedLabel == null)
+                    {
+                        evidenceLockedLabel = lockTransform.GetComponentInChildren<Text>();
+                    }
+                }
+            }
+
+            // Dynamically construct navigation row if missing from hierarchy
+            if (prevEvidenceButton == null || nextEvidenceButton == null || evidenceIndexLabel == null)
+            {
+                Transform existingNav = cardTransform.Find("Evidence_Nav_Row");
+                GameObject navRowGO = existingNav != null ? existingNav.gameObject : new GameObject("Evidence_Nav_Row", typeof(RectTransform));
+                if (existingNav == null)
+                {
+                    navRowGO.transform.SetParent(cardTransform, false);
+                    RectTransform navRowRT = navRowGO.GetComponent<RectTransform>();
+                    navRowRT.anchorMin = new Vector2(0.08f, 0.15f);
+                    navRowRT.anchorMax = new Vector2(0.92f, 0.23f);
+                    navRowRT.offsetMin = Vector2.zero;
+                    navRowRT.offsetMax = Vector2.zero;
+                }
+
+                // Button Prev (<)
+                if (prevEvidenceButton == null)
+                {
+                    GameObject prevBtnGO = new GameObject("Button_Prev", typeof(RectTransform), typeof(Image), typeof(Button));
+                    prevBtnGO.transform.SetParent(navRowGO.transform, false);
+                    RectTransform prevRT = prevBtnGO.GetComponent<RectTransform>();
+                    prevRT.anchorMin = new Vector2(0f, 0f);
+                    prevRT.anchorMax = new Vector2(0.25f, 1f);
+                    prevRT.offsetMin = Vector2.zero;
+                    prevRT.offsetMax = Vector2.zero;
+
+                    Image prevImg = prevBtnGO.GetComponent<Image>();
+                    prevImg.color = new Color(0.18f, 0.20f, 0.25f, 0.9f);
+
+                    GameObject prevTextGO = new GameObject("Text", typeof(RectTransform), typeof(Text));
+                    prevTextGO.transform.SetParent(prevBtnGO.transform, false);
+                    Text prevText = prevTextGO.GetComponent<Text>();
+                    prevText.text = "<";
+                    prevText.fontSize = 18;
+                    prevText.fontStyle = FontStyle.Bold;
+                    prevText.alignment = TextAnchor.MiddleCenter;
+                    prevText.color = Color.white;
+                    RectTransform prevTextRT = prevTextGO.GetComponent<RectTransform>();
+                    prevTextRT.anchorMin = Vector2.zero;
+                    prevTextRT.anchorMax = Vector2.one;
+                    prevTextRT.offsetMin = Vector2.zero;
+                    prevTextRT.offsetMax = Vector2.zero;
+
+                    prevEvidenceButton = prevBtnGO.GetComponent<Button>();
+                }
+
+                // Text Index ([ 1 / 3 ])
+                if (evidenceIndexLabel == null)
+                {
+                    GameObject indexGO = new GameObject("Text_Index", typeof(RectTransform), typeof(Text));
+                    indexGO.transform.SetParent(navRowGO.transform, false);
+                    RectTransform indexRT = indexGO.GetComponent<RectTransform>();
+                    indexRT.anchorMin = new Vector2(0.28f, 0f);
+                    indexRT.anchorMax = new Vector2(0.72f, 1f);
+                    indexRT.offsetMin = Vector2.zero;
+                    indexRT.offsetMax = Vector2.zero;
+
+                    evidenceIndexLabel = indexGO.GetComponent<Text>();
+                    evidenceIndexLabel.text = "[ 1 / 1 ]";
+                    evidenceIndexLabel.fontSize = 15;
+                    evidenceIndexLabel.fontStyle = FontStyle.Bold;
+                    evidenceIndexLabel.alignment = TextAnchor.MiddleCenter;
+                    evidenceIndexLabel.color = new Color(0.15f, 0.15f, 0.18f, 1f);
+                }
+
+                // Button Next (>)
+                if (nextEvidenceButton == null)
+                {
+                    GameObject nextBtnGO = new GameObject("Button_Next", typeof(RectTransform), typeof(Image), typeof(Button));
+                    nextBtnGO.transform.SetParent(navRowGO.transform, false);
+                    RectTransform nextRT = nextBtnGO.GetComponent<RectTransform>();
+                    nextRT.anchorMin = new Vector2(0.75f, 0f);
+                    nextRT.anchorMax = new Vector2(1f, 1f);
+                    nextRT.offsetMin = Vector2.zero;
+                    nextRT.offsetMax = Vector2.zero;
+
+                    Image nextImg = nextBtnGO.GetComponent<Image>();
+                    nextImg.color = new Color(0.18f, 0.20f, 0.25f, 0.9f);
+
+                    GameObject nextTextGO = new GameObject("Text", typeof(RectTransform), typeof(Text));
+                    nextTextGO.transform.SetParent(nextBtnGO.transform, false);
+                    Text nextText = nextTextGO.GetComponent<Text>();
+                    nextText.text = ">";
+                    nextText.fontSize = 18;
+                    nextText.fontStyle = FontStyle.Bold;
+                    nextText.alignment = TextAnchor.MiddleCenter;
+                    nextText.color = Color.white;
+                    RectTransform nextTextRT = nextTextGO.GetComponent<RectTransform>();
+                    nextTextRT.anchorMin = Vector2.zero;
+                    nextTextRT.anchorMax = Vector2.one;
+                    nextTextRT.offsetMin = Vector2.zero;
+                    nextTextRT.offsetMax = Vector2.zero;
+
+                    nextEvidenceButton = nextBtnGO.GetComponent<Button>();
+                }
+            }
+
+            // Construct locked placeholder if missing
+            if (evidenceLockedPlaceholder == null)
+            {
+                Transform existingLocked = cardTransform.Find("Locked_Placeholder");
+                GameObject lockedGO = existingLocked != null ? existingLocked.gameObject : new GameObject("Locked_Placeholder", typeof(RectTransform), typeof(Image));
+                if (existingLocked == null)
+                {
+                    lockedGO.transform.SetParent(cardTransform, false);
+                    RectTransform lockedRT = lockedGO.GetComponent<RectTransform>();
+                    lockedRT.anchorMin = new Vector2(0.08f, 0.26f);
+                    lockedRT.anchorMax = new Vector2(0.92f, 0.98f);
+                    lockedRT.offsetMin = Vector2.zero;
+                    lockedRT.offsetMax = Vector2.zero;
+
+                    Image lockedImg = lockedGO.GetComponent<Image>();
+                    lockedImg.color = new Color(0.12f, 0.13f, 0.16f, 0.95f);
+
+                    GameObject lockedTextGO = new GameObject("Text_LockedMessage", typeof(RectTransform), typeof(Text));
+                    lockedTextGO.transform.SetParent(lockedGO.transform, false);
+                    RectTransform textRT = lockedTextGO.GetComponent<RectTransform>();
+                    textRT.anchorMin = Vector2.zero;
+                    textRT.anchorMax = Vector2.one;
+                    textRT.offsetMin = new Vector2(10, 10);
+                    textRT.offsetMax = new Vector2(-10, -10);
+
+                    evidenceLockedLabel = lockedTextGO.GetComponent<Text>();
+                    evidenceLockedLabel.text = "<b>[ EVIDENCE LOCKED ]</b>\n\n<size=13><color=#94A3B8>Keep investigating the crime scene and interrogating suspects to uncover this evidence.</color></size>";
+                    evidenceLockedLabel.fontSize = 15;
+                    evidenceLockedLabel.fontStyle = FontStyle.Bold;
+                    evidenceLockedLabel.alignment = TextAnchor.MiddleCenter;
+                    evidenceLockedLabel.color = new Color(0.95f, 0.75f, 0.25f, 1f);
+                    evidenceLockedLabel.supportRichText = true;
+                }
+
+                evidenceLockedPlaceholder = lockedGO;
+                evidenceLockedPlaceholder.SetActive(false);
+            }
+
+            // Bind click listeners
+            if (prevEvidenceButton != null)
+            {
+                prevEvidenceButton.onClick.RemoveListener(PreviousEvidence);
+                prevEvidenceButton.onClick.AddListener(PreviousEvidence);
+            }
+            if (nextEvidenceButton != null)
+            {
+                nextEvidenceButton.onClick.RemoveListener(NextEvidence);
+                nextEvidenceButton.onClick.AddListener(NextEvidence);
             }
         }
 

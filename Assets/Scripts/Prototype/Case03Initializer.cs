@@ -13,6 +13,15 @@ namespace CaseClosed.Prototype
     /// </summary>
     public class Case03Initializer : MonoBehaviour
     {
+        [Header("Case Data Source (Optional)")]
+        [Tooltip("Pre-configured Case ScriptableObject asset. If assigned, this asset is loaded directly instead of generating procedural mock data.")]
+        [SerializeField] private CaseSO _caseDataAsset;
+        public CaseSO CaseDataAsset
+        {
+            get => _caseDataAsset;
+            set => _caseDataAsset = value;
+        }
+
         /// <summary>Whether to automatically initialize and load Case 03 on Start.</summary>
         public bool initializeOnStart = false;
 
@@ -40,7 +49,7 @@ namespace CaseClosed.Prototype
                 CaseSO case03 = CreateCase03Data();
                 CaseManager.Instance?.LoadCase(case03);
 
-                if (InterrogationManager.Instance != null && case03.primarySuspect != null && case03.dialogueTrees.Count > 0)
+                if (InterrogationManager.Instance != null && case03 != null && case03.primarySuspect != null && case03.dialogueTrees != null && case03.dialogueTrees.Count > 0)
                 {
                     InterrogationManager.Instance.SetInterrogationTarget(case03.primarySuspect, case03.dialogueTrees[0]);
                 }
@@ -50,11 +59,30 @@ namespace CaseClosed.Prototype
         }
 
         /// <summary>
-        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 3: The Last Call.
+        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 3: The Last Call,
+        /// or returns the assigned pre-configured <see cref="CaseSO"/> data asset if available.
         /// </summary>
         /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase03Data()
         {
+            if (_caseDataAsset != null)
+            {
+                if (CaseManager.Instance != null && CaseManager.Instance.selectedInvestigator != null)
+                {
+                    _caseDataAsset.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+                }
+                return _caseDataAsset;
+            }
+
+            if (CaseManager.Instance != null && CaseManager.Instance.activeCase != null && CaseManager.Instance.activeCase.levelNumber == 3)
+            {
+                if (CaseManager.Instance.selectedInvestigator != null)
+                {
+                    CaseManager.Instance.activeCase.leadInvestigator = CaseManager.Instance.selectedInvestigator;
+                }
+                return CaseManager.Instance.activeCase;
+            }
+
             CaseSO c = ScriptableObject.CreateInstance<CaseSO>();
             c.levelNumber = 3;
             c.caseId = "LEVEL_03";
@@ -115,6 +143,7 @@ namespace CaseClosed.Prototype
             evPhoneLog.category = EvidenceCategory.DigitalRecord;
             evPhoneLog.normalSprite = phoneLogTableSprite;
             evPhoneLog.zoomedSprite = phoneLogZoomedSprite;
+            evPhoneLog.topPovSprite = phoneLogZoomedSprite;
             evPhoneLog.baseDescription = "Call log extracted from Kurt Miguel Ancheta's phone.";
             evPhoneLog.detailedObservation = "Shows an unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
             evPhoneLog.unlockedClueText = "Unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
@@ -128,6 +157,7 @@ namespace CaseClosed.Prototype
             evCctv.category = EvidenceCategory.Photograph;
             evCctv.normalSprite = cctvTableSprite;
             evCctv.zoomedSprite = cctvZoomedSprite;
+            evCctv.topPovSprite = cctvZoomedSprite;
             evCctv.baseDescription = "Security footage capture from the back exit camera.";
             evCctv.detailedObservation = "Clearly shows Shanaia's distinct jacket entering the back exit door at 7:10 PM.";
             evCctv.unlockedClueText = "Shanaia's jacket captured entering cafe back exit at 7:10 PM.";
@@ -151,6 +181,7 @@ namespace CaseClosed.Prototype
             evDraft.category = EvidenceCategory.Document;
             evDraft.normalSprite = terminationTableSprite;
             evDraft.zoomedSprite = terminationZoomedSprite;
+            evDraft.topPovSprite = terminationZoomedSprite;
             evDraft.baseDescription = "Drafted letter found inside Kurt's briefcase.";
             evDraft.unlockedClueText = "Kurt planned to fire Shanaia for secretly selling company data to rival firms.";
             evDraft.startsDiscovered = false;

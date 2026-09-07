@@ -36,8 +36,20 @@ namespace CaseClosed.Data
         public Sprite normalSprite;
         public Sprite highlightedSprite;
         public Sprite zoomedSprite;
+        [Tooltip("Top-down visual sprite (from Assets/Assets/EVIDENCES/TopPOV) used in the detective notebook and inspection. If null, falls back to zoomedSprite or normalSprite.")]
+        public Sprite topPovSprite;
         [Tooltip("Optional custom background sprite for top-down inspection. If null, defaults to TableTOPVIEW.")]
         public Sprite customInspectBackground;
+
+        /// <summary>
+        /// Gets the top-down perspective sprite (TopPOV) for this evidence item, falling back to zoomedSprite or normalSprite if unassigned.
+        /// </summary>
+        public Sprite GetTopPovSprite()
+        {
+            if (topPovSprite != null) return topPovSprite;
+            if (zoomedSprite != null) return zoomedSprite;
+            return normalSprite;
+        }
 
         [Header("Multi-Stage Descriptions")]
         [TextArea(2, 4)]
