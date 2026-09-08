@@ -3802,6 +3802,11 @@ MonoBehaviour:
   questionHeaderPrefab: {fileID: 0}
   optionItemPrefab: {fileID: 0}
   submitConclusionButton: {fileID: 500302011}
+  questionBoxSprite: {fileID: 0}
+  startButtonSprite: {fileID: 0}
+  nextButtonSprite: {fileID: 0}
+  confirmButtonSprite: {fileID: 0}
+  failedBackgroundSprite: {fileID: 0}
   resultsContainer: {fileID: 1017963406}
   resultTitleText: {fileID: 2092126418}
   resultGradeText: {fileID: 1139900102}
@@ -4368,7 +4373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec325c2818ad78b6c86248a79e5ae6aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Managers.CaseManager
-  activeCase: {fileID: 0}
+  activeCase: {fileID: 11400000, guid: 3421a1a0bb6d37ef1a41648379159463, type: 2}
   selectedInvestigator: {fileID: 0}
   availableInvestigators: []
   investigationStartTime: 0
