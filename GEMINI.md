@@ -10,7 +10,7 @@ Current user instructions override repository guides and skills.
 1. Identify the current request; do not automatically resume an earlier refactor.
 2. Inspect both staged and unstaged changes. An empty working-tree diff does not mean a clean file.
 3. Use CodeGraph first when indexed, then targeted reads for omitted information.
-4. Make the smallest complete change that satisfies the task and preserves behavior.
+4. Make the smallest complete change that satisfies the task and preserves behavior. Always use `apply_patch` to create or edit text files; do not substitute shell redirection, Python, sed, or other file-writing commands.
 5. Verify references and diffs; compile and inspect Console when editor/scene constraints permit.
 6. Report completed work and unverified behavior accurately. Stop immediately when asked.
 

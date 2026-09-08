@@ -138,6 +138,7 @@ The user has explicitly removed the project's unit tests.
 
 ## Worktree and handoff discipline
 
+- Always use `apply_patch` to create or edit text files. Do not use shell redirection, Python, sed, or other file-writing commands as substitutes.
 - Use targeted patches. Preserve unrelated edits and the Git index.
 - Before large temporary builds/imports, check disk capacity and avoid duplicate Library imports.
   Never delete the main Library or workspace as a troubleshooting shortcut.

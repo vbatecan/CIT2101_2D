@@ -140,6 +140,33 @@ namespace CaseClosed.Managers
             OnExpressionChanged?.Invoke(CurrentNode.expression);
         }
 
+        /// <summary>Defers an evidence explanation until the player finishes inspecting.</summary>
+        public void QueueInspectionDialogue(string nodeId)
+        {
+            EnsureSessionState();
+            sessionState.QueueInspectionDialogue(nodeId);
+        }
+
+        public void QueueInspectionEvidence(EvidenceSO evidence)
+        {
+            EnsureSessionState();
+            sessionState.QueueInspectionEvidence(evidence);
+        }
+
+        /// <summary>Plays an unseen explanation once per interrogation session.</summary>
+        public void PlayPendingInspectionDialogue()
+        {
+            EnsureSessionState();
+            string nodeId = sessionState.TakeInspectionDialogue();
+            EvidenceSO evidence = sessionState.TakeInspectionEvidence();
+            if (evidence != null)
+            {
+                PresentEvidenceToChallenge(evidence, true);
+                return;
+            }
+            if (!string.IsNullOrEmpty(nodeId)) JumpToNode(nodeId);
+        }
+
         /// <summary>Advances the dialogue to its default next node when no challenge is active.</summary>
         public void AdvanceDialogue()
         {
@@ -222,12 +249,30 @@ namespace CaseClosed.Managers
         /// <summary>Evaluates evidence presented against the current challengeable statement.</summary>
         public void PresentEvidenceToChallenge(EvidenceSO presentedEvidence)
         {
+            PresentEvidenceToChallenge(presentedEvidence, false);
+        }
+
+        private void PresentEvidenceToChallenge(EvidenceSO presentedEvidence, bool inspectionCompleted)
+        {
             EnsureSessionState();
             DialogueNode node = CurrentNode;
-            if (node == null || presentedEvidence == null) return;
+            if (node == null || !node.isChallengeable || presentedEvidence == null) return;
 
-            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            CaseManager caseManager = CaseManager.Instance;
+            CaseSO activeCase = caseManager != null ? caseManager.ActiveCase : null;
             if (activeCase == null) return;
+
+            EvidenceManager evidenceManager = EvidenceManager.Instance;
+            if (evidenceManager != null && (evidenceManager.isInspectingModalOpen ||
+                (!inspectionCompleted && evidenceManager.LastInspectionClosedFrame == Time.frameCount))) return;
+
+            // Keep the statement active while the player reads. Closing inspection
+            // submits the queued evidence automatically.
+            if (!caseManager.IsEvidenceExamined(presentedEvidence))
+            {
+                if (evidenceManager != null) evidenceManager.OpenInspectModal(presentedEvidence, null);
+                return;
+            }
 
             Debug.Log($"[Interrogation] Presenting evidence '{presentedEvidence.evidenceName}' (ID: {presentedEvidence.id}) against statement node '{node.nodeId}'");
 

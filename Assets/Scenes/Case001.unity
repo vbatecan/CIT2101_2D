@@ -4279,7 +4279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af174de93e56e386fa6816dfffb23ef7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.Case01Initializer
-  _caseDataAsset: {fileID: 0}
+  _caseDataAsset: {fileID: 11400000, guid: 3421a1a0bb6d37ef1a41648379159463, type: 2}
   initializeOnStart: 1
   maleSuspectSprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
   femaleSuspectSprite: {fileID: 762338069729248364, guid: 0ab5235ab3832964ab41f407745817f4, type: 3}

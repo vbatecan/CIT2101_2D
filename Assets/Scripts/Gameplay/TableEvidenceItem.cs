@@ -793,13 +793,18 @@ namespace CaseClosed.Gameplay
             // 2. Select evidence in EvidenceManager
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
-            // 3. If in Challenge Mode, clicking this table item directly presents it to challenge!
+            // 3. Challenge selection inspects unread evidence before it can be presented.
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
+                if (isInspectOrRightClick)
+                {
+                    EvidenceManager.Instance?.OpenInspectModal(evidenceData, null);
+                    return;
+                }
+
                 Debug.Log($"[Gameplay:TableEvidence] Challenge Mode: Presenting '{evidenceData.evidenceName}' directly from table to challenge statement '{InterrogationManager.Instance.CurrentNode?.nodeId}'");
                 AudioManager.Instance?.PlayButtonClick();
                 manager?.RegisterDiscoveredEvidence(evidenceData);
-                InterrogationManager.Instance.ToggleChallengeMode(false);
                 InterrogationManager.Instance.PresentEvidenceToChallenge(evidenceData);
                 return;
             }
@@ -809,16 +814,10 @@ namespace CaseClosed.Gameplay
 
             // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
-            EvidenceManager.Instance?.OpenInspectModal(evidenceData);
-
             string nodeToTrigger = !string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect)
                 ? dialogueNodeToTriggerOnInspect
                 : evidenceData.dialogueNodeToTriggerOnInspect;
-            if (!string.IsNullOrEmpty(nodeToTrigger))
-            {
-                Debug.Log($"[Gameplay:TableEvidence] Triggering suspect explanation dialogue node '{nodeToTrigger}' for '{evidenceData.evidenceName}'");
-                InterrogationManager.Instance?.JumpToNode(nodeToTrigger);
-            }
+            EvidenceManager.Instance?.OpenInspectModal(evidenceData, nodeToTrigger);
         }
     }
 }

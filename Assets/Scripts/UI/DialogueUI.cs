@@ -188,6 +188,8 @@ namespace CaseClosed.UI
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
+        private int lastDialogueInputFrame = -1;
+
         private void Update()
         {
             if (!IsDialogueOpen || !gameObject.activeInHierarchy) return;
@@ -289,6 +291,8 @@ namespace CaseClosed.UI
                 GameObject hit = _raycastResults[i].gameObject;
                 if (hit == null) continue;
 
+                if (nextButton != null && (hit == nextButton.gameObject || hit.transform.IsChildOf(nextButton.transform)))
+                    return true;
                 if (challengeButton != null && (hit == challengeButton.gameObject || hit.transform.IsChildOf(challengeButton.transform)))
                     return true;
                 if (closeDialogueButton != null && (hit == closeDialogueButton.gameObject || hit.transform.IsChildOf(closeDialogueButton.transform)))
@@ -319,6 +323,9 @@ namespace CaseClosed.UI
         /// </summary>
         public void HandleDialogueAdvanceInput()
         {
+            if (!CanHandleDialogueInput()) return;
+            lastDialogueInputFrame = Time.frameCount;
+
             if (isTyping)
             {
                 CompleteTypingImmediately();
@@ -387,6 +394,7 @@ namespace CaseClosed.UI
         {
             if (node == null) return;
 
+            lastDialogueInputFrame = Time.frameCount;
             gameObject.SetActive(true);
             IsDialogueOpen = true;
             isShowingFailureReaction = false;
@@ -987,8 +995,16 @@ namespace CaseClosed.UI
         /// <summary>
         /// Handles next button click after the current line has finished printing or to skip typing.
         /// </summary>
+        private bool CanHandleDialogueInput()
+        {
+            return IsDialogueOpen && lastDialogueInputFrame != Time.frameCount &&
+                (EvidenceManager.Instance == null || !EvidenceManager.Instance.isInspectingModalOpen);
+        }
+
         private void OnNextButtonClicked()
         {
+            if (!CanHandleDialogueInput()) return;
+            lastDialogueInputFrame = Time.frameCount;
             Debug.Log($"[UI:Dialogue] Next button clicked (IsTyping: {isTyping})");
 
             if (isTyping)

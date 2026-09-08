@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CaseClosed.Data;
 
 namespace CaseClosed.Services
@@ -8,6 +9,10 @@ namespace CaseClosed.Services
     /// </summary>
     public sealed class InterrogationSessionState
     {
+        private readonly HashSet<string> displayedNodeIds = new HashSet<string>();
+        private string pendingInspectionNodeId;
+        private EvidenceSO pendingInspectionEvidence;
+
         public CharacterProfileSO CurrentSuspect { get; private set; }
         public DialogueTreeSO CurrentDialogueTree { get; private set; }
         public DialogueNode CurrentNode { get; private set; }
@@ -17,6 +22,9 @@ namespace CaseClosed.Services
 
         public void Begin(CharacterProfileSO suspect, DialogueTreeSO dialogueTree)
         {
+            displayedNodeIds.Clear();
+            pendingInspectionNodeId = null;
+            pendingInspectionEvidence = null;
             CurrentSuspect = suspect;
             CurrentDialogueTree = dialogueTree;
             CurrentNode = null;
@@ -27,12 +35,41 @@ namespace CaseClosed.Services
 
         public void SetCurrentNode(DialogueNode node)
         {
+            pendingInspectionEvidence = null;
             CurrentNode = node;
+            if (node != null) displayedNodeIds.Add(node.nodeId);
+        }
+
+        public void QueueInspectionDialogue(string nodeId)
+        {
+            pendingInspectionNodeId = !string.IsNullOrEmpty(nodeId) && !displayedNodeIds.Contains(nodeId)
+                ? nodeId
+                : null;
+        }
+
+        public string TakeInspectionDialogue()
+        {
+            string nodeId = pendingInspectionNodeId;
+            pendingInspectionNodeId = null;
+            return nodeId != null && !displayedNodeIds.Contains(nodeId) ? nodeId : null;
         }
 
         public void SetChallengeMode(bool enabled)
         {
             IsChallengeModeActive = enabled;
+            if (!enabled) pendingInspectionEvidence = null;
+        }
+
+        public void QueueInspectionEvidence(EvidenceSO evidence)
+        {
+            pendingInspectionEvidence = IsChallengeModeActive ? evidence : null;
+        }
+
+        public EvidenceSO TakeInspectionEvidence()
+        {
+            EvidenceSO evidence = pendingInspectionEvidence;
+            pendingInspectionEvidence = null;
+            return IsChallengeModeActive ? evidence : null;
         }
 
         public void RecordFailedChallenge()
@@ -61,6 +98,7 @@ namespace CaseClosed.Services
 
         public void Close()
         {
+            pendingInspectionEvidence = null;
             CurrentNode = null;
             LastChallengeableNode = null;
             IsChallengeModeActive = false;

@@ -21,6 +21,8 @@ namespace CaseClosed.Managers
         /// <summary>Flag indicating whether the close-up inspect modal is currently open.</summary>
         public bool isInspectingModalOpen = false;
 
+        public int LastInspectionClosedFrame { get; private set; } = -1;
+
         /// <summary>Event raised when an evidence item is selected on the table or list.</summary>
         public event Action<EvidenceSO> OnEvidenceSelected;
 
@@ -69,8 +71,15 @@ namespace CaseClosed.Managers
         /// <param name="evidence">The evidence item to examine.</param>
         public void OpenInspectModal(EvidenceSO evidence)
         {
-            if (evidence == null) return;
+            OpenInspectModal(evidence, evidence != null ? evidence.dialogueNodeToTriggerOnInspect : null);
+        }
 
+        public void OpenInspectModal(EvidenceSO evidence, string dialogueNodeId)
+        {
+            if (evidence == null || isInspectingModalOpen) return;
+
+            InterrogationManager.Instance?.QueueInspectionDialogue(dialogueNodeId);
+            InterrogationManager.Instance?.QueueInspectionEvidence(evidence);
             currentlySelectedEvidence = evidence;
             isInspectingModalOpen = true;
 
@@ -95,9 +104,13 @@ namespace CaseClosed.Managers
         /// </summary>
         public void CloseInspectModal()
         {
+            if (!isInspectingModalOpen) return;
+
             Debug.Log("[EvidenceManager] Closed inspect modal");
+            LastInspectionClosedFrame = Time.frameCount;
             isInspectingModalOpen = false;
             OnInspectModalClosed?.Invoke();
+            InterrogationManager.Instance?.PlayPendingInspectionDialogue();
         }
 
         /// <summary>
