@@ -166,10 +166,38 @@ namespace CaseClosed.UI
                 if (btn != null) btn.onClick.AddListener(ToggleDeductionBoardPanel);
             }
 
+            if (concludeCaseButton == null)
+            {
+                concludeCaseButton = GameObject.Find("ConcludeCaseButton")
+                                  ?? GameObject.Find("Button_ConcludeCase")
+                                  ?? GameObject.Find("ButtonCONCLUDE_0")
+                                  ?? GameObject.Find("ButtonCONCLUDE");
+
+                if (concludeCaseButton == null)
+                {
+                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                    {
+                        if (child.name.IndexOf("Conclude", System.StringComparison.OrdinalIgnoreCase) >= 0 &&
+                            !child.name.Contains("Quiz") && !child.name.Contains("Panel"))
+                        {
+                            concludeCaseButton = child.gameObject;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (concludeCaseButton != null)
             {
-                Button btn = concludeCaseButton.GetComponent<Button>();
-                if (btn != null) btn.onClick.AddListener(OpenConclusionQuiz);
+                var concludeComp = concludeCaseButton.GetComponent<ConcludeCaseButton>() ?? concludeCaseButton.AddComponent<ConcludeCaseButton>();
+                concludeComp.EnsureClickable();
+
+                Button btn = concludeCaseButton.GetComponentInChildren<Button>(true);
+                if (btn != null)
+                {
+                    btn.onClick.RemoveListener(OpenConclusionQuiz);
+                    btn.onClick.AddListener(OpenConclusionQuiz);
+                }
             }
 
             UIPanelType initialPanel = (mainMenuPanel != null) ? UIPanelType.MainMenu : UIPanelType.InvestigationTable;
@@ -314,12 +342,41 @@ namespace CaseClosed.UI
 
         private void UpdateConclusionButtonState()
         {
+            if (concludeCaseButton == null)
+            {
+                concludeCaseButton = GameObject.Find("ConcludeCaseButton")
+                                  ?? GameObject.Find("Button_ConcludeCase")
+                                  ?? GameObject.Find("ButtonCONCLUDE_0")
+                                  ?? GameObject.Find("ButtonCONCLUDE");
+
+                if (concludeCaseButton == null)
+                {
+                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
+                    {
+                        if (child.name.IndexOf("Conclude", System.StringComparison.OrdinalIgnoreCase) >= 0 &&
+                            !child.name.Contains("Quiz") && !child.name.Contains("Panel"))
+                        {
+                            concludeCaseButton = child.gameObject;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (concludeCaseButton == null) return;
 
-            Button button = concludeCaseButton.GetComponent<Button>();
+            bool isReady = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
+
+            var concludeComp = concludeCaseButton.GetComponent<ConcludeCaseButton>();
+            if (concludeComp != null)
+            {
+                concludeComp.UpdateReadinessState();
+            }
+
+            Button button = concludeCaseButton.GetComponentInChildren<Button>(true);
             if (button != null)
             {
-                button.interactable = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
+                button.interactable = isReady;
             }
 
             RegisterEvents();
@@ -540,12 +597,34 @@ namespace CaseClosed.UI
         {
             if (CaseManager.Instance == null || !CaseManager.Instance.IsReadyForConclusion())
             {
-                Debug.LogWarning("[UI:Manager] Conclusion locked: examine all evidence and expose every contradiction first.");
+                bool evDone = CaseManager.Instance != null && CaseManager.Instance.AreAllEvidenceUnlocked();
+                bool diagDone = CaseManager.Instance != null && CaseManager.Instance.AreAllDialoguesDone();
+                Debug.LogWarning($"[UI:Manager] Conclusion locked: all dialogues must be done and all evidence must be unlocked first! (EvidenceUnlocked: {evDone}, DialoguesDone: {diagDone})");
                 UpdateConclusionButtonState();
                 return;
             }
 
-            Debug.Log("[UI:Manager] Open conclusion quiz button clicked");
+            if (conclusionQuizPanel == null)
+            {
+                var found = Object.FindFirstObjectByType<ConclusionUI>(FindObjectsInactive.Include);
+                if (found != null)
+                {
+                    conclusionQuizPanel = found.gameObject;
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Panels/Panel_ConclusionQuiz.prefab");
+                    if (prefab != null)
+                    {
+                        conclusionQuizPanel = Instantiate(prefab, transform);
+                        conclusionQuizPanel.name = "Panel_ConclusionQuiz";
+                    }
+#endif
+                }
+            }
+
+            Debug.Log("[UI:Manager] Open conclusion quiz button clicked — showing ConclusionQuiz panel");
             ShowPanel(UIPanelType.ConclusionQuiz);
         }
     }
