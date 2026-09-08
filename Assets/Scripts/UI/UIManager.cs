@@ -49,6 +49,7 @@ namespace CaseClosed.UI
         private UIPanelType _panelBeforeInGameMenu = UIPanelType.InvestigationTable;
         private EvidenceManager _subscribedEvidenceManager;
         private CaseManager _subscribedCaseManager;
+        private InterrogationManager _subscribedInterrogationManager;
 
         /// <summary>The currently active UI panel type.</summary>
         public UIPanelType currentPanel => _currentPanel;
@@ -216,12 +217,35 @@ namespace CaseClosed.UI
                 if (_subscribedCaseManager != null)
                 {
                     _subscribedCaseManager.OnTimeExpired -= HandleTimeExpired;
+                    _subscribedCaseManager.OnEvidenceDiscovered -= HandleEvidenceOrDialogueChanged;
+                    _subscribedCaseManager.OnDialogueTreeCompleted -= HandleDialogueTreeCompleted;
+                    _subscribedCaseManager.OnConclusionReadinessChanged -= HandleConclusionReadinessChanged;
+                    _subscribedCaseManager.OnCaseLoaded -= HandleCaseLoaded;
                 }
 
                 _subscribedCaseManager = caseManager;
                 if (_subscribedCaseManager != null)
                 {
                     _subscribedCaseManager.OnTimeExpired += HandleTimeExpired;
+                    _subscribedCaseManager.OnEvidenceDiscovered += HandleEvidenceOrDialogueChanged;
+                    _subscribedCaseManager.OnDialogueTreeCompleted += HandleDialogueTreeCompleted;
+                    _subscribedCaseManager.OnConclusionReadinessChanged += HandleConclusionReadinessChanged;
+                    _subscribedCaseManager.OnCaseLoaded += HandleCaseLoaded;
+                }
+            }
+
+            InterrogationManager interrogationManager = InterrogationManager.Instance;
+            if (_subscribedInterrogationManager != interrogationManager)
+            {
+                if (_subscribedInterrogationManager != null)
+                {
+                    _subscribedInterrogationManager.OnDialogueClosed -= HandleEvidenceOrDialogueChanged;
+                }
+
+                _subscribedInterrogationManager = interrogationManager;
+                if (_subscribedInterrogationManager != null)
+                {
+                    _subscribedInterrogationManager.OnDialogueClosed += HandleEvidenceOrDialogueChanged;
                 }
             }
         }
@@ -238,8 +262,43 @@ namespace CaseClosed.UI
             if (_subscribedCaseManager != null)
             {
                 _subscribedCaseManager.OnTimeExpired -= HandleTimeExpired;
+                _subscribedCaseManager.OnEvidenceDiscovered -= HandleEvidenceOrDialogueChanged;
+                _subscribedCaseManager.OnDialogueTreeCompleted -= HandleDialogueTreeCompleted;
+                _subscribedCaseManager.OnConclusionReadinessChanged -= HandleConclusionReadinessChanged;
+                _subscribedCaseManager.OnCaseLoaded -= HandleCaseLoaded;
                 _subscribedCaseManager = null;
             }
+
+            if (_subscribedInterrogationManager != null)
+            {
+                _subscribedInterrogationManager.OnDialogueClosed -= HandleEvidenceOrDialogueChanged;
+                _subscribedInterrogationManager = null;
+            }
+        }
+
+        private void HandleEvidenceOrDialogueChanged(EvidenceSO evidence)
+        {
+            UpdateConclusionButtonState();
+        }
+
+        private void HandleEvidenceOrDialogueChanged()
+        {
+            UpdateConclusionButtonState();
+        }
+
+        private void HandleDialogueTreeCompleted(string treeId)
+        {
+            UpdateConclusionButtonState();
+        }
+
+        private void HandleConclusionReadinessChanged(bool isReady)
+        {
+            UpdateConclusionButtonState();
+        }
+
+        private void HandleCaseLoaded(CaseSO caseData)
+        {
+            UpdateConclusionButtonState();
         }
 
         private void HandleInspectModalOpened(EvidenceSO evidence)

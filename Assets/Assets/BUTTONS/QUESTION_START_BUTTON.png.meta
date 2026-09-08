@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 14fccb72a4f6528e8b02bbe79747f1ce
+guid: c41c5b9ae66e50b489a4f7b78c1accd1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3793743161828799519
-    second: QUESTION-NEXT-BUTTON_0
+      213: 5747082746147661206
+    second: QUESTION_START_BUTTON_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: QUESTION-NEXT-BUTTON_0
+      name: QUESTION_START_BUTTON_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 769
-        height: 472
+        x: 189
+        y: 143
+        width: 66
+        height: 29
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f147fd93e4516a430800000000000000
-      internalID: 3793743161828799519
+      spriteID: 69568eaee4db1cf40800000000000000
+      internalID: 5747082746147661206
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      QUESTION-NEXT-BUTTON_0: 3793743161828799519
+      QUESTION_START_BUTTON_0: 5747082746147661206
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

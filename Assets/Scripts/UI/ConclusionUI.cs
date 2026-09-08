@@ -24,8 +24,26 @@ namespace CaseClosed.UI
         [SerializeField] public GameObject optionItemPrefab;
         public Button submitConclusionButton;
 
+        [Header("Questionnaire Sprites")]
+        [Tooltip("Background asset used for question title box and choice buttons.")]
+        [SerializeField] private Sprite questionBoxSprite;
+
+        [Tooltip("Button asset to start the question sequence.")]
+        [SerializeField] private Sprite startButtonSprite;
+
+        [Tooltip("Button asset to advance to the next question.")]
+        [SerializeField] private Sprite nextButtonSprite;
+
+        [Tooltip("Button asset displayed on the final question to confirm and conclude.")]
+        [SerializeField] private Sprite confirmButtonSprite;
+
+        [Tooltip("Asset for failed conclusion outcome background.")]
+        [SerializeField] private Sprite failedBackgroundSprite;
+
         private static readonly Color HeaderGoldColor = new Color(0.95f, 0.82f, 0.45f, 1f);
         private static readonly Color ShadowBlackColor = new Color(0f, 0f, 0f, 0.85f);
+        private static readonly Color ChoiceNormalColor = new Color(0.85f, 0.85f, 0.85f, 0.95f);
+        private static readonly Color ChoiceSelectedColor = new Color(1f, 0.92f, 0.5f, 1f);
 
         [Header("Results Screen Overlay")]
         public GameObject resultsContainer;
@@ -40,19 +58,42 @@ namespace CaseClosed.UI
         public Button returnToMainMenuButton;
 
         [Header("Outcome Branding")]
-        [Tooltip("Full-screen background image used when the case is solved.")]
+        [Tooltip("Full-screen background image used when the case conclusion completes.")]
         [SerializeField] private Image resultBackgroundImage;
 
         [Tooltip("Case Closed / You Win artwork displayed for a successful conclusion.")]
         [SerializeField] private Sprite solvedBackgroundSprite;
 
-        private List<int> playerAnswers = new List<int>();
+        private readonly List<int> playerAnswers = new List<int>();
+        private int _currentQuestionIndex = 0;
+
+        // Runtime UI containers & components
+        private GameObject _flowRoot;
+        private GameObject _startScreenObj;
+        private GameObject _questionScreenObj;
+        private Image _questionBoxImage;
+        private Text _questionBoxText;
+        private Transform _choicesContainer;
+        private Text _hintPromptText;
+        private GameObject _nextButtonObj;
+        private GameObject _confirmButtonObj;
+        private Button _nextButton;
+        private Button _confirmButton;
+        private readonly List<Image> _choiceImages = new List<Image>();
+        private readonly List<Text> _choiceTexts = new List<Text>();
+
+        private void Awake()
+        {
+            EnsureAssets();
+        }
 
         /// <summary>
         /// Binds UI button click listeners on start.
         /// </summary>
         private void Start()
         {
+            EnsureAssets();
+
             if (submitConclusionButton != null) submitConclusionButton.onClick.AddListener(OnSubmitClicked);
             if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
             if (nextLevelButton != null) nextLevelButton.onClick.AddListener(OnNextLevelClicked);
@@ -60,6 +101,27 @@ namespace CaseClosed.UI
 
             if (resultsContainer != null) resultsContainer.SetActive(false);
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
+        }
+
+        /// <summary>
+        /// Ensures questionnaire and outcome sprites are loaded from assets when not assigned in Inspector.
+        /// </summary>
+        private void EnsureAssets()
+        {
+#if UNITY_EDITOR
+            if (questionBoxSprite == null)
+                questionBoxSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_BOX.png");
+            if (startButtonSprite == null)
+                startButtonSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_START_BUTTON.png");
+            if (nextButtonSprite == null)
+                nextButtonSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_NEXT_BUTTON.png");
+            if (confirmButtonSprite == null)
+                confirmButtonSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_CONFIRM_BUTTON.png");
+            if (failedBackgroundSprite == null)
+                failedBackgroundSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/case1FAILED.png");
+            if (solvedBackgroundSprite == null)
+                solvedBackgroundSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/CasesWIN.png");
+#endif
         }
 
         /// <summary>
@@ -71,10 +133,12 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Initializes the player answer list and dynamically renders quiz questions and selectable option items.
+        /// Initializes the player answer list and displays the initial Start screen.
         /// </summary>
         private void SetupQuiz()
         {
+            EnsureAssets();
+
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase == null || activeCase.conclusionQuestions == null) return;
 
@@ -82,6 +146,12 @@ namespace CaseClosed.UI
 
             if (quizContainer != null) quizContainer.SetActive(true);
             if (resultsContainer != null) resultsContainer.SetActive(false);
+            if (submitConclusionButton != null) submitConclusionButton.gameObject.SetActive(false);
+            if (questionTitleText != null) questionTitleText.gameObject.SetActive(false);
+            if (optionsGrid != null && optionsGrid.parent != null && optionsGrid.parent.name.Contains("Scroll"))
+            {
+                optionsGrid.parent.gameObject.SetActive(false);
+            }
 
             if (resultBackgroundImage != null)
             {
@@ -100,159 +170,420 @@ namespace CaseClosed.UI
                 playerAnswers.Add(-1);
             }
 
-            RenderQuestionOptions(activeCase);
+            _currentQuestionIndex = 0;
+            EnsureFlowHierarchy();
+            ShowStartScreen();
         }
 
         /// <summary>
-        /// Dynamically builds the UI hierarchy for question headers and clickable option choices.
-        /// Supports questionHeaderPrefab and optionItemPrefab instantiation with zero-GC fallbacks.
+        /// Builds the flow hierarchy for the Start screen, question box, choices, and navigation buttons.
         /// </summary>
-        /// <param name="activeCase">The active case containing conclusion questions.</param>
-        private void RenderQuestionOptions(CaseSO activeCase)
+        private void EnsureFlowHierarchy()
         {
-            if (optionsGrid == null) return;
+            Transform parentTransform = (quizContainer != null) ? quizContainer.transform : transform;
 
-            foreach (Transform child in optionsGrid)
+            if (_flowRoot == null)
             {
-                if (Application.isPlaying)
-                    Destroy(child.gameObject);
+                Transform existing = parentTransform.Find("QuizFlowRoot");
+                if (existing != null)
+                {
+                    _flowRoot = existing.gameObject;
+                }
                 else
-                    DestroyImmediate(child.gameObject);
+                {
+                    _flowRoot = new GameObject("QuizFlowRoot", typeof(RectTransform));
+                    _flowRoot.transform.SetParent(parentTransform, false);
+                    RectTransform rt = _flowRoot.GetComponent<RectTransform>();
+                    rt.anchorMin = Vector2.zero;
+                    rt.anchorMax = Vector2.one;
+                    rt.anchoredPosition = Vector2.zero;
+                    rt.sizeDelta = Vector2.zero;
+                }
             }
 
-            for (int qIdx = 0; qIdx < activeCase.conclusionQuestions.Count; qIdx++)
+            Font standardFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (standardFont == null && questionTitleText != null)
             {
-                var q = activeCase.conclusionQuestions[qIdx];
-                int questionIndex = qIdx;
+                standardFont = questionTitleText.font;
+            }
 
-                // 1. Question Header
-                bool headerCreated = false;
-                if (questionHeaderPrefab != null)
+            // 1. Build Start Screen if missing
+            if (_startScreenObj == null)
+            {
+                Transform existingStart = _flowRoot.transform.Find("StartScreen");
+                if (existingStart != null)
                 {
-                    GameObject headerObj = Instantiate(questionHeaderPrefab, optionsGrid, false);
-                    headerObj.name = $"Header_Q{qIdx}";
-
-                    Text hText = headerObj.GetComponent<Text>() ?? headerObj.GetComponentInChildren<Text>();
-                    if (hText != null)
-                    {
-                        hText.text = $"{qIdx + 1}. {q.questionText}";
-                        headerCreated = true;
-                    }
-                    else
-                    {
-                        if (Application.isPlaying)
-                            Destroy(headerObj);
-                        else
-                            DestroyImmediate(headerObj);
-                    }
+                    _startScreenObj = existingStart.gameObject;
                 }
-
-                if (!headerCreated)
+                else
                 {
-                    GameObject headerObj = new GameObject($"Header_Q{qIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    headerObj.transform.SetParent(optionsGrid, false);
-                    Text hText = headerObj.GetComponent<Text>();
-                    hText.text = $"\n{qIdx + 1}. {q.questionText}";
-                    hText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                    hText.fontSize = 18;
-                    hText.fontStyle = FontStyle.Bold;
-                    hText.color = HeaderGoldColor;
-                    Shadow hShadow = headerObj.AddComponent<Shadow>();
-                    hShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                    hShadow.effectColor = ShadowBlackColor;
-                }
+                    _startScreenObj = new GameObject("StartScreen", typeof(RectTransform));
+                    _startScreenObj.transform.SetParent(_flowRoot.transform, false);
+                    RectTransform srt = _startScreenObj.GetComponent<RectTransform>();
+                    srt.anchorMin = Vector2.zero;
+                    srt.anchorMax = Vector2.one;
+                    srt.anchoredPosition = Vector2.zero;
+                    srt.sizeDelta = Vector2.zero;
 
-                // 2. Question Options
-                var optionTextsForQuestion = new List<Text>();
+                    // Title
+                    GameObject titleObj = new GameObject("StartTitle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    titleObj.transform.SetParent(_startScreenObj.transform, false);
+                    RectTransform trt = titleObj.GetComponent<RectTransform>();
+                    trt.anchoredPosition = new Vector2(0f, 90f);
+                    trt.sizeDelta = new Vector2(700f, 60f);
+                    Text titleTxt = titleObj.GetComponent<Text>();
+                    titleTxt.font = standardFont;
+                    titleTxt.fontSize = 28;
+                    titleTxt.fontStyle = FontStyle.Bold;
+                    titleTxt.alignment = TextAnchor.MiddleCenter;
+                    titleTxt.color = HeaderGoldColor;
+                    titleTxt.text = "CASE CONCLUSION";
+                    Shadow tShadow = titleObj.AddComponent<Shadow>();
+                    tShadow.effectDistance = new Vector2(1.5f, -1.5f);
+                    tShadow.effectColor = ShadowBlackColor;
 
-                for (int optIdx = 0; optIdx < q.options.Count; optIdx++)
-                {
-                    int optionIndex = optIdx;
-                    bool optionCreated = false;
+                    // Subtitle / Prompt
+                    GameObject descObj = new GameObject("StartDesc", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    descObj.transform.SetParent(_startScreenObj.transform, false);
+                    RectTransform drt = descObj.GetComponent<RectTransform>();
+                    drt.anchoredPosition = new Vector2(0f, 25f);
+                    drt.sizeDelta = new Vector2(650f, 60f);
+                    Text descTxt = descObj.GetComponent<Text>();
+                    descTxt.font = standardFont;
+                    descTxt.fontSize = 17;
+                    descTxt.alignment = TextAnchor.MiddleCenter;
+                    descTxt.color = Color.white;
+                    descTxt.text = "Answer all 5 questions based on your investigation to solve the case.\nClick Start to begin.";
+                    Shadow dShadow = descObj.AddComponent<Shadow>();
+                    dShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                    dShadow.effectColor = ShadowBlackColor;
 
-                    if (optionItemPrefab != null)
-                    {
-                        GameObject optObj = Instantiate(optionItemPrefab, optionsGrid, false);
-                        optObj.name = $"Opt_Q{qIdx}_O{optIdx}";
-
-                        Text optText = optObj.GetComponent<Text>() ?? optObj.GetComponentInChildren<Text>();
-                        Button btn = optObj.GetComponent<Button>() ?? optObj.GetComponentInChildren<Button>();
-
-                        if (btn != null)
-                        {
-                            if (optText != null)
-                            {
-                                optText.text = $"   [ ] {q.options[optionIndex]}";
-                                optionTextsForQuestion.Add(optText);
-                            }
-                            else
-                            {
-                                optionTextsForQuestion.Add(null);
-                            }
-
-                            btn.onClick.AddListener(() =>
-                            {
-                                Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
-                                playerAnswers[questionIndex] = optionIndex;
-                                for (int i = 0; i < optionTextsForQuestion.Count; i++)
-                                {
-                                    if (optionTextsForQuestion[i] != null && i < q.options.Count)
-                                    {
-                                        optionTextsForQuestion[i].text = (i == optionIndex) ? $"   [X] {q.options[i]}" : $"   [ ] {q.options[i]}";
-                                    }
-                                }
-                                AudioManager.Instance?.PlayButtonClick();
-                            });
-
-                            optionCreated = true;
-                        }
-                        else
-                        {
-                            if (Application.isPlaying)
-                                Destroy(optObj);
-                            else
-                                DestroyImmediate(optObj);
-                        }
-                    }
-
-                    if (!optionCreated)
-                    {
-                        GameObject optObj = new GameObject($"Opt_Q{qIdx}_O{optIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text), typeof(Button));
-                        optObj.transform.SetParent(optionsGrid, false);
-
-                        Text optText = optObj.GetComponent<Text>();
-                        optText.text = $"   [ ] {q.options[optIdx]}";
-                        optText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                        optText.fontSize = 16;
-                        optText.color = Color.white;
-                        Shadow optShadow = optObj.AddComponent<Shadow>();
-                        optShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                        optShadow.effectColor = ShadowBlackColor;
-
-                        optionTextsForQuestion.Add(optText);
-
-                        optObj.GetComponent<Button>().onClick.AddListener(() =>
-                        {
-                            Debug.Log($"[UI:Conclusion] Selected option {optionIndex} ('{q.options[optionIndex]}') for Question {questionIndex + 1} ('{q.questionText}')");
-                            playerAnswers[questionIndex] = optionIndex;
-                            for (int i = 0; i < optionTextsForQuestion.Count; i++)
-                            {
-                                if (optionTextsForQuestion[i] != null && i < q.options.Count)
-                                {
-                                    optionTextsForQuestion[i].text = (i == optionIndex) ? $"   [X] {q.options[i]}" : $"   [ ] {q.options[i]}";
-                                }
-                            }
-                            AudioManager.Instance?.PlayButtonClick();
-                        });
-                    }
+                    // Start Button
+                    GameObject btnObj = new GameObject("StartButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    btnObj.transform.SetParent(_startScreenObj.transform, false);
+                    RectTransform brt = btnObj.GetComponent<RectTransform>();
+                    brt.anchoredPosition = new Vector2(0f, -65f);
+                    brt.sizeDelta = new Vector2(180f, 55f);
+                    Image btnImg = btnObj.GetComponent<Image>();
+                    btnImg.sprite = startButtonSprite;
+                    btnImg.preserveAspect = true;
+                    Button btn = btnObj.GetComponent<Button>();
+                    btn.onClick.AddListener(OnStartQuizClicked);
                 }
             }
 
+            // 2. Build Question Screen if missing
+            if (_questionScreenObj == null)
+            {
+                Transform existingQ = _flowRoot.transform.Find("QuestionScreen");
+                if (existingQ != null)
+                {
+                    _questionScreenObj = existingQ.gameObject;
+                }
+                else
+                {
+                    _questionScreenObj = new GameObject("QuestionScreen", typeof(RectTransform));
+                    _questionScreenObj.transform.SetParent(_flowRoot.transform, false);
+                    RectTransform qrt = _questionScreenObj.GetComponent<RectTransform>();
+                    qrt.anchorMin = Vector2.zero;
+                    qrt.anchorMax = Vector2.one;
+                    qrt.anchoredPosition = Vector2.zero;
+                    qrt.sizeDelta = Vector2.zero;
+
+                    // Question Box
+                    GameObject qBoxObj = new GameObject("QuestionBox", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                    qBoxObj.transform.SetParent(_questionScreenObj.transform, false);
+                    RectTransform qbrt = qBoxObj.GetComponent<RectTransform>();
+                    qbrt.anchoredPosition = new Vector2(0f, 120f);
+                    qbrt.sizeDelta = new Vector2(720f, 110f);
+                    _questionBoxImage = qBoxObj.GetComponent<Image>();
+                    _questionBoxImage.sprite = questionBoxSprite;
+                    _questionBoxImage.type = Image.Type.Sliced;
+
+                    GameObject qTextObj = new GameObject("QuestionText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    qTextObj.transform.SetParent(qBoxObj.transform, false);
+                    RectTransform qtrt = qTextObj.GetComponent<RectTransform>();
+                    qtrt.anchorMin = Vector2.zero;
+                    qtrt.anchorMax = Vector2.one;
+                    qtrt.sizeDelta = new Vector2(-40f, -20f);
+                    qtrt.anchoredPosition = Vector2.zero;
+                    _questionBoxText = qTextObj.GetComponent<Text>();
+                    _questionBoxText.font = standardFont;
+                    _questionBoxText.fontSize = 17;
+                    _questionBoxText.fontStyle = FontStyle.Bold;
+                    _questionBoxText.alignment = TextAnchor.MiddleCenter;
+                    _questionBoxText.color = Color.white;
+                    Shadow qShadow = qTextObj.AddComponent<Shadow>();
+                    qShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                    qShadow.effectColor = ShadowBlackColor;
+
+                    // Choices Container
+                    GameObject choicesObj = new GameObject("ChoicesContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
+                    choicesObj.transform.SetParent(_questionScreenObj.transform, false);
+                    RectTransform crt = choicesObj.GetComponent<RectTransform>();
+                    crt.anchoredPosition = new Vector2(0f, -25f);
+                    crt.sizeDelta = new Vector2(680f, 175f);
+                    VerticalLayoutGroup vlg = choicesObj.GetComponent<VerticalLayoutGroup>();
+                    vlg.spacing = 10f;
+                    vlg.childAlignment = TextAnchor.UpperCenter;
+                    vlg.childControlWidth = true;
+                    vlg.childControlHeight = false;
+                    vlg.childForceExpandWidth = true;
+                    vlg.childForceExpandHeight = false;
+                    _choicesContainer = choicesObj.transform;
+
+                    // Hint / Prompt Text
+                    GameObject hintObj = new GameObject("HintText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    hintObj.transform.SetParent(_questionScreenObj.transform, false);
+                    RectTransform hrt = hintObj.GetComponent<RectTransform>();
+                    hrt.anchoredPosition = new Vector2(0f, -130f);
+                    hrt.sizeDelta = new Vector2(600f, 30f);
+                    _hintPromptText = hintObj.GetComponent<Text>();
+                    _hintPromptText.font = standardFont;
+                    _hintPromptText.fontSize = 15;
+                    _hintPromptText.alignment = TextAnchor.MiddleCenter;
+                    _hintPromptText.color = new Color(1f, 0.78f, 0.25f, 1f);
+                    _hintPromptText.text = "";
+
+                    // Navigation Footer
+                    // Next Button (Arrow)
+                    _nextButtonObj = new GameObject("NextButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    _nextButtonObj.transform.SetParent(_questionScreenObj.transform, false);
+                    RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
+                    nrt.anchoredPosition = new Vector2(0f, -180f);
+                    nrt.sizeDelta = new Vector2(120f, 48f);
+                    Image nImg = _nextButtonObj.GetComponent<Image>();
+                    nImg.sprite = nextButtonSprite;
+                    nImg.preserveAspect = true;
+                    _nextButton = _nextButtonObj.GetComponent<Button>();
+                    _nextButton.onClick.AddListener(OnNextQuestionClicked);
+
+                    // Confirm Button (Confirm)
+                    _confirmButtonObj = new GameObject("ConfirmButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    _confirmButtonObj.transform.SetParent(_questionScreenObj.transform, false);
+                    RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
+                    cbrt.anchoredPosition = new Vector2(0f, -180f);
+                    cbrt.sizeDelta = new Vector2(160f, 50f);
+                    Image cImg = _confirmButtonObj.GetComponent<Image>();
+                    cImg.sprite = confirmButtonSprite;
+                    cImg.preserveAspect = true;
+                    _confirmButton = _confirmButtonObj.GetComponent<Button>();
+                    _confirmButton.onClick.AddListener(OnConfirmCaseClicked);
+                }
+            }
+
+            if (_questionBoxImage == null && _questionScreenObj != null)
+            {
+                _questionBoxImage = _questionScreenObj.transform.Find("QuestionBox")?.GetComponent<Image>();
+                _questionBoxText = _questionScreenObj.transform.Find("QuestionBox/QuestionText")?.GetComponent<Text>();
+                _choicesContainer = _questionScreenObj.transform.Find("ChoicesContainer");
+                _hintPromptText = _questionScreenObj.transform.Find("HintText")?.GetComponent<Text>();
+                _nextButtonObj = _questionScreenObj.transform.Find("NextButton")?.gameObject;
+                _confirmButtonObj = _questionScreenObj.transform.Find("ConfirmButton")?.gameObject;
+                _nextButton = _nextButtonObj?.GetComponent<Button>();
+                _confirmButton = _confirmButtonObj?.GetComponent<Button>();
+            }
+
+            if (_questionBoxImage != null && _questionBoxImage.sprite == null)
+            {
+                _questionBoxImage.sprite = questionBoxSprite;
+            }
+        }
+
+        /// <summary>
+        /// Shows the initial Start prompt screen.
+        /// </summary>
+        private void ShowStartScreen()
+        {
+            if (_startScreenObj != null) _startScreenObj.SetActive(true);
+            if (_questionScreenObj != null) _questionScreenObj.SetActive(false);
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>
-        /// Handles click on the submit button, triggering case evaluation in <see cref="CaseConclusionManager"/> and displaying results.
+        /// Handler for Start button click: initiates the first question.
+        /// </summary>
+        private void OnStartQuizClicked()
+        {
+            AudioManager.Instance?.PlayButtonClick();
+            if (_startScreenObj != null) _startScreenObj.SetActive(false);
+            if (_questionScreenObj != null) _questionScreenObj.SetActive(true);
+
+            _currentQuestionIndex = 0;
+            RenderCurrentQuestion();
+        }
+
+        /// <summary>
+        /// Renders the current question and choice option buttons using QUESTION_BOX.
+        /// </summary>
+        private void RenderCurrentQuestion()
+        {
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            if (activeCase == null || activeCase.conclusionQuestions == null || activeCase.conclusionQuestions.Count == 0) return;
+
+            int totalQuestions = activeCase.conclusionQuestions.Count;
+            if (_currentQuestionIndex < 0) _currentQuestionIndex = 0;
+            if (_currentQuestionIndex >= totalQuestions) _currentQuestionIndex = totalQuestions - 1;
+
+            ConclusionQuestion q = activeCase.conclusionQuestions[_currentQuestionIndex];
+
+            // Render Question Box
+            if (_questionBoxText != null)
+            {
+                _questionBoxText.text = $"QUESTION {_currentQuestionIndex + 1} OF {totalQuestions}\n\n{q.questionText}";
+            }
+
+            if (_hintPromptText != null)
+            {
+                _hintPromptText.text = "";
+            }
+
+            // Clear old choices
+            _choiceImages.Clear();
+            _choiceTexts.Clear();
+
+            if (_choicesContainer != null)
+            {
+                foreach (Transform child in _choicesContainer)
+                {
+                    if (Application.isPlaying)
+                        Destroy(child.gameObject);
+                    else
+                        DestroyImmediate(child.gameObject);
+                }
+
+                Font standardFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                if (standardFont == null && questionTitleText != null) standardFont = questionTitleText.font;
+
+                // Render each choice option
+                for (int optIdx = 0; optIdx < q.options.Count; optIdx++)
+                {
+                    int choiceIndex = optIdx;
+                    GameObject choiceObj = new GameObject($"Choice_{optIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    choiceObj.transform.SetParent(_choicesContainer, false);
+                    RectTransform chRt = choiceObj.GetComponent<RectTransform>();
+                    chRt.sizeDelta = new Vector2(660f, 48f);
+
+                    Image chImg = choiceObj.GetComponent<Image>();
+                    chImg.sprite = questionBoxSprite;
+                    chImg.type = Image.Type.Sliced;
+                    _choiceImages.Add(chImg);
+
+                    GameObject chTextObj = new GameObject("ChoiceText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    chTextObj.transform.SetParent(choiceObj.transform, false);
+                    RectTransform txtRt = chTextObj.GetComponent<RectTransform>();
+                    txtRt.anchorMin = Vector2.zero;
+                    txtRt.anchorMax = Vector2.one;
+                    txtRt.sizeDelta = new Vector2(-40f, 0f);
+                    txtRt.anchoredPosition = Vector2.zero;
+
+                    Text chTxt = chTextObj.GetComponent<Text>();
+                    chTxt.font = standardFont;
+                    chTxt.fontSize = 16;
+                    chTxt.alignment = TextAnchor.MiddleCenter;
+                    _choiceTexts.Add(chTxt);
+
+                    Shadow chShadow = chTextObj.AddComponent<Shadow>();
+                    chShadow.effectDistance = new Vector2(1.2f, -1.2f);
+                    chShadow.effectColor = ShadowBlackColor;
+
+                    Button btn = choiceObj.GetComponent<Button>();
+                    btn.onClick.AddListener(() => SelectChoice(choiceIndex));
+                }
+
+                UpdateChoiceVisuals();
+            }
+
+            // Update Navigation Buttons: Next on Q1..Q4, Confirm on Q5
+            bool isLastQuestion = (_currentQuestionIndex == totalQuestions - 1);
+            if (_nextButtonObj != null) _nextButtonObj.SetActive(!isLastQuestion);
+            if (_confirmButtonObj != null) _confirmButtonObj.SetActive(isLastQuestion);
+
+            UIButtonHighlightSystem.ApplyToHierarchy(_questionScreenObj);
+        }
+
+        /// <summary>
+        /// Selects a choice for the current question and updates button highlight.
+        /// </summary>
+        /// <param name="choiceIndex">The option index chosen by the player.</param>
+        private void SelectChoice(int choiceIndex)
+        {
+            AudioManager.Instance?.PlayButtonClick();
+            playerAnswers[_currentQuestionIndex] = choiceIndex;
+            if (_hintPromptText != null) _hintPromptText.text = "";
+            UpdateChoiceVisuals();
+        }
+
+        /// <summary>
+        /// Updates the visual highlight and text labels for choice buttons based on current selection.
+        /// </summary>
+        private void UpdateChoiceVisuals()
+        {
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            if (activeCase == null || _currentQuestionIndex >= activeCase.conclusionQuestions.Count) return;
+
+            ConclusionQuestion q = activeCase.conclusionQuestions[_currentQuestionIndex];
+            int selectedIndex = playerAnswers[_currentQuestionIndex];
+
+            for (int i = 0; i < _choiceImages.Count; i++)
+            {
+                if (i >= q.options.Count) break;
+                bool isSelected = (i == selectedIndex);
+
+                if (_choiceImages[i] != null)
+                {
+                    _choiceImages[i].color = isSelected ? ChoiceSelectedColor : ChoiceNormalColor;
+                }
+
+                if (_choiceTexts[i] != null)
+                {
+                    _choiceTexts[i].text = isSelected ? $"<b>[✓]  {q.options[i]}</b>" : $"   [ ]  {q.options[i]}";
+                    _choiceTexts[i].color = isSelected ? HeaderGoldColor : Color.white;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Advances to the next question with no turning back.
+        /// </summary>
+        private void OnNextQuestionClicked()
+        {
+            if (playerAnswers[_currentQuestionIndex] < 0)
+            {
+                if (_hintPromptText != null)
+                {
+                    _hintPromptText.text = "Please select an answer to proceed.";
+                }
+                AudioManager.Instance?.PlaySFX(AudioManager.Instance?.caseFailedSFX);
+                return;
+            }
+
+            AudioManager.Instance?.PlayButtonClick();
+            _currentQuestionIndex++;
+            RenderCurrentQuestion();
+        }
+
+        /// <summary>
+        /// Confirms the final question and concludes the case.
+        /// </summary>
+        private void OnConfirmCaseClicked()
+        {
+            if (playerAnswers[_currentQuestionIndex] < 0)
+            {
+                if (_hintPromptText != null)
+                {
+                    _hintPromptText.text = "Please select an answer before confirming.";
+                }
+                AudioManager.Instance?.PlaySFX(AudioManager.Instance?.caseFailedSFX);
+                return;
+            }
+
+            AudioManager.Instance?.PlayButtonClick();
+            OnSubmitClicked();
+        }
+
+        /// <summary>
+        /// Handles case evaluation submission in <see cref="CaseConclusionManager"/> and displaying results.
         /// </summary>
         private void OnSubmitClicked()
         {
@@ -264,12 +595,45 @@ namespace CaseClosed.UI
                 if (playerAnswers[i] < 0)
                 {
                     Debug.LogWarning($"[UI:Conclusion] Cannot submit: question {i + 1} has not been answered.");
+                    if (_hintPromptText != null)
+                    {
+                        _hintPromptText.text = $"Question {i + 1} has not been answered.";
+                    }
                     return;
                 }
             }
 
             CaseEvaluationResult result = CaseConclusionManager.Instance.EvaluateCase(playerAnswers);
             DisplayResultsCard(result);
+        }
+
+        /// <summary>
+        /// Resolves the appropriate failed background sprite based on case level number.
+        /// </summary>
+        private Sprite GetFailedSprite(int levelNumber)
+        {
+            if (levelNumber == 2)
+            {
+#if UNITY_EDITOR
+                var s2 = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/Case2FAILED.png");
+                if (s2 != null) return s2;
+#endif
+            }
+            else if (levelNumber == 3)
+            {
+#if UNITY_EDITOR
+                var s3 = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/Case3FAILED.png");
+                if (s3 != null) return s3;
+#endif
+            }
+
+            if (failedBackgroundSprite != null) return failedBackgroundSprite;
+
+#if UNITY_EDITOR
+            var s1 = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/case1FAILED.png");
+            if (s1 != null) return s1;
+#endif
+            return null;
         }
 
         /// <summary>
@@ -280,36 +644,48 @@ namespace CaseClosed.UI
         {
             if (result == null) return;
 
-            Debug.Log($"[UI:Conclusion] Displaying results scorecard: Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}");
-
-            if (quizContainer != null) quizContainer.SetActive(false);
-            if (resultsContainer != null) resultsContainer.SetActive(true);
-
-            if (resultBackgroundImage != null)
-            {
-                resultBackgroundImage.sprite = result.isCaseSolved ? solvedBackgroundSprite : null;
-                resultBackgroundImage.color = result.isCaseSolved && solvedBackgroundSprite != null
-                    ? Color.white
-                    : new Color(0.06f, 0.07f, 0.09f, 0.98f);
-            }
-
-            if (resultTitleText != null)
-            {
-                resultTitleText.gameObject.SetActive(!result.isCaseSolved);
-            }
+            EnsureAssets();
 
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             CharacterProfileSO investigator = CaseManager.Instance?.EffectiveInvestigator;
             string investigatorName = investigator != null ? investigator.fullName : "Unknown Investigator";
             int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
 
-            if (resultTitleText != null)
+            bool isAllCorrect = (result.totalQuizQuestions > 0 && result.correctQuizAnswers == result.totalQuizQuestions);
+
+            Debug.Log($"[UI:Conclusion] Displaying results scorecard: AllCorrect={isAllCorrect}, Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}");
+
+            if (quizContainer != null) quizContainer.SetActive(false);
+            if (resultsContainer != null) resultsContainer.SetActive(true);
+
+            // Outcome Background: CasesWIN on all correct, case1FAILED on loss
+            if (resultBackgroundImage != null)
             {
-                resultTitleText.text = result.isCaseSolved ? "CASE CLOSED" : "CASE NOT CLOSED";
-                resultTitleText.color = result.isCaseSolved ? Color.green : Color.red;
+                if (isAllCorrect)
+                {
+                    Sprite winSprite = solvedBackgroundSprite;
+#if UNITY_EDITOR
+                    if (winSprite == null) winSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/CasesWIN.png");
+#endif
+                    resultBackgroundImage.sprite = winSprite;
+                    resultBackgroundImage.color = (winSprite != null) ? Color.white : new Color(0.06f, 0.07f, 0.09f, 0.98f);
+                }
+                else
+                {
+                    Sprite failSprite = GetFailedSprite(currentLevel);
+                    resultBackgroundImage.sprite = failSprite;
+                    resultBackgroundImage.color = (failSprite != null) ? Color.white : new Color(0.06f, 0.07f, 0.09f, 0.98f);
+                }
             }
 
-            if (result.isCaseSolved)
+            if (resultTitleText != null)
+            {
+                resultTitleText.gameObject.SetActive(true);
+                resultTitleText.text = isAllCorrect ? "CASE CLOSED" : "CASE NOT CLOSED";
+                resultTitleText.color = isAllCorrect ? Color.green : Color.red;
+            }
+
+            if (isAllCorrect)
             {
                 CaseClosed.Services.CaseProgressionService.Instance?.SetCaseCompleted(currentLevel, true);
             }
@@ -340,7 +716,7 @@ namespace CaseClosed.UI
 
             if (nextLevelButton != null)
             {
-                nextLevelButton.gameObject.SetActive(result.isCaseSolved);
+                nextLevelButton.gameObject.SetActive(isAllCorrect);
                 int nextLevel = currentLevel + 1;
                 if (nextLevel <= 3)
                 {
@@ -358,10 +734,10 @@ namespace CaseClosed.UI
                 }
             }
 
-            if (returnToMainMenuButton != null) returnToMainMenuButton.gameObject.SetActive(result.isCaseSolved);
+            if (returnToMainMenuButton != null) returnToMainMenuButton.gameObject.SetActive(isAllCorrect);
             if (continueButton != null)
             {
-                continueButton.gameObject.SetActive(!result.isCaseSolved);
+                continueButton.gameObject.SetActive(!isAllCorrect);
                 if (continueButtonText != null) continueButtonText.text = "Back to Level Start";
             }
         }

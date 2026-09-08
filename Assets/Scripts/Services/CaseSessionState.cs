@@ -17,6 +17,7 @@ namespace CaseClosed.Services
         private readonly HashSet<string> _unlockedClueIds = new HashSet<string>();
         private readonly Dictionary<string, string> _unlockedClues = new Dictionary<string, string>();
         private readonly HashSet<string> _exposedContradictionIds = new HashSet<string>();
+        private readonly HashSet<string> _completedDialogueTreeIds = new HashSet<string>();
 
         private float _accumulatedElapsedTime;
         private float _lastResumeTimestamp;
@@ -36,9 +37,11 @@ namespace CaseClosed.Services
         public IReadOnlyCollection<string> UnlockedClueIds => _unlockedClueIds;
         public IReadOnlyDictionary<string, string> UnlockedClues => _unlockedClues;
         public IReadOnlyCollection<string> ExposedContradictionIds => _exposedContradictionIds;
+        public IReadOnlyCollection<string> CompletedDialogueTreeIds => _completedDialogueTreeIds;
 
         public int DiscoveredEvidenceCount => _discoveredEvidenceIds.Count;
         public int ExposedContradictionCount => _exposedContradictionIds.Count;
+        public int CompletedDialogueCount => _completedDialogueTreeIds.Count;
 
         public float InvestigationStartedAt { get; private set; }
         public bool IsTimerRunning { get; private set; }
@@ -64,6 +67,7 @@ namespace CaseClosed.Services
             _unlockedClueIds.Clear();
             _unlockedClues.Clear();
             _exposedContradictionIds.Clear();
+            _completedDialogueTreeIds.Clear();
 
             _accumulatedElapsedTime = 0f;
             _lastResumeTimestamp = currentTime;
@@ -198,6 +202,16 @@ namespace CaseClosed.Services
         public bool IsContradictionExposed(string ruleId)
         {
             return !string.IsNullOrEmpty(ruleId) && _exposedContradictionIds.Contains(ruleId);
+        }
+
+        public bool TryMarkDialogueCompleted(string treeId)
+        {
+            return !string.IsNullOrEmpty(treeId) && _completedDialogueTreeIds.Add(treeId);
+        }
+
+        public bool IsDialogueCompleted(string treeId)
+        {
+            return !string.IsNullOrEmpty(treeId) && _completedDialogueTreeIds.Contains(treeId);
         }
 
         private static string GetHotspotKey(EvidenceSO evidence, EvidenceHotspot hotspot)

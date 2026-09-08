@@ -169,6 +169,10 @@ namespace CaseClosed.Managers
             else
             {
                 Debug.Log($"[Interrogation] Reached end of dialogue branch for node '{node.nodeId}'. Closing dialogue.");
+                if (CurrentDialogueTree != null)
+                {
+                    CaseManager.Instance?.RecordDialogueCompleted(CurrentDialogueTree.treeId);
+                }
                 CloseDialogue();
             }
         }
@@ -188,6 +192,11 @@ namespace CaseClosed.Managers
         public void CloseDialogue()
         {
             EnsureSessionState();
+            DialogueNode node = CurrentNode;
+            if (node != null && CurrentDialogueTree != null && string.IsNullOrEmpty(node.defaultNextNodeId) && (node.choices == null || node.choices.Count == 0))
+            {
+                CaseManager.Instance?.RecordDialogueCompleted(CurrentDialogueTree.treeId);
+            }
             sessionState.Close();
             OnChallengeModeToggled?.Invoke(false);
             OnDialogueClosed?.Invoke();

@@ -78,6 +78,9 @@ namespace CaseClosed.Managers
         /// <summary>Contradictions exposed during this session. The collection cannot be mutated externally.</summary>
         public IReadOnlyCollection<string> ExposedContradictionIds => sessionState.ExposedContradictionIds;
 
+        /// <summary>Completed dialogue tree identifiers during this session.</summary>
+        public IReadOnlyCollection<string> CompletedDialogueTreeIds => sessionState.CompletedDialogueTreeIds;
+
         /// <summary>The timestamp when the active session began.</summary>
         public float InvestigationStartTime => sessionState.InvestigationStartedAt;
 
@@ -119,6 +122,12 @@ namespace CaseClosed.Managers
 
         /// <summary>Event raised when the case investigation time expires (Game Over).</summary>
         public event Action OnTimeExpired;
+
+        /// <summary>Event raised when a dialogue tree is completed.</summary>
+        public event Action<string> OnDialogueTreeCompleted;
+
+        /// <summary>Event raised when conclusion readiness state changes.</summary>
+        public event Action<bool> OnConclusionReadinessChanged;
 
         private void Awake()
         {
@@ -280,6 +289,7 @@ namespace CaseClosed.Managers
             Debug.Log($"[CaseManager] Registered new evidence discovery: '{evidence.evidenceName}' (ID: {evidence.id}). Total discovered: {sessionState.DiscoveredEvidenceCount}");
             OnEvidenceDiscovered?.Invoke(evidence);
             AudioManager.Instance?.PlayClueDiscovered();
+            OnConclusionReadinessChanged?.Invoke(IsReadyForConclusion());
         }
 
         /// <summary>Returns whether evidence has been discovered during this session.</summary>
@@ -303,7 +313,12 @@ namespace CaseClosed.Managers
         /// <summary>Records evidence examination, returning false when it was already examined.</summary>
         public bool TryMarkEvidenceExamined(EvidenceSO evidence)
         {
-            return sessionState.TryMarkEvidenceExamined(evidence);
+            bool marked = sessionState.TryMarkEvidenceExamined(evidence);
+            if (marked)
+            {
+                OnConclusionReadinessChanged?.Invoke(IsReadyForConclusion());
+            }
+            return marked;
         }
 
         /// <summary>Records a hotspot discovery, returning false when it was already discovered.</summary>
@@ -355,13 +370,60 @@ namespace CaseClosed.Managers
             return true;
         }
 
-        /// <summary>Returns true when the player can confront the culprit.</summary>
+        /// <summary>Returns true if all evidence items in the active case have been discovered/unlocked.</summary>
+        public bool AreAllEvidenceUnlocked()
+        {
+            if (ActiveCase == null || ActiveCase.evidenceItems == null || ActiveCase.evidenceItems.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (EvidenceSO evidence in ActiveCase.evidenceItems)
+            {
+                if (evidence != null && !sessionState.IsEvidenceDiscovered(evidence))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Returns true if all dialogue trees in the active case have completed.</summary>
+        public bool AreAllDialoguesDone()
+        {
+            if (ActiveCase == null || ActiveCase.dialogueTrees == null || ActiveCase.dialogueTrees.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (DialogueTreeSO tree in ActiveCase.dialogueTrees)
+            {
+                if (tree != null && !string.IsNullOrEmpty(tree.treeId) && !sessionState.IsDialogueCompleted(tree.treeId))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>Records that a dialogue tree has reached completion.</summary>
+        public void RecordDialogueCompleted(string treeId)
+        {
+            if (string.IsNullOrEmpty(treeId)) return;
+            if (sessionState.TryMarkDialogueCompleted(treeId))
+            {
+                Debug.Log($"[CaseManager] Dialogue tree '{treeId}' marked completed. Total completed trees: {sessionState.CompletedDialogueCount}");
+                OnDialogueTreeCompleted?.Invoke(treeId);
+                OnConclusionReadinessChanged?.Invoke(IsReadyForConclusion());
+            }
+        }
+
+        /// <summary>Returns true when the player can confront the culprit (all dialogs done and all evidence unlocked).</summary>
         public bool IsReadyForConclusion()
         {
-            if (!AreAllEvidenceExamined()) return false;
-            return ActiveCase != null
-                && ActiveCase.totalContradictionsCount > 0
-                && sessionState.ExposedContradictionCount >= ActiveCase.totalContradictionsCount;
+            return AreAllEvidenceUnlocked() && AreAllDialoguesDone();
         }
 
         /// <summary>Unlocks an authored case evidence item by identifier.</summary>
