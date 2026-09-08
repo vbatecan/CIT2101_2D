@@ -40,10 +40,13 @@ namespace CaseClosed.UI
         [Tooltip("Asset for failed conclusion outcome background.")]
         [SerializeField] private Sprite failedBackgroundSprite;
 
-        private static readonly Color HeaderGoldColor = new Color(0.95f, 0.82f, 0.45f, 1f);
-        private static readonly Color ShadowBlackColor = new Color(0f, 0f, 0f, 0.85f);
-        private static readonly Color ChoiceNormalColor = new Color(0.85f, 0.85f, 0.85f, 0.95f);
-        private static readonly Color ChoiceSelectedColor = new Color(1f, 0.92f, 0.5f, 1f);
+        private static readonly Color HeaderDarkColor = new Color(0.12f, 0.12f, 0.18f, 1f);
+        private static readonly Color SubtitleDarkColor = new Color(0.25f, 0.25f, 0.32f, 1f);
+        private static readonly Color ShadowLightColor = new Color(0.85f, 0.85f, 0.88f, 0.5f);
+        private static readonly Color ChoiceNormalColor = Color.white;
+        private static readonly Color ChoiceSelectedColor = new Color(1f, 0.88f, 0.48f, 1f);
+        private static readonly Color ChoiceTextNormalColor = new Color(0.15f, 0.16f, 0.22f, 1f);
+        private static readonly Color ChoiceTextSelectedColor = new Color(0.08f, 0.08f, 0.12f, 1f);
 
         [Header("Results Screen Overlay")]
         public GameObject resultsContainer;
@@ -104,24 +107,65 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
+        /// Loads a sprite from the specified asset path, searching sub-assets if imported as Multiple sprite sheet.
+        /// </summary>
+        private static Sprite LoadSprite(string path, Vector4 fallbackBorder = default)
+        {
+#if UNITY_EDITOR
+            Sprite found = null;
+            var all = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
+            if (all != null)
+            {
+                foreach (var obj in all)
+                {
+                    if (obj is Sprite s)
+                    {
+                        found = s;
+                        break;
+                    }
+                }
+            }
+
+            if (found == null)
+            {
+                found = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            }
+
+            if (found != null)
+            {
+                if (fallbackBorder != Vector4.zero && found.border == Vector4.zero)
+                {
+                    return Sprite.Create(found.texture, found.rect, new Vector2(0.5f, 0.5f), found.pixelsPerUnit, 0, SpriteMeshType.FullRect, fallbackBorder);
+                }
+                return found;
+            }
+
+            var tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+            if (tex != null)
+            {
+                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, fallbackBorder);
+            }
+#endif
+            return null;
+        }
+
+        /// <summary>
         /// Ensures questionnaire and outcome sprites are loaded from assets when not assigned in Inspector.
         /// </summary>
         private void EnsureAssets()
         {
-#if UNITY_EDITOR
             if (questionBoxSprite == null)
-                questionBoxSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_BOX.png");
+                questionBoxSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_BOX.png", new Vector4(8, 8, 8, 8));
             if (startButtonSprite == null)
-                startButtonSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_START_BUTTON.png");
+                startButtonSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_START_BUTTON.png");
             if (nextButtonSprite == null)
-                nextButtonSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_NEXT_BUTTON.png");
+                nextButtonSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_NEXT_BUTTON.png");
             if (confirmButtonSprite == null)
-                confirmButtonSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BUTTONS/QUESTION_CONFIRM_BUTTON.png");
+                confirmButtonSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_CONFIRM_BUTTON.png");
             if (failedBackgroundSprite == null)
-                failedBackgroundSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/case1FAILED.png");
+                failedBackgroundSprite = LoadSprite("Assets/Assets/BACKGROUNDS/case1FAILED.png");
             if (solvedBackgroundSprite == null)
-                solvedBackgroundSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/CasesWIN.png");
-#endif
+                solvedBackgroundSprite = LoadSprite("Assets/Assets/BACKGROUNDS/CasesWIN.png");
         }
 
         /// <summary>
@@ -143,6 +187,25 @@ namespace CaseClosed.UI
             if (activeCase == null || activeCase.conclusionQuestions == null) return;
 
             Debug.Log($"[UI:Conclusion] Setting up conclusion quiz for '{activeCase.caseTitle}' with {activeCase.conclusionQuestions.Count} questions");
+
+            // Configure modal frame with QUESTION_BOX background during the conclusion quiz
+            RectTransform rootRt = GetComponent<RectTransform>();
+            if (rootRt != null)
+            {
+                rootRt.anchorMin = new Vector2(0.12f, 0.08f);
+                rootRt.anchorMax = new Vector2(0.88f, 0.92f);
+                rootRt.offsetMin = Vector2.zero;
+                rootRt.offsetMax = Vector2.zero;
+                rootRt.sizeDelta = Vector2.zero;
+            }
+
+            Image panelBg = GetComponent<Image>();
+            if (panelBg != null)
+            {
+                panelBg.sprite = questionBoxSprite;
+                panelBg.type = Image.Type.Sliced;
+                panelBg.color = Color.white;
+            }
 
             if (quizContainer != null) quizContainer.SetActive(true);
             if (resultsContainer != null) resultsContainer.SetActive(false);
@@ -233,14 +296,14 @@ namespace CaseClosed.UI
                     trt.sizeDelta = new Vector2(700f, 60f);
                     Text titleTxt = titleObj.GetComponent<Text>();
                     titleTxt.font = standardFont;
-                    titleTxt.fontSize = 28;
+                    titleTxt.fontSize = 30;
                     titleTxt.fontStyle = FontStyle.Bold;
                     titleTxt.alignment = TextAnchor.MiddleCenter;
-                    titleTxt.color = HeaderGoldColor;
+                    titleTxt.color = HeaderDarkColor;
                     titleTxt.text = "CASE CONCLUSION";
                     Shadow tShadow = titleObj.AddComponent<Shadow>();
-                    tShadow.effectDistance = new Vector2(1.5f, -1.5f);
-                    tShadow.effectColor = ShadowBlackColor;
+                    tShadow.effectDistance = new Vector2(1f, -1f);
+                    tShadow.effectColor = ShadowLightColor;
 
                     // Subtitle / Prompt
                     GameObject descObj = new GameObject("StartDesc", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
@@ -252,23 +315,33 @@ namespace CaseClosed.UI
                     descTxt.font = standardFont;
                     descTxt.fontSize = 17;
                     descTxt.alignment = TextAnchor.MiddleCenter;
-                    descTxt.color = Color.white;
+                    descTxt.color = SubtitleDarkColor;
                     descTxt.text = "Answer all 5 questions based on your investigation to solve the case.\nClick Start to begin.";
                     Shadow dShadow = descObj.AddComponent<Shadow>();
-                    dShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                    dShadow.effectColor = ShadowBlackColor;
+                    dShadow.effectDistance = new Vector2(1f, -1f);
+                    dShadow.effectColor = ShadowLightColor;
 
                     // Start Button
                     GameObject btnObj = new GameObject("StartButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
                     btnObj.transform.SetParent(_startScreenObj.transform, false);
                     RectTransform brt = btnObj.GetComponent<RectTransform>();
                     brt.anchoredPosition = new Vector2(0f, -65f);
-                    brt.sizeDelta = new Vector2(180f, 55f);
+                    brt.sizeDelta = new Vector2(200f, 60f);
                     Image btnImg = btnObj.GetComponent<Image>();
                     btnImg.sprite = startButtonSprite;
                     btnImg.preserveAspect = true;
                     Button btn = btnObj.GetComponent<Button>();
                     btn.onClick.AddListener(OnStartQuizClicked);
+                }
+            }
+
+            if (_startScreenObj != null)
+            {
+                Image sBtnImg = _startScreenObj.transform.Find("StartButton")?.GetComponent<Image>();
+                if (sBtnImg != null && startButtonSprite != null)
+                {
+                    sBtnImg.sprite = startButtonSprite;
+                    sBtnImg.preserveAspect = true;
                 }
             }
 
@@ -299,6 +372,7 @@ namespace CaseClosed.UI
                     _questionBoxImage = qBoxObj.GetComponent<Image>();
                     _questionBoxImage.sprite = questionBoxSprite;
                     _questionBoxImage.type = Image.Type.Sliced;
+                    _questionBoxImage.color = Color.white;
 
                     GameObject qTextObj = new GameObject("QuestionText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
                     qTextObj.transform.SetParent(qBoxObj.transform, false);
@@ -312,10 +386,10 @@ namespace CaseClosed.UI
                     _questionBoxText.fontSize = 17;
                     _questionBoxText.fontStyle = FontStyle.Bold;
                     _questionBoxText.alignment = TextAnchor.MiddleCenter;
-                    _questionBoxText.color = Color.white;
+                    _questionBoxText.color = HeaderDarkColor;
                     Shadow qShadow = qTextObj.AddComponent<Shadow>();
-                    qShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                    qShadow.effectColor = ShadowBlackColor;
+                    qShadow.effectDistance = new Vector2(1f, -1f);
+                    qShadow.effectColor = ShadowLightColor;
 
                     // Choices Container
                     GameObject choicesObj = new GameObject("ChoicesContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
@@ -342,7 +416,7 @@ namespace CaseClosed.UI
                     _hintPromptText.font = standardFont;
                     _hintPromptText.fontSize = 15;
                     _hintPromptText.alignment = TextAnchor.MiddleCenter;
-                    _hintPromptText.color = new Color(1f, 0.78f, 0.25f, 1f);
+                    _hintPromptText.color = new Color(0.8f, 0.15f, 0.15f, 1f);
                     _hintPromptText.text = "";
 
                     // Navigation Footer
@@ -351,7 +425,7 @@ namespace CaseClosed.UI
                     _nextButtonObj.transform.SetParent(_questionScreenObj.transform, false);
                     RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
                     nrt.anchoredPosition = new Vector2(0f, -180f);
-                    nrt.sizeDelta = new Vector2(120f, 48f);
+                    nrt.sizeDelta = new Vector2(130f, 50f);
                     Image nImg = _nextButtonObj.GetComponent<Image>();
                     nImg.sprite = nextButtonSprite;
                     nImg.preserveAspect = true;
@@ -363,7 +437,7 @@ namespace CaseClosed.UI
                     _confirmButtonObj.transform.SetParent(_questionScreenObj.transform, false);
                     RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
                     cbrt.anchoredPosition = new Vector2(0f, -180f);
-                    cbrt.sizeDelta = new Vector2(160f, 50f);
+                    cbrt.sizeDelta = new Vector2(180f, 55f);
                     Image cImg = _confirmButtonObj.GetComponent<Image>();
                     cImg.sprite = confirmButtonSprite;
                     cImg.preserveAspect = true;
@@ -384,9 +458,31 @@ namespace CaseClosed.UI
                 _confirmButton = _confirmButtonObj?.GetComponent<Button>();
             }
 
-            if (_questionBoxImage != null && _questionBoxImage.sprite == null)
+            if (_questionBoxImage != null && questionBoxSprite != null)
             {
                 _questionBoxImage.sprite = questionBoxSprite;
+                _questionBoxImage.type = Image.Type.Sliced;
+                _questionBoxImage.color = Color.white;
+            }
+
+            if (_nextButtonObj != null)
+            {
+                Image nImg = _nextButtonObj.GetComponent<Image>();
+                if (nImg != null && nextButtonSprite != null)
+                {
+                    nImg.sprite = nextButtonSprite;
+                    nImg.preserveAspect = true;
+                }
+            }
+
+            if (_confirmButtonObj != null)
+            {
+                Image cImg = _confirmButtonObj.GetComponent<Image>();
+                if (cImg != null && confirmButtonSprite != null)
+                {
+                    cImg.sprite = confirmButtonSprite;
+                    cImg.preserveAspect = true;
+                }
             }
         }
 
@@ -431,6 +527,7 @@ namespace CaseClosed.UI
             if (_questionBoxText != null)
             {
                 _questionBoxText.text = $"QUESTION {_currentQuestionIndex + 1} OF {totalQuestions}\n\n{q.questionText}";
+                _questionBoxText.color = HeaderDarkColor;
             }
 
             if (_hintPromptText != null)
@@ -467,6 +564,7 @@ namespace CaseClosed.UI
                     Image chImg = choiceObj.GetComponent<Image>();
                     chImg.sprite = questionBoxSprite;
                     chImg.type = Image.Type.Sliced;
+                    chImg.color = ChoiceNormalColor;
                     _choiceImages.Add(chImg);
 
                     GameObject chTextObj = new GameObject("ChoiceText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
@@ -481,11 +579,12 @@ namespace CaseClosed.UI
                     chTxt.font = standardFont;
                     chTxt.fontSize = 16;
                     chTxt.alignment = TextAnchor.MiddleCenter;
+                    chTxt.color = ChoiceTextNormalColor;
                     _choiceTexts.Add(chTxt);
 
                     Shadow chShadow = chTextObj.AddComponent<Shadow>();
-                    chShadow.effectDistance = new Vector2(1.2f, -1.2f);
-                    chShadow.effectColor = ShadowBlackColor;
+                    chShadow.effectDistance = new Vector2(1f, -1f);
+                    chShadow.effectColor = ShadowLightColor;
 
                     Button btn = choiceObj.GetComponent<Button>();
                     btn.onClick.AddListener(() => SelectChoice(choiceIndex));
@@ -538,7 +637,7 @@ namespace CaseClosed.UI
                 if (_choiceTexts[i] != null)
                 {
                     _choiceTexts[i].text = isSelected ? $"<b>[✓]  {q.options[i]}</b>" : $"   [ ]  {q.options[i]}";
-                    _choiceTexts[i].color = isSelected ? HeaderGoldColor : Color.white;
+                    _choiceTexts[i].color = isSelected ? ChoiceTextSelectedColor : ChoiceTextNormalColor;
                 }
             }
         }
@@ -614,30 +713,24 @@ namespace CaseClosed.UI
         {
             if (levelNumber == 2)
             {
-#if UNITY_EDITOR
-                var s2 = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/Case2FAILED.png");
+                var s2 = LoadSprite("Assets/Assets/BACKGROUNDS/Case2FAILED.png");
                 if (s2 != null) return s2;
-#endif
             }
             else if (levelNumber == 3)
             {
-#if UNITY_EDITOR
-                var s3 = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/Case3FAILED.png");
+                var s3 = LoadSprite("Assets/Assets/BACKGROUNDS/Case3FAILED.png");
                 if (s3 != null) return s3;
-#endif
             }
 
             if (failedBackgroundSprite != null) return failedBackgroundSprite;
 
-#if UNITY_EDITOR
-            var s1 = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/case1FAILED.png");
+            var s1 = LoadSprite("Assets/Assets/BACKGROUNDS/case1FAILED.png");
             if (s1 != null) return s1;
-#endif
             return null;
         }
 
         /// <summary>
-        /// Populates and displays the final evaluation results scorecard.
+        /// Populates and displays the final evaluation results scorecard, maximizing to fullscreen.
         /// </summary>
         /// <param name="result">The evaluation result data to display.</param>
         private void DisplayResultsCard(CaseEvaluationResult result)
@@ -655,6 +748,65 @@ namespace CaseClosed.UI
 
             Debug.Log($"[UI:Conclusion] Displaying results scorecard: AllCorrect={isAllCorrect}, Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}");
 
+            // Maximize Panel_ConclusionQuiz and results container to fill 100% of the screen
+            RectTransform rootRt = GetComponent<RectTransform>();
+            if (rootRt != null)
+            {
+                rootRt.anchorMin = Vector2.zero;
+                rootRt.anchorMax = Vector2.one;
+                rootRt.offsetMin = Vector2.zero;
+                rootRt.offsetMax = Vector2.zero;
+                rootRt.sizeDelta = Vector2.zero;
+            }
+            transform.SetAsLastSibling();
+
+            Image panelBg = GetComponent<Image>();
+            if (panelBg != null)
+            {
+                panelBg.color = Color.clear;
+            }
+
+            if (resultsContainer != null)
+            {
+                RectTransform resRt = resultsContainer.GetComponent<RectTransform>();
+                if (resRt != null)
+                {
+                    resRt.anchorMin = Vector2.zero;
+                    resRt.anchorMax = Vector2.one;
+                    resRt.offsetMin = Vector2.zero;
+                    resRt.offsetMax = Vector2.zero;
+                    resRt.sizeDelta = Vector2.zero;
+                }
+            }
+
+            // Hide in-game header navigation and pause the countdown timer
+            if (UIManager.Instance != null)
+            {
+                if (UIManager.Instance.timerContainer != null) UIManager.Instance.timerContainer.SetActive(false);
+                if (UIManager.Instance.notebookButton != null) UIManager.Instance.notebookButton.SetActive(false);
+                if (UIManager.Instance.suspectFolderButton != null) UIManager.Instance.suspectFolderButton.SetActive(false);
+                if (UIManager.Instance.deductionBoardButton != null) UIManager.Instance.deductionBoardButton.SetActive(false);
+                if (UIManager.Instance.concludeCaseButton != null) UIManager.Instance.concludeCaseButton.SetActive(false);
+                if (UIManager.Instance.returnToMenuButton != null) UIManager.Instance.returnToMenuButton.SetActive(false);
+            }
+            CaseManager.Instance?.PauseTimer();
+
+            // Maximize resultBackgroundImage to stretch across the whole display without borders
+            if (resultBackgroundImage != null)
+            {
+                RectTransform bgRt = resultBackgroundImage.GetComponent<RectTransform>();
+                if (bgRt != null)
+                {
+                    bgRt.anchorMin = Vector2.zero;
+                    bgRt.anchorMax = Vector2.one;
+                    bgRt.offsetMin = Vector2.zero;
+                    bgRt.offsetMax = Vector2.zero;
+                    bgRt.sizeDelta = Vector2.zero;
+                }
+                resultBackgroundImage.preserveAspect = false;
+                resultBackgroundImage.transform.SetAsFirstSibling();
+            }
+
             if (quizContainer != null) quizContainer.SetActive(false);
             if (resultsContainer != null) resultsContainer.SetActive(true);
 
@@ -663,10 +815,7 @@ namespace CaseClosed.UI
             {
                 if (isAllCorrect)
                 {
-                    Sprite winSprite = solvedBackgroundSprite;
-#if UNITY_EDITOR
-                    if (winSprite == null) winSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/BACKGROUNDS/CasesWIN.png");
-#endif
+                    Sprite winSprite = solvedBackgroundSprite ?? LoadSprite("Assets/Assets/BACKGROUNDS/CasesWIN.png");
                     resultBackgroundImage.sprite = winSprite;
                     resultBackgroundImage.color = (winSprite != null) ? Color.white : new Color(0.06f, 0.07f, 0.09f, 0.98f);
                 }

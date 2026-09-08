@@ -103,10 +103,10 @@ TextureImporter:
       name: QUESTION_BOX_0
       rect:
         serializedVersion: 2
-        x: 598
-        y: 430
-        width: 527
-        height: 306
+        x: 319
+        y: 230
+        width: 281
+        height: 162
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
