@@ -22,5 +22,5 @@ MonoBehaviour:
   knownConflicts: 
   possibleMotives: Insurance payout to save failing gallery.
   alibi: Claims he was at home when the alarm triggered.
-  defaultSittingPose: {fileID: 0}
+  defaultSittingPose: {fileID: 5323409585441153239, guid: 2d473693d34fc3b4bb543b4395d1d919, type: 3}
   expressions: []

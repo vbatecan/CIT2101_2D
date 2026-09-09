@@ -18,6 +18,8 @@ MonoBehaviour:
   normalSprite: {fileID: 1806020922566079166, guid: 25a4bc5f411be16428595d3ac36b3176, type: 3}
   highlightedSprite: {fileID: 0}
   zoomedSprite: {fileID: -1726625432911974308, guid: 659f528c757600b70b290747418682e8, type: 3}
+  topPovSprite: {fileID: -1726625432911974308, guid: 659f528c757600b70b290747418682e8, type: 3}
+  customInspectBackground: {fileID: 0}
   baseDescription: Electronic keycard log showing guard movements throughout the
     night.
   detailedObservation: 'Digital badge log printout highlighting: 11:00 PM - Charl
@@ -25,6 +27,8 @@ MonoBehaviour:
   unlockedClueText: Log shows Charl was checking the East Perimeter gate at 11:00
     PM, far away from the office!
   startsDiscovered: 0
+  requiredDialogueNodeId: NODE_02_WINDOW_LEAD
+  dialogueNodeToTriggerOnInspect: NODE_03_SHIFT_LEAD
   isExamined: 0
   isToggledOnTable: 1
   hotspots: []

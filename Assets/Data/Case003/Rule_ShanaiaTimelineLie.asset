@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbde2d7fa0a54eb68b73deddf3aa2ccf, type: 3}
-  m_Name: Rule_CharlLocationLie
+  m_Name: Rule_ShanaiaTimelineLie
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.ContradictionRuleSO
-  ruleId: RULE_CHARL_LOCATION_LIE
-  ruleTitle: False Guard Location
+  ruleId: RULE_SHANAIA_TIMELINE_LIE
+  ruleTitle: False Departure Claim
   targetStatementNodeId: NODE_04_FINAL_STATEMENT
-  requiredEvidenceId: EVD_SHIFT_LOG
+  requiredEvidenceId: EVD_CCTV_STILL
   requiredClueId: 
-  reactionExpression: 2
-  reactionDialogue: 'Charl loses his calm composure: "The keycard shift log? Ah...
-    I forgot the electronic scanners record timestamps..."'
+  reactionExpression: 7
+  reactionDialogue: 'Shanaia''s calm veneer snaps into fury: "CCTV at the back exit?
+    How did you get access to Shan Jaraba''s private feeds?"'
   unlockedDialogueNodeId: NODE_05_CONFESSION
-  unlockedClueId: CLUE_PAUL_STAGED_BURGLARY
-  unlockedClueText: Paul Camacho paid Charl to lie and stage the inside window breakage
-    for insurance fraud!
+  unlockedClueId: CLUE_SHANAIA_CONFESSED
+  unlockedClueText: Shanaia Ortega confessed to sneaking back at 7:10 PM and stealing
+    the prototype drive!
   scoreBonus: 100

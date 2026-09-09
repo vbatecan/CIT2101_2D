@@ -23,5 +23,5 @@ MonoBehaviour:
   possibleMotives: Bribed by gallery owner.
   alibi: Claims he was standing right outside the office door when he heard glass
     shatter at 11:00 PM.
-  defaultSittingPose: {fileID: 0}
+  defaultSittingPose: {fileID: 3502997125245595844, guid: c9d21161d2a6f664986c287abfbd240f, type: 3}
   expressions: []

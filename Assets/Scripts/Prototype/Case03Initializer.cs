@@ -70,6 +70,14 @@ namespace CaseClosed.Prototype
                 return _caseDataAsset;
             }
 
+#if UNITY_EDITOR
+            _caseDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<CaseSO>("Assets/Data/Case003/Case03_Data.asset");
+            if (_caseDataAsset != null)
+            {
+                return _caseDataAsset;
+            }
+#endif
+
             if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null && CaseManager.Instance.ActiveCase.levelNumber == 3)
             {
                 return CaseManager.Instance.ActiveCase;
@@ -134,7 +142,7 @@ namespace CaseClosed.Prototype
             evPhoneLog.baseDescription = "Call log extracted from Kurt Miguel Ancheta's phone.";
             evPhoneLog.detailedObservation = "Shows an unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
             evPhoneLog.unlockedClueText = "Unanswered 10-minute encrypted call received from Shanaia at 7:15 PM!";
-            evPhoneLog.startsDiscovered = false;
+            evPhoneLog.startsDiscovered = true;
             c.evidenceItems.Add(evPhoneLog);
 
             // 2. Coffee Shop CCTV Still

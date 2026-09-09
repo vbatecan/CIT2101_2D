@@ -18,12 +18,16 @@ MonoBehaviour:
   normalSprite: {fileID: 8746195129012609110, guid: 52ccca8ea1bb4f2969702ccf51259d8a, type: 3}
   highlightedSprite: {fileID: 0}
   zoomedSprite: {fileID: -4850736249340630376, guid: fce6a962d6d21811cb6639df12ac8bf9, type: 3}
+  topPovSprite: {fileID: -4850736249340630376, guid: fce6a962d6d21811cb6639df12ac8bf9, type: 3}
+  customInspectBackground: {fileID: 0}
   baseDescription: Insurance policy agreement for the stolen painting.
   detailedObservation: Policy rider with amendment stamped 48 hours before the incident
     doubling coverage to $500,000.
   unlockedClueText: Paul doubled the insurance payout value of the painting just
     48 hours prior to the theft.
   startsDiscovered: 0
+  requiredDialogueNodeId: NODE_03_SHIFT_LEAD
+  dialogueNodeToTriggerOnInspect: 
   isExamined: 0
   isToggledOnTable: 1
   hotspots: []

@@ -144,6 +144,11 @@ namespace CaseClosed.Managers
         public void QueueInspectionDialogue(string nodeId)
         {
             EnsureSessionState();
+            if (!string.IsNullOrEmpty(nodeId) && CurrentDialogueTree != null && CurrentDialogueTree.GetNodeById(nodeId) == null)
+            {
+                Debug.LogWarning($"[Interrogation] Cannot queue inspection dialogue: node '{nodeId}' not found in current tree '{CurrentDialogueTree.treeId}'");
+                return;
+            }
             sessionState.QueueInspectionDialogue(nodeId);
         }
 

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed4d9661c3bfe10bb31f7b6447430fe, type: 3}
+  m_Name: Char_ShanaiaOrtega
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterProfileSO
+  characterId: CHAR_SHANAIA_ORTEGA
+  fullName: Shanaia Ortega
+  age: 27
+  occupation: Lead Software Developer & Partner
+  relationshipToVictim: Business Partner
+  personalityTrait: 0
+  background: 
+  knownConflicts: Furious about low compensation and Kurt taking sole credit for
+    her software optimizations.
+  possibleMotives: Steal proprietary code before getting fired.
+  alibi: Claims she went straight home at 5:30 PM and never contacted Kurt or returned
+    to the cafe.
+  defaultSittingPose: {fileID: -3568694671893061097, guid: ccab0aa9723fee4488a425d18bad2da1, type: 3}
+  expressions: []

@@ -31,6 +31,9 @@ namespace CaseClosed.Managers
         private readonly CaseSessionState sessionState = new CaseSessionState();
         private bool hasStartedSession;
 
+        /// <summary>Whether runtime case initialization has completed.</summary>
+        public bool HasStartedSession => hasStartedSession;
+
         /// <summary>Pure domain service for timer and urgency calculations.</summary>
         public CaseTimerService TimerService => timerService;
 

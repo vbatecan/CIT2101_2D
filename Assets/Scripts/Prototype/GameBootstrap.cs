@@ -105,16 +105,43 @@ namespace CaseClosed.Prototype
             {
                 targetLevel = 3;
             }
+            else
+            {
+                targetLevel = PlayerPrefs.GetInt("CaseClosed_SelectedLevel", 1);
+            }
 
-            // If a case is already loaded matching this level, keep it
+            // An Inspector assignment is not proof that the runtime session or
+            // interrogation has started. Complete both before showing the table.
             if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null && CaseManager.Instance.ActiveCase.levelNumber == targetLevel)
             {
+                CaseSO activeCase = CaseManager.Instance.ActiveCase;
+                if (!CaseManager.Instance.HasStartedSession)
+                {
+                    CaseManager.Instance.LoadCase(activeCase);
+                }
+                EnsureInterrogationStarted(activeCase);
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
                 ArmPointerController.Instance?.ForceSyncState();
                 return;
             }
 
             LoadLevel(targetLevel);
+        }
+
+        private void EnsureInterrogationStarted(CaseSO caseData)
+        {
+            InterrogationManager interrogation = InterrogationManager.Instance;
+            if (interrogation == null || caseData == null || caseData.primarySuspect == null ||
+                caseData.dialogueTrees == null || caseData.dialogueTrees.Count == 0)
+            {
+                return;
+            }
+
+            // Keep an existing conversation, including a completed one, intact.
+            if (interrogation.CurrentSuspect == null || interrogation.CurrentDialogueTree == null)
+            {
+                interrogation.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
+            }
         }
 
         /// <summary>
@@ -197,6 +224,14 @@ namespace CaseClosed.Prototype
                     }
                     else
                     {
+#if UNITY_EDITOR
+                        _case02Asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CaseSO>("Assets/Data/Case002/Case02_Data.asset");
+                        if (_case02Asset != null)
+                        {
+                            caseData = _case02Asset;
+                            break;
+                        }
+#endif
                         if (level2 == null) level2 = gameObject.GetComponent<Case02Initializer>() ?? FindFirstObjectByType<Case02Initializer>() ?? gameObject.AddComponent<Case02Initializer>();
                         caseData = level2 != null ? (level2.CaseDataAsset ?? level2.CreateCase02Data()) : null;
                     }
@@ -208,6 +243,14 @@ namespace CaseClosed.Prototype
                     }
                     else
                     {
+#if UNITY_EDITOR
+                        _case03Asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CaseSO>("Assets/Data/Case003/Case03_Data.asset");
+                        if (_case03Asset != null)
+                        {
+                            caseData = _case03Asset;
+                            break;
+                        }
+#endif
                         if (level3 == null) level3 = gameObject.GetComponent<Case03Initializer>() ?? FindFirstObjectByType<Case03Initializer>() ?? gameObject.AddComponent<Case03Initializer>();
                         caseData = level3 != null ? (level3.CaseDataAsset ?? level3.CreateCase03Data()) : null;
                     }

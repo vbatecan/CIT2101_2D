@@ -18,13 +18,17 @@ MonoBehaviour:
   normalSprite: {fileID: 3911213246147480790, guid: b136fdbe1a6047752a83b9e04a7bc4b2, type: 3}
   highlightedSprite: {fileID: 0}
   zoomedSprite: {fileID: 7034101391455836084, guid: d6ecb9b31b68d2cceb9e4ab19fc8b155, type: 3}
+  topPovSprite: {fileID: 7034101391455836084, guid: d6ecb9b31b68d2cceb9e4ab19fc8b155, type: 3}
+  customInspectBackground: {fileID: 0}
   baseDescription: Photograph of the shattered back office window taken from the
     alley.
   detailedObservation: Glass shards are scattered OUTSIDE on the alley pavement,
     proving the window was broken from the INSIDE.
   unlockedClueText: Glass shards scattered outside on pavement prove window was broken
     from INSIDE!
-  startsDiscovered: 0
+  startsDiscovered: 1
+  requiredDialogueNodeId: 
+  dialogueNodeToTriggerOnInspect: 
   isExamined: 0
   isToggledOnTable: 1
   hotspots:

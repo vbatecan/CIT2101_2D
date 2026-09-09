@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_SmartphoneLog
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_SMARTPHONE_LOG
+  evidenceName: Victim's Smartphone Call Log
+  category: 5
+  normalSprite: {fileID: -2823545479096395795, guid: f3fba1dccf705a44995f1476009b07c2, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 6118203111832014213, guid: 6f81b843c736d78579abaf0313dbbe99, type: 3}
+  topPovSprite: {fileID: 6118203111832014213, guid: 6f81b843c736d78579abaf0313dbbe99, type: 3}
+  customInspectBackground: {fileID: 0}
+  baseDescription: Call log extracted from Kurt Miguel Ancheta's phone.
+  detailedObservation: Shows an unanswered 10-minute encrypted call received from
+    Shanaia at 7:15 PM!
+  unlockedClueText: Unanswered 10-minute encrypted call received from Shanaia at
+    7:15 PM!
+  startsDiscovered: 1
+  requiredDialogueNodeId: 
+  dialogueNodeToTriggerOnInspect: 
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots: []

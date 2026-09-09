@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed4d9661c3bfe10bb31f7b6447430fe, type: 3}
+  m_Name: Char_ShanJaraba
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CharacterProfileSO
+  characterId: CHAR_SHAN_JARABA
+  fullName: Shan Jaraba
+  age: 29
+  occupation: Cafe Manager & Key Informant
+  relationshipToVictim: Cafe Manager
+  personalityTrait: 4
+  background: 
+  knownConflicts: Heard heated argument between Shanaia and Kurt before afternoon
+    meeting.
+  possibleMotives: None directly; witnessed back entrance chime and frantic phone
+    call.
+  alibi: Working at register until 7:30 PM closing.
+  defaultSittingPose: {fileID: -1933522735709877966, guid: 237663ee0c9f8c64ab2ddfb025a39fb0, type: 3}
+  expressions: []

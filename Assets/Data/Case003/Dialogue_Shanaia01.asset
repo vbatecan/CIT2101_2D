@@ -1,0 +1,199 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6170d1c959a2065d6b794816b2a5ef88, type: 3}
+  m_Name: Dialogue_Shanaia01
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.DialogueTreeSO
+  treeId: TREE_SHANAIA_01
+  characterId: CHAR_SHANAIA_ORTEGA
+  startNodeId: NODE_01
+  nodes:
+  - nodeId: NODE_01
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 10
+    statementText: Once our 5:30 PM meeting wrapped up, I went straight home. I didn't
+      contact Kurt or return to the cafe for the rest of the night.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01B_SHAN_STATEMENT
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01B_SHAN_STATEMENT
+    speakerId: CHAR_SHAN_JARABA
+    speakerName: Shan Jaraba
+    expression: 8
+    statementText: Detective, as cafe manager on duty until 7:30 PM closing, I heard
+      the back exit service chime ring around 7:10 PM. Someone returned through the
+      alley.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01C_SHANAIA_DISMISS
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01C_SHANAIA_DISMISS
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 6
+    statementText: Shan, mind your own business! You were balancing the cash register
+      at the front counter. You couldn't see through the back corridor!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01D_DETECTIVE_INTERVIEW
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01D_DETECTIVE_INTERVIEW
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: Let Shan finish, Shanaia. Kurt's smartphone call log and the security
+      captures will establish whether anyone returned.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02_PHONE_LEAD
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_02_PHONE_LEAD
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 10
+    statementText: Kurt's phone contains nothing useful. You should focus on the
+      afternoon meeting, not his private calls.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02B_SHAN_ALARMED
+    unlockEvidenceOnComplete:
+    - EVD_CCTV_STILL
+  - nodeId: NODE_02B_SHAN_ALARMED
+    speakerId: CHAR_SHAN_JARABA
+    speakerName: Shan Jaraba
+    expression: 2
+    statementText: Actually, Kurt seemed frantic right after an encrypted incoming
+      call at 7:15 PM. He slammed his office door and locked it.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02C_DETECTIVE_CCTV
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_02C_DETECTIVE_CCTV
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: An encrypted call at 7:15 PM... The security still from the cafe's
+      back exit camera should verify who arrived right before that call.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: 
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03_CCTV_LEAD
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 2
+    statementText: The back exit camera is unreliable. It could not possibly show
+      me there after I left.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03B_SHAN_JACKET
+    unlockEvidenceOnComplete:
+    - EVD_RESIGNATION_LETTER
+  - nodeId: NODE_03B_SHAN_JACKET
+    speakerId: CHAR_SHAN_JARABA
+    speakerName: Shan Jaraba
+    expression: 8
+    statementText: Shanaia, that embroidered denim jacket in the camera still...
+      you wore that exact jacket to work today. No one else has one.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03C_CONFIRMATION
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03C_CONFIRMATION
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: The call log records a 10-minute incoming call from your phone
+      at 7:15 PM, and the camera captures your return at 7:10 PM. What were you doing
+      in Kurt's office?
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03D_DETECTIVE_DRAFT
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03D_DETECTIVE_DRAFT
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: And why did Kurt have a termination notice drafted in his briefcase
+      accusing you of data theft?
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_04_FINAL_STATEMENT
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_04_FINAL_STATEMENT
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 10
+    statementText: Once I left at 5:30 PM, I never returned to that cafe. That is
+      the timeline.
+    isChallengeable: 1
+    targetContradictionRuleId: RULE_SHANAIA_TIMELINE_LIE
+    choices: []
+    defaultNextNodeId: 
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05_CONFESSION
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 3
+    statementText: Fine! Kurt discovered I was exporting our proprietary ordering
+      code to a competitor! He drafted that notice to ruin me, so I broke in at 7:10
+      PM to wipe his drive!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05B_SHAN_DISAPPOINTED
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05B_SHAN_DISAPPOINTED
+    speakerId: CHAR_SHAN_JARABA
+    speakerName: Shan Jaraba
+    expression: 4
+    statementText: Shanaia... Kurt gave you your start in tech. How could you steal
+      his life's work for rival money?
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05C_SHANAIA_BITTER
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05C_SHANAIA_BITTER
+    speakerId: CHAR_SHANAIA_ORTEGA
+    speakerName: Shanaia Ortega
+    expression: 3
+    statementText: He took credit for all my software optimizations while paying
+      me barista wages! I took back what was mine!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05D_DETECTIVE_CLOSE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05D_DETECTIVE_CLOSE
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: Your digital footprint betrayed your timeline. Shanaia Ortega,
+      you are under arrest for commercial espionage, cyber theft, and unlawful entry.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: 
+    unlockEvidenceOnComplete: []

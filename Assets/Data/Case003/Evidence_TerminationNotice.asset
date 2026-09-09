@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_TerminationNotice
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_RESIGNATION_LETTER
+  evidenceName: Termination Notice Draft
+  category: 1
+  normalSprite: {fileID: 4232438111541757452, guid: 3598578ef464dbc61b568395218889e2, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: -4506690978093520730, guid: 383a3ea6eaf1aecefaaf56679a4375c9, type: 3}
+  topPovSprite: {fileID: -4506690978093520730, guid: 383a3ea6eaf1aecefaaf56679a4375c9, type: 3}
+  customInspectBackground: {fileID: 0}
+  baseDescription: Drafted letter found inside Kurt's briefcase.
+  detailedObservation: Official termination notice drafted by Kurt citing corporate
+    espionage and unauthorized data exports.
+  unlockedClueText: Kurt planned to fire Shanaia for secretly selling company data
+    to rival firms.
+  startsDiscovered: 0
+  requiredDialogueNodeId: NODE_03_CCTV_LEAD
+  dialogueNodeToTriggerOnInspect: 
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots: []

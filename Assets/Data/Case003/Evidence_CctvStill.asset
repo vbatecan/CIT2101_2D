@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 599dfacf7107f482f8d653d60cd40671, type: 3}
+  m_Name: Evidence_CctvStill
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.EvidenceSO
+  id: EVD_CCTV_STILL
+  evidenceName: Coffee Shop CCTV Frame
+  category: 0
+  normalSprite: {fileID: 5198689355215951543, guid: 96d81a74e76427a3a8cff07024ca1fc9, type: 3}
+  highlightedSprite: {fileID: 0}
+  zoomedSprite: {fileID: 8503233421051930630, guid: 070b077d65d599f738718070cd83a861, type: 3}
+  topPovSprite: {fileID: 8503233421051930630, guid: 070b077d65d599f738718070cd83a861, type: 3}
+  customInspectBackground: {fileID: 0}
+  baseDescription: Security footage capture from the back exit camera.
+  detailedObservation: Clearly shows Shanaia's distinct jacket entering the back
+    exit door at 7:10 PM.
+  unlockedClueText: Shanaia's jacket captured entering cafe back exit at 7:10 PM.
+  startsDiscovered: 0
+  requiredDialogueNodeId: NODE_02_PHONE_LEAD
+  dialogueNodeToTriggerOnInspect: NODE_03_CCTV_LEAD
+  isExamined: 0
+  isToggledOnTable: 1
+  hotspots:
+  - hotspotId: SPOT_DISTINCT_JACKET
+    hotspotTitle: Shanaia's Custom Jacket
+    normalizedPosition: {x: 0.4, y: 0.6}
+    radius: 0.1
+    observationText: Shanaia entering back door of cafe at 7:10 PM, 1.5 hours after
+      claiming she left!
+    clueUnlockedId: CLUE_SHANAIA_RETURNED
+    isDiscovered: 0

@@ -38,31 +38,47 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4eab92ac58e53f911bf1c8773e59eca0, type: 2}
   conclusionQuestions:
   - questionId: Q_SUSPECT
-    questionText: Who orchestrated the fake burglary?
+    questionText: Who organized the staged burglary at the art gallery?
     options:
-    - Paul Gabriel Camacho (Gallery Owner)
-    - Charl Vonn Pascual (Security Guard)
-    - External Intruder
+    - Paul Gabriel Camacho
+    - Charl Vonn Pascual
+    - An Unknown Thief
     correctOptionIndex: 0
-    pointValue: 250
+    pointValue: 200
+  - questionId: Q_ACCOMPLICE
+    questionText: Who was Paul's paid accomplice?
+    options:
+    - Kirby Raymundo
+    - Charl Vonn Pascual
+    - Vince Angelo Batecan
+    correctOptionIndex: 1
+    pointValue: 200
   - questionId: Q_MOTIVE
-    questionText: What was the motive for staging the crime?
+    questionText: What was Paul's motive for staging the burglary?
     options:
-    - Insurance Fraud Payout
-    - Personal Grudge
-    - Covering Defective Art
+    - To obtain a $500,000 insurance payout
+    - Revenge against Charl
+    - To steal another painting
     correctOptionIndex: 0
-    pointValue: 250
-  - questionId: Q_EVIDENCE
-    questionText: Which evidence proved the window was broken from inside?
+    pointValue: 200
+  - questionId: Q_WINDOW
+    questionText: What did the window crime scene reveal?
     options:
-    - Window Frame Photo (Glass Outside)
-    - Shift Log
-    - Insurance Policy
+    - The window was broken from the inside.
+    - The window was broken from the outside.
+    - The window was already damaged before the incident.
     correctOptionIndex: 0
-    pointValue: 250
-  totalKeyEvidenceCount: 5
-  totalContradictionsCount: 3
+    pointValue: 200
+  - questionId: Q_INSURANCE
+    questionText: What suspicious change was made to the painting's insurance policy?
+    options:
+    - The insurance was cancelled.
+    - Coverage was reduced to $100,000.
+    - Coverage increased from $250,000 to $500,000.
+    correctOptionIndex: 2
+    pointValue: 200
+  totalKeyEvidenceCount: 3
+  totalContradictionsCount: 1
   parCompletionTimeSeconds: 300
   hasTimeLimit: 1
   timeLimitSeconds: 300

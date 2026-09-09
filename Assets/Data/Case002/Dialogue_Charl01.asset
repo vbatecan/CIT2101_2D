@@ -22,18 +22,167 @@ MonoBehaviour:
     expression: 10
     statementText: I was standing right outside the office door when I heard the
       window shatter from the alley at 11:00 PM.
-    isChallengeable: 1
-    targetContradictionRuleId: RULE_CHARL_LOCATION_LIE
+    isChallengeable: 0
+    targetContradictionRuleId: 
     choices: []
-    defaultNextNodeId: 
-  - nodeId: NODE_02_CONFESSION
+    defaultNextNodeId: NODE_01B_PAUL_DEFENDS
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01B_PAUL_DEFENDS
+    speakerId: CHAR_PAUL_CAMACHO
+    speakerName: Paul Gabriel Camacho
+    expression: 10
+    statementText: Officer Pascual has guarded my gallery for three years, Detective.
+      A street thief broke through that back alley window to steal my prize painting!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_01C_DETECTIVE_INTERVIEW
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_01C_DETECTIVE_INTERVIEW
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: Mr. Camacho, you claim you were at home when the alarm rang. Let
+      the guard speak. Charl, describe exactly what you saw around that window.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02_WINDOW_LEAD
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_02_WINDOW_LEAD
     speakerId: CHAR_CHARL_PASCUAL
     speakerName: Charl Vonn Pascual
-    expression: 2
-    statementText: Fine! The shift log doesn't lie... I was at the East Gate. Mr.
-      Paul Camacho paid me 2,000 credits to lie about being outside his door and
-      stage the break-in!
+    expression: 10
+    statementText: The alley window was broken from outside. Check the crime scene
+      photo of the window frame if you doubt me.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02B_PAUL_DIVERT
+    unlockEvidenceOnComplete:
+    - EVD_SHIFT_LOG
+  - nodeId: NODE_02B_PAUL_DIVERT
+    speakerId: CHAR_PAUL_CAMACHO
+    speakerName: Paul Gabriel Camacho
+    expression: 6
+    statementText: Don't waste time harassing my staff, Detective! We should be tracking
+      the black market, not inspecting window glass!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_02C_DETECTIVE_PHOTO
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_02C_DETECTIVE_PHOTO
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: We follow the physical evidence. The window frame photo and the
+      guard's keycard shift log will reveal who was present at 11:00 PM.
     isChallengeable: 0
     targetContradictionRuleId: 
     choices: []
     defaultNextNodeId: 
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03_SHIFT_LEAD
+    speakerId: CHAR_CHARL_PASCUAL
+    speakerName: Charl Vonn Pascual
+    expression: 2
+    statementText: The shift log is routine. It will show I was near the office,
+      exactly as I said.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03B_CONFIRMATION
+    unlockEvidenceOnComplete:
+    - EVD_INSURANCE_POLICY
+  - nodeId: NODE_03B_CONFIRMATION
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: The crime scene photo shows glass shards scattered OUTSIDE into
+      the alley. That window was smashed from INSIDE the gallery. Why does your story
+      place you outside?
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03C_PAUL_DEFENSIVE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03C_PAUL_DEFENSIVE
+    speakerId: CHAR_PAUL_CAMACHO
+    speakerName: Paul Gabriel Camacho
+    expression: 6
+    statementText: Broken from inside?! That's preposterous! What reason would anyone
+      here have to damage my own gallery?!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_03D_DETECTIVE_POLICY
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_03D_DETECTIVE_POLICY
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: 'A half-million dollar insurance policy rider stamped two days
+      ago might answer that question, Mr. Camacho. Charl, one final chance: where
+      were you?'
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_04_FINAL_STATEMENT
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_04_FINAL_STATEMENT
+    speakerId: CHAR_CHARL_PASCUAL
+    speakerName: Charl Vonn Pascual
+    expression: 10
+    statementText: I was outside that office at 11:00 PM. The keycard record cannot
+      say otherwise.
+    isChallengeable: 1
+    targetContradictionRuleId: RULE_CHARL_LOCATION_LIE
+    choices: []
+    defaultNextNodeId: 
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05_CONFESSION
+    speakerId: CHAR_CHARL_PASCUAL
+    speakerName: Charl Vonn Pascual
+    expression: 2
+    statementText: Fine! The shift log doesn't lie. I was at the East Gate. Mr. Paul
+      Camacho paid me 2,000 credits to stage the break-in from inside!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05B_PAUL_OUTRAGED
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05B_PAUL_OUTRAGED
+    speakerId: CHAR_PAUL_CAMACHO
+    speakerName: Paul Gabriel Camacho
+    expression: 3
+    statementText: You incompetent fool, Pascual! Shut your mouth! Detective, he's
+      fabricating lies to cover for his own negligence!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05C_CHARL_EVIDENCE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05C_CHARL_EVIDENCE
+    speakerId: CHAR_CHARL_PASCUAL
+    speakerName: Charl Vonn Pascual
+    expression: 6
+    statementText: I kept your encrypted wire transfer receipt, Paul! You told me
+      you needed the 500,000 insurance payout to save the gallery from bankruptcy!
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: NODE_05D_DETECTIVE_CLOSE
+    unlockEvidenceOnComplete: []
+  - nodeId: NODE_05D_DETECTIVE_CLOSE
+    speakerId: 
+    speakerName: Detective
+    expression: 0
+    statementText: Glass on the alley cobblestones, a fraudulent shift alibi, and
+      a doubled insurance policy. Paul Camacho and Charl Pascual, you are both under
+      arrest for conspiracy and insurance fraud.
+    isChallengeable: 0
+    targetContradictionRuleId: 
+    choices: []
+    defaultNextNodeId: 
+    unlockEvidenceOnComplete: []

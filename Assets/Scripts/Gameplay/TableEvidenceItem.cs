@@ -444,13 +444,21 @@ namespace CaseClosed.Gameplay
         /// </summary>
         public EvidenceSO ResolveEvidenceData()
         {
+            CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
+            if (manager != null && manager.ActiveCase != null && manager.ActiveCase.evidenceItems != null)
+            {
+                if (evidenceData != null && !manager.ActiveCase.evidenceItems.Contains(evidenceData))
+                {
+                    evidenceData = null;
+                    dialogueNodeToTriggerOnInspect = null;
+                }
+            }
+
             if (evidenceData != null)
             {
                 if (string.IsNullOrEmpty(evidenceId)) evidenceId = evidenceData.id;
                 return evidenceData;
             }
-
-            CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
             if (manager != null && manager.ActiveCase != null)
             {
                 var evList = manager.ActiveCase.evidenceItems;
@@ -486,6 +494,20 @@ namespace CaseClosed.Gameplay
                             }
                         }
                     }
+
+                    // 3. Fallback by sibling index among TableEvidenceItem components on the investigation table
+                    if (transform.parent != null)
+                    {
+                        var siblings = transform.parent.GetComponentsInChildren<TableEvidenceItem>(true);
+                        int myIndex = System.Array.IndexOf(siblings, this);
+                        if (myIndex >= 0 && myIndex < evList.Count && evList[myIndex] != null)
+                        {
+                            evidenceData = evList[myIndex];
+                            evidenceId = evidenceData.id;
+                            BindEvidenceData();
+                            return evidenceData;
+                        }
+                    }
                 }
             }
 
@@ -496,9 +518,8 @@ namespace CaseClosed.Gameplay
         {
             if (activeCase == null) return;
 
-            ResolveEvidenceData();
-
             string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
+            bool matched = false;
 
             if (activeCase.evidenceItems != null && !string.IsNullOrEmpty(effectiveId))
             {
@@ -510,8 +531,22 @@ namespace CaseClosed.Gameplay
                         evidenceId = ev.id;
                         BindEvidenceData();
                         AdjustColliderToSprite();
+                        matched = true;
                         break;
                     }
+                }
+            }
+
+            if (!matched && activeCase.evidenceItems != null && transform.parent != null)
+            {
+                var siblings = transform.parent.GetComponentsInChildren<TableEvidenceItem>(true);
+                int myIndex = System.Array.IndexOf(siblings, this);
+                if (myIndex >= 0 && myIndex < activeCase.evidenceItems.Count && activeCase.evidenceItems[myIndex] != null)
+                {
+                    evidenceData = activeCase.evidenceItems[myIndex];
+                    evidenceId = evidenceData.id;
+                    BindEvidenceData();
+                    AdjustColliderToSprite();
                 }
             }
 
@@ -678,11 +713,15 @@ namespace CaseClosed.Gameplay
 
         private void BindEvidenceData()
         {
-            if (evidenceData != null && spriteRenderer != null && evidenceData.normalSprite != null)
+            if (evidenceData != null)
             {
-                spriteRenderer.sprite = evidenceData.normalSprite;
-                if (haloRenderer != null) haloRenderer.sprite = evidenceData.normalSprite;
-                AdjustColliderToSprite();
+                dialogueNodeToTriggerOnInspect = evidenceData.dialogueNodeToTriggerOnInspect;
+                if (spriteRenderer != null && evidenceData.normalSprite != null)
+                {
+                    spriteRenderer.sprite = evidenceData.normalSprite;
+                    if (haloRenderer != null) haloRenderer.sprite = evidenceData.normalSprite;
+                    AdjustColliderToSprite();
+                }
             }
         }
 
@@ -814,9 +853,9 @@ namespace CaseClosed.Gameplay
 
             // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
-            string nodeToTrigger = !string.IsNullOrEmpty(dialogueNodeToTriggerOnInspect)
-                ? dialogueNodeToTriggerOnInspect
-                : evidenceData.dialogueNodeToTriggerOnInspect;
+            string nodeToTrigger = evidenceData != null && !string.IsNullOrEmpty(evidenceData.dialogueNodeToTriggerOnInspect)
+                ? evidenceData.dialogueNodeToTriggerOnInspect
+                : dialogueNodeToTriggerOnInspect;
             EvidenceManager.Instance?.OpenInspectModal(evidenceData, nodeToTrigger);
         }
     }

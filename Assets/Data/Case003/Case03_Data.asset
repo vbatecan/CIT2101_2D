@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2e46c7e171daf0d92bc6f01f927bd3, type: 3}
+  m_Name: Case03_Data
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Data.CaseSO
+  levelNumber: 3
+  caseId: LEVEL_03
+  caseTitle: 'LEVEL 3: The Last Call'
+  dateAndLocation: After Hours - Downtown Coffee Shop Office
+  incidentDescription: Tech startup founder Kurt Miguel Ancheta's secret prototype
+    drive went missing from his bag after a late meeting.
+  objective: Interrogate Shanaia Ortega, examine digital logs and CCTV stills, expose
+    her false departure claim, and recover the stolen prototype.
+  victimInfo: Kurt Miguel Ancheta (Startup Founder - Distressed Victim)
+  leadInvestigator: {fileID: 11400000, guid: c2286fadcf85a9934b712c3e8e3cefa7, type: 2}
+  primarySuspect: {fileID: 11400000, guid: 56d4fb798ea9d3949a140ee2ead90fc4, type: 2}
+  additionalSuspects:
+  - {fileID: 11400000, guid: e606335005a03d1b592f7305a961a654, type: 2}
+  evidenceItems:
+  - {fileID: 11400000, guid: 50cb682cb0c943cf083d95f78df5372c, type: 2}
+  - {fileID: 11400000, guid: e27abb3c316aaaf3ea993d372407a922, type: 2}
+  - {fileID: 11400000, guid: 9fb81bb0069232dc79ff60254e2eba17, type: 2}
+  clueConnections:
+  - {fileID: 11400000, guid: 28e3efc3083b8b97f87c01c60b298010, type: 2}
+  dialogueTrees:
+  - {fileID: 11400000, guid: 2f4ccdfbb4b9f7ae28081765f9dd3427, type: 2}
+  contradictionRules:
+  - {fileID: 11400000, guid: 4b6fb2920c4a8c7ca913251d51619a14, type: 2}
+  conclusionQuestions:
+  - questionId: Q_SUSPECT
+    questionText: Who stole Kurt Miguel Ancheta's prototype drive?
+    options:
+    - Shanaia Ortega (Lead Developer)
+    - Shan Jaraba (Cafe Manager)
+    - External Hacker
+    correctOptionIndex: 0
+    pointValue: 200
+  - questionId: Q_MOTIVE
+    questionText: What was Shanaia's motive for stealing the prototype?
+    options:
+    - To get revenge on Kurt
+    - To avoid termination and gain leverage
+    - To purchase the cafe
+    correctOptionIndex: 1
+    pointValue: 200
+  - questionId: Q_RETURN_EVIDENCE
+    questionText: Which evidence showed that Shanaia returned to the cafe?
+    options:
+    - Termination Notice
+    - Kurt's Call Log
+    - Cafe CCTV
+    correctOptionIndex: 2
+    pointValue: 200
+  - questionId: Q_CALL_TIME
+    questionText: At approximately what time did Shanaia's encrypted call appear
+      in Kurt's call log?
+    options:
+    - 5:30 PM
+    - 7:15 PM
+    - 8:00 PM
+    correctOptionIndex: 1
+    pointValue: 200
+  - questionId: Q_TERMINATION_REASON
+    questionText: Why was Shanaia being terminated?
+    options:
+    - Selling proprietary company data
+    - Stealing company money
+    - Repeatedly missing work
+    correctOptionIndex: 0
+    pointValue: 200
+  totalKeyEvidenceCount: 3
+  totalContradictionsCount: 1
+  parCompletionTimeSeconds: 300
+  hasTimeLimit: 1
+  timeLimitSeconds: 300

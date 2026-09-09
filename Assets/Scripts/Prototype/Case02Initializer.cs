@@ -70,6 +70,17 @@ namespace CaseClosed.Prototype
                 return _caseDataAsset;
             }
 
+#if UNITY_EDITOR
+            if (_caseDataAsset == null)
+            {
+                _caseDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<CaseSO>("Assets/Data/Case002/Case02_Data.asset");
+            }
+            if (_caseDataAsset != null)
+            {
+                return _caseDataAsset;
+            }
+#endif
+
             if (CaseManager.Instance != null && CaseManager.Instance.ActiveCase != null && CaseManager.Instance.ActiveCase.levelNumber == 2)
             {
                 return CaseManager.Instance.ActiveCase;
@@ -135,7 +146,7 @@ namespace CaseClosed.Prototype
             evWindowPhoto.baseDescription = "Photograph of the shattered back office window taken from the alley.";
             evWindowPhoto.detailedObservation = "Glass shards are scattered OUTSIDE on the alley pavement, proving the window was broken from the INSIDE.";
             evWindowPhoto.unlockedClueText = "Glass shards scattered outside on pavement prove window was broken from INSIDE!";
-            evWindowPhoto.startsDiscovered = false;
+            evWindowPhoto.startsDiscovered = true;
 
             EvidenceHotspot spotGlass = new EvidenceHotspot();
             spotGlass.hotspotId = "SPOT_OUTSIDE_GLASS";
@@ -329,7 +340,7 @@ namespace CaseClosed.Prototype
             // Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_CHARL_LOCATION_LIE";
-            rule1.ruleTitle = "False Guard Guard Location";
+            rule1.ruleTitle = "False Guard Location";
             rule1.targetStatementNodeId = "NODE_04_FINAL_STATEMENT";
             rule1.requiredEvidenceId = "EVD_SHIFT_LOG";
             rule1.reactionExpression = CharacterExpression.Nervous;
@@ -368,7 +379,7 @@ namespace CaseClosed.Prototype
             ConclusionQuestion q3 = new ConclusionQuestion();
             q3.questionId = "Q_MOTIVE";
             q3.questionText = "What was Paul's motive for staging the burglary?";
-            q3.options = new List<string> { "Revenge against Charl", "To obtain a $500,000 insurance payout", "To steal another painting" };
+            q3.options = new List<string> { "To obtain a $500,000 insurance payout", "Revenge against Charl", "To steal another painting" };
             q3.correctOptionIndex = 0;
             c.conclusionQuestions.Add(q3);
 
