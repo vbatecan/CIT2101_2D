@@ -97,15 +97,26 @@ namespace CaseClosed.UI
             {
                 _spriteRenderer.color = _isReady ? unlockedColor : lockedColor;
             }
-
-            if (_buttonImage != null)
+            else
             {
-                _buttonImage.color = _isReady ? unlockedColor : lockedColor;
+                Image mainImg = GetComponent<Image>();
+                if (mainImg != null)
+                {
+                    mainImg.color = _isReady ? unlockedColor : lockedColor;
+                }
             }
 
+            // Keep the invisible hitbox transparent
+            if (_buttonImage != null)
+            {
+                _buttonImage.color = Color.clear;
+                _buttonImage.raycastTarget = true;
+            }
+
+            // Always interactable so clicking concludes the case
             if (_boundButton != null)
             {
-                _boundButton.interactable = _isReady;
+                _boundButton.interactable = true;
             }
         }
 
@@ -118,7 +129,7 @@ namespace CaseClosed.UI
 
             Vector2 clickSize = _spriteRenderer != null && _spriteRenderer.sprite != null
                 ? _spriteRenderer.sprite.rect.size / _spriteRenderer.sprite.pixelsPerUnit
-                : new Vector2(25f, 10f);
+                : new Vector2(37.63f, 9.81f);
 
             BoxCollider2D collider = GetComponent<BoxCollider2D>();
             if (collider == null)
@@ -127,26 +138,40 @@ namespace CaseClosed.UI
             }
             collider.size = clickSize;
 
-            Button button = GetComponentInChildren<Button>(true);
-            if (button == null)
+            Transform clickTarget = transform.Find("ConcludeClickTarget");
+            Button button = null;
+            if (clickTarget == null)
             {
-                GameObject clickTarget = new GameObject("ConcludeClickTarget", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                clickTarget.transform.SetParent(transform, false);
+                GameObject go = new GameObject("ConcludeClickTarget", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                go.transform.SetParent(transform, false);
+                go.layer = 5; // UI layer
+                clickTarget = go.transform;
 
-                Image image = clickTarget.GetComponent<Image>();
+                Image image = go.GetComponent<Image>();
                 image.color = Color.clear;
                 image.raycastTarget = true;
                 _buttonImage = image;
 
-                button = clickTarget.GetComponent<Button>();
+                button = go.GetComponent<Button>();
                 button.targetGraphic = image;
             }
+            else
+            {
+                button = clickTarget.GetComponent<Button>();
+                _buttonImage = clickTarget.GetComponent<Image>();
+                if (_buttonImage != null)
+                {
+                    _buttonImage.color = Color.clear;
+                    _buttonImage.raycastTarget = true;
+                }
+            }
 
-            RectTransform clickRect = button.GetComponent<RectTransform>();
+            RectTransform clickRect = clickTarget.GetComponent<RectTransform>();
             if (clickRect != null)
             {
                 clickRect.anchorMin = new Vector2(0.5f, 0.5f);
                 clickRect.anchorMax = new Vector2(0.5f, 0.5f);
+                clickRect.pivot = new Vector2(0.5f, 0.5f);
                 clickRect.anchoredPosition = Vector2.zero;
                 clickRect.sizeDelta = clickSize;
             }
@@ -167,6 +192,7 @@ namespace CaseClosed.UI
 
             if (_boundButton != null)
             {
+                _boundButton.interactable = true;
                 _boundButton.onClick.RemoveListener(OnClick);
                 _boundButton.onClick.AddListener(OnClick);
             }
@@ -182,10 +208,7 @@ namespace CaseClosed.UI
 
         private void OnMouseDown()
         {
-            if (_boundButton == null)
-            {
-                OnClick();
-            }
+            OnClick();
         }
 
         /// <summary>
@@ -193,37 +216,26 @@ namespace CaseClosed.UI
         /// </summary>
         public void OnClick()
         {
-            bool ready = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
-            Debug.Log($"[UI:ConcludeCaseButton] Clicked — Readiness: {ready}");
+            Debug.Log("[UI:ConcludeCaseButton] Clicked — opening conclusion quiz");
+            AudioManager.Instance?.PlayButtonClick();
 
-            if (ready)
+            if (UIManager.Instance != null)
             {
-                AudioManager.Instance?.PlayButtonClick();
-                if (UIManager.Instance != null)
-                {
-                    UIManager.Instance.OpenConclusionQuiz();
-                }
-                else
-                {
-                    var conclusionUI = Object.FindFirstObjectByType<ConclusionUI>(FindObjectsInactive.Include);
-                    if (conclusionUI != null)
-                    {
-                        conclusionUI.gameObject.SetActive(true);
-                    }
-                }
+                UIManager.Instance.OpenConclusionQuiz();
             }
             else
             {
-                AudioManager.Instance?.PlaySFX(AudioManager.Instance?.caseFailedSFX);
-                bool evDone = CaseManager.Instance != null && CaseManager.Instance.AreAllEvidenceUnlocked();
-                bool diagDone = CaseManager.Instance != null && CaseManager.Instance.AreAllDialoguesDone();
-                Debug.LogWarning($"[UI:ConcludeCaseButton] Conclude Case is locked! EvidenceUnlocked: {evDone}, DialoguesDone: {diagDone}. Finish all dialogues and uncover all clues first.");
+                var conclusionUI = Object.FindFirstObjectByType<ConclusionUI>(FindObjectsInactive.Include);
+                if (conclusionUI != null)
+                {
+                    conclusionUI.gameObject.SetActive(true);
+                }
             }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!_isHovered && _isReady && hoverScaleMultiplier > 1f)
+            if (!_isHovered && hoverScaleMultiplier > 1f)
             {
                 _isHovered = true;
                 transform.localScale = _originalScale * hoverScaleMultiplier;

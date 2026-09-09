@@ -40,6 +40,12 @@ namespace CaseClosed.UI
         [Tooltip("Asset for failed conclusion outcome background.")]
         [SerializeField] private Sprite failedBackgroundSprite;
 
+        [Tooltip("Button asset for returning to main menu on the win screen.")]
+        [SerializeField] private Sprite menuGameButtonSprite;
+
+        [Tooltip("Button asset for advancing to next case on the win screen.")]
+        [SerializeField] private Sprite nextGameButtonSprite;
+
         private static readonly Color HeaderDarkColor = new Color(0.12f, 0.12f, 0.18f, 1f);
         private static readonly Color SubtitleDarkColor = new Color(0.25f, 0.25f, 0.32f, 1f);
         private static readonly Color ShadowLightColor = new Color(0.85f, 0.85f, 0.88f, 0.5f);
@@ -96,6 +102,7 @@ namespace CaseClosed.UI
         private void Start()
         {
             EnsureAssets();
+            EnsureResultsButtons();
 
             if (submitConclusionButton != null) submitConclusionButton.onClick.AddListener(OnSubmitClicked);
             if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
@@ -166,6 +173,78 @@ namespace CaseClosed.UI
                 failedBackgroundSprite = LoadSprite("Assets/Assets/BACKGROUNDS/case1FAILED.png");
             if (solvedBackgroundSprite == null)
                 solvedBackgroundSprite = LoadSprite("Assets/Assets/BACKGROUNDS/CasesWIN.png");
+            if (menuGameButtonSprite == null)
+                menuGameButtonSprite = LoadSprite("Assets/Assets/BUTTONS/MenuGAME.png");
+            if (nextGameButtonSprite == null)
+                nextGameButtonSprite = LoadSprite("Assets/Assets/BUTTONS/NextGAME.png");
+        }
+
+        /// <summary>
+        /// Ensures MenuGAME, NextGAME, and Retry navigation buttons exist within the results container.
+        /// </summary>
+        private void EnsureResultsButtons()
+        {
+            Transform parent = (resultsContainer != null) ? resultsContainer.transform : transform;
+
+            // 1. Return to Main Menu (MenuGAME) button
+            if (returnToMainMenuButton == null)
+            {
+                Transform existing = parent.Find("Button_ReturnToMenu") ?? parent.Find("MenuButton");
+                if (existing != null)
+                {
+                    returnToMainMenuButton = existing.GetComponent<Button>();
+                }
+                else
+                {
+                    GameObject menuObj = new GameObject("Button_ReturnToMenu", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    menuObj.transform.SetParent(parent, false);
+                    returnToMainMenuButton = menuObj.GetComponent<Button>();
+                }
+            }
+
+            if (returnToMainMenuButton != null)
+            {
+                returnToMainMenuButton.onClick.RemoveListener(OnMainMenuClicked);
+                returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
+            }
+
+            // 2. Next Level (NextGAME) button
+            if (nextLevelButton == null)
+            {
+                Transform existing = parent.Find("Button_NextLevel") ?? parent.Find("NextButton");
+                if (existing != null)
+                {
+                    nextLevelButton = existing.GetComponent<Button>();
+                }
+                else
+                {
+                    GameObject nextObj = new GameObject("Button_NextLevel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+                    nextObj.transform.SetParent(parent, false);
+                    nextLevelButton = nextObj.GetComponent<Button>();
+                }
+            }
+
+            if (nextLevelButton != null)
+            {
+                nextLevelButton.onClick.RemoveListener(OnNextLevelClicked);
+                nextLevelButton.onClick.AddListener(OnNextLevelClicked);
+            }
+
+            // 3. Continue / Retry button on failed outcome
+            if (continueButton == null)
+            {
+                Transform existing = parent.Find("Button_Continue");
+                if (existing != null)
+                {
+                    continueButton = existing.GetComponent<Button>();
+                }
+            }
+
+            if (continueButton != null)
+            {
+                continueButton.onClick.RemoveListener(OnContinueClicked);
+                continueButton.onClick.AddListener(OnContinueClicked);
+            }
         }
 
         /// <summary>
@@ -224,7 +303,7 @@ namespace CaseClosed.UI
 
             if (resultTitleText != null)
             {
-                resultTitleText.gameObject.SetActive(true);
+                resultTitleText.gameObject.SetActive(false);
             }
 
             playerAnswers.Clear();
@@ -316,7 +395,9 @@ namespace CaseClosed.UI
                     descTxt.fontSize = 17;
                     descTxt.alignment = TextAnchor.MiddleCenter;
                     descTxt.color = SubtitleDarkColor;
-                    descTxt.text = "Answer all 5 questions based on your investigation to solve the case.\nClick Start to begin.";
+                    CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+                    int totalQ = activeCase != null && activeCase.conclusionQuestions != null ? activeCase.conclusionQuestions.Count : 3;
+                    descTxt.text = $"Answer all {totalQ} questions based on your investigation to solve the case.\nClick Start to begin.";
                     Shadow dShadow = descObj.AddComponent<Shadow>();
                     dShadow.effectDistance = new Vector2(1f, -1f);
                     dShadow.effectColor = ShadowLightColor;
@@ -827,11 +908,11 @@ namespace CaseClosed.UI
                 }
             }
 
+            // Win or lose screen: Clear and hide all text overlays so the illustrated background art is unobstructed
             if (resultTitleText != null)
             {
-                resultTitleText.gameObject.SetActive(true);
-                resultTitleText.text = isAllCorrect ? "CASE CLOSED" : "CASE NOT CLOSED";
-                resultTitleText.color = isAllCorrect ? Color.green : Color.red;
+                resultTitleText.text = string.Empty;
+                resultTitleText.gameObject.SetActive(false);
             }
 
             if (isAllCorrect)
@@ -839,55 +920,156 @@ namespace CaseClosed.UI
                 CaseClosed.Services.CaseProgressionService.Instance?.SetCaseCompleted(currentLevel, true);
             }
 
-            if (resultGradeText != null) resultGradeText.text = $"GRADE: {result.rankGrade}";
+            if (resultGradeText != null)
+            {
+                resultGradeText.text = string.Empty;
+                resultGradeText.gameObject.SetActive(false);
+            }
 
             if (starRatingText != null)
             {
-                string stars = "";
-                for (int i = 0; i < 5; i++)
-                {
-                    stars += (i < result.starCount) ? "★ " : "☆ ";
-                }
-                starRatingText.text = stars;
+                starRatingText.text = string.Empty;
+                starRatingText.gameObject.SetActive(false);
             }
 
             if (scoreBreakdownText != null)
             {
-                scoreBreakdownText.text =
-                    $"Lead Investigator: {investigatorName}\n" +
-                    $"Case {currentLevel}: {activeCase?.caseTitle}\n" +
-                    $"Total Score: {result.totalScore} pts\n" +
-                    $"Correct Quiz Answers: {result.correctQuizAnswers}/{result.totalQuizQuestions}\n" +
-                    $"Evidence Discovered: {result.evidenceFoundCount}/{result.totalEvidenceCount}\n" +
-                    $"Contradictions Caught: {result.contradictionsCaughtCount}/{result.totalContradictionsCount}\n" +
-                    $"Time Taken: {Mathf.FloorToInt(result.completionTimeSeconds / 60)}m {Mathf.FloorToInt(result.completionTimeSeconds % 60)}s";
+                scoreBreakdownText.text = string.Empty;
+                scoreBreakdownText.gameObject.SetActive(false);
             }
 
-            if (nextLevelButton != null)
+            // Remove any loose text components on results container while preserving navigation button labels
+            if (resultsContainer != null)
             {
-                nextLevelButton.gameObject.SetActive(isAllCorrect);
-                int nextLevel = currentLevel + 1;
-                if (nextLevel <= 3)
+                foreach (var txt in resultsContainer.GetComponentsInChildren<Text>(true))
                 {
-                    if (nextLevelButtonText != null)
+                    if (txt.GetComponentInParent<Button>() == null)
                     {
-                        nextLevelButtonText.text = $"Proceed to Level {nextLevel} >";
-                    }
-                }
-                else
-                {
-                    if (nextLevelButtonText != null)
-                    {
-                        nextLevelButtonText.text = "Replay / Level Select";
+                        txt.text = string.Empty;
+                        txt.gameObject.SetActive(false);
                     }
                 }
             }
 
-            if (returnToMainMenuButton != null) returnToMainMenuButton.gameObject.SetActive(isAllCorrect);
-            if (continueButton != null)
+            EnsureResultsButtons();
+
+            if (isAllCorrect)
             {
-                continueButton.gameObject.SetActive(!isAllCorrect);
-                if (continueButtonText != null) continueButtonText.text = "Back to Level Start";
+                // WIN SCREEN: Show MenuGAME and NextGAME buttons side-by-side on desk
+                if (returnToMainMenuButton != null)
+                {
+                    returnToMainMenuButton.gameObject.SetActive(true);
+                    RectTransform rt = returnToMainMenuButton.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        rt.anchorMin = new Vector2(0.5f, 0f);
+                        rt.anchorMax = new Vector2(0.5f, 0f);
+                        rt.pivot = new Vector2(0.5f, 0.5f);
+                        rt.anchoredPosition = new Vector2(-150f, 90f);
+                        rt.sizeDelta = new Vector2(240f, 65f);
+                    }
+
+                    Image img = returnToMainMenuButton.GetComponent<Image>();
+                    if (img != null)
+                    {
+                        if (menuGameButtonSprite != null) img.sprite = menuGameButtonSprite;
+                        img.color = Color.white;
+                        img.preserveAspect = true;
+                    }
+
+                    foreach (var txt in returnToMainMenuButton.GetComponentsInChildren<Text>(true))
+                    {
+                        txt.text = string.Empty;
+                        txt.gameObject.SetActive(false);
+                    }
+                }
+
+                if (nextLevelButton != null)
+                {
+                    nextLevelButton.gameObject.SetActive(true);
+                    RectTransform rt = nextLevelButton.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        rt.anchorMin = new Vector2(0.5f, 0f);
+                        rt.anchorMax = new Vector2(0.5f, 0f);
+                        rt.pivot = new Vector2(0.5f, 0.5f);
+                        rt.anchoredPosition = new Vector2(150f, 90f);
+                        rt.sizeDelta = new Vector2(240f, 65f);
+                    }
+
+                    Image img = nextLevelButton.GetComponent<Image>();
+                    if (img != null)
+                    {
+                        if (nextGameButtonSprite != null) img.sprite = nextGameButtonSprite;
+                        img.color = Color.white;
+                        img.preserveAspect = true;
+                    }
+
+                    foreach (var txt in nextLevelButton.GetComponentsInChildren<Text>(true))
+                    {
+                        txt.text = string.Empty;
+                        txt.gameObject.SetActive(false);
+                    }
+                }
+
+                if (continueButton != null)
+                {
+                    continueButton.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                // FAILED SCREEN: Hide NextGAME button, show Continue/Retry button
+                if (nextLevelButton != null)
+                {
+                    nextLevelButton.gameObject.SetActive(false);
+                }
+
+                if (continueButton != null)
+                {
+                    continueButton.gameObject.SetActive(true);
+                    RectTransform rt = continueButton.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        rt.anchorMin = new Vector2(0.5f, 0f);
+                        rt.anchorMax = new Vector2(0.5f, 0f);
+                        rt.pivot = new Vector2(0.5f, 0.5f);
+                        rt.anchoredPosition = new Vector2(-120f, 40f);
+                        rt.sizeDelta = new Vector2(200f, 50f);
+                    }
+                    if (continueButtonText != null) continueButtonText.text = "Back to Level Start";
+                }
+
+                if (returnToMainMenuButton != null)
+                {
+                    returnToMainMenuButton.gameObject.SetActive(true);
+                    RectTransform rt = returnToMainMenuButton.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        rt.anchorMin = new Vector2(0.5f, 0f);
+                        rt.anchorMax = new Vector2(0.5f, 0f);
+                        rt.pivot = new Vector2(0.5f, 0.5f);
+                        rt.anchoredPosition = new Vector2(120f, 40f);
+                        rt.sizeDelta = new Vector2(200f, 50f);
+                    }
+                    Image img = returnToMainMenuButton.GetComponent<Image>();
+                    if (img != null && menuGameButtonSprite != null)
+                    {
+                        img.sprite = menuGameButtonSprite;
+                        img.color = Color.white;
+                        img.preserveAspect = true;
+                    }
+                    foreach (var txt in returnToMainMenuButton.GetComponentsInChildren<Text>(true))
+                    {
+                        txt.text = string.Empty;
+                        txt.gameObject.SetActive(false);
+                    }
+                }
+            }
+
+            if (resultsContainer != null)
+            {
+                UIButtonHighlightSystem.ApplyToHierarchy(resultsContainer);
             }
         }
 

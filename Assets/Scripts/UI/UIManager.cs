@@ -365,8 +365,6 @@ namespace CaseClosed.UI
 
             if (concludeCaseButton == null) return;
 
-            bool isReady = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
-
             var concludeComp = concludeCaseButton.GetComponent<ConcludeCaseButton>();
             if (concludeComp != null)
             {
@@ -376,7 +374,7 @@ namespace CaseClosed.UI
             Button button = concludeCaseButton.GetComponentInChildren<Button>(true);
             if (button != null)
             {
-                button.interactable = isReady;
+                button.interactable = true;
             }
 
             RegisterEvents();
@@ -431,6 +429,27 @@ namespace CaseClosed.UI
                         suspectFolderPanel = Instantiate(prefab, transform);
                         suspectFolderPanel.name = "Panel_SuspectFolder";
                         suspectFolderPanel.SetActive(false);
+                    }
+#endif
+                }
+            }
+
+            if (conclusionQuizPanel == null)
+            {
+                var foundGO = Object.FindFirstObjectByType<ConclusionUI>(FindObjectsInactive.Include);
+                if (foundGO != null)
+                {
+                    conclusionQuizPanel = foundGO.gameObject;
+                }
+                else if (panelType == UIPanelType.ConclusionQuiz)
+                {
+#if UNITY_EDITOR
+                    var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/UI/Panels/Panel_ConclusionQuiz.prefab");
+                    if (prefab != null)
+                    {
+                        conclusionQuizPanel = Instantiate(prefab, transform);
+                        conclusionQuizPanel.name = "Panel_ConclusionQuiz";
+                        conclusionQuizPanel.SetActive(false);
                     }
 #endif
                 }
@@ -595,15 +614,6 @@ namespace CaseClosed.UI
         /// </summary>
         public void OpenConclusionQuiz()
         {
-            if (CaseManager.Instance == null || !CaseManager.Instance.IsReadyForConclusion())
-            {
-                bool evDone = CaseManager.Instance != null && CaseManager.Instance.AreAllEvidenceUnlocked();
-                bool diagDone = CaseManager.Instance != null && CaseManager.Instance.AreAllDialoguesDone();
-                Debug.LogWarning($"[UI:Manager] Conclusion locked: all dialogues must be done and all evidence must be unlocked first! (EvidenceUnlocked: {evDone}, DialoguesDone: {diagDone})");
-                UpdateConclusionButtonState();
-                return;
-            }
-
             if (conclusionQuizPanel == null)
             {
                 var found = Object.FindFirstObjectByType<ConclusionUI>(FindObjectsInactive.Include);
