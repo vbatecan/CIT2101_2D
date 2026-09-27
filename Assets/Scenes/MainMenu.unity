@@ -1193,6 +1193,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.Prototype.GameBootstrap
   startOnMainMenu: 1
+  _case01Asset: {fileID: 11400000, guid: 3421a1a0bb6d37ef1a41648379159463, type: 2}
+  _case02Asset: {fileID: 11400000, guid: db0542a9619f21bc79da828307fcc418, type: 2}
+  _case03Asset: {fileID: 11400000, guid: ea52aa841fab1df37a1a6e537a85b623, type: 2}
 --- !u!114 &175811169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1602,6 +1605,7 @@ MonoBehaviour:
     defaultNextNodeId: 
     unlockEvidenceOnComplete: []
   isChallengeModeActive: 0
+  isShowingFailureReaction: 0
 --- !u!114 &175811178
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5823,6 +5827,7 @@ MonoBehaviour:
   mainTablePanel: {fileID: 0}
   inspectModalPanel: {fileID: 0}
   notebookPanel: {fileID: 0}
+  suspectFolderPanel: {fileID: 0}
   deductionBoardPanel: {fileID: 0}
   conclusionQuizPanel: {fileID: 0}
   resultsScreenPanel: {fileID: 0}
@@ -5832,6 +5837,7 @@ MonoBehaviour:
   mainMenuConfirmPanel: {fileID: 0}
   timerContainer: {fileID: 0}
   notebookButton: {fileID: 0}
+  suspectFolderButton: {fileID: 0}
   deductionBoardButton: {fileID: 0}
   concludeCaseButton: {fileID: 0}
   investigatorSelectButton: {fileID: 0}
@@ -9324,13 +9330,14 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "<b>PROJECT:</b> CIT2101_2D / Case Closed\n\n<b>CAST OF CHARACTERS:</b>\n\u2022
-    <b>Vince Angelo Batecan</b> \u2014 Case 01 Primary Suspect\n\u2022 <b>Jane Reyes</b> \u2014 Case 01 Secondary Suspect / Accomplice\n\u2022 <b>Kirby
-    Raymundo</b> \u2014 Manor Owner & Aristocrat\n\u2022 <b>Charl Vonn Pascual</b>
-    \u2014 Night Security Guard\n\u2022 <b>Paul Gabriel Camacho</b> \u2014 Art Gallery
-    Owner\n\u2022 <b>Shanaia Ortega</b> \u2014 Lead Software Developer\n\u2022 <b>Shan
-    Jaraba</b> \u2014 Coffee Shop Manager\n\u2022 <b>Kurt Miguel Ancheta</b> \u2014
-    Startup Founder\n\u2022 <b>Kyle Gabriel Pastrana & Miguel Borja</b> \u2014 Detective
-    Agency\n\n<i>Built with Unity 2D Engine (URP)</i>"
+    <b>Vince Angelo Batecan</b> \u2014 Case 01 Primary Suspect\n\u2022 <b>Jane Reyes</b>
+    \u2014 Case 01 Secondary Suspect / Accomplice\n\u2022 <b>Kirby Raymundo</b> \u2014
+    Manor Owner & Aristocrat\n\u2022 <b>Charl Vonn Pascual</b> \u2014 Night Security
+    Guard\n\u2022 <b>Paul Gabriel Camacho</b> \u2014 Art Gallery Owner\n\u2022 <b>Shanaia
+    Ortega</b> \u2014 Lead Software Developer\n\u2022 <b>Shan Jaraba</b> \u2014 Coffee
+    Shop Manager\n\u2022 <b>Kurt Miguel Ancheta</b> \u2014 Startup Founder\n\u2022
+    <b>Kyle Gabriel Pastrana & Miguel Borja</b> \u2014 Detective Agency\n\n<i>Built
+    with Unity 2D Engine (URP)</i>"
 --- !u!222 &1743749081
 CanvasRenderer:
   m_ObjectHideFlags: 0
