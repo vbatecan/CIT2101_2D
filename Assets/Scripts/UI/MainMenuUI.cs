@@ -80,19 +80,42 @@ namespace CaseClosed.UI
         public Button confirmExitYesButton;
         public Button confirmExitNoButton;
 
+        private void Awake()
+        {
+            AutoResolveReferences();
+        }
+
         private void Start()
         {
+            AutoResolveReferences();
             BindMainButtons();
             BindCaseSelectButtons();
             BindSettingsButtons();
             BindExitConfirmButtons();
             BindBackButtons();
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
+        }
 
-            // Subscribe to external progression changes
+        private void OnEnable()
+        {
+            AutoResolveReferences();
+            ReturnToMainView(false);
+            RefreshCaseSelectUI();
+            AudioManager.Instance?.PlayMenuBGM();
+            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
+
             if (CaseClosed.Services.CaseProgressionService.Instance != null)
             {
+                CaseClosed.Services.CaseProgressionService.Instance.OnProgressionChanged -= RefreshCaseSelectUI;
                 CaseClosed.Services.CaseProgressionService.Instance.OnProgressionChanged += RefreshCaseSelectUI;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (CaseClosed.Services.CaseProgressionService.Instance != null)
+            {
+                CaseClosed.Services.CaseProgressionService.Instance.OnProgressionChanged -= RefreshCaseSelectUI;
             }
         }
 
@@ -132,11 +155,87 @@ namespace CaseClosed.UI
                    (creditsContainer != null && creditsContainer.activeSelf);
         }
 
-        private void OnEnable()
+        /// <summary>
+        /// Attempts to locate missing button or panel references in the hierarchy if unassigned in Inspector.
+        /// </summary>
+        private void AutoResolveReferences()
         {
-            ReturnToMainView();
-            AudioManager.Instance?.PlayMenuBGM();
-            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
+            if (mainButtonsContainer == null)
+            {
+                Transform containerTr = transform.Find("Container_MainButtons") ?? transform.Find("MainButtons") ?? transform.Find("Buttons");
+                if (containerTr != null) mainButtonsContainer = containerTr.gameObject;
+            }
+
+            if (caseSelectContainer == null)
+            {
+                Transform c = transform.Find("Panel_CaseSelect") ?? transform.Find("CaseSelectContainer");
+                if (c != null) caseSelectContainer = c.gameObject;
+            }
+            if (settingsContainer == null)
+            {
+                Transform c = transform.Find("Panel_Settings") ?? transform.Find("SettingsContainer");
+                if (c != null) settingsContainer = c.gameObject;
+            }
+            if (howToPlayContainer == null)
+            {
+                Transform c = transform.Find("Panel_HowToPlay") ?? transform.Find("HowToPlayContainer");
+                if (c != null) howToPlayContainer = c.gameObject;
+            }
+            if (creditsContainer == null)
+            {
+                Transform c = transform.Find("Panel_Credits") ?? transform.Find("CreditsContainer");
+                if (c != null) creditsContainer = c.gameObject;
+            }
+            if (exitConfirmContainer == null)
+            {
+                Transform c = transform.Find("Panel_ExitConfirmation") ?? transform.Find("ExitConfirmContainer");
+                if (c != null) exitConfirmContainer = c.gameObject;
+            }
+
+            if (playButton == null)
+            {
+                playButton = transform.Find("Button_Play")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_Play")?.GetComponent<Button>();
+            }
+            if (caseSelectButton == null)
+            {
+                caseSelectButton = transform.Find("Button_CaseSelect")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_CaseSelect")?.GetComponent<Button>();
+            }
+            if (settingsButton == null)
+            {
+                settingsButton = transform.Find("Button_Settings")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_Settings")?.GetComponent<Button>();
+            }
+            if (howToPlayButton == null)
+            {
+                howToPlayButton = transform.Find("Button_HowToPlay")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_HowToPlay")?.GetComponent<Button>();
+            }
+            if (creditsButton == null)
+            {
+                creditsButton = transform.Find("Button_Credits")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_Credits")?.GetComponent<Button>();
+            }
+            if (quitButton == null)
+            {
+                quitButton = transform.Find("Button_Quit")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_Quit")?.GetComponent<Button>();
+            }
+        }
+
+        /// <summary>
+        /// Toggles the main navigation buttons container or individual buttons if no container object exists.
+        /// </summary>
+        private void SetMainButtonsActive(bool active)
+        {
+            if (mainButtonsContainer != null)
+            {
+                mainButtonsContainer.SetActive(active);
+            }
+            else
+            {
+                if (playButton != null) playButton.gameObject.SetActive(active);
+                if (caseSelectButton != null) caseSelectButton.gameObject.SetActive(active);
+                if (howToPlayButton != null) howToPlayButton.gameObject.SetActive(active);
+                if (settingsButton != null) settingsButton.gameObject.SetActive(active);
+                if (creditsButton != null) creditsButton.gameObject.SetActive(active);
+                if (quitButton != null) quitButton.gameObject.SetActive(active);
+            }
         }
 
         private void BindMainButtons()
@@ -210,16 +309,24 @@ namespace CaseClosed.UI
         /// <summary>
         /// Displays the default primary buttons view and hides all sub-view overlays.
         /// </summary>
-        public void ReturnToMainView()
+        public void ReturnToMainView() => ReturnToMainView(true);
+
+        /// <summary>
+        /// Displays the default primary buttons view and hides all sub-view overlays, optionally playing button click SFX.
+        /// </summary>
+        public void ReturnToMainView(bool playAudio)
         {
-            if (mainButtonsContainer != null) mainButtonsContainer.SetActive(true);
+            SetMainButtonsActive(true);
             if (caseSelectContainer != null) caseSelectContainer.SetActive(false);
             if (howToPlayContainer != null) howToPlayContainer.SetActive(false);
             if (settingsContainer != null) settingsContainer.SetActive(false);
             if (creditsContainer != null) creditsContainer.SetActive(false);
             if (exitConfirmContainer != null) exitConfirmContainer.SetActive(false);
 
-            AudioManager.Instance?.PlayButtonClick();
+            if (playAudio)
+            {
+                AudioManager.Instance?.PlayButtonClick();
+            }
         }
 
         /// <summary>
@@ -227,7 +334,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void OpenSubView(GameObject targetSubView)
         {
-            if (mainButtonsContainer != null) mainButtonsContainer.SetActive(false);
+            SetMainButtonsActive(false);
             if (caseSelectContainer != null) caseSelectContainer.SetActive(targetSubView == caseSelectContainer);
             if (howToPlayContainer != null) howToPlayContainer.SetActive(targetSubView == howToPlayContainer);
             if (settingsContainer != null) settingsContainer.SetActive(targetSubView == settingsContainer);
@@ -266,6 +373,11 @@ namespace CaseClosed.UI
             bool isCompleted = (progression != null) && progression.IsCaseCompleted(levelIndex);
 
             btn.interactable = isUnlocked;
+
+            if (titleText != null)
+            {
+                titleText.color = isUnlocked ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.75f);
+            }
 
             if (statusText != null)
             {
@@ -540,7 +652,19 @@ namespace CaseClosed.UI
             PlayerPrefs.SetInt("CaseClosed_SelectedLevel", caseIndex);
             PlayerPrefs.Save();
 
+            string activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             string sceneName = $"Case00{caseIndex}";
+
+            if (activeScene == sceneName)
+            {
+                GameBootstrap currentBootstrap = FindFirstObjectByType<GameBootstrap>();
+                if (currentBootstrap != null)
+                {
+                    currentBootstrap.LoadLevel(caseIndex);
+                    return;
+                }
+            }
+
             if (Application.CanStreamedLevelBeLoaded(sceneName))
             {
                 Debug.Log($"[UI:MainMenu] Loading scene '{sceneName}' via SceneManager...");
@@ -549,7 +673,7 @@ namespace CaseClosed.UI
             }
 
             // Fallback: If dedicated scene isn't built but Case001 is available, load Case001
-            if (Application.CanStreamedLevelBeLoaded("Case001"))
+            if (activeScene != "Case001" && Application.CanStreamedLevelBeLoaded("Case001"))
             {
                 Debug.Log($"[UI:MainMenu] '{sceneName}' not streamable. Loading Case001 scene fallback...");
                 UnityEngine.SceneManagement.SceneManager.LoadScene("Case001");
