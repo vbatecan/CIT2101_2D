@@ -46,13 +46,13 @@ namespace CaseClosed.UI
         [Tooltip("Button asset for advancing to next case on the win screen.")]
         [SerializeField] private Sprite nextGameButtonSprite;
 
-        private static readonly Color HeaderDarkColor = new Color(0.12f, 0.12f, 0.18f, 1f);
-        private static readonly Color SubtitleDarkColor = new Color(0.25f, 0.25f, 0.32f, 1f);
-        private static readonly Color ShadowLightColor = new Color(0.85f, 0.85f, 0.88f, 0.5f);
-        private static readonly Color ChoiceNormalColor = Color.white;
-        private static readonly Color ChoiceSelectedColor = new Color(1f, 0.88f, 0.48f, 1f);
-        private static readonly Color ChoiceTextNormalColor = new Color(0.15f, 0.16f, 0.22f, 1f);
-        private static readonly Color ChoiceTextSelectedColor = new Color(0.08f, 0.08f, 0.12f, 1f);
+        private static readonly Color HeaderDarkColor = DetectiveUITheme.Ink;
+        private static readonly Color SubtitleDarkColor = DetectiveUITheme.MutedInk;
+        private static readonly Color PaperColor = DetectiveUITheme.Paper;
+        private static readonly Color ChoiceNormalColor = new Color(1f, 0.98f, 0.92f, 1f);
+        private static readonly Color ChoiceSelectedColor = HeaderDarkColor;
+        private static readonly Color ChoiceTextNormalColor = HeaderDarkColor;
+        private static readonly Color ChoiceTextSelectedColor = ChoiceNormalColor;
 
         [Header("Results Screen Overlay")]
         public GameObject resultsContainer;
@@ -88,6 +88,8 @@ namespace CaseClosed.UI
         private GameObject _confirmButtonObj;
         private Button _nextButton;
         private Button _confirmButton;
+        private ScrollRect _choicesScroll;
+        private DetectiveCard conclusionCard;
         private readonly List<Image> _choiceImages = new List<Image>();
         private readonly List<Text> _choiceTexts = new List<Text>();
 
@@ -196,8 +198,7 @@ namespace CaseClosed.UI
                 }
                 else
                 {
-                    GameObject menuObj = new GameObject("Button_ReturnToMenu", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    menuObj.transform.SetParent(parent, false);
+                    GameObject menuObj = DetectiveUITheme.CreateButton(parent, "Button_ReturnToMenu");
                     returnToMainMenuButton = menuObj.GetComponent<Button>();
                 }
             }
@@ -218,8 +219,7 @@ namespace CaseClosed.UI
                 }
                 else
                 {
-                    GameObject nextObj = new GameObject("Button_NextLevel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    nextObj.transform.SetParent(parent, false);
+                    GameObject nextObj = DetectiveUITheme.CreateButton(parent, "Button_NextLevel");
                     nextLevelButton = nextObj.GetComponent<Button>();
                 }
             }
@@ -281,9 +281,8 @@ namespace CaseClosed.UI
             Image panelBg = GetComponent<Image>();
             if (panelBg != null)
             {
-                panelBg.sprite = questionBoxSprite;
-                panelBg.type = Image.Type.Sliced;
-                panelBg.color = Color.white;
+                panelBg.sprite = null;
+                panelBg.color = Color.clear;
             }
 
             if (quizContainer != null) quizContainer.SetActive(true);
@@ -314,7 +313,118 @@ namespace CaseClosed.UI
 
             _currentQuestionIndex = 0;
             EnsureFlowHierarchy();
+            ApplyFlowDesign();
             ShowStartScreen();
+        }
+
+        // Styles only the runtime conclusion flow; authored scenes and references stay intact.
+        private void ApplyFlowDesign()
+        {
+            if (conclusionCard == null)
+            {
+                conclusionCard = DetectiveUITheme.CreateCard(_flowRoot.transform);
+                if (conclusionCard != null)
+                {
+                    DetectiveUITheme.Place(conclusionCard.Rect, Vector2.zero, Vector2.one);
+                    conclusionCard.transform.SetAsFirstSibling();
+                    conclusionCard.ShowReportText(false);
+                    conclusionCard.SetContent("CASE CLOSED / INVESTIGATION BUREAU / CONFIDENTIAL", "", "", HeaderDarkColor);
+                }
+            }
+            if (_startScreenObj != null)
+            {
+                Text title = _startScreenObj.transform.Find("StartTitle").GetComponent<Text>();
+                SetFlowRect(title.rectTransform, new Vector2(0.08f, 0.57f), new Vector2(0.92f, 0.78f));
+                title.fontSize = 36;
+                title.resizeTextForBestFit = true;
+                title.resizeTextMinSize = 24;
+                title.resizeTextMaxSize = 36;
+                title.text = "<size=14>D E T E C T I V E ' S   D O S S I E R</size>\nTHE FINAL VERDICT";
+                title.raycastTarget = false;
+
+                Text description = _startScreenObj.transform.Find("StartDesc").GetComponent<Text>();
+                SetFlowRect(description.rectTransform, new Vector2(0.12f, 0.36f), new Vector2(0.88f, 0.56f));
+                CaseSO activeCase = CaseManager.Instance.ActiveCase;
+                description.text = $"{activeCase.caseTitle}\n\nAnswer {playerAnswers.Count} questions using the evidence you gathered.\nEach answer is final when you move to the next question.";
+                description.fontSize = 18;
+                description.resizeTextForBestFit = true;
+                description.resizeTextMinSize = 14;
+                description.resizeTextMaxSize = 18;
+                description.raycastTarget = false;
+
+                Button start = _startScreenObj.transform.Find("StartButton").GetComponent<Button>();
+                SetFlowRect(start.GetComponent<RectTransform>(), new Vector2(0.30f, 0.20f), new Vector2(0.70f, 0.30f));
+                StyleFlowAction(start, "Begin final report");
+            }
+
+            if (_questionBoxImage != null)
+            {
+                SetFlowRect(_questionBoxImage.rectTransform, new Vector2(0.08f, 0.70f), new Vector2(0.92f, 0.89f));
+                _questionBoxImage.sprite = null;
+                _questionBoxImage.color = PaperColor;
+                _questionBoxImage.raycastTarget = false;
+                _questionBoxText.fontSize = 24;
+                _questionBoxText.resizeTextForBestFit = true;
+                _questionBoxText.resizeTextMinSize = 18;
+                _questionBoxText.resizeTextMaxSize = 24;
+                _questionBoxText.alignment = TextAnchor.MiddleLeft;
+                _questionBoxText.raycastTarget = false;
+            }
+
+            if (_choicesContainer != null && _choicesScroll == null)
+            {
+                GameObject viewport = new GameObject("AnswerViewport", typeof(RectTransform), typeof(RectMask2D), typeof(ScrollRect));
+                viewport.transform.SetParent(_questionScreenObj.transform, false);
+                RectTransform viewportRect = viewport.GetComponent<RectTransform>();
+                SetFlowRect(viewportRect, new Vector2(0.10f, 0.25f), new Vector2(0.90f, 0.68f));
+                _choicesContainer.SetParent(viewport.transform, false);
+                RectTransform content = (RectTransform)_choicesContainer;
+                content.anchorMin = new Vector2(0f, 1f);
+                content.anchorMax = Vector2.one;
+                content.pivot = new Vector2(0.5f, 1f);
+                content.anchoredPosition = Vector2.zero;
+                content.sizeDelta = Vector2.zero;
+                VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
+                layout.spacing = 12f;
+                layout.padding = new RectOffset(3, 3, 3, 3);
+                layout.childControlHeight = true;
+                ContentSizeFitter fitter = content.gameObject.AddComponent<ContentSizeFitter>();
+                fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                _choicesScroll = viewport.GetComponent<ScrollRect>();
+                _choicesScroll.viewport = viewportRect;
+                _choicesScroll.content = content;
+                _choicesScroll.horizontal = false;
+                _choicesScroll.movementType = ScrollRect.MovementType.Clamped;
+            }
+
+            if (_hintPromptText != null)
+            {
+                SetFlowRect(_hintPromptText.rectTransform, new Vector2(0.10f, 0.17f), new Vector2(0.90f, 0.24f));
+                _hintPromptText.raycastTarget = false;
+            }
+            if (_nextButton != null)
+            {
+                SetFlowRect(_nextButton.GetComponent<RectTransform>(), new Vector2(0.30f, 0.05f), new Vector2(0.70f, 0.15f));
+                StyleFlowAction(_nextButton, "Next question  >");
+            }
+            if (_confirmButton != null)
+            {
+                SetFlowRect(_confirmButton.GetComponent<RectTransform>(), new Vector2(0.30f, 0.05f), new Vector2(0.70f, 0.15f));
+                StyleFlowAction(_confirmButton, "Submit conclusion");
+            }
+        }
+
+        private static void SetFlowRect(RectTransform rect, Vector2 min, Vector2 max)
+        {
+            rect.anchorMin = min;
+            rect.anchorMax = max;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+
+        private static void StyleFlowAction(Button button, string caption)
+        {
+            DetectiveUITheme.Action(button, caption, HeaderDarkColor);
         }
 
         /// <summary>
@@ -380,9 +490,6 @@ namespace CaseClosed.UI
                     titleTxt.alignment = TextAnchor.MiddleCenter;
                     titleTxt.color = HeaderDarkColor;
                     titleTxt.text = "CASE CONCLUSION";
-                    Shadow tShadow = titleObj.AddComponent<Shadow>();
-                    tShadow.effectDistance = new Vector2(1f, -1f);
-                    tShadow.effectColor = ShadowLightColor;
 
                     // Subtitle / Prompt
                     GameObject descObj = new GameObject("StartDesc", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
@@ -398,13 +505,9 @@ namespace CaseClosed.UI
                     CaseSO activeCase = CaseManager.Instance?.ActiveCase;
                     int totalQ = activeCase != null && activeCase.conclusionQuestions != null ? activeCase.conclusionQuestions.Count : 3;
                     descTxt.text = $"Answer all {totalQ} questions based on your investigation to solve the case.\nClick Start to begin.";
-                    Shadow dShadow = descObj.AddComponent<Shadow>();
-                    dShadow.effectDistance = new Vector2(1f, -1f);
-                    dShadow.effectColor = ShadowLightColor;
 
                     // Start Button
-                    GameObject btnObj = new GameObject("StartButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    btnObj.transform.SetParent(_startScreenObj.transform, false);
+                    GameObject btnObj = DetectiveUITheme.CreateButton(_startScreenObj.transform, "StartButton");
                     RectTransform brt = btnObj.GetComponent<RectTransform>();
                     brt.anchoredPosition = new Vector2(0f, -65f);
                     brt.sizeDelta = new Vector2(200f, 60f);
@@ -468,9 +571,6 @@ namespace CaseClosed.UI
                     _questionBoxText.fontStyle = FontStyle.Bold;
                     _questionBoxText.alignment = TextAnchor.MiddleCenter;
                     _questionBoxText.color = HeaderDarkColor;
-                    Shadow qShadow = qTextObj.AddComponent<Shadow>();
-                    qShadow.effectDistance = new Vector2(1f, -1f);
-                    qShadow.effectColor = ShadowLightColor;
 
                     // Choices Container
                     GameObject choicesObj = new GameObject("ChoicesContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
@@ -502,8 +602,7 @@ namespace CaseClosed.UI
 
                     // Navigation Footer
                     // Next Button (Arrow)
-                    _nextButtonObj = new GameObject("NextButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    _nextButtonObj.transform.SetParent(_questionScreenObj.transform, false);
+                    _nextButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "NextButton");
                     RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
                     nrt.anchoredPosition = new Vector2(0f, -180f);
                     nrt.sizeDelta = new Vector2(130f, 50f);
@@ -514,8 +613,7 @@ namespace CaseClosed.UI
                     _nextButton.onClick.AddListener(OnNextQuestionClicked);
 
                     // Confirm Button (Confirm)
-                    _confirmButtonObj = new GameObject("ConfirmButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    _confirmButtonObj.transform.SetParent(_questionScreenObj.transform, false);
+                    _confirmButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "ConfirmButton");
                     RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
                     cbrt.anchoredPosition = new Vector2(0f, -180f);
                     cbrt.sizeDelta = new Vector2(180f, 55f);
@@ -607,13 +705,14 @@ namespace CaseClosed.UI
             // Render Question Box
             if (_questionBoxText != null)
             {
-                _questionBoxText.text = $"QUESTION {_currentQuestionIndex + 1} OF {totalQuestions}\n\n{q.questionText}";
+                _questionBoxText.text = $"<size=14>FINAL REPORT   /   QUESTION {_currentQuestionIndex + 1} OF {totalQuestions}</size>\n\n{q.questionText}";
                 _questionBoxText.color = HeaderDarkColor;
             }
 
             if (_hintPromptText != null)
             {
-                _hintPromptText.text = "";
+                _hintPromptText.text = "Choose the answer supported by your evidence.";
+                _hintPromptText.color = SubtitleDarkColor;
             }
 
             // Clear old choices
@@ -624,6 +723,7 @@ namespace CaseClosed.UI
             {
                 foreach (Transform child in _choicesContainer)
                 {
+                    child.gameObject.SetActive(false);
                     if (Application.isPlaying)
                         Destroy(child.gameObject);
                     else
@@ -641,11 +741,12 @@ namespace CaseClosed.UI
                     choiceObj.transform.SetParent(_choicesContainer, false);
                     RectTransform chRt = choiceObj.GetComponent<RectTransform>();
                     chRt.sizeDelta = new Vector2(660f, 48f);
+                    LayoutElement choiceLayout = choiceObj.AddComponent<LayoutElement>();
+                    choiceLayout.minHeight = 64f;
+                    choiceLayout.preferredHeight = 64f;
 
                     Image chImg = choiceObj.GetComponent<Image>();
-                    chImg.sprite = questionBoxSprite;
-                    chImg.type = Image.Type.Sliced;
-                    chImg.color = ChoiceNormalColor;
+                    DetectiveUITheme.Surface(chImg, ChoiceNormalColor);
                     _choiceImages.Add(chImg);
 
                     GameObject chTextObj = new GameObject("ChoiceText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
@@ -658,20 +759,30 @@ namespace CaseClosed.UI
 
                     Text chTxt = chTextObj.GetComponent<Text>();
                     chTxt.font = standardFont;
-                    chTxt.fontSize = 16;
-                    chTxt.alignment = TextAnchor.MiddleCenter;
+                    chTxt.fontSize = 18;
+                    chTxt.alignment = TextAnchor.MiddleLeft;
+                    chTxt.raycastTarget = false;
+                    chTxt.supportRichText = false;
+                    float availableWidth = Mathf.Max(120f, ((RectTransform)_choicesContainer).rect.width - 80f);
+                    TextGenerationSettings textSettings = chTxt.GetGenerationSettings(new Vector2(availableWidth, 0f));
+                    string measuredText = $"[X]  {optIdx + 1:00}   {q.options[optIdx]}";
+                    textSettings.fontStyle = FontStyle.Bold;
+                    float textHeight = chTxt.cachedTextGeneratorForLayout.GetPreferredHeight(measuredText, textSettings) / chTxt.pixelsPerUnit;
+                    choiceLayout.preferredHeight = Mathf.Max(64f, textHeight + 28f);
                     chTxt.color = ChoiceTextNormalColor;
                     _choiceTexts.Add(chTxt);
-
-                    Shadow chShadow = chTextObj.AddComponent<Shadow>();
-                    chShadow.effectDistance = new Vector2(1f, -1f);
-                    chShadow.effectColor = ShadowLightColor;
 
                     Button btn = choiceObj.GetComponent<Button>();
                     btn.onClick.AddListener(() => SelectChoice(choiceIndex));
                 }
 
                 UpdateChoiceVisuals();
+                if (_choicesScroll != null)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)_choicesContainer);
+                    _choicesScroll.StopMovement();
+                    _choicesScroll.verticalNormalizedPosition = 1f;
+                }
             }
 
             // Update Navigation Buttons: Next on Q1..Q4, Confirm on Q5
@@ -690,7 +801,11 @@ namespace CaseClosed.UI
         {
             AudioManager.Instance?.PlayButtonClick();
             playerAnswers[_currentQuestionIndex] = choiceIndex;
-            if (_hintPromptText != null) _hintPromptText.text = "";
+            if (_hintPromptText != null)
+            {
+                _hintPromptText.text = "Answer recorded. Continue when ready.";
+                _hintPromptText.color = SubtitleDarkColor;
+            }
             UpdateChoiceVisuals();
         }
 
@@ -717,7 +832,9 @@ namespace CaseClosed.UI
 
                 if (_choiceTexts[i] != null)
                 {
-                    _choiceTexts[i].text = isSelected ? $"<b>[✓]  {q.options[i]}</b>" : $"   [ ]  {q.options[i]}";
+                    string marker = isSelected ? "[X]" : "[ ]";
+                    _choiceTexts[i].text = $"{marker}  {i + 1:00}   {q.options[i]}";
+                    _choiceTexts[i].fontStyle = isSelected ? FontStyle.Bold : FontStyle.Normal;
                     _choiceTexts[i].color = isSelected ? ChoiceTextSelectedColor : ChoiceTextNormalColor;
                 }
             }
@@ -733,6 +850,7 @@ namespace CaseClosed.UI
                 if (_hintPromptText != null)
                 {
                     _hintPromptText.text = "Please select an answer to proceed.";
+                    _hintPromptText.color = new Color(0.65f, 0.19f, 0.12f, 1f);
                 }
                 AudioManager.Instance?.PlaySFX(AudioManager.Instance?.caseFailedSFX);
                 return;
@@ -753,6 +871,7 @@ namespace CaseClosed.UI
                 if (_hintPromptText != null)
                 {
                     _hintPromptText.text = "Please select an answer before confirming.";
+                    _hintPromptText.color = new Color(0.65f, 0.19f, 0.12f, 1f);
                 }
                 AudioManager.Instance?.PlaySFX(AudioManager.Instance?.caseFailedSFX);
                 return;
@@ -1071,6 +1190,9 @@ namespace CaseClosed.UI
             {
                 UIButtonHighlightSystem.ApplyToHierarchy(resultsContainer);
             }
+            DetectiveUITheme.Action(returnToMainMenuButton, "Main menu", DetectiveUITheme.MutedInk);
+            DetectiveUITheme.Action(nextLevelButton, "Next case", DetectiveUITheme.Ink);
+            DetectiveUITheme.Action(continueButton, "Reopen case", DetectiveUITheme.Ink);
         }
 
         /// <summary>
