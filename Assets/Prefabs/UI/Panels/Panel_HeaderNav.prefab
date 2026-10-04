@@ -208,6 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2013682481322757865}
   - component: {fileID: 4193835311028496017}
+  - component: {fileID: 7850496219301578401}
   m_Layer: 0
   m_Name: CaseTitle
   m_TagString: Untagged
@@ -289,6 +290,22 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &7850496219301578401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5645606050776193328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eec14e8e4a2a4c7ca567290c2c9ef6d1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.UI.CaseTitleUI
+  caseTitleSprites:
+  - {fileID: -8763793758851916732, guid: 3cb988d8a06f449448a2d7e24476835f, type: 3}
+  - {fileID: -4084181044190488883, guid: a669bebe3f7a05241ad2abdbf7c577be, type: 3}
+  - {fileID: 6179017011743455656, guid: d746fff2d3789cc489958fffa1cebac5, type: 3}
 --- !u!1 &6044440373531453997
 GameObject:
   m_ObjectHideFlags: 0

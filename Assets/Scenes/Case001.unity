@@ -5443,6 +5443,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Panel_HeaderNav
       objectReference: {fileID: 0}
+    - target: {fileID: 4977187049728810785, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6044440373531453997, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_IsActive
       value: 1
