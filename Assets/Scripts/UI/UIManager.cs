@@ -192,14 +192,23 @@ namespace CaseClosed.UI
 
             if (concludeCaseButton != null)
             {
-                var concludeComp = concludeCaseButton.GetComponent<ConcludeCaseButton>() ?? concludeCaseButton.AddComponent<ConcludeCaseButton>();
-                concludeComp.EnsureClickable();
-
-                Button btn = concludeCaseButton.GetComponentInChildren<Button>(true);
-                if (btn != null)
+                if (concludeCaseButton.GetComponent<DetectiveButton>() != null)
                 {
-                    btn.onClick.RemoveListener(OpenConclusionQuiz);
-                    btn.onClick.AddListener(OpenConclusionQuiz);
+                    Button btn = concludeCaseButton.GetComponent<Button>();
+                    btn.onClick.RemoveListener(HandleConcludeNavigationClicked);
+                    btn.onClick.AddListener(HandleConcludeNavigationClicked);
+                }
+                else
+                {
+                    var concludeComp = concludeCaseButton.GetComponent<ConcludeCaseButton>() ?? concludeCaseButton.AddComponent<ConcludeCaseButton>();
+                    concludeComp.EnsureClickable();
+
+                    Button btn = concludeCaseButton.GetComponentInChildren<Button>(true);
+                    if (btn != null)
+                    {
+                        btn.onClick.RemoveListener(OpenConclusionQuiz);
+                        btn.onClick.AddListener(OpenConclusionQuiz);
+                    }
                 }
             }
 

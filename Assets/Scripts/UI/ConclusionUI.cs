@@ -88,6 +88,7 @@ namespace CaseClosed.UI
         private GameObject _confirmButtonObj;
         private Button _nextButton;
         private Button _confirmButton;
+        private Button returnToInvestigationButton;
         private ScrollRect _choicesScroll;
         private DetectiveCard conclusionCard;
         private readonly List<Image> _choiceImages = new List<Image>();
@@ -404,14 +405,30 @@ namespace CaseClosed.UI
             }
             if (_nextButton != null)
             {
-                SetFlowRect(_nextButton.GetComponent<RectTransform>(), new Vector2(0.30f, 0.05f), new Vector2(0.70f, 0.15f));
+                SetFlowRect(_nextButton.GetComponent<RectTransform>(), new Vector2(0.46f, 0.05f), new Vector2(0.92f, 0.15f));
                 StyleFlowAction(_nextButton, "Next question  >");
             }
             if (_confirmButton != null)
             {
-                SetFlowRect(_confirmButton.GetComponent<RectTransform>(), new Vector2(0.30f, 0.05f), new Vector2(0.70f, 0.15f));
+                SetFlowRect(_confirmButton.GetComponent<RectTransform>(), new Vector2(0.46f, 0.05f), new Vector2(0.92f, 0.15f));
                 StyleFlowAction(_confirmButton, "Submit conclusion");
             }
+
+            if (returnToInvestigationButton == null)
+            {
+                GameObject action = DetectiveUITheme.CreateButton(_flowRoot.transform, "ReturnToInvestigationButton");
+                returnToInvestigationButton = action.GetComponent<Button>();
+                returnToInvestigationButton.onClick.AddListener(OnReturnToInvestigationClicked);
+            }
+            SetFlowRect(returnToInvestigationButton.GetComponent<RectTransform>(), new Vector2(0.08f, 0.05f), new Vector2(0.42f, 0.15f));
+            DetectiveUITheme.Action(returnToInvestigationButton, "Return to investigation", SubtitleDarkColor);
+        }
+
+        private void OnReturnToInvestigationClicked()
+        {
+            AudioManager.Instance?.PlayButtonClick();
+            if (UIManager.Instance != null)
+                UIManager.Instance.ShowPanel(UIPanelType.InvestigationTable);
         }
 
         private static void SetFlowRect(RectTransform rect, Vector2 min, Vector2 max)
@@ -887,7 +904,11 @@ namespace CaseClosed.UI
         private void OnSubmitClicked()
         {
             Debug.Log($"[UI:Conclusion] Submit conclusion button clicked. Answers count: {playerAnswers.Count}");
-            if (CaseConclusionManager.Instance == null) return;
+            if (CaseConclusionManager.Instance == null)
+            {
+                ShowSubmissionError("Conclusion unavailable. Return to investigation and try again.");
+                return;
+            }
 
             for (int i = 0; i < playerAnswers.Count; i++)
             {
@@ -903,7 +924,34 @@ namespace CaseClosed.UI
             }
 
             CaseEvaluationResult result = CaseConclusionManager.Instance.EvaluateCase(playerAnswers);
+            if (result == null)
+            {
+                string message = "Conclusion unavailable. Return to investigation and try again.";
+                CaseManager caseManager = CaseManager.Instance;
+                if (caseManager != null && caseManager.ActiveCase != null)
+                {
+                    bool evidenceComplete = caseManager.AreAllEvidenceUnlocked();
+                    bool dialoguesComplete = caseManager.AreAllDialoguesDone();
+                    if (!evidenceComplete && !dialoguesComplete)
+                        message = "Find all evidence and finish all interrogations before submitting.";
+                    else if (!evidenceComplete)
+                        message = "Find all evidence before submitting your conclusion.";
+                    else if (!dialoguesComplete)
+                        message = "Finish all interrogations before submitting your conclusion.";
+                }
+                ShowSubmissionError(message);
+                return;
+            }
             DisplayResultsCard(result);
+        }
+
+        private void ShowSubmissionError(string message)
+        {
+            if (_hintPromptText != null)
+            {
+                _hintPromptText.text = message;
+                _hintPromptText.color = DetectiveUITheme.StampRed;
+            }
         }
 
         /// <summary>

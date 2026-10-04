@@ -130,7 +130,9 @@ namespace CaseClosed.UI
         {
             if (gameOverView == null)
             {
-                gameOverView = DetectiveUITheme.CreateDialog(transform);
+                gameOverView = GetComponentInChildren<DetectiveDialog>(true);
+                if (gameOverView == null)
+                    gameOverView = DetectiveUITheme.CreateDialog(transform);
                 if (gameOverView == null) return;
                 gameOverView.PrimaryButton.onClick.AddListener(OnRetryClicked);
                 gameOverView.SecondaryButton.onClick.AddListener(OnMainMenuClicked);

@@ -12,9 +12,9 @@ Edit the base card and button prefabs to update their nested instances. Use pref
 
 The DetectiveButton component applies its caption and color when enabled. It leaves Button On Click bindings intact. DetectiveCard provides SetContent and ShowReportText; DetectiveDialog provides SetContent, SetActions, PrimaryButton and SecondaryButton. Screens own the action callbacks and game rules.
 
-GameOverUI and UIManager's leave-case confirmation use the shared dialog and bind their existing handlers. Panel_MainMenuConfirm in Panel_InGameMenu contains a nested dialog instance; older scene copies receive that instance at runtime. Their legacy serialized fields remain for compatibility. ConclusionUI uses the shared card and action buttons for its runtime flow.
+GameOverUI and UIManager's leave-case confirmation use the shared dialog and bind their existing handlers. The Case001 and Main scenes and the shared panel prefabs contain authored dialog instances, so their design is visible before Play Mode. Older scene copies receive an instance at runtime. Their legacy serialized fields remain for compatibility. ConclusionUI uses the shared card and action buttons for its runtime flow.
 
-UIManager replaces the in-game Main Menu, Case Notebook, Conclude Case and Deduction Board navigation controls with button-prefab instances during startup. It also replaces the pause menu actions. Sprite artwork bounds and existing UI RectTransforms supply the positions and sizes, so old scene copies receive the new controls without a scene save. Conclude Case keeps its existing click availability and uses a muted surface until the case is ready.
+The Case001 and Main navigation, pause, confirmation and result buttons are authored DetectiveButton prefab instances. Panel_HeaderNav, Panel_InGameMenu, Panel_GameOver, Panel_ConclusionQuiz and Panel_ResultsScreen reuse the same button prefab. UIManager keeps authored instances and their Inspector references; its startup replacement remains a fallback for older controls. Conclude Case keeps its existing click availability and uses a muted surface until the case is ready.
 
 For another runtime screen, load a prefab component from Resources and instantiate it under the screen's canvas:
 
