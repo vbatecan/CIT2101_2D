@@ -16,6 +16,8 @@ GameOverUI and UIManager's leave-case confirmation use the shared dialog and bin
 
 The Case001 and Main navigation, pause, confirmation and result buttons are authored DetectiveButton prefab instances. Panel_HeaderNav, Panel_InGameMenu, Panel_GameOver, Panel_ConclusionQuiz and Panel_ResultsScreen reuse the same button prefab. UIManager keeps authored instances and their Inspector references; its startup replacement remains a fallback for older controls. Conclude Case keeps its existing click availability and uses a muted surface until the case is ready.
 
+The settings panels in MainMenu and Main contain a paper DetectiveCard and shared button instances for mute, reset and back actions. Existing sliders, toggles and serialized settings references remain in place. MainMenuUI updates mute captions and colors through the shared presentation so the muted state survives reopening the panel.
+
 For another runtime screen, load a prefab component from Resources and instantiate it under the screen's canvas:
 
 ```csharp
