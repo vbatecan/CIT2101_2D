@@ -80,6 +80,8 @@ namespace CaseClosed.UI
         public Button confirmExitYesButton;
         public Button confirmExitNoButton;
 
+        private bool _referencesResolved = false;
+
         private void Awake()
         {
             AutoResolveReferences();
@@ -158,8 +160,9 @@ namespace CaseClosed.UI
         /// <summary>
         /// Attempts to locate missing button or panel references in the hierarchy if unassigned in Inspector.
         /// </summary>
-        private void AutoResolveReferences()
+        private void AutoResolveReferences(bool force = false)
         {
+            if (_referencesResolved && !force) return;
             if (mainButtonsContainer == null)
             {
                 Transform containerTr = transform.Find("Container_MainButtons") ?? transform.Find("MainButtons") ?? transform.Find("Buttons");
@@ -216,6 +219,8 @@ namespace CaseClosed.UI
             {
                 quitButton = transform.Find("Button_Quit")?.GetComponent<Button>() ?? transform.Find("Container_MainButtons/Button_Quit")?.GetComponent<Button>();
             }
+
+            _referencesResolved = true;
         }
 
         /// <summary>

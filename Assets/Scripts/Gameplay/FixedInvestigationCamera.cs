@@ -49,8 +49,14 @@ namespace CaseClosed.Gameplay
         {
             if (lockCameraTransform)
             {
-                transform.position = fixedPosition;
-                transform.rotation = Quaternion.identity;
+                if (transform.position != fixedPosition)
+                {
+                    transform.position = fixedPosition;
+                }
+                if (transform.rotation != Quaternion.identity)
+                {
+                    transform.rotation = Quaternion.identity;
+                }
             }
         }
 

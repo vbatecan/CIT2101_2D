@@ -70,8 +70,9 @@ namespace CaseClosed.UI
             if (button == null) return;
 
             // Skip full-screen backdrop click dismissers so hovering empty areas does not flash white
-            string bName = button.name.ToLowerInvariant();
-            if (bName.Contains("backdrop") || bName.Contains("overlay"))
+            string bName = button.name;
+            if (bName.IndexOf("backdrop", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                bName.IndexOf("overlay", System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return;
             }

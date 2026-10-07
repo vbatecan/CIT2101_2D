@@ -38,7 +38,6 @@ namespace CaseClosed.UI
 
         private void Start()
         {
-            EnsureClickable();
             UpdateReadinessState();
         }
 

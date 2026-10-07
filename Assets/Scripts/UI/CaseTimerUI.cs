@@ -108,17 +108,9 @@ namespace CaseClosed.UI
 
         private void Update()
         {
-            if (CaseManager.Instance != null)
+            if (CaseManager.Instance != null && !_isSubscribed)
             {
-                if (!_isSubscribed)
-                {
-                    TrySubscribe();
-                }
-
-                if (CaseManager.Instance.IsTimerRunning)
-                {
-                    SyncTimerState(CaseManager.Instance.RemainingTime, CaseManager.Instance.ElapsedTime);
-                }
+                TrySubscribe();
             }
 
             // Zero-allocation visual pulse animation only active during urgent state

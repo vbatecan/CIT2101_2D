@@ -26,11 +26,6 @@ namespace CaseClosed.UI
             EnsureClickable();
         }
 
-        private void Start()
-        {
-            EnsureClickable();
-        }
-
         private void OnEnable()
         {
             transform.localScale = _originalScale;
@@ -42,12 +37,16 @@ namespace CaseClosed.UI
         {
             transform.localScale = _originalScale;
             _isHovered = false;
+            if (_boundButton != null)
+            {
+                _boundButton.onClick.RemoveListener(OnClick);
+            }
         }
 
         /// <summary>
         /// Ensures both 2D physics collider and uGUI click target are ready.
         /// </summary>
-public void EnsureClickable()
+        public void EnsureClickable()
         {
             SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
             Vector2 clickSize = spriteRenderer != null && spriteRenderer.sprite != null

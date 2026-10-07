@@ -215,19 +215,29 @@ namespace CaseClosed.UI
             if (slideCoroutine != null) return;
             if (clipboardRoot == null) return;
 
-            if (smoothZoom)
+            if (Mathf.Abs(_currentZoom - _targetZoom) > 0.0005f || (_currentPosition - _targetPosition).sqrMagnitude > 0.001f)
             {
-                _currentZoom = Mathf.Lerp(_currentZoom, _targetZoom, Time.unscaledDeltaTime * zoomLerpSpeed);
-                _currentPosition = Vector2.Lerp(_currentPosition, _targetPosition, Time.unscaledDeltaTime * zoomLerpSpeed);
+                if (smoothZoom)
+                {
+                    _currentZoom = Mathf.Lerp(_currentZoom, _targetZoom, Time.unscaledDeltaTime * zoomLerpSpeed);
+                    _currentPosition = Vector2.Lerp(_currentPosition, _targetPosition, Time.unscaledDeltaTime * zoomLerpSpeed);
+                }
+                else
+                {
+                    _currentZoom = _targetZoom;
+                    _currentPosition = _targetPosition;
+                }
+
+                clipboardRoot.localScale = new Vector3(_currentZoom, _currentZoom, 1f);
+                clipboardRoot.anchoredPosition = _currentPosition;
             }
-            else
+            else if (_currentZoom != _targetZoom || _currentPosition != _targetPosition)
             {
                 _currentZoom = _targetZoom;
                 _currentPosition = _targetPosition;
+                clipboardRoot.localScale = new Vector3(_currentZoom, _currentZoom, 1f);
+                clipboardRoot.anchoredPosition = _currentPosition;
             }
-
-            clipboardRoot.localScale = new Vector3(_currentZoom, _currentZoom, 1f);
-            clipboardRoot.anchoredPosition = _currentPosition;
         }
 
         public void SetupTabButtons()

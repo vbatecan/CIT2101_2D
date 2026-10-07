@@ -234,27 +234,51 @@ namespace CaseClosed.UI
             if (evidenceZoomImage == null) return;
 
             // Smooth Interpolation for Zoom, Pan, and Rotation
-            if (smoothZoom)
+            bool needsTransformUpdate = false;
+
+            if (Mathf.Abs(currentZoom - targetZoom) > 0.0005f || (currentPanPosition - targetPanPosition).sqrMagnitude > 0.001f)
             {
-                currentZoom = Mathf.Lerp(currentZoom, targetZoom, Time.unscaledDeltaTime * zoomLerpSpeed);
-                currentPanPosition = Vector2.Lerp(currentPanPosition, targetPanPosition, Time.unscaledDeltaTime * zoomLerpSpeed);
+                if (smoothZoom)
+                {
+                    currentZoom = Mathf.Lerp(currentZoom, targetZoom, Time.unscaledDeltaTime * zoomLerpSpeed);
+                    currentPanPosition = Vector2.Lerp(currentPanPosition, targetPanPosition, Time.unscaledDeltaTime * zoomLerpSpeed);
+                }
+                else
+                {
+                    currentZoom = targetZoom;
+                    currentPanPosition = targetPanPosition;
+                }
+                needsTransformUpdate = true;
             }
-            else
+            else if (currentZoom != targetZoom || currentPanPosition != targetPanPosition)
             {
                 currentZoom = targetZoom;
                 currentPanPosition = targetPanPosition;
+                needsTransformUpdate = true;
             }
 
-            if (smoothRotation)
+            if (Mathf.Abs(currentRotationAngle - targetRotationAngle) > 0.05f)
             {
-                currentRotationAngle = Mathf.Lerp(currentRotationAngle, targetRotationAngle, Time.unscaledDeltaTime * rotationLerpSpeed);
+                if (smoothRotation)
+                {
+                    currentRotationAngle = Mathf.Lerp(currentRotationAngle, targetRotationAngle, Time.unscaledDeltaTime * rotationLerpSpeed);
+                }
+                else
+                {
+                    currentRotationAngle = targetRotationAngle;
+                }
+                needsTransformUpdate = true;
             }
-            else
+            else if (currentRotationAngle != targetRotationAngle)
             {
                 currentRotationAngle = targetRotationAngle;
+                needsTransformUpdate = true;
             }
 
-            ApplyTransform();
+            if (needsTransformUpdate)
+            {
+                ApplyTransform();
+            }
         }
 
         /// <summary>

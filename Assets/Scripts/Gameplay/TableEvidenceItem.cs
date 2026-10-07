@@ -90,6 +90,7 @@ namespace CaseClosed.Gameplay
         private SpriteRenderer haloRenderer;
         private Collider2D itemCollider;
         private CaseManager subscribedCaseManager;
+        private Camera _cachedMainCamera;
 
         public bool IsHovered => isHovered;
         public float CurrentGlowIntensity => currentGlowIntensity;
@@ -198,7 +199,11 @@ namespace CaseClosed.Gameplay
 
         private void CheckDirectMouseInteraction()
         {
-            Camera cam = Camera.main;
+            if (_cachedMainCamera == null)
+            {
+                _cachedMainCamera = Camera.main;
+            }
+            Camera cam = _cachedMainCamera;
             if (cam == null) return;
 
             // Disallow desk interaction if UI modal or inspection modal is currently active
@@ -560,7 +565,10 @@ namespace CaseClosed.Gameplay
         {
             if (openNotebookOnClick) return true;
 
-            ResolveEvidenceData();
+            if (evidenceData == null)
+            {
+                ResolveEvidenceData();
+            }
 
             string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
             CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
