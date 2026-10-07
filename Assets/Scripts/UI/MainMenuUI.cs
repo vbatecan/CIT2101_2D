@@ -484,6 +484,7 @@ namespace CaseClosed.UI
             if (bgmVolumeSlider != null) bgmVolumeSlider.value = bgmVal;
             if (bgmPercentText != null) bgmPercentText.text = $"{Mathf.RoundToInt(bgmVal * 100)}%";
             if (bgmMuteText != null) bgmMuteText.text = bgmMuted ? "MUTED" : "MUTE";
+            UpdateMuteButtonPresentation(bgmMuteButton, bgmMuted);
 
             // SFX
             float sfxVal = audio != null ? audio.sfxVolume : (settings?.SfxVolume ?? 1.0f);
@@ -491,6 +492,7 @@ namespace CaseClosed.UI
             if (sfxVolumeSlider != null) sfxVolumeSlider.value = sfxVal;
             if (sfxPercentText != null) sfxPercentText.text = $"{Mathf.RoundToInt(sfxVal * 100)}%";
             if (sfxMuteText != null) sfxMuteText.text = sfxMuted ? "MUTED" : "MUTE";
+            UpdateMuteButtonPresentation(sfxMuteButton, sfxMuted);
 
             // Dialogue
             float dlgVal = audio != null ? audio.dialogVolume : (settings?.DialogVolume ?? 1.0f);
@@ -498,6 +500,7 @@ namespace CaseClosed.UI
             if (dialogVolumeSlider != null) dialogVolumeSlider.value = dlgVal;
             if (dialogPercentText != null) dialogPercentText.text = $"{Mathf.RoundToInt(dlgVal * 100)}%";
             if (dialogMuteText != null) dialogMuteText.text = dlgMuted ? "MUTED" : "MUTE";
+            UpdateMuteButtonPresentation(dialogMuteButton, dlgMuted);
 
             // Display Mode
             bool isFull = Screen.fullScreen;
@@ -527,6 +530,7 @@ namespace CaseClosed.UI
             AudioManager.Instance?.SetBgmMuted(newMute);
             CaseClosed.Services.GameSettingsService.Instance?.SetBgmMuted(newMute);
             if (bgmMuteText != null) bgmMuteText.text = newMute ? "MUTED" : "MUTE";
+            UpdateMuteButtonPresentation(bgmMuteButton, newMute);
             AudioManager.Instance?.PlayButtonClick();
         }
 
@@ -543,6 +547,7 @@ namespace CaseClosed.UI
             AudioManager.Instance?.SetSfxMuted(newMute);
             CaseClosed.Services.GameSettingsService.Instance?.SetSfxMuted(newMute);
             if (sfxMuteText != null) sfxMuteText.text = newMute ? "MUTED" : "MUTE";
+            UpdateMuteButtonPresentation(sfxMuteButton, newMute);
             AudioManager.Instance?.PlayButtonClick();
         }
 
@@ -559,7 +564,20 @@ namespace CaseClosed.UI
             AudioManager.Instance?.SetDialogMuted(newMute);
             CaseClosed.Services.GameSettingsService.Instance?.SetDialogMuted(newMute);
             if (dialogMuteText != null) dialogMuteText.text = newMute ? "MUTED" : "MUTE";
+            UpdateMuteButtonPresentation(dialogMuteButton, newMute);
             AudioManager.Instance?.PlayButtonClick();
+        }
+
+        private static void UpdateMuteButtonPresentation(Button button, bool muted)
+        {
+            string caption = "Mute";
+            Color color = DetectiveUITheme.Ink;
+            if (muted)
+            {
+                caption = "Muted";
+                color = DetectiveUITheme.StampRed;
+            }
+            DetectiveUITheme.Action(button, caption, color);
         }
 
         private void OnFullscreenToggleChanged(bool isFullscreen)

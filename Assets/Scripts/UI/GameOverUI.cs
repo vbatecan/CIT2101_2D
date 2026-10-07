@@ -31,6 +31,8 @@ namespace CaseClosed.UI
         [Tooltip("Button to exit back to the main menu screen.")]
         [SerializeField] private Button returnToMainMenuButton;
 
+        private DetectiveDialog gameOverView;
+
         private void Awake()
         {
             if (retryButton != null)
@@ -49,6 +51,7 @@ namespace CaseClosed.UI
         private void OnEnable()
         {
             PopulateGameOverDetails();
+            ApplyDossierDesign();
 
             if (CaseManager.Instance != null)
             {
@@ -102,8 +105,8 @@ namespace CaseClosed.UI
 
             if (titleText != null)
             {
-                titleText.text = $"LEVEL {levelNumber}: TIME EXPIRED";
-                titleText.color = new Color(1f, 0.25f, 0.25f, 1f);
+                titleText.text = $"<size=14>CASE FILE {levelNumber:00} / TIME EXPIRED</size>\nCASE UNRESOLVED";
+                titleText.color = DetectiveUITheme.StampRed;
             }
 
             if (subtitleText != null)
@@ -121,6 +124,30 @@ namespace CaseClosed.UI
                     $"Contradictions Exposed: {contraFound} / {totalContra}\n\n" +
                     $"Status: UNRESOLVED";
             }
+        }
+
+        private void ApplyDossierDesign()
+        {
+            if (gameOverView == null)
+            {
+                gameOverView = GetComponentInChildren<DetectiveDialog>(true);
+                if (gameOverView == null)
+                    gameOverView = DetectiveUITheme.CreateDialog(transform);
+                if (gameOverView == null) return;
+                gameOverView.PrimaryButton.onClick.AddListener(OnRetryClicked);
+                gameOverView.SecondaryButton.onClick.AddListener(OnMainMenuClicked);
+                Transform legacyCard = transform.Find("Card_GameOver");
+                if (legacyCard != null) legacyCard.gameObject.SetActive(false);
+                Image backdrop = GetComponent<Image>();
+                if (backdrop != null) backdrop.color = Color.clear;
+            }
+            string title = "CASE UNRESOLVED";
+            string message = string.Empty;
+            if (titleText != null) title = titleText.text;
+            if (subtitleText != null) message = subtitleText.text + "\n\n";
+            if (detailsBreakdownText != null) message += detailsBreakdownText.text;
+            gameOverView.SetContent("INVESTIGATION BUREAU / INCIDENT REPORT", title, message, DetectiveUITheme.StampRed);
+            gameOverView.SetActions("Reopen case", "Main menu");
         }
 
         private void OnRetryClicked()

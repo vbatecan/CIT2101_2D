@@ -4,21 +4,19 @@ using UnityEngine.UI;
 namespace CaseClosed.UI
 {
     /// <summary>
-    /// Centralized coordinator and utility for applying a crisp white hover highlight to UGUI Button components.
-    /// Configures buttons to use <see cref="Selectable.Transition.ColorTint"/> with a resting dimmed state
-    /// (0.85 brightness) and an illuminating pure white (#FFFFFF) highlight on hover with a 0.1s smooth fade.
+    /// Centralized coordinator for consistent hover, keyboard focus, pressed and disabled feedback.
     /// Can be used as a static utility or attached directly to a Canvas / UI Panel.
     /// </summary>
     [DisallowMultipleComponent]
     public class UIButtonHighlightSystem : MonoBehaviour
     {
-        public static readonly Color NormalColor = new Color(0.85f, 0.85f, 0.85f, 1.0f);
-        public static readonly Color HighlightedColor = Color.white;
-        public static readonly Color PressedColor = new Color(0.70f, 0.70f, 0.70f, 1.0f);
-        public static readonly Color SelectedColor = Color.white;
-        public static readonly Color DisabledColor = new Color(0.50f, 0.50f, 0.50f, 0.50f);
+        public static readonly Color NormalColor = Color.white;
+        public static readonly Color HighlightedColor = new Color(1f, 0.94f, 0.78f, 1f);
+        public static readonly Color PressedColor = new Color(0.78f, 0.72f, 0.59f, 1f);
+        public static readonly Color SelectedColor = new Color(1f, 0.94f, 0.78f, 1f);
+        public static readonly Color DisabledColor = new Color(0.58f, 0.58f, 0.58f, 0.65f);
         public const float ColorMultiplier = 1.0f;
-        public const float FadeDuration = 0.10f;
+        public const float FadeDuration = 0.12f;
 
         [Header("Auto-Apply Configuration")]
         [Tooltip("Whether to automatically apply hover colors to all child buttons on Awake/OnEnable.")]
