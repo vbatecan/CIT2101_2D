@@ -6,7 +6,8 @@ namespace CaseClosed.UI
     /// <summary>Shared runtime presentation for dossier panels and their actions.</summary>
     internal static class DetectiveUITheme
     {
-        internal static readonly Color Paper = new Color(0.94f, 0.89f, 0.78f, 1f);
+        internal static readonly Color Paper = new Color(0.98f, 0.97f, 0.93f, 1f);
+        internal static readonly Color Backdrop = new Color(0.98f, 0.97f, 0.93f, 0.88f);
         internal static readonly Color Ink = new Color(0.12f, 0.17f, 0.17f, 1f);
         internal static readonly Color MutedInk = new Color(0.36f, 0.36f, 0.31f, 1f);
         internal static readonly Color Brass = new Color(0.65f, 0.49f, 0.26f, 1f);
@@ -126,7 +127,9 @@ namespace CaseClosed.UI
             DetectiveButton presentation = button.GetComponent<DetectiveButton>();
             if (presentation != null) presentation.SetPresentation(caption, color);
             Image image = button.GetComponent<Image>();
-            Surface(image, color);
+            Color lightSurface = Color.Lerp(Color.white, color, 0.12f);
+            lightSurface.a = 1f;
+            Surface(image, lightSurface);
             if (image != null) button.targetGraphic = image;
             Text label = button.GetComponentInChildren<Text>(true);
             if (label == null)
@@ -139,7 +142,7 @@ namespace CaseClosed.UI
             label.gameObject.SetActive(true);
             Place(label.rectTransform, Vector2.zero, Vector2.one);
             label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
-            TextStyle(label, 18, Paper);
+            TextStyle(label, 18, color);
             label.fontStyle = FontStyle.Bold;
             label.text = caption;
             UIButtonHighlightSystem.ApplyTo(button);

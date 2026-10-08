@@ -14,6 +14,12 @@ namespace CaseClosed.UI
         public Button PrimaryButton => primaryButton;
         public Button SecondaryButton => secondaryButton;
 
+        private void Awake()
+        {
+            Image backdrop = GetComponent<Image>();
+            if (backdrop != null) backdrop.color = DetectiveUITheme.Backdrop;
+        }
+
         public void SetContent(string classification, string title, string message, Color titleColor)
         {
             if (card != null) card.SetContent(classification, title, message, titleColor);

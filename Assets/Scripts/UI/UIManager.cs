@@ -213,6 +213,7 @@ namespace CaseClosed.UI
             }
 
             InstallNavigationPrefabs();
+            StyleInGameMenu();
             if (mainMenuConfirmPanel != null) StyleMainMenuConfirmation();
 
             UIPanelType initialPanel = (mainMenuPanel != null) ? UIPanelType.MainMenu : UIPanelType.InvestigationTable;
@@ -220,6 +221,23 @@ namespace CaseClosed.UI
             RegisterEvents();
             UpdateConclusionButtonState();
             UIButtonHighlightSystem.ApplyToAllButtonsInScene();
+        }
+
+        private void StyleInGameMenu()
+        {
+            if (inGameMenuPanel == null) return;
+            Image backdrop = inGameMenuPanel.GetComponent<Image>();
+            if (backdrop != null) backdrop.color = DetectiveUITheme.Backdrop;
+
+            Transform card = inGameMenuPanel.transform.Find("Card_InGameMenu");
+            if (card == null) return;
+            DetectiveUITheme.Surface(card.GetComponent<Image>(), DetectiveUITheme.Paper, true);
+            Transform title = card.Find("Text_Title");
+            if (title != null)
+            {
+                Text label = title.GetComponent<Text>();
+                if (label != null) DetectiveUITheme.TextStyle(label, label.fontSize, DetectiveUITheme.Ink);
+            }
         }
 
         private void InstallNavigationPrefabs()

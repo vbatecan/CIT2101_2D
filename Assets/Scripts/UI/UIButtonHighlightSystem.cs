@@ -12,9 +12,9 @@ namespace CaseClosed.UI
     {
         public static readonly Color NormalColor = Color.white;
         public static readonly Color HighlightedColor = new Color(1f, 0.94f, 0.78f, 1f);
-        public static readonly Color PressedColor = new Color(0.78f, 0.72f, 0.59f, 1f);
+        public static readonly Color PressedColor = new Color(0.90f, 0.87f, 0.80f, 1f);
         public static readonly Color SelectedColor = new Color(1f, 0.94f, 0.78f, 1f);
-        public static readonly Color DisabledColor = new Color(0.58f, 0.58f, 0.58f, 0.65f);
+        public static readonly Color DisabledColor = new Color(0.94f, 0.94f, 0.92f, 0.70f);
         public const float ColorMultiplier = 1.0f;
         public const float FadeDuration = 0.12f;
 

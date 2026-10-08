@@ -298,7 +298,7 @@ namespace CaseClosed.UI
             if (resultBackgroundImage != null)
             {
                 resultBackgroundImage.sprite = null;
-                resultBackgroundImage.color = new Color(0.06f, 0.07f, 0.09f, 0.98f);
+                resultBackgroundImage.color = DetectiveUITheme.Paper;
             }
 
             if (resultTitleText != null)
@@ -1065,13 +1065,13 @@ namespace CaseClosed.UI
                 {
                     Sprite winSprite = solvedBackgroundSprite ?? LoadSprite("Assets/Assets/BACKGROUNDS/CasesWIN.png");
                     resultBackgroundImage.sprite = winSprite;
-                    resultBackgroundImage.color = (winSprite != null) ? Color.white : new Color(0.06f, 0.07f, 0.09f, 0.98f);
+                    resultBackgroundImage.color = (winSprite != null) ? Color.white : DetectiveUITheme.Paper;
                 }
                 else
                 {
                     Sprite failSprite = GetFailedSprite(currentLevel);
                     resultBackgroundImage.sprite = failSprite;
-                    resultBackgroundImage.color = (failSprite != null) ? Color.white : new Color(0.06f, 0.07f, 0.09f, 0.98f);
+                    resultBackgroundImage.color = (failSprite != null) ? Color.white : DetectiveUITheme.Paper;
                 }
             }
 

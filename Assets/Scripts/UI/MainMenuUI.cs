@@ -389,7 +389,7 @@ namespace CaseClosed.UI
 
             if (titleText != null)
             {
-                titleText.color = isUnlocked ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.75f);
+                titleText.color = isUnlocked ? DetectiveUITheme.Ink : DetectiveUITheme.MutedInk;
             }
 
             if (statusText != null)
@@ -397,12 +397,12 @@ namespace CaseClosed.UI
                 if (isCompleted)
                 {
                     statusText.text = "[ SOLVED \u2605 ]";
-                    statusText.color = new Color(0.95f, 0.8f, 0.25f, 1f); // Gold
+                    statusText.color = DetectiveUITheme.Brass;
                 }
                 else if (isUnlocked)
                 {
                     statusText.text = "[ AVAILABLE ]";
-                    statusText.color = new Color(0.4f, 0.9f, 0.4f, 1f); // Green
+                    statusText.color = new Color(0.18f, 0.40f, 0.24f, 1f);
                 }
                 else
                 {
@@ -412,14 +412,13 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Folder button image: normal full color when unlocked, black shade when locked
+            // Keep folder artwork light; labels and interactability convey the lock state.
             Image btnImg = btn.GetComponent<Image>();
             if (btnImg != null)
             {
                 if (!isUnlocked)
                 {
-                    // Black shade for locked folder
-                    btnImg.color = new Color(0.18f, 0.18f, 0.18f, 0.95f);
+                    btnImg.color = DetectiveUITheme.Paper;
                 }
                 else
                 {
@@ -428,11 +427,11 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Optional black shade overlay child
+            // Legacy dark overlays are not part of the light theme.
             Transform shadeChild = btn.transform.Find("BlackShade") ?? btn.transform.Find("Image_BlackShade") ?? btn.transform.Find("Shade");
             if (shadeChild != null)
             {
-                shadeChild.gameObject.SetActive(!isUnlocked);
+                shadeChild.gameObject.SetActive(false);
             }
         }
 
