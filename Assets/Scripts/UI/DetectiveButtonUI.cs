@@ -181,6 +181,22 @@ namespace CaseClosed.UI
                     _shadow.useGraphicAlpha = true;
                 }
             }
+
+            if (_outline == null)
+            {
+                _outline = GetComponent<Outline>();
+                if (_outline == null && _targetImage != null)
+                {
+                    _outline = _targetImage.gameObject.AddComponent<Outline>();
+                }
+            }
+
+            if (_outline != null)
+            {
+                _outline.effectColor = BrassAccentColor;
+                _outline.effectDistance = new Vector2(1.5f, -1.5f);
+                _outline.useGraphicAlpha = false;
+            }
         }
 
         /// <summary>
@@ -262,13 +278,12 @@ namespace CaseClosed.UI
             {
                 if (effectiveVariant != DetectiveButtonVariant.DossierCard)
                 {
-                    // Use antialiased 9-sliced rounded sprite unless custom artwork is already assigned
-                    if (_targetImage.sprite == null || _targetImage.sprite.name.Contains("UISprite") || _targetImage.sprite.name.Contains("Background"))
-                    {
-                        _targetImage.sprite = DetectiveUITheme.GetRoundedSprite();
-                        _targetImage.type = Image.Type.Sliced;
-                        _targetImage.pixelsPerUnitMultiplier = 1.4f;
-                    }
+                    // Ensure the button uses the 9-sliced rounded sprite
+                    _targetImage.sprite = DetectiveUITheme.GetRoundedSprite();
+                    _targetImage.overrideSprite = null;
+                    _targetImage.type = Image.Type.Sliced;
+                    _targetImage.pixelsPerUnitMultiplier = 1.4f;
+                    _targetImage.preserveAspect = false;
                     _targetImage.color = GetBaseColor(effectiveVariant);
                 }
                 else
@@ -277,6 +292,8 @@ namespace CaseClosed.UI
                     _targetImage.color = Color.white;
                 }
             }
+
+            EnsureButtonLabel(effectiveVariant);
 
             // Style Typography
             if (enforceReadableTypography)
@@ -493,6 +510,70 @@ namespace CaseClosed.UI
             }
         }
 
+        private void EnsureButtonLabel(DetectiveButtonVariant effectiveVariant)
+        {
+            if (effectiveVariant == DetectiveButtonVariant.DossierCard) return;
+
+            Text existingText = GetComponentInChildren<Text>(true);
+            TMPro.TMP_Text existingTmp = GetComponentInChildren<TMPro.TMP_Text>(true);
+
+            if (existingText == null && existingTmp == null)
+            {
+                string caption = InferButtonCaption(gameObject.name);
+                if (!string.IsNullOrEmpty(caption))
+                {
+                    GameObject labelObj = new GameObject("ActionLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    labelObj.transform.SetParent(transform, false);
+                    RectTransform rt = labelObj.GetComponent<RectTransform>();
+                    DetectiveUITheme.Place(rt, Vector2.zero, Vector2.one);
+                    rt.sizeDelta = new Vector2(-20f, -8f);
+
+                    Text t = labelObj.GetComponent<Text>();
+                    t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
+                    t.text = caption.ToUpperInvariant();
+                    t.fontStyle = FontStyle.Bold;
+                    t.alignment = TextAnchor.MiddleCenter;
+                    t.color = PaperColor;
+                    t.resizeTextForBestFit = true;
+                    t.resizeTextMinSize = 10;
+                    t.resizeTextMaxSize = 18;
+                    t.raycastTarget = false;
+
+                    CacheTypographyComponents();
+                }
+            }
+        }
+
+        private static string InferButtonCaption(string objName)
+        {
+            if (string.IsNullOrEmpty(objName)) return "";
+            string lower = objName.ToLowerInvariant();
+            if (lower.Contains("mute")) return "MUTE";
+            if (lower.Contains("reset")) return "RESET DEFAULTS";
+            if (lower.Contains("quit") || lower.Contains("exit")) return "QUIT";
+            if (lower.Contains("settings")) return "SETTINGS";
+            if (lower.Contains("caseselect") || lower.Contains("cases_select") || lower.Contains("levelselect")) return "CASE FILES";
+            if (lower.Contains("howtoplay") || lower.Contains("how_to_play") || lower.Contains("help")) return "HOW TO PLAY";
+            if (lower.Contains("credit")) return "CREDITS";
+            if (lower.Contains("play") || lower.Contains("start")) return "START";
+            if (lower.Contains("resume")) return "RESUME";
+            if (lower.Contains("mainmenu") || lower.Contains("main_menu")) return "MAIN MENU";
+            if (lower.Contains("returntomenu") || lower.Contains("backtomenu")) return "BACK TO MENU";
+            if (lower.Contains("back") || lower.Contains("return")) return "BACK";
+            if (lower.Contains("retry") || lower.Contains("reopen")) return "RETRY";
+            if (lower.Contains("nextlevel") || lower.Contains("nextgame")) return "NEXT CASE";
+            if (lower.Contains("next")) return "NEXT";
+            if (lower.Contains("continue")) return "CONTINUE";
+            if (lower.Contains("conclude")) return "CONCLUDE CASE";
+            if (lower.Contains("notebook")) return "NOTEBOOK";
+            if (lower.Contains("suspect")) return "SUSPECTS";
+            if (lower.Contains("confirm") || lower.Contains("yes")) return "CONFIRM";
+            if (lower.Contains("cancel") || lower.Contains("no")) return "CANCEL";
+            if (lower.Contains("challenge")) return "CHALLENGE";
+            if (lower.Contains("close")) return "CLOSE";
+            return objName.Replace("Button_", "").Replace("Button", "").Trim();
+        }
+
         private void UpdateInteractableState()
         {
             if (_targetImage != null)
@@ -533,6 +614,26 @@ namespace CaseClosed.UI
                     else if (_isHovered) targetDist = new Vector2(0f, -5f);
                 }
                 _shadow.effectDistance = Vector2.Lerp(_shadow.effectDistance, targetDist, dt * transitionSpeed);
+            }
+
+            // Animate Outline border color with warm brass highlight
+            if (_outline != null)
+            {
+                Color targetOutline = BrassAccentColor;
+                if (!interactable)
+                {
+                    targetOutline = new Color(0.40f, 0.35f, 0.25f, 0.35f);
+                }
+                else if (_isPressed)
+                {
+                    targetOutline = new Color(0.48f, 0.36f, 0.18f, 1f);
+                }
+                else if (_isHovered || _isSelected)
+                {
+                    targetOutline = BrassHoverGlow;
+                }
+
+                _outline.effectColor = Color.Lerp(_outline.effectColor, targetOutline, dt * transitionSpeed);
             }
 
             // Animate Graphic Color (for non-dossier cards)

@@ -95,6 +95,7 @@ namespace CaseClosed.UI
             BindSettingsButtons();
             BindExitConfirmButtons();
             BindBackButtons();
+            StyleAllModalsAndButtons();
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
@@ -641,12 +642,160 @@ namespace CaseClosed.UI
         public void OpenExitConfirmation()
         {
             Debug.Log("[UI:MainMenu] Opening exit confirmation prompt...");
+            StyleExitConfirmationModal();
             if (exitConfirmContainer != null)
             {
                 exitConfirmContainer.SetActive(true);
                 exitConfirmContainer.transform.SetAsLastSibling();
             }
             AudioManager.Instance?.PlayButtonClick();
+        }
+
+        private void StyleAllModalsAndButtons()
+        {
+            // Navigation buttons
+            if (playButton != null) DetectiveUITheme.Action(playButton, "PLAY", DetectiveUITheme.Ink);
+            if (caseSelectButton != null) DetectiveUITheme.Action(caseSelectButton, "CASE FILES", DetectiveUITheme.Ink);
+            if (howToPlayButton != null) DetectiveUITheme.Action(howToPlayButton, "HOW TO PLAY", DetectiveUITheme.Ink);
+            if (settingsButton != null) DetectiveUITheme.Action(settingsButton, "SETTINGS", DetectiveUITheme.Ink);
+            if (creditsButton != null) DetectiveUITheme.Action(creditsButton, "CREDITS", DetectiveUITheme.Ink);
+            if (quitButton != null) DetectiveUITheme.Action(quitButton, "QUIT", DetectiveUITheme.StampRed);
+
+            // Back buttons
+            if (backFromCaseSelectButton != null) DetectiveUITheme.Action(backFromCaseSelectButton, "BACK TO MENU", DetectiveUITheme.Ink);
+            if (backFromSettingsButton != null) DetectiveUITheme.Action(backFromSettingsButton, "BACK TO MENU", DetectiveUITheme.Ink);
+            if (backFromHowToPlayButton != null) DetectiveUITheme.Action(backFromHowToPlayButton, "BACK TO MENU", DetectiveUITheme.Ink);
+            if (backFromCreditsButton != null) DetectiveUITheme.Action(backFromCreditsButton, "BACK TO MENU", DetectiveUITheme.Ink);
+
+            // Settings buttons
+            if (resetSettingsButton != null) DetectiveUITheme.Action(resetSettingsButton, "RESET DEFAULTS", DetectiveUITheme.Ink);
+
+            StyleExitConfirmationModal();
+            StyleHowToPlayModal();
+            StyleCreditsModal();
+        }
+
+        private void StyleExitConfirmationModal()
+        {
+            if (exitConfirmContainer == null) return;
+
+            Transform dialogWindow = exitConfirmContainer.transform.Find("Dialog_Window") ??
+                                     exitConfirmContainer.transform.Find("Card_Confirm") ??
+                                     exitConfirmContainer.transform;
+
+            Image windowImg = dialogWindow.GetComponent<Image>();
+            if (windowImg != null)
+            {
+                DetectiveUITheme.Surface(windowImg, DetectiveUITheme.Paper, true);
+            }
+
+            // Classification Header
+            Transform headerTr = dialogWindow.Find("Classification") ?? dialogWindow.Find("Text_Classification");
+            Text headerText = headerTr != null ? headerTr.GetComponent<Text>() : null;
+            if (headerText == null)
+            {
+                GameObject hObj = new GameObject("Classification", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                hObj.transform.SetParent(dialogWindow, false);
+                RectTransform rt = hObj.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2(0.08f, 0.88f);
+                rt.anchorMax = new Vector2(0.92f, 0.96f);
+                rt.anchoredPosition = Vector2.zero;
+                rt.sizeDelta = Vector2.zero;
+                headerText = hObj.GetComponent<Text>();
+                headerText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
+            DetectiveUITheme.TextStyle(headerText, 13, DetectiveUITheme.WoodDark, TextAnchor.MiddleLeft);
+            headerText.text = "INVESTIGATION BUREAU / CONFIDENTIAL";
+
+            // Horizontal Bronze Divider Rule
+            DetectiveUITheme.CreateDividerRule(dialogWindow, 0.85f);
+
+            // Title Text
+            Transform titleTr = dialogWindow.Find("Text_Title") ?? dialogWindow.Find("Title");
+            Text title = titleTr != null ? titleTr.GetComponent<Text>() : null;
+            if (title != null)
+            {
+                DetectiveUITheme.TextStyle(title, 24, DetectiveUITheme.Ink, TextAnchor.MiddleCenter);
+                title.text = "EXIT INVESTIGATION";
+            }
+
+            // Message / Body Text
+            Transform descTr = dialogWindow.Find("Text_Description") ?? dialogWindow.Find("Text_Body") ?? dialogWindow.Find("Body");
+            Text desc = descTr != null ? descTr.GetComponent<Text>() : null;
+            if (desc != null)
+            {
+                DetectiveUITheme.TextStyle(desc, 15, DetectiveUITheme.MutedInk, TextAnchor.MiddleCenter);
+                desc.text = "Are you sure you want to close the case files and exit the application?";
+            }
+
+            // Action Buttons
+            if (confirmExitYesButton != null)
+            {
+                DetectiveUITheme.Action(confirmExitYesButton, "QUIT", DetectiveUITheme.StampRed);
+            }
+            if (confirmExitNoButton != null)
+            {
+                DetectiveUITheme.Action(confirmExitNoButton, "CANCEL", DetectiveUITheme.Ink);
+            }
+        }
+
+        private void StyleHowToPlayModal()
+        {
+            if (howToPlayContainer == null) return;
+            Image bg = howToPlayContainer.GetComponent<Image>();
+            if (bg != null)
+            {
+                DetectiveUITheme.Surface(bg, DetectiveUITheme.Paper, true);
+            }
+            DetectiveUITheme.CreateDividerRule(howToPlayContainer.transform, 0.90f);
+
+            Text title = howToPlayContainer.transform.Find("Text_Title")?.GetComponent<Text>();
+            if (title != null)
+            {
+                DetectiveUITheme.TextStyle(title, 26, DetectiveUITheme.Ink, TextAnchor.MiddleCenter);
+                title.text = "DETECTIVE FIELD MANUAL";
+            }
+
+            Text body = howToPlayContainer.transform.Find("Text_Instructions")?.GetComponent<Text>() ??
+                        howToPlayContainer.transform.Find("Text_Body")?.GetComponent<Text>();
+            if (body != null)
+            {
+                DetectiveUITheme.TextStyle(body, 15, DetectiveUITheme.MutedInk, TextAnchor.UpperLeft);
+            }
+
+            if (backFromHowToPlayButton != null)
+            {
+                DetectiveUITheme.Action(backFromHowToPlayButton, "BACK TO MENU", DetectiveUITheme.Ink);
+            }
+        }
+
+        private void StyleCreditsModal()
+        {
+            if (creditsContainer == null) return;
+            Image bg = creditsContainer.GetComponent<Image>();
+            if (bg != null)
+            {
+                DetectiveUITheme.Surface(bg, DetectiveUITheme.Paper, true);
+            }
+            DetectiveUITheme.CreateDividerRule(creditsContainer.transform, 0.90f);
+
+            Text title = creditsContainer.transform.Find("Text_Title")?.GetComponent<Text>();
+            if (title != null)
+            {
+                DetectiveUITheme.TextStyle(title, 26, DetectiveUITheme.Ink, TextAnchor.MiddleCenter);
+            }
+
+            Text body = creditsContainer.transform.Find("Text_Credits")?.GetComponent<Text>() ??
+                        creditsContainer.transform.Find("Text_Body")?.GetComponent<Text>();
+            if (body != null)
+            {
+                DetectiveUITheme.TextStyle(body, 15, DetectiveUITheme.MutedInk, TextAnchor.MiddleCenter);
+            }
+
+            if (backFromCreditsButton != null)
+            {
+                DetectiveUITheme.Action(backFromCreditsButton, "BACK TO MENU", DetectiveUITheme.Ink);
+            }
         }
 
         /// <summary>

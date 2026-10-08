@@ -623,9 +623,6 @@ namespace CaseClosed.UI
                     RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
                     nrt.anchoredPosition = new Vector2(0f, -180f);
                     nrt.sizeDelta = new Vector2(130f, 50f);
-                    Image nImg = _nextButtonObj.GetComponent<Image>();
-                    nImg.sprite = nextButtonSprite;
-                    nImg.preserveAspect = true;
                     _nextButton = _nextButtonObj.GetComponent<Button>();
                     _nextButton.onClick.AddListener(OnNextQuestionClicked);
 
@@ -634,9 +631,6 @@ namespace CaseClosed.UI
                     RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
                     cbrt.anchoredPosition = new Vector2(0f, -180f);
                     cbrt.sizeDelta = new Vector2(180f, 55f);
-                    Image cImg = _confirmButtonObj.GetComponent<Image>();
-                    cImg.sprite = confirmButtonSprite;
-                    cImg.preserveAspect = true;
                     _confirmButton = _confirmButtonObj.GetComponent<Button>();
                     _confirmButton.onClick.AddListener(OnConfirmCaseClicked);
                 }
@@ -661,25 +655,6 @@ namespace CaseClosed.UI
                 _questionBoxImage.color = Color.white;
             }
 
-            if (_nextButtonObj != null)
-            {
-                Image nImg = _nextButtonObj.GetComponent<Image>();
-                if (nImg != null && nextButtonSprite != null)
-                {
-                    nImg.sprite = nextButtonSprite;
-                    nImg.preserveAspect = true;
-                }
-            }
-
-            if (_confirmButtonObj != null)
-            {
-                Image cImg = _confirmButtonObj.GetComponent<Image>();
-                if (cImg != null && confirmButtonSprite != null)
-                {
-                    cImg.sprite = confirmButtonSprite;
-                    cImg.preserveAspect = true;
-                }
-            }
         }
 
         /// <summary>
@@ -1122,7 +1097,7 @@ namespace CaseClosed.UI
 
             if (isAllCorrect)
             {
-                // WIN SCREEN: Show MenuGAME and NextGAME buttons side-by-side on desk
+                // WIN SCREEN: Show Main Menu and Next Case buttons side-by-side
                 if (returnToMainMenuButton != null)
                 {
                     returnToMainMenuButton.gameObject.SetActive(true);
@@ -1135,20 +1110,7 @@ namespace CaseClosed.UI
                         rt.anchoredPosition = new Vector2(-150f, 90f);
                         rt.sizeDelta = new Vector2(240f, 65f);
                     }
-
-                    Image img = returnToMainMenuButton.GetComponent<Image>();
-                    if (img != null)
-                    {
-                        if (menuGameButtonSprite != null) img.sprite = menuGameButtonSprite;
-                        img.color = Color.white;
-                        img.preserveAspect = true;
-                    }
-
-                    foreach (var txt in returnToMainMenuButton.GetComponentsInChildren<Text>(true))
-                    {
-                        txt.text = string.Empty;
-                        txt.gameObject.SetActive(false);
-                    }
+                    DetectiveUITheme.Action(returnToMainMenuButton, "MAIN MENU", DetectiveUITheme.Ink);
                 }
 
                 if (nextLevelButton != null)
@@ -1163,20 +1125,7 @@ namespace CaseClosed.UI
                         rt.anchoredPosition = new Vector2(150f, 90f);
                         rt.sizeDelta = new Vector2(240f, 65f);
                     }
-
-                    Image img = nextLevelButton.GetComponent<Image>();
-                    if (img != null)
-                    {
-                        if (nextGameButtonSprite != null) img.sprite = nextGameButtonSprite;
-                        img.color = Color.white;
-                        img.preserveAspect = true;
-                    }
-
-                    foreach (var txt in nextLevelButton.GetComponentsInChildren<Text>(true))
-                    {
-                        txt.text = string.Empty;
-                        txt.gameObject.SetActive(false);
-                    }
+                    DetectiveUITheme.Action(nextLevelButton, "NEXT CASE", DetectiveUITheme.Ink);
                 }
 
                 if (continueButton != null)
@@ -1186,7 +1135,7 @@ namespace CaseClosed.UI
             }
             else
             {
-                // FAILED SCREEN: Hide NextGAME button, show Continue/Retry button
+                // FAILED SCREEN: Hide Next Case button, show Retry Case and Main Menu buttons
                 if (nextLevelButton != null)
                 {
                     nextLevelButton.gameObject.SetActive(false);
@@ -1202,13 +1151,9 @@ namespace CaseClosed.UI
                         rt.anchorMax = new Vector2(0.5f, 0f);
                         rt.pivot = new Vector2(0.5f, 0.5f);
                         rt.anchoredPosition = new Vector2(-120f, 40f);
-                        rt.sizeDelta = new Vector2(200f, 50f);
+                        rt.sizeDelta = new Vector2(220f, 55f);
                     }
-                    if (continueButtonText != null)
-                    {
-                        continueButtonText.fontStyle = FontStyle.Bold;
-                        continueButtonText.text = "BACK TO LEVEL START";
-                    }
+                    DetectiveUITheme.Action(continueButton, "RETRY CASE", DetectiveUITheme.Ink);
                 }
 
                 if (returnToMainMenuButton != null)
@@ -1221,20 +1166,9 @@ namespace CaseClosed.UI
                         rt.anchorMax = new Vector2(0.5f, 0f);
                         rt.pivot = new Vector2(0.5f, 0.5f);
                         rt.anchoredPosition = new Vector2(120f, 40f);
-                        rt.sizeDelta = new Vector2(200f, 50f);
+                        rt.sizeDelta = new Vector2(220f, 55f);
                     }
-                    Image img = returnToMainMenuButton.GetComponent<Image>();
-                    if (img != null && menuGameButtonSprite != null)
-                    {
-                        img.sprite = menuGameButtonSprite;
-                        img.color = Color.white;
-                        img.preserveAspect = true;
-                    }
-                    foreach (var txt in returnToMainMenuButton.GetComponentsInChildren<Text>(true))
-                    {
-                        txt.text = string.Empty;
-                        txt.gameObject.SetActive(false);
-                    }
+                    DetectiveUITheme.Action(returnToMainMenuButton, "MAIN MENU", DetectiveUITheme.Ink);
                 }
             }
 
@@ -1242,9 +1176,6 @@ namespace CaseClosed.UI
             {
                 UIButtonHighlightSystem.ApplyToHierarchy(resultsContainer);
             }
-            DetectiveUITheme.Action(returnToMainMenuButton, "Main menu", DetectiveUITheme.MutedInk);
-            DetectiveUITheme.Action(nextLevelButton, "Next case", DetectiveUITheme.Ink);
-            DetectiveUITheme.Action(continueButton, "Reopen case", DetectiveUITheme.Ink);
         }
 
         /// <summary>

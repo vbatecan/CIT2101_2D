@@ -55,6 +55,7 @@ namespace CaseClosed.UI
             {
                 closeBoardButton.onClick.RemoveListener(OnCloseClicked);
                 closeBoardButton.onClick.AddListener(OnCloseClicked);
+                DetectiveUITheme.Action(closeBoardButton, "CLOSE", DetectiveUITheme.Ink);
             }
 
             RegisterEvents();
@@ -368,7 +369,15 @@ namespace CaseClosed.UI
 
         private void HandleConnectionResult(bool success, ClueConnectionSO matchedRule)
         {
-            if (feedbackBanner != null) feedbackBanner.SetActive(true);
+            if (feedbackBanner != null)
+            {
+                feedbackBanner.SetActive(true);
+                Image fbImg = feedbackBanner.GetComponent<Image>();
+                if (fbImg != null)
+                {
+                    DetectiveUITheme.Surface(fbImg, DetectiveUITheme.Paper, true);
+                }
+            }
 
             if (success && matchedRule != null)
             {

@@ -41,6 +41,10 @@ namespace CaseClosed.UI
             AutoResolveReferences();
             BindButtons();
             RefreshUI();
+            if (backButton != null)
+            {
+                DetectiveUITheme.Action(backButton, "BACK TO MENU", DetectiveUITheme.Ink);
+            }
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 

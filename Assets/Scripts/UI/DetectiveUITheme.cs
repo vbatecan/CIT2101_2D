@@ -149,43 +149,73 @@ namespace CaseClosed.UI
             DetectiveButton presentation = button.GetComponent<DetectiveButton>();
             if (presentation != null) presentation.SetPresentation(caption, color);
             Image image = button.GetComponent<Image>();
-            bool filled = color == Ink || color == StampRed;
-            Color surface;
-            if (filled)
-            {
-                surface = color;
-            }
-            else
-            {
-                surface = Color.Lerp(Color.white, color, 0.12f);
-                surface.a = 1f;
-            }
+            bool isAlert = color == StampRed;
+            Color surface = isAlert ? StampRed : Ink;
             Surface(image, surface);
             if (image != null)
             {
                 button.targetGraphic = image;
                 Outline edge = image.GetComponent<Outline>();
                 if (edge == null) edge = image.gameObject.AddComponent<Outline>();
-                edge.effectColor = filled ? WoodDark : BrassLight;
+                edge.effectColor = Brass;
                 edge.effectDistance = new Vector2(1.5f, -1.5f);
                 edge.useGraphicAlpha = false;
             }
-            Text label = button.GetComponentInChildren<Text>(true);
-            if (label == null)
+
+            string upperText = caption != null ? caption.ToUpperInvariant() : "";
+            TMPro.TextMeshProUGUI tmp = button.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+            if (tmp != null)
             {
-                GameObject labelObject = new GameObject("ActionLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                labelObject.transform.SetParent(button.transform, false);
-                label = labelObject.GetComponent<Text>();
-                label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                tmp.gameObject.SetActive(true);
+                tmp.text = upperText;
+                tmp.color = Paper;
+                tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
+                tmp.alignment = TMPro.TextAlignmentOptions.Center;
+                tmp.raycastTarget = false;
             }
-            label.gameObject.SetActive(true);
-            Place(label.rectTransform, Vector2.zero, Vector2.one);
-            label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
-            TextStyle(label, 18, filled ? Paper : color);
-            label.fontStyle = FontStyle.Bold;
-            label.text = caption != null ? caption.ToUpperInvariant() : "";
+            else
+            {
+                Text label = button.GetComponentInChildren<Text>(true);
+                if (label == null)
+                {
+                    GameObject labelObject = new GameObject("ActionLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                    labelObject.transform.SetParent(button.transform, false);
+                    label = labelObject.GetComponent<Text>();
+                    label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                }
+                label.gameObject.SetActive(true);
+                Place(label.rectTransform, Vector2.zero, Vector2.one);
+                label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
+                TextStyle(label, 18, Paper);
+                label.fontStyle = FontStyle.Bold;
+                label.text = upperText;
+            }
             UIButtonHighlightSystem.ApplyTo(button);
         }
 
+        internal static Image CreateDividerRule(Transform parent, float anchorY = 0.88f)
+        {
+            if (parent == null) return null;
+            Transform existing = parent.Find("HeaderRule") ?? parent.Find("DividerRule");
+            Image ruleImage = existing != null ? existing.GetComponent<Image>() : null;
+            if (ruleImage == null)
+            {
+                GameObject ruleObj = new GameObject("HeaderRule", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                ruleObj.transform.SetParent(parent, false);
+                ruleImage = ruleObj.GetComponent<Image>();
+            }
+
+            RectTransform rt = ruleImage.rectTransform;
+            rt.anchorMin = new Vector2(0.06f, anchorY);
+            rt.anchorMax = new Vector2(0.94f, anchorY);
+            rt.anchoredPosition = Vector2.zero;
+            rt.sizeDelta = new Vector2(0f, 1.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+
+            ruleImage.sprite = null;
+            ruleImage.color = Brass;
+            ruleImage.raycastTarget = false;
+            return ruleImage;
+        }
     }
 }

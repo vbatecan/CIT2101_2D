@@ -163,9 +163,21 @@ namespace CaseClosed.UI
         /// </summary>
         private void Start()
         {
-            if (nextButton != null) nextButton.onClick.AddListener(OnNextButtonClicked);
-            if (challengeButton != null) challengeButton.onClick.AddListener(OnChallengeButtonClicked);
-            if (closeDialogueButton != null) closeDialogueButton.onClick.AddListener(OnCloseButtonClicked);
+            if (nextButton != null)
+            {
+                nextButton.onClick.AddListener(OnNextButtonClicked);
+                DetectiveUITheme.Action(nextButton, "CONTINUE", DetectiveUITheme.Ink);
+            }
+            if (challengeButton != null)
+            {
+                challengeButton.onClick.AddListener(OnChallengeButtonClicked);
+                DetectiveUITheme.Action(challengeButton, "CHALLENGE", DetectiveUITheme.StampRed);
+            }
+            if (closeDialogueButton != null)
+            {
+                closeDialogueButton.onClick.AddListener(OnCloseButtonClicked);
+                DetectiveUITheme.Action(closeDialogueButton, "CLOSE", DetectiveUITheme.Ink);
+            }
 
             SubscribeToInterrogationEvents();
 
@@ -475,6 +487,8 @@ namespace CaseClosed.UI
                     if (dialogueBodyText != null) dialogueBodyText.enabled = false;
                     if (tmpDialogueText != null) tmpDialogueText.enabled = false;
                 }
+
+                ApplyUnifiedDialogueBoxStyle(targetBox, speakerName, string.Equals(characterKey, "Detective", StringComparison.OrdinalIgnoreCase));
             }
             else
             {
@@ -482,9 +496,95 @@ namespace CaseClosed.UI
                 if (_panelImage != null)
                 {
                     _panelImage.enabled = true;
+                    DetectiveUITheme.Surface(_panelImage, DetectiveUITheme.Paper, true);
                 }
-                if (dialogueBodyText != null) dialogueBodyText.enabled = true;
-                if (tmpDialogueText != null) tmpDialogueText.enabled = true;
+                if (dialogueBodyText != null)
+                {
+                    dialogueBodyText.enabled = true;
+                    dialogueBodyText.color = DetectiveUITheme.Ink;
+                }
+                if (tmpDialogueText != null)
+                {
+                    tmpDialogueText.enabled = true;
+                    tmpDialogueText.color = DetectiveUITheme.Ink;
+                }
+                if (speakerNameText != null)
+                {
+                    speakerNameText.color = DetectiveUITheme.WoodDark;
+                    speakerNameText.fontStyle = FontStyle.Bold;
+                }
+                if (tmpSpeakerNameText != null)
+                {
+                    tmpSpeakerNameText.color = DetectiveUITheme.WoodDark;
+                    tmpSpeakerNameText.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
+                }
+            }
+        }
+
+        private void ApplyUnifiedDialogueBoxStyle(GameObject box, string speakerName, bool isDetective)
+        {
+            if (box == null) return;
+
+            // 1. If Canvas Image based box
+            Image boxImage = box.GetComponent<Image>();
+            if (boxImage != null)
+            {
+                DetectiveUITheme.Surface(boxImage, DetectiveUITheme.Paper, true);
+            }
+
+            // 2. If World-space SpriteRenderer based speech bubble (VinceDialog, JaneDialog, etc.)
+            SpriteRenderer sr = box.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                Sprite roundedSprite = DetectiveUITheme.GetRoundedSprite();
+                if (roundedSprite != null)
+                {
+                    sr.sprite = roundedSprite;
+                    sr.drawMode = SpriteDrawMode.Sliced;
+                    if (sr.size.x < 30f || sr.size.y < 5f)
+                    {
+                        sr.size = new Vector2(Mathf.Max(sr.size.x, 35.69f), Mathf.Max(sr.size.y, 6.78f));
+                    }
+                }
+                sr.color = DetectiveUITheme.Paper;
+            }
+
+            // 3. Statement Text color: always dark antique ink for legibility on paper
+            TextMeshProUGUI tmpText = GetTextMeshProFromBox(box);
+            if (tmpText != null)
+            {
+                tmpText.color = DetectiveUITheme.Ink;
+            }
+
+            Text legacyText = box.GetComponentInChildren<Text>(true);
+            if (legacyText != null)
+            {
+                legacyText.color = DetectiveUITheme.Ink;
+            }
+
+            // 4. Speaker header styling if present
+            var boxSpeakerTmp = box.transform.Find("Text_Speaker")?.GetComponent<TextMeshProUGUI>() ??
+                                box.transform.Find("SpeakerName")?.GetComponent<TextMeshProUGUI>();
+            if (boxSpeakerTmp != null)
+            {
+                boxSpeakerTmp.color = isDetective ? DetectiveUITheme.Ink : DetectiveUITheme.WoodDark;
+                boxSpeakerTmp.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
+                if (!string.IsNullOrEmpty(speakerName))
+                {
+                    boxSpeakerTmp.text = speakerName.ToUpperInvariant();
+                }
+            }
+
+            var boxSpeakerLegacy = box.transform.Find("Text_Speaker")?.GetComponent<Text>() ??
+                                   box.transform.Find("SpeakerName")?.GetComponent<Text>();
+            if (boxSpeakerLegacy != null)
+            {
+                boxSpeakerLegacy.color = isDetective ? DetectiveUITheme.Ink : DetectiveUITheme.WoodDark;
+                boxSpeakerLegacy.fontStyle = FontStyle.Bold;
+                if (!string.IsNullOrEmpty(speakerName))
+                {
+                    boxSpeakerLegacy.text = speakerName.ToUpperInvariant();
+                }
             }
         }
 
@@ -1050,20 +1150,8 @@ namespace CaseClosed.UI
         {
             if (challengeButton == null) return;
             string upper = !string.IsNullOrEmpty(text) ? text.ToUpperInvariant() : "";
-            var tmp = challengeButton.GetComponentInChildren<TextMeshProUGUI>(true);
-            if (tmp != null)
-            {
-                tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
-                tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
-                tmp.text = upper;
-                return;
-            }
-            var legacy = challengeButton.GetComponentInChildren<Text>(true);
-            if (legacy != null)
-            {
-                legacy.fontStyle = FontStyle.Bold;
-                legacy.text = upper;
-            }
+            bool isCancel = string.Equals(upper, "CANCEL", StringComparison.OrdinalIgnoreCase);
+            DetectiveUITheme.Action(challengeButton, upper, isCancel ? DetectiveUITheme.MutedInk : DetectiveUITheme.StampRed);
         }
 
         /// <summary>

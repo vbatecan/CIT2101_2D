@@ -747,7 +747,15 @@ namespace CaseClosed.UI
             if (clueUnlockedNotificationText != null)
             {
                 clueUnlockedNotificationText.gameObject.SetActive(true);
+                clueUnlockedNotificationText.color = DetectiveUITheme.Ink;
+                clueUnlockedNotificationText.fontStyle = FontStyle.Bold;
                 clueUnlockedNotificationText.text = $"[NEW CLUE DISCOVERED]\n{hotspot.observationText}";
+
+                Image bannerBg = clueUnlockedNotificationText.GetComponentInParent<Image>();
+                if (bannerBg != null && bannerBg != backgroundImage)
+                {
+                    DetectiveUITheme.Surface(bannerBg, DetectiveUITheme.Paper, true);
+                }
             }
 
             if (currentEvidence != null)
