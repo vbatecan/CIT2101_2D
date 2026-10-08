@@ -129,16 +129,57 @@ namespace CaseClosed.UI
             rect.offsetMax = Vector2.zero;
         }
 
+        private static Font _standardFont;
+        public static Font GetStandardFont()
+        {
+            if (_standardFont != null) return _standardFont;
+            _standardFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (_standardFont == null)
+            {
+                _standardFont = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            }
+            if (_standardFont == null)
+            {
+                Text anyText = Object.FindFirstObjectByType<Text>(FindObjectsInactive.Include);
+                if (anyText != null && anyText.font != null)
+                {
+                    _standardFont = anyText.font;
+                }
+            }
+            return _standardFont;
+        }
+
+        private static TMPro.TMP_FontAsset _standardTmpFont;
+        public static TMPro.TMP_FontAsset GetStandardTmpFont()
+        {
+            if (_standardTmpFont != null) return _standardTmpFont;
+            _standardTmpFont = Resources.Load<TMPro.TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            if (_standardTmpFont == null)
+            {
+                _standardTmpFont = TMPro.TMP_Settings.defaultFontAsset;
+            }
+            if (_standardTmpFont == null)
+            {
+                var anyTmp = Object.FindFirstObjectByType<TMPro.TMP_Text>(FindObjectsInactive.Include);
+                if (anyTmp != null && anyTmp.font != null)
+                {
+                    _standardTmpFont = anyTmp.font;
+                }
+            }
+            return _standardTmpFont;
+        }
+
         internal static void TextStyle(Text text, int size, Color color, TextAnchor alignment = TextAnchor.MiddleCenter)
         {
             if (text == null) return;
+            text.font = GetStandardFont();
             text.color = color;
             text.fontSize = size;
             text.fontStyle = FontStyle.Bold;
             text.alignment = alignment;
             text.raycastTarget = false;
             text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = Mathf.Max(14, size - 4);
+            text.resizeTextMinSize = Mathf.Max(12, size - 4);
             text.resizeTextMaxSize = size;
             foreach (Shadow shadow in text.GetComponents<Shadow>()) shadow.enabled = false;
         }
@@ -167,9 +208,11 @@ namespace CaseClosed.UI
             if (tmp != null)
             {
                 tmp.gameObject.SetActive(true);
+                tmp.font = GetStandardTmpFont();
+                tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
+                tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
                 tmp.text = upperText;
                 tmp.color = Paper;
-                tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
                 tmp.alignment = TMPro.TextAlignmentOptions.Center;
                 tmp.raycastTarget = false;
             }
@@ -181,9 +224,9 @@ namespace CaseClosed.UI
                     GameObject labelObject = new GameObject("ActionLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
                     labelObject.transform.SetParent(button.transform, false);
                     label = labelObject.GetComponent<Text>();
-                    label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 }
                 label.gameObject.SetActive(true);
+                label.font = GetStandardFont();
                 Place(label.rectTransform, Vector2.zero, Vector2.one);
                 label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
                 TextStyle(label, 18, Paper);

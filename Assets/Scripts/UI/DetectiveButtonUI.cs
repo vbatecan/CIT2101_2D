@@ -369,9 +369,9 @@ namespace CaseClosed.UI
                     Text t = _cachedLabels[i];
                     if (t == null) continue;
 
-                    if (t.font == null)
+                    if (t.font == null || t.font != DetectiveUITheme.GetStandardFont())
                     {
-                        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
+                        t.font = DetectiveUITheme.GetStandardFont();
                     }
 
                     if (t.fontStyle != FontStyle.Bold)
@@ -405,6 +405,11 @@ namespace CaseClosed.UI
                 {
                     TMPro.TMP_Text tmp = _cachedTmpLabels[i];
                     if (tmp == null) continue;
+
+                    if (tmp.font == null)
+                    {
+                        tmp.font = DetectiveUITheme.GetStandardTmpFont();
+                    }
 
                     if ((tmp.fontStyle & TMPro.FontStyles.Bold) == 0 || (tmp.fontStyle & TMPro.FontStyles.LowerCase) != 0 || (tmp.fontStyle & TMPro.FontStyles.UpperCase) == 0)
                     {
@@ -444,11 +449,7 @@ namespace CaseClosed.UI
                     Text t = _cachedLabels[i];
                     if (t == null) continue;
 
-                    if (t.font == null)
-                    {
-                        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
-                    }
-
+                    t.font = DetectiveUITheme.GetStandardFont();
                     t.fontStyle = FontStyle.Bold;
                     if (!string.IsNullOrEmpty(t.text))
                     {
@@ -488,6 +489,7 @@ namespace CaseClosed.UI
                     TMPro.TMP_Text tmp = _cachedTmpLabels[i];
                     if (tmp == null) continue;
 
+                    tmp.font = DetectiveUITheme.GetStandardTmpFont();
                     tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
                     tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
                     tmp.enableAutoSizing = true;
@@ -517,36 +519,68 @@ namespace CaseClosed.UI
             Text existingText = GetComponentInChildren<Text>(true);
             TMPro.TMP_Text existingTmp = GetComponentInChildren<TMPro.TMP_Text>(true);
 
+            // 1. If existing Text has empty or whitespace text, or is inactive:
+            if (existingText != null && string.IsNullOrWhiteSpace(existingText.text))
+            {
+                string caption = InferButtonCaption(gameObject.name);
+                if (string.IsNullOrEmpty(caption)) caption = "SELECT";
+                existingText.gameObject.SetActive(true);
+                existingText.text = caption.ToUpperInvariant();
+                existingText.font = DetectiveUITheme.GetStandardFont();
+                existingText.fontStyle = FontStyle.Bold;
+                existingText.alignment = TextAnchor.MiddleCenter;
+                existingText.color = PaperColor;
+                existingText.raycastTarget = false;
+            }
+
+            // 2. If existing TMP_Text has empty or whitespace text, or is inactive:
+            if (existingTmp != null && string.IsNullOrWhiteSpace(existingTmp.text))
+            {
+                string caption = InferButtonCaption(gameObject.name);
+                if (string.IsNullOrEmpty(caption)) caption = "SELECT";
+                existingTmp.gameObject.SetActive(true);
+                existingTmp.text = caption.ToUpperInvariant();
+                existingTmp.font = DetectiveUITheme.GetStandardTmpFont();
+                existingTmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
+                existingTmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
+                existingTmp.alignment = TMPro.TextAlignmentOptions.Center;
+                existingTmp.color = PaperColor;
+                existingTmp.raycastTarget = false;
+            }
+
+            // 3. If neither exists, create a clean ActionLabel
             if (existingText == null && existingTmp == null)
             {
                 string caption = InferButtonCaption(gameObject.name);
-                if (!string.IsNullOrEmpty(caption))
+                if (string.IsNullOrEmpty(caption))
                 {
-                    GameObject labelObj = new GameObject("ActionLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    labelObj.transform.SetParent(transform, false);
-                    RectTransform rt = labelObj.GetComponent<RectTransform>();
-                    DetectiveUITheme.Place(rt, Vector2.zero, Vector2.one);
-                    rt.sizeDelta = new Vector2(-20f, -8f);
-
-                    Text t = labelObj.GetComponent<Text>();
-                    t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
-                    t.text = caption.ToUpperInvariant();
-                    t.fontStyle = FontStyle.Bold;
-                    t.alignment = TextAnchor.MiddleCenter;
-                    t.color = PaperColor;
-                    t.resizeTextForBestFit = true;
-                    t.resizeTextMinSize = 10;
-                    t.resizeTextMaxSize = 18;
-                    t.raycastTarget = false;
-
-                    CacheTypographyComponents();
+                    caption = "SELECT";
                 }
+
+                GameObject labelObj = new GameObject("ActionLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+                labelObj.transform.SetParent(transform, false);
+                RectTransform rt = labelObj.GetComponent<RectTransform>();
+                DetectiveUITheme.Place(rt, Vector2.zero, Vector2.one);
+                rt.sizeDelta = new Vector2(-20f, -8f);
+
+                Text t = labelObj.GetComponent<Text>();
+                t.font = DetectiveUITheme.GetStandardFont();
+                t.text = caption.ToUpperInvariant();
+                t.fontStyle = FontStyle.Bold;
+                t.alignment = TextAnchor.MiddleCenter;
+                t.color = PaperColor;
+                t.resizeTextForBestFit = true;
+                t.resizeTextMinSize = 10;
+                t.resizeTextMaxSize = 18;
+                t.raycastTarget = false;
+
+                CacheTypographyComponents();
             }
         }
 
         private static string InferButtonCaption(string objName)
         {
-            if (string.IsNullOrEmpty(objName)) return "";
+            if (string.IsNullOrEmpty(objName)) return "SELECT";
             string lower = objName.ToLowerInvariant();
             if (lower.Contains("mute")) return "MUTE";
             if (lower.Contains("reset")) return "RESET DEFAULTS";
@@ -555,23 +589,33 @@ namespace CaseClosed.UI
             if (lower.Contains("caseselect") || lower.Contains("cases_select") || lower.Contains("levelselect")) return "CASE FILES";
             if (lower.Contains("howtoplay") || lower.Contains("how_to_play") || lower.Contains("help")) return "HOW TO PLAY";
             if (lower.Contains("credit")) return "CREDITS";
-            if (lower.Contains("play") || lower.Contains("start")) return "START";
+            if (lower.Contains("play")) return "PLAY";
+            if (lower.Contains("start")) return "START";
             if (lower.Contains("resume")) return "RESUME";
             if (lower.Contains("mainmenu") || lower.Contains("main_menu")) return "MAIN MENU";
             if (lower.Contains("returntomenu") || lower.Contains("backtomenu")) return "BACK TO MENU";
             if (lower.Contains("back") || lower.Contains("return")) return "BACK";
             if (lower.Contains("retry") || lower.Contains("reopen")) return "RETRY";
+            if (lower.Contains("nextquestion") || lower.Contains("next_question")) return "NEXT QUESTION >";
+            if (lower.Contains("confirmcase") || lower.Contains("submitconclusion") || lower.Contains("confirm_case")) return "SUBMIT CONCLUSION";
             if (lower.Contains("nextlevel") || lower.Contains("nextgame")) return "NEXT CASE";
             if (lower.Contains("next")) return "NEXT";
             if (lower.Contains("continue")) return "CONTINUE";
             if (lower.Contains("conclude")) return "CONCLUDE CASE";
             if (lower.Contains("notebook")) return "NOTEBOOK";
             if (lower.Contains("suspect")) return "SUSPECTS";
+            if (lower.Contains("deduction")) return "DEDUCTIONS";
+            if (lower.Contains("inspect")) return "INSPECT";
+            if (lower.Contains("case01") || lower.Contains("case_01") || lower.Contains("level1")) return "CASE 01";
+            if (lower.Contains("case02") || lower.Contains("case_02") || lower.Contains("level2")) return "CASE 02";
+            if (lower.Contains("case03") || lower.Contains("case_03") || lower.Contains("level3")) return "CASE 03";
             if (lower.Contains("confirm") || lower.Contains("yes")) return "CONFIRM";
             if (lower.Contains("cancel") || lower.Contains("no")) return "CANCEL";
             if (lower.Contains("challenge")) return "CHALLENGE";
             if (lower.Contains("close")) return "CLOSE";
-            return objName.Replace("Button_", "").Replace("Button", "").Trim();
+
+            string cleaned = objName.Replace("Button_", "").Replace("Button", "").Replace("_", " ").Trim().ToUpperInvariant();
+            return !string.IsNullOrEmpty(cleaned) ? cleaned : "SELECT";
         }
 
         private void UpdateInteractableState()

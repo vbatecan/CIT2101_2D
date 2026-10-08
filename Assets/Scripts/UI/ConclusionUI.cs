@@ -208,6 +208,7 @@ namespace CaseClosed.UI
             {
                 returnToMainMenuButton.onClick.RemoveListener(OnMainMenuClicked);
                 returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
+                DetectiveUITheme.Action(returnToMainMenuButton, "MAIN MENU", DetectiveUITheme.Ink);
             }
 
             // 2. Next Level (NextGAME) button
@@ -229,6 +230,7 @@ namespace CaseClosed.UI
             {
                 nextLevelButton.onClick.RemoveListener(OnNextLevelClicked);
                 nextLevelButton.onClick.AddListener(OnNextLevelClicked);
+                DetectiveUITheme.Action(nextLevelButton, "NEXT CASE", DetectiveUITheme.Ink);
             }
 
             // 3. Continue / Retry button on failed outcome
@@ -245,6 +247,7 @@ namespace CaseClosed.UI
             {
                 continueButton.onClick.RemoveListener(OnContinueClicked);
                 continueButton.onClick.AddListener(OnContinueClicked);
+                DetectiveUITheme.Action(continueButton, "RETRY CASE", DetectiveUITheme.Ink);
             }
         }
 
@@ -527,22 +530,19 @@ namespace CaseClosed.UI
                     GameObject btnObj = DetectiveUITheme.CreateButton(_startScreenObj.transform, "StartButton");
                     RectTransform brt = btnObj.GetComponent<RectTransform>();
                     brt.anchoredPosition = new Vector2(0f, -65f);
-                    brt.sizeDelta = new Vector2(200f, 60f);
-                    Image btnImg = btnObj.GetComponent<Image>();
-                    btnImg.sprite = startButtonSprite;
-                    btnImg.preserveAspect = true;
+                    brt.sizeDelta = new Vector2(220f, 60f);
                     Button btn = btnObj.GetComponent<Button>();
                     btn.onClick.AddListener(OnStartQuizClicked);
+                    DetectiveUITheme.Action(btn, "START CONCLUSION", DetectiveUITheme.Ink);
                 }
             }
 
             if (_startScreenObj != null)
             {
-                Image sBtnImg = _startScreenObj.transform.Find("StartButton")?.GetComponent<Image>();
-                if (sBtnImg != null && startButtonSprite != null)
+                Button sBtn = _startScreenObj.transform.Find("StartButton")?.GetComponent<Button>();
+                if (sBtn != null)
                 {
-                    sBtnImg.sprite = startButtonSprite;
-                    sBtnImg.preserveAspect = true;
+                    DetectiveUITheme.Action(sBtn, "START CONCLUSION", DetectiveUITheme.Ink);
                 }
             }
 
@@ -622,17 +622,19 @@ namespace CaseClosed.UI
                     _nextButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "NextButton");
                     RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
                     nrt.anchoredPosition = new Vector2(0f, -180f);
-                    nrt.sizeDelta = new Vector2(130f, 50f);
+                    nrt.sizeDelta = new Vector2(160f, 50f);
                     _nextButton = _nextButtonObj.GetComponent<Button>();
                     _nextButton.onClick.AddListener(OnNextQuestionClicked);
+                    DetectiveUITheme.Action(_nextButton, "NEXT QUESTION >", DetectiveUITheme.Ink);
 
                     // Confirm Button (Confirm)
                     _confirmButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "ConfirmButton");
                     RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
                     cbrt.anchoredPosition = new Vector2(0f, -180f);
-                    cbrt.sizeDelta = new Vector2(180f, 55f);
+                    cbrt.sizeDelta = new Vector2(200f, 55f);
                     _confirmButton = _confirmButtonObj.GetComponent<Button>();
                     _confirmButton.onClick.AddListener(OnConfirmCaseClicked);
+                    DetectiveUITheme.Action(_confirmButton, "SUBMIT CONCLUSION", DetectiveUITheme.Ink);
                 }
             }
 
@@ -646,6 +648,8 @@ namespace CaseClosed.UI
                 _confirmButtonObj = _questionScreenObj.transform.Find("ConfirmButton")?.gameObject;
                 _nextButton = _nextButtonObj?.GetComponent<Button>();
                 _confirmButton = _confirmButtonObj?.GetComponent<Button>();
+                if (_nextButton != null) DetectiveUITheme.Action(_nextButton, "NEXT QUESTION >", DetectiveUITheme.Ink);
+                if (_confirmButton != null) DetectiveUITheme.Action(_confirmButton, "SUBMIT CONCLUSION", DetectiveUITheme.Ink);
             }
 
             if (_questionBoxImage != null && questionBoxSprite != null)
