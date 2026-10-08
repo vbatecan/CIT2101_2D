@@ -161,11 +161,17 @@ namespace CaseClosed.UI
 
             if (titleText != null)
             {
+                titleText.fontStyle = FontStyle.Bold;
+                if (!string.IsNullOrEmpty(titleText.text))
+                {
+                    titleText.text = titleText.text.ToUpperInvariant();
+                }
                 titleText.color = isUnlocked ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.75f);
             }
 
             if (statusText != null)
             {
+                statusText.fontStyle = FontStyle.Bold;
                 if (isCompleted)
                 {
                     statusText.text = "[ COMPLETED \u2605 ]";
@@ -179,7 +185,7 @@ namespace CaseClosed.UI
                 else
                 {
                     int requiredLevel = levelIndex - 1;
-                    statusText.text = $"[ LOCKED \uD83D\uDD12 (Beat Case 0{requiredLevel}) ]";
+                    statusText.text = $"[ LOCKED \uD83D\uDD12 (BEAT CASE 0{requiredLevel}) ]";
                     statusText.color = new Color(0.75f, 0.35f, 0.35f, 0.85f); // Dim Red
                 }
             }

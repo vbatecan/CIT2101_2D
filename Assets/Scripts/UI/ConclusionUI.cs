@@ -1204,7 +1204,11 @@ namespace CaseClosed.UI
                         rt.anchoredPosition = new Vector2(-120f, 40f);
                         rt.sizeDelta = new Vector2(200f, 50f);
                     }
-                    if (continueButtonText != null) continueButtonText.text = "Back to Level Start";
+                    if (continueButtonText != null)
+                    {
+                        continueButtonText.fontStyle = FontStyle.Bold;
+                        continueButtonText.text = "BACK TO LEVEL START";
+                    }
                 }
 
                 if (returnToMainMenuButton != null)

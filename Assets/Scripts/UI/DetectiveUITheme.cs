@@ -134,6 +134,7 @@ namespace CaseClosed.UI
             if (text == null) return;
             text.color = color;
             text.fontSize = size;
+            text.fontStyle = FontStyle.Bold;
             text.alignment = alignment;
             text.raycastTarget = false;
             text.resizeTextForBestFit = true;
@@ -182,7 +183,7 @@ namespace CaseClosed.UI
             label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
             TextStyle(label, 18, filled ? Paper : color);
             label.fontStyle = FontStyle.Bold;
-            label.text = caption;
+            label.text = caption != null ? caption.ToUpperInvariant() : "";
             UIButtonHighlightSystem.ApplyTo(button);
         }
 

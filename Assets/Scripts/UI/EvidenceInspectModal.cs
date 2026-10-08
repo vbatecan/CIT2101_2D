@@ -696,7 +696,8 @@ namespace CaseClosed.UI
                     Text labelText = spotObj.GetComponentInChildren<Text>();
                     if (labelText != null)
                     {
-                        labelText.text = currentSpot.hotspotTitle;
+                        labelText.fontStyle = FontStyle.Bold;
+                        labelText.text = !string.IsNullOrEmpty(currentSpot.hotspotTitle) ? currentSpot.hotspotTitle.ToUpperInvariant() : "";
                     }
 
                     Button btn = spotObj.GetComponent<Button>() ?? spotObj.GetComponentInChildren<Button>();

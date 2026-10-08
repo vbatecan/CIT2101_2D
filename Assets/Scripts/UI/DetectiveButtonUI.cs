@@ -52,6 +52,11 @@ namespace CaseClosed.UI
         private RectTransform _rectTransform;
         private Vector3 _originalScale = Vector3.one;
 
+        private Text[] _cachedLabels;
+        private TMPro.TMP_Text[] _cachedTmpLabels;
+        private string[] _lastProcessedTexts;
+        private string[] _lastProcessedTmpTexts;
+
         private bool _isHovered = false;
         private bool _isPressed = false;
         private bool _isSelected = false;
@@ -90,6 +95,7 @@ namespace CaseClosed.UI
 
             ResolveTargetGraphic();
             EnsureDepthComponents();
+            CacheTypographyComponents();
         }
 
         private void Start()
@@ -109,6 +115,7 @@ namespace CaseClosed.UI
             {
                 _rectTransform.localScale = _originalScale;
             }
+            CacheTypographyComponents();
         }
 
         private void Update()
@@ -314,38 +321,174 @@ namespace CaseClosed.UI
             }
         }
 
+        private void CacheTypographyComponents()
+        {
+            _cachedLabels = GetComponentsInChildren<Text>(true);
+            _lastProcessedTexts = (_cachedLabels != null) ? new string[_cachedLabels.Length] : null;
+
+            _cachedTmpLabels = GetComponentsInChildren<TMPro.TMP_Text>(true);
+            _lastProcessedTmpTexts = (_cachedTmpLabels != null) ? new string[_cachedTmpLabels.Length] : null;
+        }
+
+        private void LateUpdate()
+        {
+            if (enforceReadableTypography)
+            {
+                EnforceAllCapsAndBold();
+            }
+        }
+
+        private void EnforceAllCapsAndBold()
+        {
+            if (_cachedLabels == null || _cachedTmpLabels == null)
+            {
+                CacheTypographyComponents();
+            }
+
+            if (_cachedLabels != null)
+            {
+                for (int i = 0; i < _cachedLabels.Length; i++)
+                {
+                    Text t = _cachedLabels[i];
+                    if (t == null) continue;
+
+                    if (t.font == null)
+                    {
+                        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
+                    }
+
+                    if (t.fontStyle != FontStyle.Bold)
+                    {
+                        t.fontStyle = FontStyle.Bold;
+                    }
+
+                    string current = t.text;
+                    if (!string.IsNullOrEmpty(current))
+                    {
+                        if (current != _lastProcessedTexts[i])
+                        {
+                            string upper = current.ToUpperInvariant();
+                            if (current != upper)
+                            {
+                                t.text = upper;
+                                _lastProcessedTexts[i] = upper;
+                            }
+                            else
+                            {
+                                _lastProcessedTexts[i] = current;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (_cachedTmpLabels != null)
+            {
+                for (int i = 0; i < _cachedTmpLabels.Length; i++)
+                {
+                    TMPro.TMP_Text tmp = _cachedTmpLabels[i];
+                    if (tmp == null) continue;
+
+                    if ((tmp.fontStyle & TMPro.FontStyles.Bold) == 0 || (tmp.fontStyle & TMPro.FontStyles.LowerCase) != 0 || (tmp.fontStyle & TMPro.FontStyles.UpperCase) == 0)
+                    {
+                        tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
+                        tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
+                    }
+
+                    string current = tmp.text;
+                    if (!string.IsNullOrEmpty(current))
+                    {
+                        if (current != _lastProcessedTmpTexts[i])
+                        {
+                            string upper = current.ToUpperInvariant();
+                            if (current != upper)
+                            {
+                                tmp.text = upper;
+                                _lastProcessedTmpTexts[i] = upper;
+                            }
+                            else
+                            {
+                                _lastProcessedTmpTexts[i] = current;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void ApplyTypographyStyling(DetectiveButtonVariant effectiveVariant)
         {
-            Text[] labels = GetComponentsInChildren<Text>(true);
-            if (labels == null || labels.Length == 0) return;
+            CacheTypographyComponents();
 
-            for (int i = 0; i < labels.Length; i++)
+            if (_cachedLabels != null && _cachedLabels.Length > 0)
             {
-                Text t = labels[i];
-                if (t == null) continue;
-
-                // Dossier cards have specialized title and status badge layouts; do not alter their anchors
-                if (effectiveVariant == DetectiveButtonVariant.DossierCard)
+                for (int i = 0; i < _cachedLabels.Length; i++)
                 {
+                    Text t = _cachedLabels[i];
+                    if (t == null) continue;
+
+                    if (t.font == null)
+                    {
+                        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf") ?? Resources.GetBuiltinResource<Font>("Arial.ttf");
+                    }
+
                     t.fontStyle = FontStyle.Bold;
+                    if (!string.IsNullOrEmpty(t.text))
+                    {
+                        string upper = t.text.ToUpperInvariant();
+                        if (t.text != upper) t.text = upper;
+                        _lastProcessedTexts[i] = upper;
+                    }
+
+                    // Dossier cards have specialized title and status badge layouts; do not alter their anchors
+                    if (effectiveVariant == DetectiveButtonVariant.DossierCard)
+                    {
+                        t.resizeTextForBestFit = true;
+                        t.resizeTextMinSize = 9;
+                        t.resizeTextMaxSize = Mathf.Max(14, t.fontSize);
+                        continue;
+                    }
+
+                    // Standard action buttons: ensure centered, bold, perfectly legible all-caps text
+                    t.alignment = TextAnchor.MiddleCenter;
+                    t.color = PaperColor;
                     t.resizeTextForBestFit = true;
                     t.resizeTextMinSize = 10;
-                    t.resizeTextMaxSize = Mathf.Max(14, t.fontSize);
-                    continue;
+                    t.resizeTextMaxSize = Mathf.Max(15, t.fontSize);
+
+                    // Disable muddy default text shadows
+                    foreach (Shadow sh in t.GetComponents<Shadow>())
+                    {
+                        sh.enabled = false;
+                    }
                 }
+            }
 
-                // Standard action buttons: ensure centered, bold, perfectly legible text
-                t.alignment = TextAnchor.MiddleCenter;
-                t.fontStyle = FontStyle.Bold;
-                t.color = PaperColor;
-                t.resizeTextForBestFit = true;
-                t.resizeTextMinSize = 11;
-                t.resizeTextMaxSize = Mathf.Max(15, t.fontSize);
-
-                // Disable muddy default text shadows
-                foreach (Shadow sh in t.GetComponents<Shadow>())
+            if (_cachedTmpLabels != null && _cachedTmpLabels.Length > 0)
+            {
+                for (int i = 0; i < _cachedTmpLabels.Length; i++)
                 {
-                    sh.enabled = false;
+                    TMPro.TMP_Text tmp = _cachedTmpLabels[i];
+                    if (tmp == null) continue;
+
+                    tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
+                    tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
+                    tmp.enableAutoSizing = true;
+                    tmp.fontSizeMin = 9f;
+                    tmp.fontSizeMax = Mathf.Max(14f, tmp.fontSize);
+
+                    if (!string.IsNullOrEmpty(tmp.text))
+                    {
+                        string upper = tmp.text.ToUpperInvariant();
+                        if (tmp.text != upper) tmp.text = upper;
+                        _lastProcessedTmpTexts[i] = upper;
+                    }
+
+                    if (effectiveVariant != DetectiveButtonVariant.DossierCard)
+                    {
+                        tmp.alignment = TMPro.TextAlignmentOptions.Center;
+                        tmp.color = PaperColor;
+                    }
                 }
             }
         }

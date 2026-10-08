@@ -1049,16 +1049,20 @@ namespace CaseClosed.UI
         private void SetChallengeButtonText(string text)
         {
             if (challengeButton == null) return;
+            string upper = !string.IsNullOrEmpty(text) ? text.ToUpperInvariant() : "";
             var tmp = challengeButton.GetComponentInChildren<TextMeshProUGUI>(true);
             if (tmp != null)
             {
-                tmp.text = text;
+                tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
+                tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
+                tmp.text = upper;
                 return;
             }
             var legacy = challengeButton.GetComponentInChildren<Text>(true);
             if (legacy != null)
             {
-                legacy.text = text;
+                legacy.fontStyle = FontStyle.Bold;
+                legacy.text = upper;
             }
         }
 

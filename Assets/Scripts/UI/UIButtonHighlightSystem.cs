@@ -58,16 +58,47 @@ namespace CaseClosed.UI
             return cb;
         }
 
+        private static DetectiveButtonRunner _runnerInstance;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void InitializeSceneListener()
         {
+            ApplyToAllButtonsInScene();
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+            EnsureRuntimeRunner();
         }
 
         private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
         {
             ApplyToAllButtonsInScene();
+        }
+
+        private static void EnsureRuntimeRunner()
+        {
+            if (_runnerInstance == null)
+            {
+                GameObject runnerGO = new GameObject("[DetectiveButtonSystemRunner]");
+                runnerGO.hideFlags = HideFlags.HideAndDontSave;
+                _runnerInstance = runnerGO.AddComponent<DetectiveButtonRunner>();
+                Object.DontDestroyOnLoad(runnerGO);
+            }
+        }
+
+        private class DetectiveButtonRunner : MonoBehaviour
+        {
+            private float _checkTimer = 0f;
+            private const float CheckInterval = 0.35f;
+
+            private void Update()
+            {
+                _checkTimer += Time.unscaledDeltaTime;
+                if (_checkTimer >= CheckInterval)
+                {
+                    _checkTimer = 0f;
+                    ApplyToAllButtonsInScene();
+                }
+            }
         }
 
         /// <summary>
@@ -107,11 +138,14 @@ namespace CaseClosed.UI
             if (detBtn == null)
             {
                 detBtn = button.gameObject.AddComponent<DetectiveButtonUI>();
+                detBtn.ApplyStyling();
             }
-            detBtn.ApplyStyling();
 
-            button.transition = Selectable.Transition.ColorTint;
-            button.colors = GetHighlightColorBlock();
+            if (button.transition != Selectable.Transition.ColorTint)
+            {
+                button.transition = Selectable.Transition.ColorTint;
+                button.colors = GetHighlightColorBlock();
+            }
         }
 
         /// <summary>
