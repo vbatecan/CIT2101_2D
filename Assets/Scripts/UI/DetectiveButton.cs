@@ -19,11 +19,21 @@ namespace CaseClosed.UI
         private void Awake()
         {
             button = GetComponent<Button>();
+            EnsureDetectiveUI();
         }
 
         private void OnEnable()
         {
             DetectiveUITheme.Action(button, caption, backgroundColor);
+            EnsureDetectiveUI();
+        }
+
+        private void EnsureDetectiveUI()
+        {
+            if (GetComponent<DetectiveButtonUI>() == null)
+            {
+                gameObject.AddComponent<DetectiveButtonUI>();
+            }
         }
 
         // Keep runtime labels and colors when a panel is closed and reopened.

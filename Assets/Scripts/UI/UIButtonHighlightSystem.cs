@@ -58,16 +58,28 @@ namespace CaseClosed.UI
             return cb;
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void InitializeSceneListener()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            ApplyToAllButtonsInScene();
+        }
+
         /// <summary>
-        /// Applies the standardized white hover highlight to a single Button component.
-        /// Ensures a valid targetGraphic and transitions to ColorTint mode.
+        /// Applies the standardized detective button styling and interaction system to a single Button component.
+        /// Ensures DetectiveButtonUI is attached and configured, and sets up transitions.
         /// </summary>
         /// <param name="button">The button to configure.</param>
         public static void ApplyTo(Button button)
         {
             if (button == null) return;
 
-            // Skip full-screen backdrop click dismissers so hovering empty areas does not flash white
+            // Skip full-screen backdrop click dismissers so hovering empty areas does not flash white or animate
             string bName = button.name;
             if (bName.IndexOf("backdrop", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                 bName.IndexOf("overlay", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -89,6 +101,14 @@ namespace CaseClosed.UI
                     button.targetGraphic = graphic;
                 }
             }
+
+            // Ensure DetectiveButtonUI is attached and styled with authentic detective aesthetics
+            DetectiveButtonUI detBtn = button.GetComponent<DetectiveButtonUI>();
+            if (detBtn == null)
+            {
+                detBtn = button.gameObject.AddComponent<DetectiveButtonUI>();
+            }
+            detBtn.ApplyStyling();
 
             button.transition = Selectable.Transition.ColorTint;
             button.colors = GetHighlightColorBlock();

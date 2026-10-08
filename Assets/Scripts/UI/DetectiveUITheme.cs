@@ -52,7 +52,7 @@ namespace CaseClosed.UI
             return instance;
         }
 
-        private static Sprite GetRoundedSprite()
+        internal static Sprite GetRoundedSprite()
         {
             if (roundedSprite != null) return roundedSprite;
 

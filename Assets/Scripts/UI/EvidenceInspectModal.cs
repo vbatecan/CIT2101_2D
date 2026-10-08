@@ -728,6 +728,11 @@ namespace CaseClosed.UI
                     });
                 }
             }
+
+            if (hotspotsContainer != null)
+            {
+                UIButtonHighlightSystem.ApplyToHierarchy(hotspotsContainer.gameObject);
+            }
         }
 
         /// <summary>
