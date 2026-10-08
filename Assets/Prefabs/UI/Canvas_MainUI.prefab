@@ -164,6 +164,7 @@ MonoBehaviour:
   mainTablePanel: {fileID: 1204560600386639792}
   inspectModalPanel: {fileID: 4235437890786737015}
   notebookPanel: {fileID: 4736709159919651843}
+  suspectFolderPanel: {fileID: 0}
   deductionBoardPanel: {fileID: 8726136840528562215}
   conclusionQuizPanel: {fileID: 6662344102769393415}
   resultsScreenPanel: {fileID: 4747624794464319205}
@@ -171,12 +172,13 @@ MonoBehaviour:
   gameOverPanel: {fileID: 2703574657979302858}
   inGameMenuPanel: {fileID: 2633298300663942574}
   mainMenuConfirmPanel: {fileID: 72587854125227031}
-  timerContainer: {fileID: 3733597316016821999}
-  notebookButton: {fileID: 4382080048934352495}
-  deductionBoardButton: {fileID: 5989812954296452374}
-  concludeCaseButton: {fileID: 5912360476344444137}
-  investigatorSelectButton: {fileID: 6556369078558157602}
-  returnToMenuButton: {fileID: 4592450539837082509}
+  timerContainer: {fileID: 0}
+  notebookButton: {fileID: 0}
+  suspectFolderButton: {fileID: 0}
+  deductionBoardButton: {fileID: 0}
+  concludeCaseButton: {fileID: 0}
+  investigatorSelectButton: {fileID: 0}
+  returnToMenuButton: {fileID: 0}
   resumeGameButton: {fileID: 3235234608492604094}
   inGameMainMenuButton: {fileID: 202486876401767694}
   confirmMainMenuYesButton: {fileID: 1236527911379252362}
@@ -478,6 +480,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4193835311028496017, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4977187049728810785, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_Name
       value: Panel_HeaderNav
@@ -487,39 +493,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
---- !u!1 &3733597316016821999 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4188595161156564832, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 716221742718181775}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4203699261981198717 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3721677353766021362, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 716221742718181775}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &4382080048934352495 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3828272400331315168, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 716221742718181775}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &4592450539837082509 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3912271890746092034, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 716221742718181775}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5912360476344444137 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6628290839085909350, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 716221742718181775}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &5989812954296452374 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6543889433697936537, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
-  m_PrefabInstance: {fileID: 716221742718181775}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &6556369078558157602 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5984264733949201069, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
   m_PrefabInstance: {fileID: 716221742718181775}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1171224014152711731
