@@ -351,9 +351,17 @@ namespace CaseClosed.UI
 
         /// <summary>
         /// Opens the Case Selection screen and refreshes locked/unlocked statuses.
+        /// If a dedicated LevelSelect scene is registered, loads that scene; otherwise opens the in-menu subview.
         /// </summary>
         public void OpenCaseSelect()
         {
+            if (UnityEngine.Application.CanStreamedLevelBeLoaded("LevelSelect"))
+            {
+                AudioManager.Instance?.PlayButtonClick();
+                UnityEngine.SceneManagement.SceneManager.LoadScene("LevelSelect");
+                return;
+            }
+
             RefreshCaseSelectUI();
             OpenSubView(caseSelectContainer);
         }

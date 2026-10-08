@@ -1292,6 +1292,11 @@ namespace CaseClosed.UI
             }
 
             Debug.Log("[UI:Conclusion] Reached final level or returning to Level Select");
+            if (Application.CanStreamedLevelBeLoaded("LevelSelect"))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("LevelSelect");
+                return;
+            }
             OnMainMenuClicked();
         }
 
