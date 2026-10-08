@@ -452,6 +452,7 @@ namespace CaseClosed.UI
 
             if (concludeCaseButton == null) return;
 
+            bool isReady = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
             var concludeComp = concludeCaseButton.GetComponent<ConcludeCaseButton>();
             if (concludeComp != null)
             {
@@ -461,15 +462,16 @@ namespace CaseClosed.UI
             Button button = concludeCaseButton.GetComponentInChildren<Button>(true);
             if (button != null)
             {
-                button.interactable = true;
+                button.interactable = isReady;
             }
 
             if (concludeNavigationButton != null)
             {
                 Color color = DetectiveUITheme.MutedInk;
-                if (CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion())
+                if (isReady)
                     color = DetectiveUITheme.Ink;
                 DetectiveUITheme.Action(concludeNavigationButton, "Conclude case", color);
+                concludeNavigationButton.interactable = isReady;
             }
 
             RegisterEvents();
@@ -733,6 +735,8 @@ namespace CaseClosed.UI
         /// </summary>
         public void OpenConclusionQuiz()
         {
+            if (CaseManager.Instance == null || !CaseManager.Instance.IsReadyForConclusion()) return;
+
             if (conclusionQuizPanel == null)
             {
                 var found = Object.FindFirstObjectByType<ConclusionUI>(FindObjectsInactive.Include);

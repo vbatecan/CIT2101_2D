@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using CaseClosed.Enums;
 using CaseClosed.Managers;
 using CaseClosed.UI;
@@ -65,6 +66,11 @@ namespace CaseClosed.Gameplay
         private TableEvidenceItem currentHoveredItem;
         public bool isTapping = false;
         private Coroutine _tapCoroutine;
+        private Canvas _pointerCanvas;
+        private Image _pointerImage;
+        private Sprite _sourceSprite;
+        private Sprite _extendedSprite;
+        private bool _originalForceRenderingOff;
 
         /// <summary>
         /// Resets the tap state and cancels any ongoing tap animation coroutine.
@@ -86,6 +92,7 @@ namespace CaseClosed.Gameplay
 
             if (targetCamera == null) targetCamera = Camera.main;
             if (armRenderer == null) armRenderer = GetComponent<SpriteRenderer>();
+            if (armRenderer != null) _originalForceRenderingOff = armRenderer.forceRenderingOff;
 
             if (fingertipPoint == null)
             {
@@ -115,6 +122,8 @@ namespace CaseClosed.Gameplay
 
         private void OnDisable()
         {
+            if (_pointerCanvas != null) _pointerCanvas.enabled = false;
+            if (armRenderer != null) armRenderer.forceRenderingOff = _originalForceRenderingOff;
             ResetTapState();
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
@@ -123,6 +132,8 @@ namespace CaseClosed.Gameplay
 
         private void OnDestroy()
         {
+            if (_pointerCanvas != null) Destroy(_pointerCanvas.gameObject);
+            if (_extendedSprite != null) Destroy(_extendedSprite);
             if (_instance == this)
             {
                 _instance = null;
@@ -149,6 +160,67 @@ namespace CaseClosed.Gameplay
                 transform.position = Vector3.Lerp(transform.position, restPos, Time.deltaTime * transitionSpeed);
                 ClearHoveredItem();
             }
+        }
+
+        private void LateUpdate()
+        {
+            if (armRenderer == null || targetCamera == null || armRenderer.sprite == null) return;
+            EnsurePointerOverlay();
+            armRenderer.forceRenderingOff = true;
+            _pointerCanvas.enabled = isArmActive && armRenderer.enabled;
+            if (!_pointerCanvas.enabled) return;
+
+            Sprite sprite = armRenderer.sprite;
+            Bounds bounds = sprite.bounds;
+            Transform visualTransform = armRenderer.transform;
+            Vector3 top = targetCamera.WorldToScreenPoint(visualTransform.TransformPoint(
+                new Vector3(0f, bounds.max.y, 0f)));
+            Vector3 right = targetCamera.WorldToScreenPoint(visualTransform.TransformPoint(
+                new Vector3(bounds.size.x, bounds.max.y, 0f))) - top;
+            Vector3 down = targetCamera.WorldToScreenPoint(visualTransform.TransformPoint(
+                new Vector3(0f, bounds.min.y, 0f))) - top;
+
+            RectTransform rect = _pointerImage.rectTransform;
+            rect.position = new Vector3(top.x, top.y, 0f);
+            rect.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(right.y, right.x) * Mathf.Rad2Deg);
+            rect.pivot = new Vector2(sprite.pivot.x / sprite.rect.width, 1f);
+            float pixelsPerTexturePixel = down.magnitude / sprite.rect.height;
+            if (pixelsPerTexturePixel <= 0f) return;
+
+            // Preserve the hand, cuff and upper sleeve at their original size. Only the
+            // lowest sleeve section stretches, keeping the cut edge below the viewport.
+            float extension = new Vector2(Screen.width, Screen.height).magnitude;
+            rect.sizeDelta = new Vector2(right.magnitude, down.magnitude + extension);
+            _pointerImage.pixelsPerUnitMultiplier = _pointerCanvas.referencePixelsPerUnit /
+                (sprite.pixelsPerUnit * pixelsPerTexturePixel);
+            _pointerImage.color = armRenderer.color;
+        }
+
+        private void EnsurePointerOverlay()
+        {
+            if (_pointerCanvas == null)
+            {
+                GameObject overlay = new GameObject("ArmPointerOverlay", typeof(RectTransform), typeof(Canvas));
+                _pointerCanvas = overlay.GetComponent<Canvas>();
+                _pointerCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                _pointerCanvas.sortingOrder = short.MaxValue;
+                _pointerCanvas.targetDisplay = targetCamera.targetDisplay;
+
+                GameObject visual = new GameObject("Arm", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                visual.transform.SetParent(overlay.transform, false);
+                _pointerImage = visual.GetComponent<Image>();
+                _pointerImage.raycastTarget = false;
+                _pointerImage.type = Image.Type.Sliced;
+            }
+
+            if (_sourceSprite == armRenderer.sprite) return;
+            if (_extendedSprite != null) Destroy(_extendedSprite);
+            _sourceSprite = armRenderer.sprite;
+            Rect sourceRect = _sourceSprite.rect;
+            _extendedSprite = Sprite.Create(_sourceSprite.texture, sourceRect,
+                _sourceSprite.pivot / sourceRect.size, _sourceSprite.pixelsPerUnit, 0,
+                SpriteMeshType.FullRect, new Vector4(0f, 0f, 0f, sourceRect.height * 0.85f));
+            _pointerImage.sprite = _extendedSprite;
         }
 
         /// <summary>

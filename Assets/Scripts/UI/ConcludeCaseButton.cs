@@ -28,6 +28,7 @@ namespace CaseClosed.UI
         private SpriteRenderer _spriteRenderer;
         private Image _buttonImage;
         private bool _isReady = false;
+        private CaseManager _subscribedCaseManager;
 
         private void Awake()
         {
@@ -38,6 +39,8 @@ namespace CaseClosed.UI
 
         private void Start()
         {
+            EnsureClickable();
+            SubscribeEvents();
             UpdateReadinessState();
         }
 
@@ -59,30 +62,35 @@ namespace CaseClosed.UI
 
         private void SubscribeEvents()
         {
-            if (CaseManager.Instance != null)
+            CaseManager publisher = CaseManager.Instance;
+            if (_subscribedCaseManager == publisher) return;
+            UnsubscribeEvents();
+            _subscribedCaseManager = publisher;
+            if (_subscribedCaseManager != null)
             {
-                CaseManager.Instance.OnConclusionReadinessChanged -= HandleReadinessChanged;
-                CaseManager.Instance.OnConclusionReadinessChanged += HandleReadinessChanged;
-                CaseManager.Instance.OnDialogueTreeCompleted -= HandleDialogueChanged;
-                CaseManager.Instance.OnDialogueTreeCompleted += HandleDialogueChanged;
-                CaseManager.Instance.OnEvidenceDiscovered -= HandleEvidenceChanged;
-                CaseManager.Instance.OnEvidenceDiscovered += HandleEvidenceChanged;
+                _subscribedCaseManager.OnConclusionReadinessChanged += HandleReadinessChanged;
+                _subscribedCaseManager.OnDialogueTreeCompleted += HandleDialogueChanged;
+                _subscribedCaseManager.OnEvidenceDiscovered += HandleEvidenceChanged;
+                _subscribedCaseManager.OnCaseLoaded += HandleCaseLoaded;
             }
         }
 
         private void UnsubscribeEvents()
         {
-            if (CaseManager.Instance != null)
+            if (_subscribedCaseManager != null)
             {
-                CaseManager.Instance.OnConclusionReadinessChanged -= HandleReadinessChanged;
-                CaseManager.Instance.OnDialogueTreeCompleted -= HandleDialogueChanged;
-                CaseManager.Instance.OnEvidenceDiscovered -= HandleEvidenceChanged;
+                _subscribedCaseManager.OnConclusionReadinessChanged -= HandleReadinessChanged;
+                _subscribedCaseManager.OnDialogueTreeCompleted -= HandleDialogueChanged;
+                _subscribedCaseManager.OnEvidenceDiscovered -= HandleEvidenceChanged;
+                _subscribedCaseManager.OnCaseLoaded -= HandleCaseLoaded;
             }
+            _subscribedCaseManager = null;
         }
 
         private void HandleReadinessChanged(bool ready) => UpdateReadinessState();
         private void HandleDialogueChanged(string treeId) => UpdateReadinessState();
         private void HandleEvidenceChanged(Data.EvidenceSO ev) => UpdateReadinessState();
+        private void HandleCaseLoaded(Data.CaseSO caseData) => UpdateReadinessState();
 
         /// <summary>
         /// Updates the visual tint and interactability based on CaseManager readiness.
@@ -112,10 +120,15 @@ namespace CaseClosed.UI
                 _buttonImage.raycastTarget = true;
             }
 
-            // Always interactable so clicking concludes the case
             if (_boundButton != null)
             {
-                _boundButton.interactable = true;
+                _boundButton.interactable = _isReady;
+            }
+
+            if (!_isReady && _isHovered)
+            {
+                _isHovered = false;
+                transform.localScale = _originalScale;
             }
         }
 
@@ -191,7 +204,7 @@ namespace CaseClosed.UI
 
             if (_boundButton != null)
             {
-                _boundButton.interactable = true;
+                _boundButton.interactable = _isReady;
                 _boundButton.onClick.RemoveListener(OnClick);
                 _boundButton.onClick.AddListener(OnClick);
             }
@@ -215,6 +228,9 @@ namespace CaseClosed.UI
         /// </summary>
         public void OnClick()
         {
+            UpdateReadinessState();
+            if (!_isReady) return;
+
             Debug.Log("[UI:ConcludeCaseButton] Clicked — opening conclusion quiz");
             AudioManager.Instance?.PlayButtonClick();
 
@@ -234,7 +250,7 @@ namespace CaseClosed.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!_isHovered && hoverScaleMultiplier > 1f)
+            if (_isReady && !_isHovered && hoverScaleMultiplier > 1f)
             {
                 _isHovered = true;
                 transform.localScale = _originalScale * hoverScaleMultiplier;
