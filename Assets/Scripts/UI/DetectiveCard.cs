@@ -19,7 +19,7 @@ namespace CaseClosed.UI
         {
             DetectiveUITheme.Surface(background, DetectiveUITheme.Paper, true);
             if (classificationText != null)
-                DetectiveUITheme.TextStyle(classificationText, classificationText.fontSize, DetectiveUITheme.Brass, TextAnchor.MiddleLeft);
+                DetectiveUITheme.TextStyle(classificationText, classificationText.fontSize, DetectiveUITheme.WoodDark, TextAnchor.MiddleLeft);
             if (titleText != null)
                 DetectiveUITheme.TextStyle(titleText, titleText.fontSize, DetectiveUITheme.Ink);
             if (bodyText != null)

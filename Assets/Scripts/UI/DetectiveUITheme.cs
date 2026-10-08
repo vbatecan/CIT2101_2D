@@ -7,11 +7,15 @@ namespace CaseClosed.UI
     internal static class DetectiveUITheme
     {
         internal static readonly Color Paper = new Color(0.98f, 0.97f, 0.93f, 1f);
-        internal static readonly Color Backdrop = new Color(0.98f, 0.97f, 0.93f, 0.88f);
-        internal static readonly Color Ink = new Color(0.12f, 0.17f, 0.17f, 1f);
-        internal static readonly Color MutedInk = new Color(0.36f, 0.36f, 0.31f, 1f);
+        internal static readonly Color Wood = new Color(169f / 255f, 110f / 255f, 73f / 255f, 1f);
+        internal static readonly Color Backdrop = new Color(131f / 255f, 82f / 255f, 53f / 255f, 0.72f);
+        internal static readonly Color Ink = new Color(0.06f, 0.04f, 0.02f, 1f);
+        internal static readonly Color MutedInk = new Color(0.30f, 0.23f, 0.17f, 1f);
         internal static readonly Color Brass = new Color(0.65f, 0.49f, 0.26f, 1f);
         internal static readonly Color StampRed = new Color(0.56f, 0.20f, 0.16f, 1f);
+        internal static readonly Color PaperShade = new Color(0.93f, 0.90f, 0.82f, 1f);
+        internal static readonly Color WoodDark = new Color(0.36f, 0.22f, 0.13f, 1f);
+        internal static readonly Color BrassLight = new Color(0.80f, 0.65f, 0.38f, 1f);
         private static Sprite roundedSprite;
         private static GameObject buttonPrefab;
         private static GameObject cardPrefab;
@@ -91,11 +95,28 @@ namespace CaseClosed.UI
             image.color = color;
             if (panel)
             {
-                Shadow shadow = image.GetComponent<Shadow>();
-                if (shadow == null) shadow = image.gameObject.AddComponent<Shadow>();
-                shadow.effectColor = new Color(0f, 0f, 0f, 0.22f);
-                shadow.effectDistance = new Vector2(0f, -5f);
-                shadow.useGraphicAlpha = true;
+                Shadow[] shadows = image.GetComponents<Shadow>();
+                Shadow soft = null;
+                Shadow contact = null;
+                Outline frame = null;
+                for (int i = 0; i < shadows.Length; i++)
+                {
+                    if (shadows[i] is Outline outline) frame = outline;
+                    else if (soft == null) soft = shadows[i];
+                    else if (contact == null) contact = shadows[i];
+                }
+                if (soft == null) soft = image.gameObject.AddComponent<Shadow>();
+                if (contact == null) contact = image.gameObject.AddComponent<Shadow>();
+                if (frame == null) frame = image.gameObject.AddComponent<Outline>();
+                soft.effectColor = new Color(0f, 0f, 0f, 0.18f);
+                soft.effectDistance = new Vector2(0f, -8f);
+                soft.useGraphicAlpha = true;
+                contact.effectColor = new Color(0f, 0f, 0f, 0.12f);
+                contact.effectDistance = new Vector2(0f, -2f);
+                contact.useGraphicAlpha = true;
+                frame.effectColor = WoodDark;
+                frame.effectDistance = new Vector2(2f, -2f);
+                frame.useGraphicAlpha = false;
             }
         }
 
@@ -127,10 +148,27 @@ namespace CaseClosed.UI
             DetectiveButton presentation = button.GetComponent<DetectiveButton>();
             if (presentation != null) presentation.SetPresentation(caption, color);
             Image image = button.GetComponent<Image>();
-            Color lightSurface = Color.Lerp(Color.white, color, 0.12f);
-            lightSurface.a = 1f;
-            Surface(image, lightSurface);
-            if (image != null) button.targetGraphic = image;
+            bool filled = color == Ink || color == StampRed;
+            Color surface;
+            if (filled)
+            {
+                surface = color;
+            }
+            else
+            {
+                surface = Color.Lerp(Color.white, color, 0.12f);
+                surface.a = 1f;
+            }
+            Surface(image, surface);
+            if (image != null)
+            {
+                button.targetGraphic = image;
+                Outline edge = image.GetComponent<Outline>();
+                if (edge == null) edge = image.gameObject.AddComponent<Outline>();
+                edge.effectColor = filled ? WoodDark : BrassLight;
+                edge.effectDistance = new Vector2(1.5f, -1.5f);
+                edge.useGraphicAlpha = false;
+            }
             Text label = button.GetComponentInChildren<Text>(true);
             if (label == null)
             {
@@ -142,7 +180,7 @@ namespace CaseClosed.UI
             label.gameObject.SetActive(true);
             Place(label.rectTransform, Vector2.zero, Vector2.one);
             label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
-            TextStyle(label, 18, color);
+            TextStyle(label, 18, filled ? Paper : color);
             label.fontStyle = FontStyle.Bold;
             label.text = caption;
             UIButtonHighlightSystem.ApplyTo(button);

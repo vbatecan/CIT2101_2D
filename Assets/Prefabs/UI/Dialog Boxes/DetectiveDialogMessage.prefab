@@ -74,8 +74,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278849300
+  m_fontColor: {r: 0.078431375, g: 0.05882353, b: 0.039215688, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -193,6 +193,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6850836561159669493, guid: 454332f66bbbe9f6b96033e59e4dac18, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1483352951266711905, guid: fc451fed76406e75d88bb1cb50af5614, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

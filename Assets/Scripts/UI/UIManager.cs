@@ -236,7 +236,7 @@ namespace CaseClosed.UI
             if (title != null)
             {
                 Text label = title.GetComponent<Text>();
-                if (label != null) DetectiveUITheme.TextStyle(label, label.fontSize, DetectiveUITheme.Ink);
+                if (label != null) DetectiveUITheme.TextStyle(label, label.fontSize, DetectiveUITheme.Paper);
             }
         }
 
