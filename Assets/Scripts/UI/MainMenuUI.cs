@@ -865,6 +865,12 @@ namespace CaseClosed.UI
                 return;
             }
 
+            if (activeScene != "CaseManager" && Application.CanStreamedLevelBeLoaded("CaseManager"))
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("CaseManager");
+                return;
+            }
+
             GameBootstrap bootstrap = FindFirstObjectByType<GameBootstrap>();
             if (bootstrap != null)
             {

@@ -208,7 +208,6 @@ namespace CaseClosed.UI
             {
                 returnToMainMenuButton.onClick.RemoveListener(OnMainMenuClicked);
                 returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
-                DetectiveUITheme.Action(returnToMainMenuButton, "MAIN MENU", DetectiveUITheme.Ink);
             }
 
             // 2. Next Level (NextGAME) button
@@ -230,7 +229,6 @@ namespace CaseClosed.UI
             {
                 nextLevelButton.onClick.RemoveListener(OnNextLevelClicked);
                 nextLevelButton.onClick.AddListener(OnNextLevelClicked);
-                DetectiveUITheme.Action(nextLevelButton, "NEXT CASE", DetectiveUITheme.Ink);
             }
 
             // 3. Continue / Retry button on failed outcome
@@ -247,7 +245,6 @@ namespace CaseClosed.UI
             {
                 continueButton.onClick.RemoveListener(OnContinueClicked);
                 continueButton.onClick.AddListener(OnContinueClicked);
-                DetectiveUITheme.Action(continueButton, "RETRY CASE", DetectiveUITheme.Ink);
             }
         }
 
@@ -530,19 +527,22 @@ namespace CaseClosed.UI
                     GameObject btnObj = DetectiveUITheme.CreateButton(_startScreenObj.transform, "StartButton");
                     RectTransform brt = btnObj.GetComponent<RectTransform>();
                     brt.anchoredPosition = new Vector2(0f, -65f);
-                    brt.sizeDelta = new Vector2(220f, 60f);
+                    brt.sizeDelta = new Vector2(200f, 60f);
+                    Image btnImg = btnObj.GetComponent<Image>();
+                    btnImg.sprite = startButtonSprite;
+                    btnImg.preserveAspect = true;
                     Button btn = btnObj.GetComponent<Button>();
                     btn.onClick.AddListener(OnStartQuizClicked);
-                    DetectiveUITheme.Action(btn, "START CONCLUSION", DetectiveUITheme.Ink);
                 }
             }
 
             if (_startScreenObj != null)
             {
-                Button sBtn = _startScreenObj.transform.Find("StartButton")?.GetComponent<Button>();
-                if (sBtn != null)
+                Image sBtnImg = _startScreenObj.transform.Find("StartButton")?.GetComponent<Image>();
+                if (sBtnImg != null && startButtonSprite != null)
                 {
-                    DetectiveUITheme.Action(sBtn, "START CONCLUSION", DetectiveUITheme.Ink);
+                    sBtnImg.sprite = startButtonSprite;
+                    sBtnImg.preserveAspect = true;
                 }
             }
 
@@ -622,19 +622,23 @@ namespace CaseClosed.UI
                     _nextButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "NextButton");
                     RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
                     nrt.anchoredPosition = new Vector2(0f, -180f);
-                    nrt.sizeDelta = new Vector2(160f, 50f);
+                    nrt.sizeDelta = new Vector2(130f, 50f);
+                    Image nImg = _nextButtonObj.GetComponent<Image>();
+                    nImg.sprite = nextButtonSprite;
+                    nImg.preserveAspect = true;
                     _nextButton = _nextButtonObj.GetComponent<Button>();
                     _nextButton.onClick.AddListener(OnNextQuestionClicked);
-                    DetectiveUITheme.Action(_nextButton, "NEXT QUESTION >", DetectiveUITheme.Ink);
 
                     // Confirm Button (Confirm)
                     _confirmButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "ConfirmButton");
                     RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
                     cbrt.anchoredPosition = new Vector2(0f, -180f);
-                    cbrt.sizeDelta = new Vector2(200f, 55f);
+                    cbrt.sizeDelta = new Vector2(180f, 55f);
+                    Image cImg = _confirmButtonObj.GetComponent<Image>();
+                    cImg.sprite = confirmButtonSprite;
+                    cImg.preserveAspect = true;
                     _confirmButton = _confirmButtonObj.GetComponent<Button>();
                     _confirmButton.onClick.AddListener(OnConfirmCaseClicked);
-                    DetectiveUITheme.Action(_confirmButton, "SUBMIT CONCLUSION", DetectiveUITheme.Ink);
                 }
             }
 
@@ -648,8 +652,6 @@ namespace CaseClosed.UI
                 _confirmButtonObj = _questionScreenObj.transform.Find("ConfirmButton")?.gameObject;
                 _nextButton = _nextButtonObj?.GetComponent<Button>();
                 _confirmButton = _confirmButtonObj?.GetComponent<Button>();
-                if (_nextButton != null) DetectiveUITheme.Action(_nextButton, "NEXT QUESTION >", DetectiveUITheme.Ink);
-                if (_confirmButton != null) DetectiveUITheme.Action(_confirmButton, "SUBMIT CONCLUSION", DetectiveUITheme.Ink);
             }
 
             if (_questionBoxImage != null && questionBoxSprite != null)
@@ -659,6 +661,25 @@ namespace CaseClosed.UI
                 _questionBoxImage.color = Color.white;
             }
 
+            if (_nextButtonObj != null)
+            {
+                Image nImg = _nextButtonObj.GetComponent<Image>();
+                if (nImg != null && nextButtonSprite != null)
+                {
+                    nImg.sprite = nextButtonSprite;
+                    nImg.preserveAspect = true;
+                }
+            }
+
+            if (_confirmButtonObj != null)
+            {
+                Image cImg = _confirmButtonObj.GetComponent<Image>();
+                if (cImg != null && confirmButtonSprite != null)
+                {
+                    cImg.sprite = confirmButtonSprite;
+                    cImg.preserveAspect = true;
+                }
+            }
         }
 
         /// <summary>
@@ -921,7 +942,8 @@ namespace CaseClosed.UI
                 ShowSubmissionError(message);
                 return;
             }
-            DisplayResultsCard(result);
+            if (UIManager.Instance != null)
+                UIManager.Instance.ShowResults(result);
         }
 
         private void ShowSubmissionError(string message)
@@ -933,254 +955,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Resolves the appropriate failed background sprite based on case level number.
-        /// </summary>
-        private Sprite GetFailedSprite(int levelNumber)
-        {
-            if (levelNumber == 2)
-            {
-                var s2 = LoadSprite("Assets/Assets/BACKGROUNDS/Case2FAILED.png");
-                if (s2 != null) return s2;
-            }
-            else if (levelNumber == 3)
-            {
-                var s3 = LoadSprite("Assets/Assets/BACKGROUNDS/Case3FAILED.png");
-                if (s3 != null) return s3;
-            }
-
-            if (failedBackgroundSprite != null) return failedBackgroundSprite;
-
-            var s1 = LoadSprite("Assets/Assets/BACKGROUNDS/case1FAILED.png");
-            if (s1 != null) return s1;
-            return null;
-        }
-
-        /// <summary>
-        /// Populates and displays the final evaluation results scorecard, maximizing to fullscreen.
-        /// </summary>
-        /// <param name="result">The evaluation result data to display.</param>
-        private void DisplayResultsCard(CaseEvaluationResult result)
-        {
-            if (result == null) return;
-
-            EnsureAssets();
-
-            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
-            CharacterProfileSO investigator = CaseManager.Instance?.EffectiveInvestigator;
-            string investigatorName = investigator != null ? investigator.fullName : "Unknown Investigator";
-            int currentLevel = activeCase != null ? activeCase.levelNumber : 1;
-
-            bool isAllCorrect = (result.totalQuizQuestions > 0 && result.correctQuizAnswers == result.totalQuizQuestions);
-
-            Debug.Log($"[UI:Conclusion] Displaying results scorecard: AllCorrect={isAllCorrect}, Solved={result.isCaseSolved}, Score={result.totalScore}, Grade={result.rankGrade}, Stars={result.starCount}");
-
-            // Maximize Panel_ConclusionQuiz and results container to fill 100% of the screen
-            RectTransform rootRt = GetComponent<RectTransform>();
-            if (rootRt != null)
-            {
-                rootRt.anchorMin = Vector2.zero;
-                rootRt.anchorMax = Vector2.one;
-                rootRt.offsetMin = Vector2.zero;
-                rootRt.offsetMax = Vector2.zero;
-                rootRt.sizeDelta = Vector2.zero;
-            }
-            transform.SetAsLastSibling();
-
-            Image panelBg = GetComponent<Image>();
-            if (panelBg != null)
-            {
-                panelBg.color = Color.clear;
-            }
-
-            if (resultsContainer != null)
-            {
-                RectTransform resRt = resultsContainer.GetComponent<RectTransform>();
-                if (resRt != null)
-                {
-                    resRt.anchorMin = Vector2.zero;
-                    resRt.anchorMax = Vector2.one;
-                    resRt.offsetMin = Vector2.zero;
-                    resRt.offsetMax = Vector2.zero;
-                    resRt.sizeDelta = Vector2.zero;
-                }
-            }
-
-            // Hide in-game header navigation and pause the countdown timer
-            if (UIManager.Instance != null)
-            {
-                if (UIManager.Instance.timerContainer != null) UIManager.Instance.timerContainer.SetActive(false);
-                if (UIManager.Instance.notebookButton != null) UIManager.Instance.notebookButton.SetActive(false);
-                if (UIManager.Instance.suspectFolderButton != null) UIManager.Instance.suspectFolderButton.SetActive(false);
-                if (UIManager.Instance.deductionBoardButton != null) UIManager.Instance.deductionBoardButton.SetActive(false);
-                if (UIManager.Instance.concludeCaseButton != null) UIManager.Instance.concludeCaseButton.SetActive(false);
-                if (UIManager.Instance.returnToMenuButton != null) UIManager.Instance.returnToMenuButton.SetActive(false);
-            }
-            CaseManager.Instance?.PauseTimer();
-
-            // Maximize resultBackgroundImage to stretch across the whole display without borders
-            if (resultBackgroundImage != null)
-            {
-                RectTransform bgRt = resultBackgroundImage.GetComponent<RectTransform>();
-                if (bgRt != null)
-                {
-                    bgRt.anchorMin = Vector2.zero;
-                    bgRt.anchorMax = Vector2.one;
-                    bgRt.offsetMin = Vector2.zero;
-                    bgRt.offsetMax = Vector2.zero;
-                    bgRt.sizeDelta = Vector2.zero;
-                }
-                resultBackgroundImage.preserveAspect = false;
-                resultBackgroundImage.transform.SetAsFirstSibling();
-            }
-
-            if (quizContainer != null) quizContainer.SetActive(false);
-            if (resultsContainer != null) resultsContainer.SetActive(true);
-
-            // Outcome Background: CasesWIN on all correct, case1FAILED on loss
-            if (resultBackgroundImage != null)
-            {
-                if (isAllCorrect)
-                {
-                    Sprite winSprite = solvedBackgroundSprite ?? LoadSprite("Assets/Assets/BACKGROUNDS/CasesWIN.png");
-                    resultBackgroundImage.sprite = winSprite;
-                    resultBackgroundImage.color = (winSprite != null) ? Color.white : DetectiveUITheme.Paper;
-                }
-                else
-                {
-                    Sprite failSprite = GetFailedSprite(currentLevel);
-                    resultBackgroundImage.sprite = failSprite;
-                    resultBackgroundImage.color = (failSprite != null) ? Color.white : DetectiveUITheme.Paper;
-                }
-            }
-
-            // Win or lose screen: Clear and hide all text overlays so the illustrated background art is unobstructed
-            if (resultTitleText != null)
-            {
-                resultTitleText.text = string.Empty;
-                resultTitleText.gameObject.SetActive(false);
-            }
-
-            if (isAllCorrect)
-            {
-                CaseClosed.Services.CaseProgressionService.Instance?.SetCaseCompleted(currentLevel, true);
-            }
-
-            if (resultGradeText != null)
-            {
-                resultGradeText.text = string.Empty;
-                resultGradeText.gameObject.SetActive(false);
-            }
-
-            if (starRatingText != null)
-            {
-                starRatingText.text = string.Empty;
-                starRatingText.gameObject.SetActive(false);
-            }
-
-            if (scoreBreakdownText != null)
-            {
-                scoreBreakdownText.text = string.Empty;
-                scoreBreakdownText.gameObject.SetActive(false);
-            }
-
-            // Remove any loose text components on results container while preserving navigation button labels
-            if (resultsContainer != null)
-            {
-                foreach (var txt in resultsContainer.GetComponentsInChildren<Text>(true))
-                {
-                    if (txt.GetComponentInParent<Button>() == null)
-                    {
-                        txt.text = string.Empty;
-                        txt.gameObject.SetActive(false);
-                    }
-                }
-            }
-
-            EnsureResultsButtons();
-
-            if (isAllCorrect)
-            {
-                // WIN SCREEN: Show Main Menu and Next Case buttons side-by-side
-                if (returnToMainMenuButton != null)
-                {
-                    returnToMainMenuButton.gameObject.SetActive(true);
-                    RectTransform rt = returnToMainMenuButton.GetComponent<RectTransform>();
-                    if (rt != null)
-                    {
-                        rt.anchorMin = new Vector2(0.5f, 0f);
-                        rt.anchorMax = new Vector2(0.5f, 0f);
-                        rt.pivot = new Vector2(0.5f, 0.5f);
-                        rt.anchoredPosition = new Vector2(-150f, 90f);
-                        rt.sizeDelta = new Vector2(240f, 65f);
-                    }
-                    DetectiveUITheme.Action(returnToMainMenuButton, "MAIN MENU", DetectiveUITheme.Ink);
-                }
-
-                if (nextLevelButton != null)
-                {
-                    nextLevelButton.gameObject.SetActive(true);
-                    RectTransform rt = nextLevelButton.GetComponent<RectTransform>();
-                    if (rt != null)
-                    {
-                        rt.anchorMin = new Vector2(0.5f, 0f);
-                        rt.anchorMax = new Vector2(0.5f, 0f);
-                        rt.pivot = new Vector2(0.5f, 0.5f);
-                        rt.anchoredPosition = new Vector2(150f, 90f);
-                        rt.sizeDelta = new Vector2(240f, 65f);
-                    }
-                    DetectiveUITheme.Action(nextLevelButton, "NEXT CASE", DetectiveUITheme.Ink);
-                }
-
-                if (continueButton != null)
-                {
-                    continueButton.gameObject.SetActive(false);
-                }
-            }
-            else
-            {
-                // FAILED SCREEN: Hide Next Case button, show Retry Case and Main Menu buttons
-                if (nextLevelButton != null)
-                {
-                    nextLevelButton.gameObject.SetActive(false);
-                }
-
-                if (continueButton != null)
-                {
-                    continueButton.gameObject.SetActive(true);
-                    RectTransform rt = continueButton.GetComponent<RectTransform>();
-                    if (rt != null)
-                    {
-                        rt.anchorMin = new Vector2(0.5f, 0f);
-                        rt.anchorMax = new Vector2(0.5f, 0f);
-                        rt.pivot = new Vector2(0.5f, 0.5f);
-                        rt.anchoredPosition = new Vector2(-120f, 40f);
-                        rt.sizeDelta = new Vector2(220f, 55f);
-                    }
-                    DetectiveUITheme.Action(continueButton, "RETRY CASE", DetectiveUITheme.Ink);
-                }
-
-                if (returnToMainMenuButton != null)
-                {
-                    returnToMainMenuButton.gameObject.SetActive(true);
-                    RectTransform rt = returnToMainMenuButton.GetComponent<RectTransform>();
-                    if (rt != null)
-                    {
-                        rt.anchorMin = new Vector2(0.5f, 0f);
-                        rt.anchorMax = new Vector2(0.5f, 0f);
-                        rt.pivot = new Vector2(0.5f, 0.5f);
-                        rt.anchoredPosition = new Vector2(120f, 40f);
-                        rt.sizeDelta = new Vector2(220f, 55f);
-                    }
-                    DetectiveUITheme.Action(returnToMainMenuButton, "MAIN MENU", DetectiveUITheme.Ink);
-                }
-            }
-
-            if (resultsContainer != null)
-            {
-                UIButtonHighlightSystem.ApplyToHierarchy(resultsContainer);
-            }
-        }
 
         /// <summary>
         /// Handles a failed conclusion by restarting the active level from its initial state.

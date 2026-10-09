@@ -252,7 +252,13 @@ namespace CaseClosed.UI
                 return;
             }
 
-            Debug.LogError($"[UI:LevelSelection] Neither '{sceneName}' nor 'Case001' can be loaded!");
+            if (Application.CanStreamedLevelBeLoaded("CaseManager"))
+            {
+                SceneManager.LoadScene("CaseManager");
+                return;
+            }
+
+            Debug.LogError($"[UI:LevelSelection] No gameplay scene is available for '{sceneName}'.");
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using CaseClosed.Data;
@@ -53,6 +55,10 @@ namespace CaseClosed.UI
         private InterrogationManager _subscribedInterrogationManager;
         private DetectiveDialog mainMenuConfirmationView;
         private Button concludeNavigationButton;
+        private CaseEvaluationResult pendingResult;
+        private bool syncingOutcomeScenes;
+        private const string ResultsSceneName = "ResultScreen";
+        private const string GameOverSceneName = "GameOver";
 
         /// <summary>The currently active UI panel type.</summary>
         public UIPanelType currentPanel => _currentPanel;
@@ -522,12 +528,6 @@ namespace CaseClosed.UI
             bool isResults = (panelType == UIPanelType.ResultsScreen);
             bool isInGameMenu = (panelType == UIPanelType.InGameMenu);
 
-            if (gameOverPanel == null)
-            {
-                var foundGO = Object.FindFirstObjectByType<GameOverUI>(FindObjectsInactive.Include);
-                if (foundGO != null) gameOverPanel = foundGO.gameObject;
-            }
-
             if (suspectFolderPanel == null)
             {
                 var foundGO = Object.FindFirstObjectByType<SuspectFolderUI>(FindObjectsInactive.Include);
@@ -577,17 +577,13 @@ namespace CaseClosed.UI
             if (suspectFolderPanel != null) suspectFolderPanel.SetActive(panelType == UIPanelType.SuspectFolder);
             if (deductionBoardPanel != null) deductionBoardPanel.SetActive(panelType == UIPanelType.DeductionBoard);
             if (conclusionQuizPanel != null) conclusionQuizPanel.SetActive(panelType == UIPanelType.ConclusionQuiz);
-            if (resultsScreenPanel != null) resultsScreenPanel.SetActive(isResults);
+            if (resultsScreenPanel != null) resultsScreenPanel.SetActive(false);
             if (investigatorSelectPanel != null) investigatorSelectPanel.SetActive(false);
             if (inGameMenuPanel != null) inGameMenuPanel.SetActive(isInGameMenu);
             if (mainMenuConfirmPanel != null && !isInGameMenu) mainMenuConfirmPanel.SetActive(false);
             if (gameOverPanel != null)
             {
-                gameOverPanel.SetActive(isGameOver);
-                if (isGameOver)
-                {
-                    gameOverPanel.transform.SetAsLastSibling();
-                }
+                gameOverPanel.SetActive(false);
             }
 
             // Toggle in-game header navigation visibility (hidden during MainMenu, Evidence Inspection, Results, and GameOver)
@@ -613,6 +609,91 @@ namespace CaseClosed.UI
             ArmPointerController.Instance?.ForceSyncState();
             AudioManager.Instance?.PlayPaperFlip();
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
+            UpdateOutcomeScenes();
+        }
+
+        /// <summary>Displays an evaluated case in the separate result scene.</summary>
+        public void ShowResults(CaseEvaluationResult result)
+        {
+            if (result == null) return;
+            pendingResult = result;
+            if (result.totalQuizQuestions > 0 && result.correctQuizAnswers == result.totalQuizQuestions)
+            {
+                CaseManager caseManager = CaseManager.Instance;
+                if (caseManager != null && caseManager.ActiveCase != null)
+                    CaseClosed.Services.CaseProgressionService.Instance?.SetCaseCompleted(caseManager.ActiveCase.levelNumber, true);
+            }
+            ShowPanel(UIPanelType.ResultsScreen);
+        }
+
+        private string GetRequestedOutcomeScene()
+        {
+            if (_currentPanel == UIPanelType.ResultsScreen) return ResultsSceneName;
+            if (_currentPanel == UIPanelType.GameOver) return GameOverSceneName;
+            return null;
+        }
+
+        private void UpdateOutcomeScenes()
+        {
+            string requestedScene = GetRequestedOutcomeScene();
+            SetOutcomeSceneVisible(ResultsSceneName, requestedScene == ResultsSceneName);
+            SetOutcomeSceneVisible(GameOverSceneName, requestedScene == GameOverSceneName);
+            if (!syncingOutcomeScenes)
+                StartCoroutine(SyncOutcomeScenes());
+        }
+
+        private IEnumerator SyncOutcomeScenes()
+        {
+            syncingOutcomeScenes = true;
+            while (true)
+            {
+                string requestedScene = GetRequestedOutcomeScene();
+                Scene resultsScene = SceneManager.GetSceneByName(ResultsSceneName);
+                Scene gameOverScene = SceneManager.GetSceneByName(GameOverSceneName);
+                if (resultsScene.isLoaded && requestedScene != ResultsSceneName)
+                {
+                    yield return SceneManager.UnloadSceneAsync(resultsScene);
+                    continue;
+                }
+                if (gameOverScene.isLoaded && requestedScene != GameOverSceneName)
+                {
+                    yield return SceneManager.UnloadSceneAsync(gameOverScene);
+                    continue;
+                }
+                if (requestedScene == null) break;
+                if (!SceneManager.GetSceneByName(requestedScene).isLoaded)
+                {
+                    if (!Application.CanStreamedLevelBeLoaded(requestedScene))
+                    {
+                        Debug.LogError($"[UI:Manager] Outcome scene '{requestedScene}' is missing from the build settings.");
+                        break;
+                    }
+                    yield return SceneManager.LoadSceneAsync(requestedScene, LoadSceneMode.Additive);
+                    // Navigation may have changed while the scene was loading.
+                    continue;
+                }
+                SetOutcomeSceneVisible(requestedScene, true);
+                break;
+            }
+            syncingOutcomeScenes = false;
+        }
+
+        private void SetOutcomeSceneVisible(string sceneName, bool visible)
+        {
+            Scene scene = SceneManager.GetSceneByName(sceneName);
+            if (!scene.isLoaded) return;
+            Canvas gameplayCanvas = GetComponent<Canvas>();
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                Canvas canvas = root.GetComponent<Canvas>();
+                if (canvas == null) continue;
+                if (gameplayCanvas != null) canvas.worldCamera = gameplayCanvas.worldCamera;
+                if (canvas.worldCamera == null) canvas.worldCamera = Camera.main;
+                if (root.transform.childCount > 0)
+                    root.transform.GetChild(0).gameObject.SetActive(visible);
+                ResultsScreenUI results = root.GetComponent<ResultsScreenUI>();
+                if (visible && results != null) results.Display(pendingResult);
+            }
         }
 
         /// <summary>
