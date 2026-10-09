@@ -58,47 +58,17 @@ namespace CaseClosed.UI
             return cb;
         }
 
-        private static DetectiveButtonRunner _runnerInstance;
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void InitializeSceneListener()
         {
             ApplyToAllButtonsInScene();
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
-            EnsureRuntimeRunner();
         }
 
         private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
         {
             ApplyToAllButtonsInScene();
-        }
-
-        private static void EnsureRuntimeRunner()
-        {
-            if (_runnerInstance == null)
-            {
-                GameObject runnerGO = new GameObject("[DetectiveButtonSystemRunner]");
-                runnerGO.hideFlags = HideFlags.HideAndDontSave;
-                _runnerInstance = runnerGO.AddComponent<DetectiveButtonRunner>();
-                Object.DontDestroyOnLoad(runnerGO);
-            }
-        }
-
-        private class DetectiveButtonRunner : MonoBehaviour
-        {
-            private float _checkTimer = 0f;
-            private const float CheckInterval = 0.35f;
-
-            private void Update()
-            {
-                _checkTimer += Time.unscaledDeltaTime;
-                if (_checkTimer >= CheckInterval)
-                {
-                    _checkTimer = 0f;
-                    ApplyToAllButtonsInScene();
-                }
-            }
         }
 
         /// <summary>
@@ -118,7 +88,7 @@ namespace CaseClosed.UI
                 return;
             }
 
-            if (button.GetComponent<CaseFileNotebookUI>() != null || button.GetComponent<SuspectFolderUI>() != null)
+            if (button.GetComponent<CaseFileNotebookUI>() != null || button.GetComponent<SuspectFolderUI>() != null || button.GetComponent<SuspectFolderButton>() != null)
             {
                 return;
             }

@@ -493,6 +493,7 @@ namespace CaseClosed.Managers
             if (deductionLinkedSFX == null) deductionLinkedSFX = LoadClip("Assets/Audio/CLUE DISCOVERED SFX.mp3");
             if (caseSolvedSFX == null) caseSolvedSFX = LoadClip("Assets/Audio/CASE SOLVED SFX.mp3");
             if (caseFailedSFX == null) caseFailedSFX = LoadClip("Assets/Audio/CASE FAILED SFX.mp3");
+            if (clockTickSFX == null) clockTickSFX = LoadClip("Assets/Audio/CLOCK TICKING LAST 10 SECONDS SFX.mp3");
         }
 
         private static AudioClip LoadClip(string path)

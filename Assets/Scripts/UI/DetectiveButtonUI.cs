@@ -61,6 +61,7 @@ namespace CaseClosed.UI
         private bool _isPressed = false;
         private bool _isSelected = false;
         private bool _wasInteractable = true;
+        private bool _isDirty = true;
 
         // Visual Palette - Authentic vintage detective desk & dossier colors
         public static readonly Color PaperColor = new Color(0.95f, 0.91f, 0.82f, 1f);       // #F2E8D1 Parchment
@@ -111,6 +112,7 @@ namespace CaseClosed.UI
             _isHovered = false;
             _isPressed = false;
             _isSelected = false;
+            _isDirty = true;
             if (_rectTransform != null)
             {
                 _rectTransform.localScale = _originalScale;
@@ -127,9 +129,13 @@ namespace CaseClosed.UI
             {
                 _wasInteractable = isInteractable;
                 UpdateInteractableState();
+                _isDirty = true;
             }
 
-            AnimateButtonState();
+            if (_isDirty)
+            {
+                AnimateButtonState();
+            }
         }
 
         /// <summary>
@@ -347,13 +353,6 @@ namespace CaseClosed.UI
             _lastProcessedTmpTexts = (_cachedTmpLabels != null) ? new string[_cachedTmpLabels.Length] : null;
         }
 
-        private void LateUpdate()
-        {
-            if (enforceReadableTypography)
-            {
-                EnforceAllCapsAndBold();
-            }
-        }
 
         private void EnforceAllCapsAndBold()
         {
@@ -630,6 +629,7 @@ namespace CaseClosed.UI
         /// <summary>
         /// Frame-independent animation lerp for scale, depth, and color.
         /// Uses unscaledDeltaTime to function seamlessly even when game is paused.
+        /// Sleeps automatically once settled at target values to avoid dirtying Canvas meshes.
         /// </summary>
         private void AnimateButtonState()
         {
@@ -646,7 +646,17 @@ namespace CaseClosed.UI
             }
 
             float dt = Time.unscaledDeltaTime;
-            _rectTransform.localScale = Vector3.Lerp(_rectTransform.localScale, targetScale, dt * transitionSpeed);
+            bool stillChanging = false;
+
+            if ((_rectTransform.localScale - targetScale).sqrMagnitude > 0.00002f)
+            {
+                _rectTransform.localScale = Vector3.Lerp(_rectTransform.localScale, targetScale, dt * transitionSpeed);
+                stillChanging = true;
+            }
+            else if (_rectTransform.localScale != targetScale)
+            {
+                _rectTransform.localScale = targetScale;
+            }
 
             // Animate Shadow depth distance
             if (_shadow != null)
@@ -657,7 +667,16 @@ namespace CaseClosed.UI
                     if (_isPressed) targetDist = new Vector2(0f, -1.2f);
                     else if (_isHovered) targetDist = new Vector2(0f, -5f);
                 }
-                _shadow.effectDistance = Vector2.Lerp(_shadow.effectDistance, targetDist, dt * transitionSpeed);
+
+                if ((_shadow.effectDistance - targetDist).sqrMagnitude > 0.01f)
+                {
+                    _shadow.effectDistance = Vector2.Lerp(_shadow.effectDistance, targetDist, dt * transitionSpeed);
+                    stillChanging = true;
+                }
+                else if (_shadow.effectDistance != targetDist)
+                {
+                    _shadow.effectDistance = targetDist;
+                }
             }
 
             // Animate Outline border color with warm brass highlight
@@ -677,7 +696,18 @@ namespace CaseClosed.UI
                     targetOutline = BrassHoverGlow;
                 }
 
-                _outline.effectColor = Color.Lerp(_outline.effectColor, targetOutline, dt * transitionSpeed);
+                if (Mathf.Abs(_outline.effectColor.r - targetOutline.r) > 0.01f ||
+                    Mathf.Abs(_outline.effectColor.g - targetOutline.g) > 0.01f ||
+                    Mathf.Abs(_outline.effectColor.b - targetOutline.b) > 0.01f ||
+                    Mathf.Abs(_outline.effectColor.a - targetOutline.a) > 0.01f)
+                {
+                    _outline.effectColor = Color.Lerp(_outline.effectColor, targetOutline, dt * transitionSpeed);
+                    stillChanging = true;
+                }
+                else if (_outline.effectColor != targetOutline)
+                {
+                    _outline.effectColor = targetOutline;
+                }
             }
 
             // Animate Graphic Color (for non-dossier cards)
@@ -688,7 +718,22 @@ namespace CaseClosed.UI
                 if (_isPressed) targetCol = GetPressColor(v);
                 else if (_isHovered || _isSelected) targetCol = GetHoverColor(v);
 
-                _targetImage.color = Color.Lerp(_targetImage.color, targetCol, dt * transitionSpeed);
+                if (Mathf.Abs(_targetImage.color.r - targetCol.r) > 0.01f ||
+                    Mathf.Abs(_targetImage.color.g - targetCol.g) > 0.01f ||
+                    Mathf.Abs(_targetImage.color.b - targetCol.b) > 0.01f)
+                {
+                    _targetImage.color = Color.Lerp(_targetImage.color, targetCol, dt * transitionSpeed);
+                    stillChanging = true;
+                }
+                else if (_targetImage.color != targetCol)
+                {
+                    _targetImage.color = targetCol;
+                }
+            }
+
+            if (!stillChanging)
+            {
+                _isDirty = false;
             }
         }
 
@@ -697,18 +742,21 @@ namespace CaseClosed.UI
         {
             if (_button != null && !_button.interactable) return;
             _isHovered = true;
+            _isDirty = true;
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             _isHovered = false;
             _isPressed = false;
+            _isDirty = true;
         }
 
         public void OnPointerDown(PointerEventData eventData)
         {
             if (_button != null && !_button.interactable) return;
             _isPressed = true;
+            _isDirty = true;
 
             if (playAudioOnPress)
             {
@@ -719,17 +767,20 @@ namespace CaseClosed.UI
         public void OnPointerUp(PointerEventData eventData)
         {
             _isPressed = false;
+            _isDirty = true;
         }
 
         public void OnSelect(BaseEventData eventData)
         {
             if (_button != null && !_button.interactable) return;
             _isSelected = true;
+            _isDirty = true;
         }
 
         public void OnDeselect(BaseEventData eventData)
         {
             _isSelected = false;
+            _isDirty = true;
         }
 
         private void PlayClickAudio()

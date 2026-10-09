@@ -166,10 +166,14 @@ namespace CaseClosed.UI
             if (titleText != null)
             {
                 titleText.fontStyle = FontStyle.Bold;
-                if (!string.IsNullOrEmpty(titleText.text))
+                string canonicalTitle = levelIndex switch
                 {
-                    titleText.text = titleText.text.ToUpperInvariant();
-                }
+                    1 => "CASE 01: THE MISSING NECKLACE",
+                    2 => "CASE 02: THE SHATTERED MIRROR",
+                    3 => "CASE 03: THE LAST CALL",
+                    _ => $"CASE {levelIndex:D2}"
+                };
+                titleText.text = canonicalTitle;
                 titleText.color = isUnlocked ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.75f);
             }
 

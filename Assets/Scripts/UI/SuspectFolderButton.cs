@@ -71,7 +71,16 @@ namespace CaseClosed.UI
                 image.raycastTarget = true;
 
                 button = clickTarget.GetComponent<Button>();
+                button.transition = Selectable.Transition.None;
                 button.targetGraphic = image;
+            }
+            else
+            {
+                button.transition = Selectable.Transition.None;
+                if (button.targetGraphic != null)
+                {
+                    button.targetGraphic.color = Color.clear;
+                }
             }
 
             RectTransform clickRect = button.GetComponent<RectTransform>();
@@ -99,6 +108,11 @@ namespace CaseClosed.UI
 
             if (_boundButton != null)
             {
+                _boundButton.transition = Selectable.Transition.None;
+                if (_boundButton.targetGraphic != null)
+                {
+                    _boundButton.targetGraphic.color = Color.clear;
+                }
                 _boundButton.onClick.RemoveListener(OnClick);
                 _boundButton.onClick.AddListener(OnClick);
             }

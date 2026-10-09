@@ -11,7 +11,7 @@ namespace CaseClosed.Services
     public class CaseTimerService
     {
         public const float DefaultWarningThresholdSeconds = 120f; // 2 minutes
-        public const float DefaultUrgentThresholdSeconds = 30f;   // 30 seconds
+        public const float DefaultUrgentThresholdSeconds = 60f;   // 1 minute (urgent)
 
         /// <summary>
         /// Calculates remaining time in seconds given a case time limit and elapsed investigation time.

@@ -77,6 +77,9 @@ namespace CaseClosed.Gameplay
         [Tooltip("Luminous HDR glow tint for the discovery celebration cue.")]
         public Color discoveryGlowColor = new Color(1.0f, 0.95f, 0.35f, 1.0f);
 
+        [Tooltip("If true, undiscovered items remain hidden on the desk until discovered. If false, shows as silhouette.")]
+        public bool hideWhenUndiscovered = true;
+
         // Runtime animation state
         private bool isHovered = false;
         private float currentGlowIntensity = 0f;
@@ -213,12 +216,12 @@ namespace CaseClosed.Gameplay
             // If dialogue is open but challenge mode is NOT active, ignore direct clicks so dialogue input advances text instead
             if (DialogueUI.IsDialogueOpen && (InterrogationManager.Instance == null || !InterrogationManager.Instance.IsChallengeModeActive)) return;
 
+            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
+            if (itemCollider == null || !itemCollider.enabled) return;
+
             Vector3 mouseScreen = Input.mousePosition;
             Vector3 mouseWorld3D = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -cam.transform.position.z));
             Vector2 mouseWorld = new Vector2(mouseWorld3D.x, mouseWorld3D.y);
-
-            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
-            if (itemCollider == null || !itemCollider.enabled) return;
 
             bool isOver = itemCollider.OverlapPoint(mouseWorld);
 
@@ -295,13 +298,27 @@ namespace CaseClosed.Gameplay
                 SetupGlowHalo();
             }
 
-            // If undiscovered, lock to pitch black silhouette and disable glowing aura
+            // If undiscovered or doesn't belong to current case, lock state and disable glowing aura
             if (!CheckIsDiscovered() && !openNotebookOnClick)
             {
                 if (haloObj != null && haloObj.activeSelf) haloObj.SetActive(false);
                 if (highlightGlow != null && highlightGlow.activeSelf) highlightGlow.SetActive(false);
-                if (spriteRenderer != null) spriteRenderer.color = Color.black;
-                if (scaleOnHover && hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f)
+
+                if (!BelongsToActiveCase() || hideWhenUndiscovered)
+                {
+                    if (spriteRenderer != null && spriteRenderer.enabled) spriteRenderer.enabled = false;
+                    if (itemCollider != null && itemCollider.enabled) itemCollider.enabled = false;
+                }
+                else
+                {
+                    if (spriteRenderer != null)
+                    {
+                        spriteRenderer.enabled = true;
+                        spriteRenderer.color = Color.black;
+                    }
+                }
+
+                if (scaleOnHover && hasCachedBaseScale && baseScale.sqrMagnitude > 0.0001f && transform.localScale != baseScale)
                 {
                     transform.localScale = baseScale;
                 }
@@ -421,7 +438,14 @@ namespace CaseClosed.Gameplay
                 bool shouldScale = isHovered || isCueActive || isChallengeActive;
                 float scaleMul = isHovered ? hoverScaleMultiplier : (isChallengeActive ? 1.015f : 1.025f);
                 Vector3 targetScale = shouldScale ? (baseScale * scaleMul) : baseScale;
-                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * glowFadeSpeed);
+                if ((transform.localScale - targetScale).sqrMagnitude > 0.00002f)
+                {
+                    transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * glowFadeSpeed);
+                }
+                else if (transform.localScale != targetScale)
+                {
+                    transform.localScale = targetScale;
+                }
             }
         }
 
@@ -593,33 +617,79 @@ namespace CaseClosed.Gameplay
         }
 
         /// <summary>
+        /// Checks whether this evidence item belongs to the active case.
+        /// </summary>
+        public bool BelongsToActiveCase()
+        {
+            if (openNotebookOnClick) return true;
+
+            CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
+            if (manager == null || manager.ActiveCase == null) return true;
+
+            string effectiveId = !string.IsNullOrEmpty(evidenceId) ? evidenceId : evidenceData?.id;
+            if (manager.ActiveCase.evidenceItems != null)
+            {
+                foreach (var ev in manager.ActiveCase.evidenceItems)
+                {
+                    if (ev == null) continue;
+                    if (evidenceData != null && ev == evidenceData) return true;
+                    if (!string.IsNullOrEmpty(effectiveId) && (ev.id == effectiveId || ev.id.Equals(effectiveId, System.StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Updates the visual rendering and collider responsiveness of this table evidence item.
-        /// Discovered items display in full color with interactive glow; undiscovered clues appear as black silhouettes.
+        /// Discovered items display in full color with interactive glow; items from other cases or undiscovered clues are hidden.
         /// </summary>
         public void SetItemVisibility(bool visible)
         {
-            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            bool belongs = BelongsToActiveCase();
+            if (!belongs)
             {
-                spriteRenderer.enabled = true;
-                if (!visible && !openNotebookOnClick)
+                if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null) spriteRenderer.enabled = false;
+                if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
+                if (itemCollider != null) itemCollider.enabled = false;
+                if (haloObj != null) haloObj.SetActive(false);
+                if (highlightGlow != null) highlightGlow.SetActive(false);
+                SetHoverState(false);
+                StopDiscoveryCue();
+                return;
+            }
+
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
+
+            if (visible || openNotebookOnClick)
+            {
+                if (spriteRenderer != null)
                 {
-                    spriteRenderer.color = Color.black;
+                    spriteRenderer.enabled = true;
+                    spriteRenderer.color = originalColor;
+                }
+                if (itemCollider != null) itemCollider.enabled = true;
+            }
+            else
+            {
+                if (hideWhenUndiscovered)
+                {
+                    if (spriteRenderer != null) spriteRenderer.enabled = false;
+                    if (itemCollider != null) itemCollider.enabled = false;
                 }
                 else
                 {
-                    spriteRenderer.color = originalColor;
+                    if (spriteRenderer != null)
+                    {
+                        spriteRenderer.enabled = true;
+                        spriteRenderer.color = Color.black;
+                    }
+                    if (itemCollider != null) itemCollider.enabled = true;
                 }
-            }
 
-            if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
-            if (itemCollider != null)
-            {
-                itemCollider.enabled = true;
-            }
-
-            if (!visible && !openNotebookOnClick)
-            {
                 SetHoverState(false);
                 StopDiscoveryCue();
             }
@@ -767,7 +837,13 @@ namespace CaseClosed.Gameplay
 
             if (!CheckIsDiscovered() && !openNotebookOnClick)
             {
-                if (spriteRenderer != null) spriteRenderer.color = Color.black;
+                if (spriteRenderer != null)
+                {
+                    if (!BelongsToActiveCase() || hideWhenUndiscovered)
+                        spriteRenderer.enabled = false;
+                    else
+                        spriteRenderer.color = Color.black;
+                }
                 if (haloObj != null) haloObj.SetActive(false);
                 if (highlightGlow != null) highlightGlow.SetActive(false);
                 return;
@@ -861,6 +937,7 @@ namespace CaseClosed.Gameplay
 
             // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
+            EvidenceInspectPreviewUI.Instance?.DisplayEvidence(evidenceData);
             string nodeToTrigger = evidenceData != null && !string.IsNullOrEmpty(evidenceData.dialogueNodeToTriggerOnInspect)
                 ? evidenceData.dialogueNodeToTriggerOnInspect
                 : dialogueNodeToTriggerOnInspect;

@@ -655,7 +655,7 @@ namespace CaseClosed.UI
         {
             // Navigation buttons
             if (playButton != null) DetectiveUITheme.Action(playButton, "PLAY", DetectiveUITheme.Ink);
-            if (caseSelectButton != null) DetectiveUITheme.Action(caseSelectButton, "CASE FILES", DetectiveUITheme.Ink);
+            if (caseSelectButton != null) DetectiveUITheme.Action(caseSelectButton, "NEW CASE / CASE SELECT", DetectiveUITheme.Ink);
             if (howToPlayButton != null) DetectiveUITheme.Action(howToPlayButton, "HOW TO PLAY", DetectiveUITheme.Ink);
             if (settingsButton != null) DetectiveUITheme.Action(settingsButton, "SETTINGS", DetectiveUITheme.Ink);
             if (creditsButton != null) DetectiveUITheme.Action(creditsButton, "CREDITS", DetectiveUITheme.Ink);

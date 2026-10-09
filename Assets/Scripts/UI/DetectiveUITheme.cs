@@ -208,6 +208,7 @@ namespace CaseClosed.UI
             if (tmp != null)
             {
                 tmp.gameObject.SetActive(true);
+                tmp.enabled = true;
                 tmp.font = GetStandardTmpFont();
                 tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
                 tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
@@ -226,6 +227,7 @@ namespace CaseClosed.UI
                     label = labelObject.GetComponent<Text>();
                 }
                 label.gameObject.SetActive(true);
+                label.enabled = true;
                 label.font = GetStandardFont();
                 Place(label.rectTransform, Vector2.zero, Vector2.one);
                 label.rectTransform.sizeDelta = new Vector2(-28f, -8f);

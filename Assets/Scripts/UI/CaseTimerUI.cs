@@ -29,7 +29,7 @@ namespace CaseClosed.UI
         [Header("Urgency Colors")]
         [SerializeField] private Color normalColor = Color.white;
         [SerializeField] private Color warningColor = new Color(1f, 0.78f, 0.15f, 1f); // Amber
-        [SerializeField] private Color urgentColor = new Color(1f, 0.25f, 0.25f, 1f);  // Red
+        [SerializeField] private Color urgentColor = new Color(0.55f, 0.15f, 0.13f, 1f);  // #8C2621 Crimson Warning Red
 
         [Header("Behavior & Options")]
         [Tooltip("Hide this GameObject if the active case has no time limit.")]
@@ -39,10 +39,10 @@ namespace CaseClosed.UI
         [SerializeField] private bool enableTickSFX = true;
 
         [Tooltip("Scale multiplier applied during urgent pulse animation.")]
-        [SerializeField] private float pulseScaleMagnitude = 0.12f;
+        [SerializeField] private float pulseScaleMagnitude = 0.08f;
 
-        [Tooltip("Pulse oscillation frequency in Hz during urgent state.")]
-        [SerializeField] private float pulseSpeed = 4f;
+        [Tooltip("Pulse oscillation frequency during urgent state.")]
+        [SerializeField] private float pulseSpeed = 5f;
 
         private int _lastDisplayedSecond = -1;
         private TimerUrgencyState _currentUrgency = TimerUrgencyState.Normal;
@@ -113,10 +113,10 @@ namespace CaseClosed.UI
                 TrySubscribe();
             }
 
-            // Zero-allocation visual pulse animation only active during urgent state
+            // Zero-allocation visual pulse animation only active during urgent state (< 60s)
             if (_currentUrgency == TimerUrgencyState.Urgent && CaseManager.Instance != null && CaseManager.Instance.IsTimerRunning)
             {
-                float sine = Mathf.Sin(Time.time * pulseSpeed * Mathf.PI);
+                float sine = Mathf.Sin(Time.time * pulseSpeed);
                 float currentScale = 1f + (Mathf.Max(0f, sine) * pulseScaleMagnitude);
                 transform.localScale = _originalScale * currentScale;
             }
