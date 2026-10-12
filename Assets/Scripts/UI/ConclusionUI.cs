@@ -49,10 +49,12 @@ namespace CaseClosed.UI
         private static readonly Color HeaderDarkColor = DetectiveUITheme.Ink;
         private static readonly Color SubtitleDarkColor = DetectiveUITheme.MutedInk;
         private static readonly Color PaperColor = DetectiveUITheme.Paper;
-        private static readonly Color ChoiceNormalColor = new Color(1f, 0.98f, 0.92f, 1f);
-        private static readonly Color ChoiceSelectedColor = HeaderDarkColor;
+        private static readonly Color ChoiceNormalColor = new Color(0.98f, 0.97f, 0.93f, 1f);
+        private static readonly Color ChoiceBorderNormalColor = new Color(0.78f, 0.72f, 0.62f, 0.55f);
+        private static readonly Color ChoiceSelectedColor = new Color(0.96f, 0.88f, 0.66f, 1f);
+        private static readonly Color ChoiceBorderSelectedColor = DetectiveUITheme.WoodDark;
         private static readonly Color ChoiceTextNormalColor = HeaderDarkColor;
-        private static readonly Color ChoiceTextSelectedColor = ChoiceNormalColor;
+        private static readonly Color ChoiceTextSelectedColor = HeaderDarkColor;
 
         [Header("Results Screen Overlay")]
         public GameObject resultsContainer;
@@ -75,6 +77,8 @@ namespace CaseClosed.UI
 
         private readonly List<int> playerAnswers = new List<int>();
         private int _currentQuestionIndex = 0;
+        private bool _hasStartedQuiz = false;
+        private CaseSO _loadedCase = null;
 
         // Runtime UI containers & components
         private GameObject _flowRoot;
@@ -84,8 +88,10 @@ namespace CaseClosed.UI
         private Text _questionBoxText;
         private Transform _choicesContainer;
         private Text _hintPromptText;
+        private GameObject _prevButtonObj;
         private GameObject _nextButtonObj;
         private GameObject _confirmButtonObj;
+        private Button _prevButton;
         private Button _nextButton;
         private Button _confirmButton;
         private Button returnToInvestigationButton;
@@ -93,6 +99,7 @@ namespace CaseClosed.UI
         private DetectiveCard conclusionCard;
         private readonly List<Image> _choiceImages = new List<Image>();
         private readonly List<Text> _choiceTexts = new List<Text>();
+        private readonly List<Outline> _choiceOutlines = new List<Outline>();
 
         private void Awake()
         {
@@ -249,15 +256,34 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Rebuilds quiz options whenever the conclusion UI panel is enabled.
+        /// Rebuilds quiz options whenever the conclusion UI panel is enabled, restoring any saved answers.
         /// </summary>
         private void OnEnable()
         {
             SetupQuiz();
         }
 
+        private void OnDisable()
+        {
+            SyncAnswersToSession();
+        }
+
+        private void SyncAnswersToSession()
+        {
+            if (CaseManager.Instance != null && playerAnswers != null)
+            {
+                for (int i = 0; i < playerAnswers.Count; i++)
+                {
+                    if (playerAnswers[i] >= 0)
+                    {
+                        CaseManager.Instance.SetConclusionAnswer(i, playerAnswers[i]);
+                    }
+                }
+            }
+        }
+
         /// <summary>
-        /// Initializes the player answer list and displays the initial Start screen.
+        /// Initializes or restores the player answer list and displays the appropriate screen.
         /// </summary>
         private void SetupQuiz()
         {
@@ -306,16 +332,69 @@ namespace CaseClosed.UI
                 resultTitleText.gameObject.SetActive(false);
             }
 
-            playerAnswers.Clear();
-            for (int i = 0; i < activeCase.conclusionQuestions.Count; i++)
+            // If activeCase has changed, reset state for the new case
+            if (_loadedCase != activeCase)
+            {
+                _loadedCase = activeCase;
+                _hasStartedQuiz = false;
+                _currentQuestionIndex = 0;
+                playerAnswers.Clear();
+            }
+
+            int totalQ = activeCase.conclusionQuestions.Count;
+            while (playerAnswers.Count < totalQ)
             {
                 playerAnswers.Add(-1);
             }
+            if (playerAnswers.Count > totalQ)
+            {
+                playerAnswers.RemoveRange(totalQ, playerAnswers.Count - totalQ);
+            }
 
-            _currentQuestionIndex = 0;
+            // Restore from CaseManager session state
+            if (CaseManager.Instance != null)
+            {
+                for (int i = 0; i < totalQ; i++)
+                {
+                    int savedAns = CaseManager.Instance.GetConclusionAnswer(i);
+                    if (savedAns >= 0)
+                    {
+                        playerAnswers[i] = savedAns;
+                    }
+                    else if (playerAnswers[i] >= 0)
+                    {
+                        CaseManager.Instance.SetConclusionAnswer(i, playerAnswers[i]);
+                    }
+                }
+            }
+
+            bool hasAnySavedAnswer = false;
+            for (int i = 0; i < playerAnswers.Count; i++)
+            {
+                if (playerAnswers[i] >= 0)
+                {
+                    hasAnySavedAnswer = true;
+                    break;
+                }
+            }
+
             EnsureFlowHierarchy();
             ApplyFlowDesign();
-            ShowStartScreen();
+
+            if (_hasStartedQuiz || hasAnySavedAnswer)
+            {
+                _hasStartedQuiz = true;
+                if (_startScreenObj != null) _startScreenObj.SetActive(false);
+                if (_questionScreenObj != null) _questionScreenObj.SetActive(true);
+                if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(true);
+                if (_currentQuestionIndex < 0 || _currentQuestionIndex >= totalQ) _currentQuestionIndex = 0;
+                RenderCurrentQuestion();
+            }
+            else
+            {
+                _currentQuestionIndex = 0;
+                ShowStartScreen();
+            }
         }
 
         // Styles only the runtime conclusion flow; authored scenes and references stay intact.
@@ -417,16 +496,6 @@ namespace CaseClosed.UI
                 SetFlowRect(_hintPromptText.rectTransform, new Vector2(0.10f, 0.17f), new Vector2(0.90f, 0.24f));
                 _hintPromptText.raycastTarget = false;
             }
-            if (_nextButton != null)
-            {
-                SetFlowRect(_nextButton.GetComponent<RectTransform>(), new Vector2(0.46f, 0.05f), new Vector2(0.92f, 0.15f));
-                StyleFlowAction(_nextButton, "Next question  >");
-            }
-            if (_confirmButton != null)
-            {
-                SetFlowRect(_confirmButton.GetComponent<RectTransform>(), new Vector2(0.46f, 0.05f), new Vector2(0.92f, 0.15f));
-                StyleFlowAction(_confirmButton, "Submit conclusion");
-            }
 
             if (returnToInvestigationButton == null)
             {
@@ -434,13 +503,73 @@ namespace CaseClosed.UI
                 returnToInvestigationButton = action.GetComponent<Button>();
                 returnToInvestigationButton.onClick.AddListener(OnReturnToInvestigationClicked);
             }
-            SetFlowRect(returnToInvestigationButton.GetComponent<RectTransform>(), new Vector2(0.08f, 0.05f), new Vector2(0.42f, 0.15f));
+            SetFlowRect(returnToInvestigationButton.GetComponent<RectTransform>(), new Vector2(0.08f, 0.05f), new Vector2(0.38f, 0.15f));
             DetectiveUITheme.Action(returnToInvestigationButton, "Return to investigation", SubtitleDarkColor);
+
+            UpdateNavigationButtonLayout();
+        }
+
+        private void UpdateNavigationButtonLayout()
+        {
+            CaseSO activeCase = CaseManager.Instance?.ActiveCase;
+            int totalQuestions = activeCase != null && activeCase.conclusionQuestions != null ? activeCase.conclusionQuestions.Count : 1;
+            bool isLastQuestion = (_currentQuestionIndex == totalQuestions - 1);
+            bool hasPrev = (_currentQuestionIndex > 0);
+
+            if (_prevButtonObj != null)
+            {
+                _prevButtonObj.SetActive(hasPrev);
+                if (hasPrev && _prevButton != null)
+                {
+                    SetFlowRect(_prevButton.GetComponent<RectTransform>(), new Vector2(0.40f, 0.05f), new Vector2(0.64f, 0.15f));
+                    StyleFlowAction(_prevButton, "<  Previous");
+                }
+            }
+
+            if (_nextButtonObj != null)
+            {
+                _nextButtonObj.SetActive(!isLastQuestion);
+                if (!isLastQuestion && _nextButton != null)
+                {
+                    Vector2 min = hasPrev ? new Vector2(0.66f, 0.05f) : new Vector2(0.42f, 0.05f);
+                    SetFlowRect(_nextButton.GetComponent<RectTransform>(), min, new Vector2(0.92f, 0.15f));
+                    StyleFlowAction(_nextButton, "Next question  >");
+                }
+            }
+
+            if (_confirmButtonObj != null)
+            {
+                _confirmButtonObj.SetActive(isLastQuestion);
+                if (isLastQuestion && _confirmButton != null)
+                {
+                    Vector2 min = hasPrev ? new Vector2(0.66f, 0.05f) : new Vector2(0.42f, 0.05f);
+                    SetFlowRect(_confirmButton.GetComponent<RectTransform>(), min, new Vector2(0.92f, 0.15f));
+                    StyleFlowAction(_confirmButton, "Submit conclusion");
+                }
+            }
+
+            if (returnToInvestigationButton != null)
+            {
+                returnToInvestigationButton.gameObject.SetActive(true);
+                SetFlowRect(returnToInvestigationButton.GetComponent<RectTransform>(), new Vector2(0.08f, 0.05f), new Vector2(0.38f, 0.15f));
+                DetectiveUITheme.Action(returnToInvestigationButton, "Return to investigation", SubtitleDarkColor);
+            }
+        }
+
+        private void OnPrevQuestionClicked()
+        {
+            if (_currentQuestionIndex > 0)
+            {
+                AudioManager.Instance?.PlayButtonClick();
+                _currentQuestionIndex--;
+                RenderCurrentQuestion();
+            }
         }
 
         private void OnReturnToInvestigationClicked()
         {
             AudioManager.Instance?.PlayButtonClick();
+            SyncAnswersToSession();
             if (UIManager.Instance != null)
                 UIManager.Instance.ShowPanel(UIPanelType.InvestigationTable);
         }
@@ -632,6 +761,14 @@ namespace CaseClosed.UI
                     _hintPromptText.text = "";
 
                     // Navigation Footer
+                    // Previous Button
+                    _prevButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "PrevButton");
+                    RectTransform prt = _prevButtonObj.GetComponent<RectTransform>();
+                    prt.anchoredPosition = new Vector2(-100f, -180f);
+                    prt.sizeDelta = new Vector2(130f, 50f);
+                    _prevButton = _prevButtonObj.GetComponent<Button>();
+                    _prevButton.onClick.AddListener(OnPrevQuestionClicked);
+
                     // Next Button (Arrow)
                     _nextButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "NextButton");
                     RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
@@ -662,6 +799,17 @@ namespace CaseClosed.UI
                 _questionBoxText = _questionScreenObj.transform.Find("QuestionBox/QuestionText")?.GetComponent<Text>();
                 _choicesContainer = _questionScreenObj.transform.Find("ChoicesContainer");
                 _hintPromptText = _questionScreenObj.transform.Find("HintText")?.GetComponent<Text>();
+                _prevButtonObj = _questionScreenObj.transform.Find("PrevButton")?.gameObject;
+                if (_prevButtonObj == null)
+                {
+                    _prevButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "PrevButton");
+                    _prevButton = _prevButtonObj.GetComponent<Button>();
+                    _prevButton.onClick.AddListener(OnPrevQuestionClicked);
+                }
+                else
+                {
+                    _prevButton = _prevButtonObj.GetComponent<Button>();
+                }
                 _nextButtonObj = _questionScreenObj.transform.Find("NextButton")?.gameObject;
                 _confirmButtonObj = _questionScreenObj.transform.Find("ConfirmButton")?.gameObject;
                 _nextButton = _nextButtonObj?.GetComponent<Button>();
@@ -701,23 +849,44 @@ namespace CaseClosed.UI
         /// </summary>
         private void ShowStartScreen()
         {
-            if (_startScreenObj != null) _startScreenObj.SetActive(true);
+            if (_startScreenObj != null)
+            {
+                _startScreenObj.SetActive(true);
+                Button start = _startScreenObj.transform.Find("StartButton")?.GetComponent<Button>();
+                if (start != null)
+                {
+                    bool hasAnswers = false;
+                    for (int i = 0; i < playerAnswers.Count; i++)
+                    {
+                        if (playerAnswers[i] >= 0) { hasAnswers = true; break; }
+                    }
+                    StyleFlowAction(start, hasAnswers ? "Resume final report" : "Begin final report");
+                }
+            }
             if (_questionScreenObj != null) _questionScreenObj.SetActive(false);
-            if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(false);
+            if (returnToInvestigationButton != null)
+            {
+                returnToInvestigationButton.gameObject.SetActive(true);
+                SetFlowRect(returnToInvestigationButton.GetComponent<RectTransform>(), new Vector2(0.08f, 0.05f), new Vector2(0.42f, 0.15f));
+            }
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>
-        /// Handler for Start button click: initiates the first question.
+        /// Handler for Start button click: initiates or resumes the questionnaire.
         /// </summary>
         private void OnStartQuizClicked()
         {
             AudioManager.Instance?.PlayButtonClick();
+            _hasStartedQuiz = true;
             if (_startScreenObj != null) _startScreenObj.SetActive(false);
             if (_questionScreenObj != null) _questionScreenObj.SetActive(true);
             if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(true);
 
-            _currentQuestionIndex = 0;
+            if (_currentQuestionIndex < 0 || _currentQuestionIndex >= playerAnswers.Count)
+            {
+                _currentQuestionIndex = 0;
+            }
             RenderCurrentQuestion();
         }
 
@@ -744,13 +913,21 @@ namespace CaseClosed.UI
 
             if (_hintPromptText != null)
             {
-                _hintPromptText.text = "Choose the answer supported by your evidence.";
+                if (playerAnswers[_currentQuestionIndex] >= 0)
+                {
+                    _hintPromptText.text = "Answer recorded. Continue or change your selection.";
+                }
+                else
+                {
+                    _hintPromptText.text = "Choose the answer supported by your evidence.";
+                }
                 _hintPromptText.color = SubtitleDarkColor;
             }
 
             // Clear old choices
             _choiceImages.Clear();
             _choiceTexts.Clear();
+            _choiceOutlines.Clear();
 
             if (_choicesContainer != null)
             {
@@ -782,6 +959,15 @@ namespace CaseClosed.UI
                     DetectiveUITheme.Surface(chImg, ChoiceNormalColor);
                     _choiceImages.Add(chImg);
 
+                    Outline chOutline = choiceObj.AddComponent<Outline>();
+                    chOutline.effectColor = ChoiceBorderNormalColor;
+                    chOutline.effectDistance = new Vector2(1.5f, -1.5f);
+                    _choiceOutlines.Add(chOutline);
+
+                    Shadow chShadow = choiceObj.AddComponent<Shadow>();
+                    chShadow.effectColor = new Color(0.1f, 0.08f, 0.05f, 0.12f);
+                    chShadow.effectDistance = new Vector2(2f, -2f);
+
                     GameObject chTextObj = new GameObject("ChoiceText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
                     chTextObj.transform.SetParent(choiceObj.transform, false);
                     RectTransform txtRt = chTextObj.GetComponent<RectTransform>();
@@ -806,6 +992,13 @@ namespace CaseClosed.UI
                     _choiceTexts.Add(chTxt);
 
                     Button btn = choiceObj.GetComponent<Button>();
+                    ColorBlock cb = btn.colors;
+                    cb.normalColor = Color.white;
+                    cb.highlightedColor = new Color(1f, 0.98f, 0.90f, 1f);
+                    cb.pressedColor = new Color(0.92f, 0.85f, 0.65f, 1f);
+                    cb.selectedColor = Color.white;
+                    cb.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+                    btn.colors = cb;
                     btn.onClick.AddListener(() => SelectChoice(choiceIndex));
                 }
 
@@ -818,11 +1011,7 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Update Navigation Buttons: Next on Q1..Q4, Confirm on Q5
-            bool isLastQuestion = (_currentQuestionIndex == totalQuestions - 1);
-            if (_nextButtonObj != null) _nextButtonObj.SetActive(!isLastQuestion);
-            if (_confirmButtonObj != null) _confirmButtonObj.SetActive(isLastQuestion);
-
+            UpdateNavigationButtonLayout();
             UIButtonHighlightSystem.ApplyToHierarchy(_questionScreenObj);
         }
 
@@ -834,6 +1023,7 @@ namespace CaseClosed.UI
         {
             AudioManager.Instance?.PlayButtonClick();
             playerAnswers[_currentQuestionIndex] = choiceIndex;
+            CaseManager.Instance?.SetConclusionAnswer(_currentQuestionIndex, choiceIndex);
             if (_hintPromptText != null)
             {
                 _hintPromptText.text = "Answer recorded. Continue when ready.";
@@ -863,6 +1053,12 @@ namespace CaseClosed.UI
                     _choiceImages[i].color = isSelected ? ChoiceSelectedColor : ChoiceNormalColor;
                 }
 
+                if (i < _choiceOutlines.Count && _choiceOutlines[i] != null)
+                {
+                    _choiceOutlines[i].effectColor = isSelected ? ChoiceBorderSelectedColor : ChoiceBorderNormalColor;
+                    _choiceOutlines[i].effectDistance = isSelected ? new Vector2(2.5f, -2.5f) : new Vector2(1.5f, -1.5f);
+                }
+
                 if (_choiceTexts[i] != null)
                 {
                     string marker = isSelected ? "[X]" : "[ ]";
@@ -890,6 +1086,7 @@ namespace CaseClosed.UI
             }
 
             AudioManager.Instance?.PlayButtonClick();
+            SyncAnswersToSession();
             _currentQuestionIndex++;
             RenderCurrentQuestion();
         }
@@ -911,6 +1108,7 @@ namespace CaseClosed.UI
             }
 
             AudioManager.Instance?.PlayButtonClick();
+            SyncAnswersToSession();
             OnSubmitClicked();
         }
 

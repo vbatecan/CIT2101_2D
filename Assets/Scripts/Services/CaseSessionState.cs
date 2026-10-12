@@ -18,6 +18,7 @@ namespace CaseClosed.Services
         private readonly Dictionary<string, string> _unlockedClues = new Dictionary<string, string>();
         private readonly HashSet<string> _exposedContradictionIds = new HashSet<string>();
         private readonly HashSet<string> _completedDialogueTreeIds = new HashSet<string>();
+        private readonly List<int> _conclusionAnswers = new List<int>();
 
         private float _accumulatedElapsedTime;
         private float _lastResumeTimestamp;
@@ -38,6 +39,7 @@ namespace CaseClosed.Services
         public IReadOnlyDictionary<string, string> UnlockedClues => _unlockedClues;
         public IReadOnlyCollection<string> ExposedContradictionIds => _exposedContradictionIds;
         public IReadOnlyCollection<string> CompletedDialogueTreeIds => _completedDialogueTreeIds;
+        public IReadOnlyList<int> ConclusionAnswers => _conclusionAnswers;
 
         public int DiscoveredEvidenceCount => _discoveredEvidenceIds.Count;
         public int ExposedContradictionCount => _exposedContradictionIds.Count;
@@ -68,6 +70,7 @@ namespace CaseClosed.Services
             _unlockedClues.Clear();
             _exposedContradictionIds.Clear();
             _completedDialogueTreeIds.Clear();
+            _conclusionAnswers.Clear();
 
             _accumulatedElapsedTime = 0f;
             _lastResumeTimestamp = currentTime;
@@ -212,6 +215,27 @@ namespace CaseClosed.Services
         public bool IsDialogueCompleted(string treeId)
         {
             return !string.IsNullOrEmpty(treeId) && _completedDialogueTreeIds.Contains(treeId);
+        }
+
+        public void SetConclusionAnswer(int questionIndex, int answerIndex)
+        {
+            if (questionIndex < 0) return;
+            while (_conclusionAnswers.Count <= questionIndex)
+            {
+                _conclusionAnswers.Add(-1);
+            }
+            _conclusionAnswers[questionIndex] = answerIndex;
+        }
+
+        public int GetConclusionAnswer(int questionIndex)
+        {
+            if (questionIndex < 0 || questionIndex >= _conclusionAnswers.Count) return -1;
+            return _conclusionAnswers[questionIndex];
+        }
+
+        public void ClearConclusionAnswers()
+        {
+            _conclusionAnswers.Clear();
         }
 
         private static string GetHotspotKey(EvidenceSO evidence, EvidenceHotspot hotspot)
