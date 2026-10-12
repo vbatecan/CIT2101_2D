@@ -423,9 +423,15 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Returns true when the player can confront the culprit (all dialogs done and all evidence unlocked).</summary>
+        /// <summary>Returns true when all evidence is unlocked, all dialogues are completed, and no dialogue is active.</summary>
         public bool IsReadyForConclusion()
         {
+            InterrogationManager interrogationManager = InterrogationManager.Instance;
+            if (interrogationManager != null && interrogationManager.CurrentNode != null)
+            {
+                return false;
+            }
+
             return AreAllEvidenceUnlocked() && AreAllDialoguesDone();
         }
 

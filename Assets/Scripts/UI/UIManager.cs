@@ -379,12 +379,14 @@ namespace CaseClosed.UI
                 if (_subscribedInterrogationManager != null)
                 {
                     _subscribedInterrogationManager.OnDialogueClosed -= HandleEvidenceOrDialogueChanged;
+                    _subscribedInterrogationManager.OnDialogueNodeDisplayed -= HandleDialogueNodeDisplayed;
                 }
 
                 _subscribedInterrogationManager = interrogationManager;
                 if (_subscribedInterrogationManager != null)
                 {
                     _subscribedInterrogationManager.OnDialogueClosed += HandleEvidenceOrDialogueChanged;
+                    _subscribedInterrogationManager.OnDialogueNodeDisplayed += HandleDialogueNodeDisplayed;
                 }
             }
         }
@@ -411,6 +413,7 @@ namespace CaseClosed.UI
             if (_subscribedInterrogationManager != null)
             {
                 _subscribedInterrogationManager.OnDialogueClosed -= HandleEvidenceOrDialogueChanged;
+                _subscribedInterrogationManager.OnDialogueNodeDisplayed -= HandleDialogueNodeDisplayed;
                 _subscribedInterrogationManager = null;
             }
         }
@@ -421,6 +424,11 @@ namespace CaseClosed.UI
         }
 
         private void HandleEvidenceOrDialogueChanged()
+        {
+            UpdateConclusionButtonState();
+        }
+
+        private void HandleDialogueNodeDisplayed(DialogueNode node)
         {
             UpdateConclusionButtonState();
         }
