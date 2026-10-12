@@ -336,26 +336,40 @@ namespace CaseClosed.UI
             {
                 Text title = _startScreenObj.transform.Find("StartTitle").GetComponent<Text>();
                 SetFlowRect(title.rectTransform, new Vector2(0.08f, 0.57f), new Vector2(0.92f, 0.78f));
-                title.fontSize = 36;
+                title.fontSize = 52;
                 title.resizeTextForBestFit = true;
-                title.resizeTextMinSize = 24;
-                title.resizeTextMaxSize = 36;
-                title.text = "<size=14>D E T E C T I V E ' S   D O S S I E R</size>\nTHE FINAL VERDICT";
+                title.resizeTextMinSize = 40;
+                title.resizeTextMaxSize = 52;
+                title.text = "<size=22>D E T E C T I V E ' S   D O S S I E R</size>\nTHE FINAL VERDICT";
                 title.raycastTarget = false;
 
                 Text description = _startScreenObj.transform.Find("StartDesc").GetComponent<Text>();
-                SetFlowRect(description.rectTransform, new Vector2(0.12f, 0.36f), new Vector2(0.88f, 0.56f));
+                SetFlowRect(description.rectTransform, new Vector2(0.08f, 0.34f), new Vector2(0.92f, 0.56f));
                 CaseSO activeCase = CaseManager.Instance.ActiveCase;
                 description.text = $"{activeCase.caseTitle}\n\nAnswer {playerAnswers.Count} questions using the evidence you gathered.\nEach answer is final when you move to the next question.";
-                description.fontSize = 18;
+                description.fontSize = 28;
                 description.resizeTextForBestFit = true;
-                description.resizeTextMinSize = 14;
-                description.resizeTextMaxSize = 18;
+                description.resizeTextMinSize = 24;
+                description.resizeTextMaxSize = 28;
                 description.raycastTarget = false;
 
                 Button start = _startScreenObj.transform.Find("StartButton").GetComponent<Button>();
-                SetFlowRect(start.GetComponent<RectTransform>(), new Vector2(0.30f, 0.20f), new Vector2(0.70f, 0.30f));
+                SetFlowRect(start.GetComponent<RectTransform>(), new Vector2(0.25f, 0.18f), new Vector2(0.75f, 0.30f));
                 StyleFlowAction(start, "Begin final report");
+                Text startLabel = start.GetComponentInChildren<Text>(true);
+                if (startLabel != null)
+                {
+                    startLabel.fontSize = 28;
+                    startLabel.resizeTextMinSize = 24;
+                    startLabel.resizeTextMaxSize = 28;
+                }
+                TMPro.TextMeshProUGUI startTmpLabel = start.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+                if (startTmpLabel != null)
+                {
+                    startTmpLabel.fontSize = 28;
+                    startTmpLabel.fontSizeMin = 24;
+                    startTmpLabel.fontSizeMax = 28;
+                }
             }
 
             if (_questionBoxImage != null)
@@ -689,6 +703,7 @@ namespace CaseClosed.UI
         {
             if (_startScreenObj != null) _startScreenObj.SetActive(true);
             if (_questionScreenObj != null) _questionScreenObj.SetActive(false);
+            if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(false);
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
@@ -700,6 +715,7 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayButtonClick();
             if (_startScreenObj != null) _startScreenObj.SetActive(false);
             if (_questionScreenObj != null) _questionScreenObj.SetActive(true);
+            if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(true);
 
             _currentQuestionIndex = 0;
             RenderCurrentQuestion();

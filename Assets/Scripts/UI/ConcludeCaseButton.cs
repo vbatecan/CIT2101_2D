@@ -33,6 +33,7 @@ namespace CaseClosed.UI
         private Image _buttonImage;
         private bool _isReady = false;
         private CaseManager _subscribedCaseManager;
+        private InterrogationManager _subscribedInterrogationManager;
 
         private void Awake()
         {
@@ -68,7 +69,8 @@ namespace CaseClosed.UI
         private void SubscribeEvents()
         {
             CaseManager publisher = CaseManager.Instance;
-            if (_subscribedCaseManager == publisher) return;
+            InterrogationManager interrogationPublisher = InterrogationManager.Instance;
+            if (_subscribedCaseManager == publisher && _subscribedInterrogationManager == interrogationPublisher) return;
             UnsubscribeEvents();
             _subscribedCaseManager = publisher;
             if (_subscribedCaseManager != null)
@@ -77,6 +79,12 @@ namespace CaseClosed.UI
                 _subscribedCaseManager.OnDialogueTreeCompleted += HandleDialogueChanged;
                 _subscribedCaseManager.OnEvidenceDiscovered += HandleEvidenceChanged;
                 _subscribedCaseManager.OnCaseLoaded += HandleCaseLoaded;
+            }
+            _subscribedInterrogationManager = interrogationPublisher;
+            if (_subscribedInterrogationManager != null)
+            {
+                _subscribedInterrogationManager.OnDialogueNodeDisplayed += HandleDialogueNodeDisplayed;
+                _subscribedInterrogationManager.OnDialogueClosed += HandleDialogueClosed;
             }
         }
 
@@ -90,12 +98,20 @@ namespace CaseClosed.UI
                 _subscribedCaseManager.OnCaseLoaded -= HandleCaseLoaded;
             }
             _subscribedCaseManager = null;
+            if (_subscribedInterrogationManager != null)
+            {
+                _subscribedInterrogationManager.OnDialogueNodeDisplayed -= HandleDialogueNodeDisplayed;
+                _subscribedInterrogationManager.OnDialogueClosed -= HandleDialogueClosed;
+            }
+            _subscribedInterrogationManager = null;
         }
 
         private void HandleReadinessChanged(bool ready) => UpdateReadinessState();
         private void HandleDialogueChanged(string treeId) => UpdateReadinessState();
         private void HandleEvidenceChanged(Data.EvidenceSO ev) => UpdateReadinessState();
         private void HandleCaseLoaded(Data.CaseSO caseData) => UpdateReadinessState();
+        private void HandleDialogueNodeDisplayed(Data.DialogueNode node) => UpdateReadinessState();
+        private void HandleDialogueClosed() => UpdateReadinessState();
 
         /// <summary>
         /// Updates the visual tint and interactability based on CaseManager readiness.
@@ -312,6 +328,9 @@ namespace CaseClosed.UI
 
         private string GetReadinessHint()
         {
+            if (InterrogationManager.Instance != null && InterrogationManager.Instance.CurrentNode != null)
+                return "Finish the current dialogue to conclude";
+
             if (CaseManager.Instance == null || CaseManager.Instance.ActiveCase == null)
                 return "Investigation in progress...";
 

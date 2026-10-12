@@ -127,6 +127,7 @@ namespace CaseClosed.UI
         private TextMeshProUGUI customDialogueSpeaker;
 
         private bool _isSubscribed = false;
+        private bool hiddenForEvidenceSelection;
 
         // Active dialogue box state
         private GameObject _activeDialogBox;
@@ -1258,7 +1259,7 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Updates the visual challenge state highlight, toggles challenge button text, and syncs the arm pointer.
+        /// Hides dialogue during evidence selection and restores the statement when selection is cancelled.
         /// </summary>
         /// <param name="isActive">Whether challenge mode is currently enabled.</param>
         private void UpdateChallengeState(bool isActive)
@@ -1267,6 +1268,36 @@ namespace CaseClosed.UI
             if (evidencePickerContainer != null) evidencePickerContainer.SetActive(false);
 
             SetChallengeButtonText(isActive ? "Cancel" : "Challenge");
+
+            if (isActive)
+            {
+                if (isTyping) CompleteTypingImmediately();
+                hiddenForEvidenceSelection = true;
+                DeactivateAllCharacterDialogBoxes();
+                gameObject.SetActive(false);
+            }
+            else if (hiddenForEvidenceSelection)
+            {
+                hiddenForEvidenceSelection = false;
+                InterrogationManager manager = InterrogationManager.Instance;
+                if (manager != null && manager.CurrentNode != null)
+                {
+                    DisplayNode(manager.CurrentNode);
+                    if (typewriterCoroutine != null)
+                    {
+                        StopCoroutine(typewriterCoroutine);
+                        typewriterCoroutine = null;
+                    }
+                    SetBodyText(currentFullText);
+                    isTyping = false;
+                    SetNextButtonInteractable(true);
+                    if (challengeButton != null)
+                    {
+                        challengeButton.gameObject.SetActive(isCurrentNodeChallengeable);
+                        challengeButton.interactable = isCurrentNodeChallengeable;
+                    }
+                }
+            }
 
             ArmPointerController.Instance?.ForceSyncState();
         }
@@ -1407,6 +1438,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void HideDialoguePanel()
         {
+            hiddenForEvidenceSelection = false;
             IsDialogueOpen = false;
             if (typewriterCoroutine != null)
             {
@@ -1438,6 +1470,7 @@ namespace CaseClosed.UI
         /// <param name="reactionMessage">The reaction dialogue text returned from the challenge.</param>
         private void HandleChallengeResult(bool success, string reactionMessage)
         {
+            hiddenForEvidenceSelection = false;
             IsDialogueOpen = true;
             gameObject.SetActive(true);
             isShowingFailureReaction = !success;
