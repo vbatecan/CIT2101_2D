@@ -251,7 +251,6 @@ namespace CaseClosed.UI
         {
             if (_isTyping)
             {
-                CompleteTypingImmediately();
                 return;
             }
 

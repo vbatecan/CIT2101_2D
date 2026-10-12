@@ -344,20 +344,13 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Advances dialogue or accelerates typewriter animation upon user click or keypress.
-        /// If typing, completes text immediately.
-        /// If typing is done and not challengeable, calls AdvanceDialogue().
+        /// Advances dialogue upon user click or keypress after the current line finishes typing.
+        /// If the completed line is not challengeable, calls AdvanceDialogue().
         /// </summary>
         public void HandleDialogueAdvanceInput()
         {
             if (!CanHandleDialogueInput()) return;
             lastDialogueInputFrame = Time.frameCount;
-
-            if (isTyping)
-            {
-                CompleteTypingImmediately();
-                return;
-            }
 
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
@@ -1151,7 +1144,7 @@ namespace CaseClosed.UI
         private IEnumerator TypeText(string text)
         {
             isTyping = true;
-            SetNextButtonInteractable(true);
+            SetNextButtonInteractable(false);
             if (challengeButton != null)
             {
                 challengeButton.gameObject.SetActive(false);
@@ -1241,26 +1234,20 @@ namespace CaseClosed.UI
             if (nextButton != null) nextButton.interactable = interactable;
         }
 
-        /// <summary>
-        /// Handles next button click after the current line has finished printing or to skip typing.
-        /// </summary>
         private bool CanHandleDialogueInput()
         {
-            return IsDialogueOpen && lastDialogueInputFrame != Time.frameCount &&
+            return IsDialogueOpen && !isTyping && lastDialogueInputFrame != Time.frameCount &&
                 (EvidenceManager.Instance == null || !EvidenceManager.Instance.isInspectingModalOpen);
         }
 
+        /// <summary>
+        /// Handles next button clicks after the current line has finished typing.
+        /// </summary>
         private void OnNextButtonClicked()
         {
             if (!CanHandleDialogueInput()) return;
             lastDialogueInputFrame = Time.frameCount;
             Debug.Log($"[UI:Dialogue] Next button clicked (IsTyping: {isTyping})");
-
-            if (isTyping)
-            {
-                CompleteTypingImmediately();
-                return;
-            }
 
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
