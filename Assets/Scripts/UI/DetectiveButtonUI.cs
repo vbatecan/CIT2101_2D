@@ -123,6 +123,10 @@ namespace CaseClosed.UI
                 _rectTransform.localScale = _originalScale;
             }
             CacheTypographyComponents();
+            if (enforceReadableTypography)
+            {
+                EnforceAllCapsAndBold();
+            }
         }
 
         private void Update()
@@ -315,6 +319,7 @@ namespace CaseClosed.UI
             if (enforceReadableTypography)
             {
                 ApplyTypographyStyling(effectiveVariant);
+                EnforceAllCapsAndBold();
             }
         }
 
@@ -407,6 +412,13 @@ namespace CaseClosed.UI
             _lastProcessedTmpTexts = (_cachedTmpLabels != null) ? new string[_cachedTmpLabels.Length] : null;
         }
 
+        private void LateUpdate()
+        {
+            if (enforceReadableTypography)
+            {
+                EnforceAllCapsAndBold();
+            }
+        }
 
         private void EnforceAllCapsAndBold()
         {
