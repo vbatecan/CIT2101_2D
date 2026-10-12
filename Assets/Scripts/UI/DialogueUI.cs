@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -91,6 +90,18 @@ namespace CaseClosed.UI
         [Tooltip("Optional parent container for instantiated dialogue boxes. If null, parents to Canvas or this transform.")]
         public Transform dialogBoxContainer;
 
+        [Header("Custom Dialogue Appearance")]
+        [SerializeField, Tooltip("Paper surface color for dialogue panels; no baked character banner is needed.")]
+        private Color dialoguePanelColor = new Color(0.98f, 0.97f, 0.93f, 0.86f);
+        [SerializeField, Tooltip("Color of dialogue text and dynamically displayed speaker names.")]
+        private Color dialogueInkColor = new Color(0.06f, 0.04f, 0.02f, 1f);
+        [SerializeField, Tooltip("Width and height of the custom world-space dialogue surface.")]
+        private Vector2 dialogueWorldSize = new Vector2(35.69f, 6.78f);
+        [SerializeField, Tooltip("Lower-left anchor of the custom Canvas dialogue panel.")]
+        private Vector2 dialoguePanelAnchorMin = new Vector2(0.14f, 0f);
+        [SerializeField, Tooltip("Upper-right anchor of the custom Canvas dialogue panel.")]
+        private Vector2 dialoguePanelAnchorMax = new Vector2(0.86f, 0.20f);
+
         [Header("Typewriter Settings")]
         public float charactersPerSecond = 35f;
 
@@ -111,7 +122,9 @@ namespace CaseClosed.UI
         private Coroutine typewriterCoroutine;
         private bool isTyping = false;
         private string currentFullText = "";
-        private readonly StringBuilder _typewriterBuilder = new StringBuilder(512);
+        private Image customDialoguePanel;
+        private TextMeshProUGUI customDialogueBody;
+        private TextMeshProUGUI customDialogueSpeaker;
 
         private bool _isSubscribed = false;
 
@@ -165,6 +178,7 @@ namespace CaseClosed.UI
         {
             if (nextButton != null)
             {
+                nextButton.onClick.RemoveListener(OnNextButtonClicked);
                 nextButton.onClick.AddListener(OnNextButtonClicked);
                 DetectiveUITheme.Action(nextButton, "CONTINUE", DetectiveUITheme.Ink);
             }
@@ -386,6 +400,7 @@ namespace CaseClosed.UI
         {
             IsDialogueOpen = false;
             DeactivateAllCharacterDialogBoxes();
+            if (customDialoguePanel != null) Destroy(customDialoguePanel.gameObject);
             if (_instance == this) _instance = null;
 
             if (_isSubscribed && InterrogationManager.Instance != null)
@@ -453,6 +468,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void ActivateDialogBox(string characterKey, string speakerName = "")
         {
+            if (customDialoguePanel != null) customDialoguePanel.gameObject.SetActive(false);
             GameObject targetBox = GetDialogBoxForKey(characterKey);
 
             DeactivateBoxesExcept(targetBox);
@@ -529,37 +545,64 @@ namespace CaseClosed.UI
             Image boxImage = box.GetComponent<Image>();
             if (boxImage != null)
             {
-                DetectiveUITheme.Surface(boxImage, DetectiveUITheme.Paper, true);
+                DetectiveUITheme.Surface(boxImage, dialoguePanelColor, true);
             }
 
             // 2. If World-space SpriteRenderer based speech bubble (VinceDialog, JaneDialog, etc.)
             SpriteRenderer sr = box.GetComponent<SpriteRenderer>();
             if (sr != null)
             {
+                TextMeshProUGUI legacyBody = GetTextMeshProFromBox(box);
+                if (ShowCustomCanvasDialogue(speakerName, legacyBody))
+                {
+                    sr.enabled = false;
+                    if (legacyBody != null) legacyBody.enabled = false;
+                    if (_activeBoxLegacyText != null) _activeBoxLegacyText.enabled = false;
+                    _activeBoxTmpText = customDialogueBody;
+                    _activeBoxLegacyText = null;
+                    return;
+                }
                 Sprite roundedSprite = DetectiveUITheme.GetRoundedSprite();
                 if (roundedSprite != null)
                 {
                     sr.sprite = roundedSprite;
                     sr.drawMode = SpriteDrawMode.Sliced;
-                    if (sr.size.x < 30f || sr.size.y < 5f)
-                    {
-                        sr.size = new Vector2(Mathf.Max(sr.size.x, 35.69f), Mathf.Max(sr.size.y, 6.78f));
-                    }
+                    sr.size = new Vector2(Mathf.Max(1f, dialogueWorldSize.x), Mathf.Max(1f, dialogueWorldSize.y));
                 }
-                sr.color = DetectiveUITheme.Paper;
+                sr.color = dialoguePanelColor;
             }
 
             // 3. Statement Text color: always dark antique ink for legibility on paper
             TextMeshProUGUI tmpText = GetTextMeshProFromBox(box);
             if (tmpText != null)
             {
-                tmpText.color = DetectiveUITheme.Ink;
+                tmpText.color = dialogueInkColor;
+                tmpText.raycastTarget = false;
+
+                // Legacy banners baked the speaker into the image. Use an editable
+                // text header when replacing those banners with a custom surface.
+                if (sr != null && box.transform.Find("Text_Speaker") == null && box.transform.Find("SpeakerName") == null)
+                {
+                    GameObject headerObject = new GameObject("Text_Speaker", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+                    headerObject.transform.SetParent(box.transform, false);
+                    TextMeshProUGUI header = headerObject.GetComponent<TextMeshProUGUI>();
+                    RectTransform bodyRect = tmpText.rectTransform;
+                    header.rectTransform.anchorMin = bodyRect.anchorMin;
+                    header.rectTransform.anchorMax = bodyRect.anchorMax;
+                    header.rectTransform.localScale = bodyRect.localScale;
+                    header.rectTransform.sizeDelta = new Vector2(bodyRect.rect.width, 42f);
+                    header.rectTransform.anchoredPosition3D = new Vector3(bodyRect.anchoredPosition.x, sr.size.y * 0.5f - 1.1f, bodyRect.anchoredPosition3D.z);
+                    header.font = tmpText.font;
+                    header.fontSize = 24f;
+                    header.alignment = TextAlignmentOptions.MidlineLeft;
+                    header.raycastTarget = false;
+                }
             }
 
             Text legacyText = box.GetComponentInChildren<Text>(true);
             if (legacyText != null)
             {
-                legacyText.color = DetectiveUITheme.Ink;
+                legacyText.color = dialogueInkColor;
             }
 
             // 4. Speaker header styling if present
@@ -567,7 +610,7 @@ namespace CaseClosed.UI
                                 box.transform.Find("SpeakerName")?.GetComponent<TextMeshProUGUI>();
             if (boxSpeakerTmp != null)
             {
-                boxSpeakerTmp.color = isDetective ? DetectiveUITheme.Ink : DetectiveUITheme.WoodDark;
+                boxSpeakerTmp.color = dialogueInkColor;
                 boxSpeakerTmp.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
                 if (!string.IsNullOrEmpty(speakerName))
                 {
@@ -586,6 +629,54 @@ namespace CaseClosed.UI
                     boxSpeakerLegacy.text = speakerName.ToUpperInvariant();
                 }
             }
+        }
+
+        /// <summary>
+        /// Reuses a Canvas panel instead of inheriting legacy banner transforms.
+        /// </summary>
+        private bool ShowCustomCanvasDialogue(string speakerName, TextMeshProUGUI legacyBody)
+        {
+            Canvas canvas = GetComponentInParent<Canvas>();
+            if (canvas == null) return false;
+            canvas = canvas.rootCanvas;
+            if (customDialoguePanel == null)
+            {
+                GameObject panelObject = new GameObject("CustomDialoguePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                panelObject.transform.SetParent(canvas.transform, false);
+                customDialoguePanel = panelObject.GetComponent<Image>();
+                customDialogueSpeaker = CreateCustomDialogueText("Speaker", panelObject.transform, 28f);
+                customDialogueSpeaker.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
+                DetectiveUITheme.Place(customDialogueSpeaker.rectTransform, new Vector2(0.04f, 0.73f), new Vector2(0.96f, 0.94f));
+                customDialogueBody = CreateCustomDialogueText("DialogueBody", panelObject.transform, 30f);
+                DetectiveUITheme.Place(customDialogueBody.rectTransform, new Vector2(0.04f, 0.12f), new Vector2(0.96f, 0.71f));
+            }
+            DetectiveUITheme.Place(customDialoguePanel.rectTransform, dialoguePanelAnchorMin, dialoguePanelAnchorMax);
+            DetectiveUITheme.Surface(customDialoguePanel, dialoguePanelColor, true);
+            customDialogueSpeaker.text = speakerName;
+            customDialogueSpeaker.color = dialogueInkColor;
+            customDialogueBody.color = dialogueInkColor;
+            if (legacyBody != null && legacyBody.font != null)
+            {
+                customDialogueBody.font = legacyBody.font;
+                customDialogueSpeaker.font = legacyBody.font;
+            }
+            customDialoguePanel.gameObject.SetActive(true);
+            return true;
+        }
+
+        private TextMeshProUGUI CreateCustomDialogueText(string objectName, Transform parent, float fontSize)
+        {
+            GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+            textObject.transform.SetParent(parent, false);
+            TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+            text.font = DetectiveUITheme.GetStandardTmpFont();
+            text.fontSize = fontSize;
+            text.enableAutoSizing = true;
+            text.fontSizeMin = 20f;
+            text.fontSizeMax = fontSize;
+            text.alignment = TextAlignmentOptions.TopLeft;
+            text.raycastTarget = false;
+            return text;
         }
 
         /// <summary>
@@ -888,6 +979,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void DeactivateAllCharacterDialogBoxes()
         {
+            if (customDialoguePanel != null) customDialoguePanel.gameObject.SetActive(false);
             DeactivateBoxIfActive(vinceDialogBox);
             DeactivateBoxIfActive(janeDialogBox);
             DeactivateBoxIfActive(paulDialogBox);
@@ -988,10 +1080,15 @@ namespace CaseClosed.UI
         private void SetBodyText(string text)
         {
             if (dialogueBodyText != null) dialogueBodyText.text = text;
-            if (tmpDialogueText != null) tmpDialogueText.text = text;
+            if (tmpDialogueText != null)
+            {
+                tmpDialogueText.maxVisibleCharacters = int.MaxValue;
+                tmpDialogueText.text = text;
+            }
             if (_activeBoxTmpText != null && _activeBoxTmpText != tmpDialogueText)
             {
                 _activeBoxTmpText.text = text;
+                _activeBoxTmpText.maxVisibleCharacters = int.MaxValue;
             }
             if (_activeBoxLegacyText != null && _activeBoxLegacyText != dialogueBodyText)
             {
@@ -1025,31 +1122,59 @@ namespace CaseClosed.UI
 
         /// <summary>
         /// Coroutine that animates text character by character with optional typewriter audio clicks.
-        /// Zero garbage collection using preallocated StringBuilder.
+        /// Parses TMP text once and reveals characters using unscaled elapsed time.
         /// </summary>
         private IEnumerator TypeText(string text)
         {
             isTyping = true;
-            SetNextButtonInteractable(false);
+            SetNextButtonInteractable(true);
             if (challengeButton != null)
             {
                 challengeButton.gameObject.SetActive(false);
             }
             currentFullText = text ?? "";
-            SetBodyText("");
-
-            _typewriterBuilder.Clear();
-            float delay = 1f / Mathf.Max(1f, charactersPerSecond);
-            for (int i = 0; i < currentFullText.Length; i++)
+            SetBodyText(currentFullText);
+            TextMeshProUGUI body = _activeBoxTmpText;
+            if (body == null) body = tmpDialogueText;
+            int characterCount = currentFullText.Length;
+            if (body != null)
             {
-                _typewriterBuilder.Append(currentFullText[i]);
-                SetBodyText(_typewriterBuilder.ToString());
-                if (i % 3 == 0) AudioManager.Instance?.PlayTypewriterKey();
-                yield return new WaitForSeconds(delay);
+                body.ForceMeshUpdate(true);
+                characterCount = body.textInfo.characterCount;
             }
-
+            SetVisibleBodyCharacters(0, body != null);
+            AudioManager audio = AudioManager.Instance;
+            float elapsed = 0f;
+            int visibleCharacters = 0;
+            while (visibleCharacters < characterCount)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                int nextVisible = Mathf.Min(characterCount, Mathf.FloorToInt(elapsed * Mathf.Max(1f, charactersPerSecond)));
+                if (nextVisible > visibleCharacters)
+                {
+                    SetVisibleBodyCharacters(nextVisible, body != null);
+                    if (audio != null && nextVisible / 3 > visibleCharacters / 3) audio.PlayTypewriterKey();
+                    visibleCharacters = nextVisible;
+                }
+                yield return null;
+            }
+            SetBodyText(currentFullText);
             isTyping = false;
             EnableCompletedLineInteraction();
+        }
+
+        private void SetVisibleBodyCharacters(int count, bool hasTmpBody)
+        {
+            if (tmpDialogueText != null) tmpDialogueText.maxVisibleCharacters = count;
+            if (_activeBoxTmpText != null) _activeBoxTmpText.maxVisibleCharacters = count;
+
+            // Retain support for scenes that still use the legacy Text component.
+            if (dialogueBodyText == null && _activeBoxLegacyText == null) return;
+            if (hasTmpBody && _activeBoxLegacyText == null &&
+                (dialogueBodyText == null || !dialogueBodyText.isActiveAndEnabled)) return;
+            string visibleText = currentFullText.Substring(0, Mathf.Min(count, currentFullText.Length));
+            if (dialogueBodyText != null) dialogueBodyText.text = visibleText;
+            if (_activeBoxLegacyText != null) _activeBoxLegacyText.text = visibleText;
         }
 
         /// <summary>

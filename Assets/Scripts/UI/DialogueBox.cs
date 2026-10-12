@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -72,7 +71,6 @@ namespace CaseClosed.UI
         private int _currentLineIndex = -1;
         private bool _isTyping = false;
         private string _fullLineText = "";
-        private readonly StringBuilder _textBuffer = new StringBuilder(512);
 
         private Coroutine _typewriterCoroutine;
         private Coroutine _fadeCoroutine;
@@ -281,7 +279,11 @@ namespace CaseClosed.UI
             }
 
             _isTyping = false;
-            if (dialogueBodyText != null) dialogueBodyText.text = _fullLineText;
+            if (dialogueBodyText != null)
+            {
+                dialogueBodyText.text = _fullLineText;
+                dialogueBodyText.maxVisibleCharacters = int.MaxValue;
+            }
 
             OnTypingFinished();
         }
@@ -290,24 +292,32 @@ namespace CaseClosed.UI
         {
             _isTyping = true;
             _fullLineText = text ?? "";
-            _textBuffer.Clear();
-
-            if (dialogueBodyText != null) dialogueBodyText.text = "";
+            int characterCount = _fullLineText.Length;
+            if (dialogueBodyText != null)
+            {
+                dialogueBodyText.text = _fullLineText;
+                dialogueBodyText.maxVisibleCharacters = 0;
+                dialogueBodyText.ForceMeshUpdate(true);
+                characterCount = dialogueBodyText.textInfo.characterCount;
+            }
             if (nextIndicatorArrow != null) nextIndicatorArrow.gameObject.SetActive(false);
 
-            float charDelay = 1f / Mathf.Max(10f, charactersPerSecond);
-            for (int i = 0; i < _fullLineText.Length; i++)
+            AudioManager audio = AudioManager.Instance;
+            float elapsed = 0f;
+            int visibleCharacters = 0;
+            while (visibleCharacters < characterCount)
             {
-                _textBuffer.Append(_fullLineText[i]);
-                if (dialogueBodyText != null) dialogueBodyText.text = _textBuffer.ToString();
-
-                if (i % 3 == 0)
+                elapsed += Time.unscaledDeltaTime;
+                int nextVisible = Mathf.Min(characterCount, Mathf.FloorToInt(elapsed * Mathf.Max(10f, charactersPerSecond)));
+                if (nextVisible > visibleCharacters)
                 {
-                    AudioManager.Instance?.PlayTypewriterKey();
+                    if (dialogueBodyText != null) dialogueBodyText.maxVisibleCharacters = nextVisible;
+                    if (audio != null && nextVisible / 3 > visibleCharacters / 3) audio.PlayTypewriterKey();
+                    visibleCharacters = nextVisible;
                 }
-                yield return new WaitForSeconds(charDelay);
+                yield return null;
             }
-
+            if (dialogueBodyText != null) dialogueBodyText.maxVisibleCharacters = int.MaxValue;
             _isTyping = false;
             OnTypingFinished();
         }

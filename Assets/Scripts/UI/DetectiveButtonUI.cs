@@ -38,6 +38,9 @@ namespace CaseClosed.UI
         [SerializeField] private bool playAudioOnPress = true;
         [SerializeField] private bool enforceReadableTypography = true;
 
+        [SerializeField, Tooltip("Optional icon for compact buttons, displayed independently of the button surface. Compact buttons retain their authored sprite by default.")]
+        private Sprite icon;
+
         [Header("Interaction Animation")]
         [Range(1.0f, 1.15f)]
         [SerializeField] private float hoverScale = 1.032f;
@@ -47,6 +50,8 @@ namespace CaseClosed.UI
 
         private Button _button;
         private Image _targetImage;
+        private Image _iconImage;
+        private DetectiveButtonVariant _effectiveVariant = DetectiveButtonVariant.Secondary;
         private Shadow _shadow;
         private Outline _outline;
         private RectTransform _rectTransform;
@@ -63,28 +68,28 @@ namespace CaseClosed.UI
         private bool _wasInteractable = true;
         private bool _isDirty = true;
 
-        // Visual Palette - Authentic vintage detective desk & dossier colors
+        // Warm paper and brass surfaces. Existing public palette names remain compatible.
         public static readonly Color PaperColor = new Color(0.95f, 0.91f, 0.82f, 1f);       // #F2E8D1 Parchment
-        public static readonly Color PrimaryInkColor = new Color(0.12f, 0.16f, 0.17f, 1f);  // #1F292B Deep antique ink
-        public static readonly Color PrimaryHoverColor = new Color(0.19f, 0.25f, 0.27f, 1f);// Richer ink highlight
-        public static readonly Color PrimaryPressColor = new Color(0.08f, 0.11f, 0.12f, 1f);// Dark stamp impression
+        public static readonly Color PrimaryInkColor = new Color(0.94f, 0.79f, 0.50f, 1f);
+        public static readonly Color PrimaryHoverColor = new Color(0.99f, 0.88f, 0.64f, 1f);
+        public static readonly Color PrimaryPressColor = new Color(0.85f, 0.68f, 0.39f, 1f);
 
-        public static readonly Color SecondarySlateColor = new Color(0.18f, 0.22f, 0.24f, 0.96f); // #2E383D Aged slate
-        public static readonly Color SecondaryHoverColor = new Color(0.26f, 0.31f, 0.33f, 1f);     // Slate highlight
-        public static readonly Color SecondaryPressColor = new Color(0.12f, 0.15f, 0.16f, 1f);
+        public static readonly Color SecondarySlateColor = PaperColor;
+        public static readonly Color SecondaryHoverColor = new Color(0.99f, 0.97f, 0.91f, 1f);
+        public static readonly Color SecondaryPressColor = new Color(0.88f, 0.81f, 0.67f, 1f);
 
-        public static readonly Color DangerRedColor = new Color(0.44f, 0.15f, 0.13f, 0.98f);  // #702621 Wax stamp red
-        public static readonly Color DangerHoverColor = new Color(0.56f, 0.19f, 0.16f, 1f);
-        public static readonly Color DangerPressColor = new Color(0.30f, 0.10f, 0.08f, 1f);
+        public static readonly Color DangerRedColor = new Color(0.91f, 0.68f, 0.58f, 1f);
+        public static readonly Color DangerHoverColor = new Color(0.97f, 0.77f, 0.66f, 1f);
+        public static readonly Color DangerPressColor = new Color(0.83f, 0.57f, 0.47f, 1f);
 
-        public static readonly Color SmallIconColor = new Color(0.14f, 0.18f, 0.20f, 0.92f);
-        public static readonly Color SmallIconHoverColor = new Color(0.22f, 0.27f, 0.30f, 1f);
-        public static readonly Color SmallIconPressColor = new Color(0.09f, 0.11f, 0.12f, 1f);
+        public static readonly Color SmallIconColor = PaperColor;
+        public static readonly Color SmallIconHoverColor = SecondaryHoverColor;
+        public static readonly Color SmallIconPressColor = SecondaryPressColor;
 
         public static readonly Color BrassAccentColor = new Color(0.68f, 0.52f, 0.28f, 0.85f); // #AE8547 Antique brass
         public static readonly Color BrassHoverGlow = new Color(0.88f, 0.70f, 0.38f, 1f);
 
-        public static readonly Color DisabledTintColor = new Color(0.55f, 0.55f, 0.55f, 0.45f);
+        public static readonly Color DisabledTintColor = new Color(0.86f, 0.82f, 0.74f, 1f);
 
         public DetectiveButtonVariant Variant => variant;
 
@@ -217,6 +222,9 @@ namespace CaseClosed.UI
 
             string bName = gameObject.name.ToLowerInvariant();
 
+            // A folder's close control is an action, even when its name contains "folder".
+            if (bName.Contains("close")) return DetectiveButtonVariant.SmallIcon;
+
             // Dossier Card / Folder check
             if (bName.Contains("folder") || bName.Contains("dossier") || bName.Contains("case0") || bName.Contains("card"))
             {
@@ -246,7 +254,7 @@ namespace CaseClosed.UI
             // Small / Icon / Utility
             if (bName.Contains("back") || bName.Contains("close") || bName.Contains("return") ||
                 bName.Contains("mute") || bName.Contains("reset") || bName.Contains("prev") ||
-                bName.Contains("next") || bName.Contains("zoom") || bName.Contains("rotate") ||
+                bName.Contains("next") || bName.Contains("zoom") || bName.Contains("rotate") || bName.Contains("tab") ||
                 (_rectTransform != null && (_rectTransform.rect.width < 90f || _rectTransform.rect.height < 44f)))
             {
                 return DetectiveButtonVariant.SmallIcon;
@@ -264,6 +272,8 @@ namespace CaseClosed.UI
             EnsureDepthComponents();
 
             DetectiveButtonVariant effectiveVariant = ResolveEffectiveVariant();
+            _effectiveVariant = effectiveVariant;
+            EnsureIcon(effectiveVariant);
 
             // Transition: Set button to ColorTint with standard colors so native selection behaves predictably
             if (_button != null)
@@ -274,7 +284,7 @@ namespace CaseClosed.UI
                 cb.highlightedColor = new Color(1.05f, 1.05f, 1.02f, 1f);
                 cb.pressedColor = new Color(0.88f, 0.88f, 0.88f, 1f);
                 cb.selectedColor = new Color(1.02f, 1.02f, 0.98f, 1f);
-                cb.disabledColor = DisabledTintColor;
+                cb.disabledColor = new Color(1f, 1f, 1f, 0.65f);
                 cb.fadeDuration = 0.08f;
                 _button.colors = cb;
             }
@@ -306,6 +316,50 @@ namespace CaseClosed.UI
             {
                 ApplyTypographyStyling(effectiveVariant);
             }
+        }
+
+        private void EnsureIcon(DetectiveButtonVariant effectiveVariant)
+        {
+            if (_targetImage == null) return;
+            if (effectiveVariant != DetectiveButtonVariant.SmallIcon)
+            {
+                if (_iconImage != null) _iconImage.enabled = false;
+                return;
+            }
+            if (icon != null && IsButtonSurface(icon)) icon = null;
+            if (icon == null && _targetImage.sprite != null && !IsButtonSurface(_targetImage.sprite))
+            {
+                icon = _targetImage.sprite;
+            }
+            if (icon == null)
+            {
+                if (_iconImage != null) _iconImage.enabled = false;
+                return;
+            }
+
+            if (_iconImage == null)
+            {
+                Transform existing = transform.Find("ButtonIcon");
+                if (existing != null) _iconImage = existing.GetComponent<Image>();
+                if (_iconImage == null)
+                {
+                    GameObject iconObject = new GameObject("ButtonIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                    iconObject.transform.SetParent(transform, false);
+                    _iconImage = iconObject.GetComponent<Image>();
+                }
+            }
+            _iconImage.sprite = icon;
+            _iconImage.enabled = true;
+            _iconImage.color = Color.white;
+            _iconImage.preserveAspect = true;
+            _iconImage.raycastTarget = false;
+            DetectiveUITheme.Place(_iconImage.rectTransform, new Vector2(0.12f, 0.12f), new Vector2(0.88f, 0.88f));
+        }
+
+        private static bool IsButtonSurface(Sprite sprite)
+        {
+            return sprite == DetectiveUITheme.GetRoundedSprite() ||
+                sprite.name == "UISprite" || sprite.name == "Background";
         }
 
         private Color GetBaseColor(DetectiveButtonVariant v)
@@ -468,7 +522,7 @@ namespace CaseClosed.UI
 
                     // Standard action buttons: ensure centered, bold, perfectly legible all-caps text
                     t.alignment = TextAnchor.MiddleCenter;
-                    t.color = PaperColor;
+                    t.color = DetectiveUITheme.Ink;
                     t.resizeTextForBestFit = true;
                     t.resizeTextMinSize = 10;
                     t.resizeTextMaxSize = Mathf.Max(15, t.fontSize);
@@ -505,7 +559,7 @@ namespace CaseClosed.UI
                     if (effectiveVariant != DetectiveButtonVariant.DossierCard)
                     {
                         tmp.alignment = TMPro.TextAlignmentOptions.Center;
-                        tmp.color = PaperColor;
+                        tmp.color = DetectiveUITheme.Ink;
                     }
                 }
             }
@@ -514,6 +568,7 @@ namespace CaseClosed.UI
         private void EnsureButtonLabel(DetectiveButtonVariant effectiveVariant)
         {
             if (effectiveVariant == DetectiveButtonVariant.DossierCard) return;
+            if (effectiveVariant == DetectiveButtonVariant.SmallIcon && _iconImage != null && _iconImage.enabled) return;
 
             Text existingText = GetComponentInChildren<Text>(true);
             TMPro.TMP_Text existingTmp = GetComponentInChildren<TMPro.TMP_Text>(true);
@@ -528,7 +583,7 @@ namespace CaseClosed.UI
                 existingText.font = DetectiveUITheme.GetStandardFont();
                 existingText.fontStyle = FontStyle.Bold;
                 existingText.alignment = TextAnchor.MiddleCenter;
-                existingText.color = PaperColor;
+                existingText.color = DetectiveUITheme.Ink;
                 existingText.raycastTarget = false;
             }
 
@@ -543,7 +598,7 @@ namespace CaseClosed.UI
                 existingTmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
                 existingTmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
                 existingTmp.alignment = TMPro.TextAlignmentOptions.Center;
-                existingTmp.color = PaperColor;
+                existingTmp.color = DetectiveUITheme.Ink;
                 existingTmp.raycastTarget = false;
             }
 
@@ -567,7 +622,7 @@ namespace CaseClosed.UI
                 t.text = caption.ToUpperInvariant();
                 t.fontStyle = FontStyle.Bold;
                 t.alignment = TextAnchor.MiddleCenter;
-                t.color = PaperColor;
+                t.color = DetectiveUITheme.Ink;
                 t.resizeTextForBestFit = true;
                 t.resizeTextMinSize = 10;
                 t.resizeTextMaxSize = 18;
@@ -621,7 +676,7 @@ namespace CaseClosed.UI
         {
             if (_targetImage != null)
             {
-                DetectiveButtonVariant v = ResolveEffectiveVariant();
+                DetectiveButtonVariant v = _effectiveVariant;
                 _targetImage.color = (_button != null && _button.interactable) ? GetBaseColor(v) : DisabledTintColor;
             }
         }
@@ -711,7 +766,7 @@ namespace CaseClosed.UI
             }
 
             // Animate Graphic Color (for non-dossier cards)
-            DetectiveButtonVariant v = ResolveEffectiveVariant();
+            DetectiveButtonVariant v = _effectiveVariant;
             if (v != DetectiveButtonVariant.DossierCard && _targetImage != null && interactable)
             {
                 Color targetCol = GetBaseColor(v);

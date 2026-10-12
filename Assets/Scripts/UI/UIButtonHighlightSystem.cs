@@ -88,7 +88,7 @@ namespace CaseClosed.UI
                 return;
             }
 
-            if (button.GetComponent<CaseFileNotebookUI>() != null || button.GetComponent<SuspectFolderUI>() != null || button.GetComponent<SuspectFolderButton>() != null)
+            if (button.GetComponent<CaseFileNotebookUI>() != null || button.GetComponent<SuspectFolderUI>() != null || button.GetComponentInParent<SuspectFolderButton>() != null)
             {
                 return;
             }

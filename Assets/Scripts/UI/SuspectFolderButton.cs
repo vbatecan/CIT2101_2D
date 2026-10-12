@@ -44,7 +44,7 @@ namespace CaseClosed.UI
         }
 
         /// <summary>
-        /// Ensures both 2D physics collider and uGUI click target are ready.
+        /// Uses a Canvas click target or a 2D collider for world-space folders.
         /// </summary>
         public void EnsureClickable()
         {
@@ -53,12 +53,16 @@ namespace CaseClosed.UI
                 ? spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit
                 : new Vector2(25f, 17f);
 
-            BoxCollider2D collider = GetComponent<BoxCollider2D>();
-            if (collider == null)
+            if (GetComponentInParent<Canvas>() == null)
             {
-                collider = gameObject.AddComponent<BoxCollider2D>();
+                BoxCollider2D worldCollider = GetComponent<BoxCollider2D>();
+                if (worldCollider == null) worldCollider = gameObject.AddComponent<BoxCollider2D>();
+                worldCollider.size = clickSize;
+                return;
             }
-            collider.size = clickSize;
+
+            BoxCollider2D collider = GetComponent<BoxCollider2D>();
+            if (collider != null) collider.size = clickSize;
 
             Button button = GetComponentInChildren<Button>(true);
             if (button == null)
@@ -74,13 +78,15 @@ namespace CaseClosed.UI
                 button.transition = Selectable.Transition.None;
                 button.targetGraphic = image;
             }
-            else
+            if (spriteRenderer != null && spriteRenderer.sprite != null && button.targetGraphic is Image folderImage)
             {
-                button.transition = Selectable.Transition.None;
-                if (button.targetGraphic != null)
-                {
-                    button.targetGraphic.color = Color.clear;
-                }
+                // Keep the authored folder art on the Canvas click target so it
+                // follows the same rendering and input path as the other UI.
+                folderImage.sprite = spriteRenderer.sprite;
+                folderImage.color = Color.white;
+                folderImage.preserveAspect = true;
+                folderImage.raycastTarget = true;
+                spriteRenderer.enabled = false;
             }
 
             RectTransform clickRect = button.GetComponent<RectTransform>();
@@ -100,19 +106,16 @@ namespace CaseClosed.UI
         /// </summary>
         public void EnsureButtonBinding()
         {
-            _boundButton = GetComponent<Button>();
-            if (_boundButton == null)
+            Button button = GetComponent<Button>();
+            if (button == null) button = GetComponentInChildren<Button>(true);
+            if (_boundButton != null && _boundButton != button)
             {
-                _boundButton = GetComponentInChildren<Button>(true);
+                _boundButton.onClick.RemoveListener(OnClick);
             }
-
+            _boundButton = button;
             if (_boundButton != null)
             {
                 _boundButton.transition = Selectable.Transition.None;
-                if (_boundButton.targetGraphic != null)
-                {
-                    _boundButton.targetGraphic.color = Color.clear;
-                }
                 _boundButton.onClick.RemoveListener(OnClick);
                 _boundButton.onClick.AddListener(OnClick);
             }
@@ -123,7 +126,7 @@ namespace CaseClosed.UI
         /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData.button == PointerEventData.InputButton.Left)
+            if (_boundButton == null && eventData.button == PointerEventData.InputButton.Left)
             {
                 OnClick();
             }
@@ -149,7 +152,8 @@ namespace CaseClosed.UI
                 }
             }
 
-            AudioManager.Instance?.PlayPaperFlip();
+            AudioManager audio = AudioManager.Instance;
+            if (audio != null) audio.PlayPaperFlip();
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -170,7 +174,7 @@ namespace CaseClosed.UI
             }
         }
 
-private void OnMouseDown()
+        private void OnMouseDown()
         {
             if (_boundButton == null)
             {

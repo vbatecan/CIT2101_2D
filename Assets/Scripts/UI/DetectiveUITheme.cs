@@ -190,8 +190,15 @@ namespace CaseClosed.UI
             DetectiveButton presentation = button.GetComponent<DetectiveButton>();
             if (presentation != null) presentation.SetPresentation(caption, color);
             Image image = button.GetComponent<Image>();
-            bool isAlert = color == StampRed;
-            Color surface = isAlert ? StampRed : Ink;
+            Color surface = DetectiveButtonUI.SecondarySlateColor;
+            if (color == StampRed)
+            {
+                surface = DetectiveButtonUI.DangerRedColor;
+            }
+            else if (color == Ink)
+            {
+                surface = DetectiveButtonUI.PrimaryInkColor;
+            }
             Surface(image, surface);
             if (image != null)
             {
@@ -213,7 +220,7 @@ namespace CaseClosed.UI
                 tmp.fontStyle &= ~TMPro.FontStyles.LowerCase;
                 tmp.fontStyle |= TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase;
                 tmp.text = upperText;
-                tmp.color = Paper;
+                tmp.color = Ink;
                 tmp.alignment = TMPro.TextAlignmentOptions.Center;
                 tmp.raycastTarget = false;
             }
@@ -231,7 +238,7 @@ namespace CaseClosed.UI
                 label.font = GetStandardFont();
                 Place(label.rectTransform, Vector2.zero, Vector2.one);
                 label.rectTransform.sizeDelta = new Vector2(-28f, -8f);
-                TextStyle(label, 18, Paper);
+                TextStyle(label, 18, Ink);
                 label.fontStyle = FontStyle.Bold;
                 label.text = upperText;
             }
