@@ -96,11 +96,11 @@ namespace CaseClosed.UI
         [SerializeField, Tooltip("Color of dialogue text and dynamically displayed speaker names.")]
         private Color dialogueInkColor = new Color(0.06f, 0.04f, 0.02f, 1f);
         [SerializeField, Tooltip("Width and height of the custom world-space dialogue surface.")]
-        private Vector2 dialogueWorldSize = new Vector2(35.69f, 6.78f);
-        [SerializeField, Tooltip("Lower-left anchor of the custom Canvas dialogue panel.")]
-        private Vector2 dialoguePanelAnchorMin = new Vector2(0.14f, 0f);
-        [SerializeField, Tooltip("Upper-right anchor of the custom Canvas dialogue panel.")]
-        private Vector2 dialoguePanelAnchorMax = new Vector2(0.86f, 0.20f);
+        private Vector2 dialogueWorldSize = new Vector2(35.69f, 5.2f);
+        [SerializeField, Tooltip("Lower-left anchor of the custom Canvas dialogue panel. Lifted above bottom to prevent extending to the lower-most screen edge.")]
+        private Vector2 dialoguePanelAnchorMin = new Vector2(0.14f, 0.035f);
+        [SerializeField, Tooltip("Upper-right anchor of the custom Canvas dialogue panel, limiting panel height.")]
+        private Vector2 dialoguePanelAnchorMax = new Vector2(0.86f, 0.185f);
 
         [Header("Typewriter Settings")]
         public float charactersPerSecond = 35f;
@@ -547,6 +547,17 @@ namespace CaseClosed.UI
             if (boxImage != null)
             {
                 DetectiveUITheme.Surface(boxImage, dialoguePanelColor, true);
+                if (box.transform is RectTransform rt && box != (customDialoguePanel != null ? customDialoguePanel.gameObject : null))
+                {
+                    if (rt.anchorMin.y < 0.025f && rt.anchorMax.y > 0.05f && rt.anchorMax.y <= 0.35f)
+                    {
+                        Vector2 min = rt.anchorMin;
+                        Vector2 max = rt.anchorMax;
+                        min.y = dialoguePanelAnchorMin.y >= 0.025f ? dialoguePanelAnchorMin.y : 0.035f;
+                        if (max.y - min.y > 0.16f) max.y = min.y + 0.15f;
+                        DetectiveUITheme.Place(rt, min, max);
+                    }
+                }
             }
 
             // 2. If World-space SpriteRenderer based speech bubble (VinceDialog, JaneDialog, etc.)
@@ -640,18 +651,30 @@ namespace CaseClosed.UI
             Canvas canvas = GetComponentInParent<Canvas>();
             if (canvas == null) return false;
             canvas = canvas.rootCanvas;
+
+            Vector2 effectiveAnchorMin = dialoguePanelAnchorMin;
+            Vector2 effectiveAnchorMax = dialoguePanelAnchorMax;
+            if (effectiveAnchorMin.y < 0.025f)
+            {
+                effectiveAnchorMin.y = 0.035f;
+            }
+            if (effectiveAnchorMax.y - effectiveAnchorMin.y > 0.16f)
+            {
+                effectiveAnchorMax.y = effectiveAnchorMin.y + 0.15f;
+            }
+
             if (customDialoguePanel == null)
             {
                 GameObject panelObject = new GameObject("CustomDialoguePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 panelObject.transform.SetParent(canvas.transform, false);
                 customDialoguePanel = panelObject.GetComponent<Image>();
-                customDialogueSpeaker = CreateCustomDialogueText("Speaker", panelObject.transform, 28f);
+                customDialogueSpeaker = CreateCustomDialogueText("Speaker", panelObject.transform, 24f);
                 customDialogueSpeaker.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
-                DetectiveUITheme.Place(customDialogueSpeaker.rectTransform, new Vector2(0.04f, 0.73f), new Vector2(0.96f, 0.94f));
-                customDialogueBody = CreateCustomDialogueText("DialogueBody", panelObject.transform, 30f);
-                DetectiveUITheme.Place(customDialogueBody.rectTransform, new Vector2(0.04f, 0.12f), new Vector2(0.96f, 0.71f));
+                DetectiveUITheme.Place(customDialogueSpeaker.rectTransform, new Vector2(0.04f, 0.68f), new Vector2(0.96f, 0.92f));
+                customDialogueBody = CreateCustomDialogueText("DialogueBody", panelObject.transform, 26f);
+                DetectiveUITheme.Place(customDialogueBody.rectTransform, new Vector2(0.04f, 0.10f), new Vector2(0.96f, 0.68f));
             }
-            DetectiveUITheme.Place(customDialoguePanel.rectTransform, dialoguePanelAnchorMin, dialoguePanelAnchorMax);
+            DetectiveUITheme.Place(customDialoguePanel.rectTransform, effectiveAnchorMin, effectiveAnchorMax);
             DetectiveUITheme.Surface(customDialoguePanel, dialoguePanelColor, true);
             customDialogueSpeaker.text = speakerName;
             customDialogueSpeaker.color = dialogueInkColor;
@@ -673,7 +696,7 @@ namespace CaseClosed.UI
             text.font = DetectiveUITheme.GetStandardTmpFont();
             text.fontSize = fontSize;
             text.enableAutoSizing = true;
-            text.fontSizeMin = 20f;
+            text.fontSizeMin = 16f;
             text.fontSizeMax = fontSize;
             text.alignment = TextAlignmentOptions.TopLeft;
             text.raycastTarget = false;

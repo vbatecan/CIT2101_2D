@@ -2,7 +2,7 @@
 
 ## UI changes
 
-`DialogueUI` converts legacy character banners to one reusable Canvas panel at runtime. The panel uses editable `Custom Dialogue Appearance` fields for surface/ink colors and normalized anchors. The default paper opacity is 86%, and its anchors span the bottom 20% of the Canvas, from 14% to 86% horizontally. Speaker and body text remain opaque. Existing scene and prefab references stay in place; no scene or prefab assets were edited.
+`DialogueUI` converts legacy character banners to one reusable Canvas panel at runtime. The panel uses editable `Custom Dialogue Appearance` fields for surface/ink colors and normalized anchors. The default paper opacity is 86%, and its anchors span from 3.5% to 18.5% vertically (leaving a clean bottom bezel so it does not touch the lower-most screen edge, limiting panel height to 15% of the screen) and from 14% to 86% horizontally. Speaker and body text remain opaque. Existing scene and prefab references stay in place; no scene or prefab assets were edited.
 
 The speaker name is text rather than part of the banner image. The custom panel has no Continue button: the existing click-anywhere, Space and Enter input handles dialogue advancement. Clicking while typing reveals the line; challenge and advancement rules still use the existing interrogation state.
 
