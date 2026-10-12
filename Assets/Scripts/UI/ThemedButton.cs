@@ -139,6 +139,7 @@ namespace CaseClosed.UI
                 {
                     targetLabel.text = labelText.ToUpperInvariant();
                 }
+                targetLabel.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
                 targetLabel.color = textColor;
                 targetLabel.alignment = TextAlignmentOptions.Center;
                 targetLabel.characterSpacing = 3f;

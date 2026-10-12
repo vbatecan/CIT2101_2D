@@ -1370,6 +1370,7 @@ namespace CaseClosed.UI
                             }
 
                             titleText.text = currentEv.evidenceName;
+                            titleText.fontStyle = FontStyle.Bold;
 
                             btn.onClick.AddListener(() =>
                             {

@@ -412,7 +412,11 @@ namespace CaseClosed.UI
                 btnObj.name = $"Choice_{choiceIndex}";
 
                 TextMeshProUGUI label = btnObj.GetComponentInChildren<TextMeshProUGUI>();
-                if (label != null) label.text = choice.choiceText;
+                if (label != null)
+                {
+                    label.text = choice.choiceText;
+                    label.fontStyle |= FontStyles.Bold;
+                }
 
                 Button btn = btnObj.GetComponent<Button>();
                 if (btn != null)

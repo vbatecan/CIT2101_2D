@@ -64,6 +64,7 @@ namespace CaseClosed.UI
                 addToNotebookButton.interactable = !discovered;
                 if (buttonLabelText != null)
                 {
+                    buttonLabelText.fontStyle |= FontStyles.Bold;
                     buttonLabelText.text = discovered ? "RECORDED IN NOTEBOOK" : "+ ADD TO NOTEBOOK";
                 }
             }
@@ -79,7 +80,11 @@ namespace CaseClosed.UI
             if (addToNotebookButton != null)
             {
                 addToNotebookButton.interactable = false;
-                if (buttonLabelText != null) buttonLabelText.text = "RECORDED IN NOTEBOOK";
+                if (buttonLabelText != null)
+                {
+                    buttonLabelText.fontStyle |= FontStyles.Bold;
+                    buttonLabelText.text = "RECORDED IN NOTEBOOK";
+                }
             }
         }
 

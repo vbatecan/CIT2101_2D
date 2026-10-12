@@ -95,6 +95,11 @@ namespace CaseClosed.UI
                 _tmp.text = _tmp.text.ToUpperInvariant();
             }
 
+            if (fontRole == FontRole.UIButton || fontRole == FontRole.DisplayTitle)
+            {
+                _tmp.fontStyle |= FontStyles.Bold;
+            }
+
             _tmp.ForceMeshUpdate();
         }
     }
