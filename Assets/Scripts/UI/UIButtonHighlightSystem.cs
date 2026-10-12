@@ -80,6 +80,9 @@ namespace CaseClosed.UI
         {
             if (button == null) return;
 
+            DetectiveButton presentation = button.GetComponent<DetectiveButton>();
+            if (presentation != null && presentation.UsesScenePresentation) return;
+
             // Skip full-screen backdrop click dismissers so hovering empty areas does not flash white or animate
             string bName = button.name;
             if (bName.IndexOf("backdrop", System.StringComparison.OrdinalIgnoreCase) >= 0 ||

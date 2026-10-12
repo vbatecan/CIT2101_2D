@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CaseClosed.Enums;
@@ -64,6 +65,7 @@ namespace CaseClosed.Gameplay
         public bool isDialogueOrUIActive = false;
 
         private TableEvidenceItem currentHoveredItem;
+        private readonly List<Collider2D> _overlapResults = new List<Collider2D>(8);
         public bool isTapping = false;
         private Coroutine _tapCoroutine;
         private Canvas _pointerCanvas;
@@ -305,26 +307,33 @@ namespace CaseClosed.Gameplay
         private void HandleFingertipRaycast()
         {
             Vector2 checkPos = (fingertipPoint != null) ? (Vector2)fingertipPoint.position : (Vector2)transform.position;
-            Collider2D[] hits = Physics2D.OverlapCircleAll(checkPos, interactionRadius, interactableLayers);
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.SetLayerMask(interactableLayers);
+            filter.useTriggers = Physics2D.queriesHitTriggers;
+
+            int hitCount = Physics2D.OverlapCircle(checkPos, interactionRadius, filter, _overlapResults);
 
             TableEvidenceItem nearestItem = null;
             float closestDistSqr = float.MaxValue;
+            float closestColliderDepth = float.MaxValue;
 
-            if (hits != null)
+            for (int i = 0; i < hitCount; i++)
             {
-                for (int i = 0; i < hits.Length; i++)
+                Collider2D hit = _overlapResults[i];
+                if (hit == null) continue;
+                TableEvidenceItem item = hit.GetComponentInParent<TableEvidenceItem>();
+                if (item != null && item.gameObject.activeInHierarchy)
                 {
-                    Collider2D hit = hits[i];
-                    if (hit == null) continue;
-                    TableEvidenceItem item = hit.GetComponentInParent<TableEvidenceItem>();
-                    if (item != null && item.gameObject.activeInHierarchy)
+                    float distSqr = ((Vector2)item.transform.position - checkPos).sqrMagnitude;
+                    float colliderDepth = hit.transform.position.z;
+                    bool isCloser = nearestItem == null || distSqr < closestDistSqr;
+                    bool winsDepthTie = nearestItem != null && distSqr == closestDistSqr &&
+                        colliderDepth < closestColliderDepth;
+                    if (isCloser || winsDepthTie)
                     {
-                        float distSqr = ((Vector2)item.transform.position - checkPos).sqrMagnitude;
-                        if (distSqr < closestDistSqr)
-                        {
-                            closestDistSqr = distSqr;
-                            nearestItem = item;
-                        }
+                        closestDistSqr = distSqr;
+                        closestColliderDepth = colliderDepth;
+                        nearestItem = item;
                     }
                 }
             }

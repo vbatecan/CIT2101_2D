@@ -9,6 +9,8 @@ namespace CaseClosed.UI
         [SerializeField] private DetectiveCard card;
         [SerializeField] private Button primaryButton;
         [SerializeField] private Button secondaryButton;
+        [SerializeField, Tooltip("Keep the scene's authored backdrop styling.")]
+        private bool useScenePresentation;
 
         public DetectiveCard Card => card;
         public Button PrimaryButton => primaryButton;
@@ -16,6 +18,7 @@ namespace CaseClosed.UI
 
         private void Awake()
         {
+            if (useScenePresentation) return;
             Image backdrop = GetComponent<Image>();
             if (backdrop != null) backdrop.color = DetectiveUITheme.Backdrop;
         }

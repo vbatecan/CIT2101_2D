@@ -7,7 +7,9 @@ Current user instructions take precedence over repository guides and bundled ski
 ## Scope and production-data protection
 
 - Work only on the requested task. Diagnosis and review do not authorize implementation.
-- **Do not touch Unity scenes unless the user explicitly requests the exact scene edit.**
+- **Do not touch Unity scenes outside the user's requested task.**
+  A requested UI change authorizes the targeted scene edits needed to implement it through Unity MCP.
+  Code cleanup, diagnosis, and review do not authorize scene edits.
   This includes scene YAML, hierarchy, transforms, active states, component assignments, prefab overrides, saves, restores, and reverts.
 - Treat prefabs, ScriptableObject assets, existing .meta files, GUIDs, Inspector references, and hand-authored layouts as production data.
   Code cleanup does not authorize changes to them.
@@ -87,6 +89,17 @@ The refactor is partial. Inspect actual callers rather than assuming every bound
 - Target changes in DialogueUI, CaseFileNotebookUI, and TableEvidenceItem carefully.
   Extract cohesive logic only as needed; preserve components and serialized references.
 - Add assembly definitions only when dependency direction and serialized-script compatibility are verified.
+
+## UI authoring: prefer Unity MCP and scene editing
+
+- Use Unity MCP to create or modify UI GameObjects, components, transforms, and Inspector properties within the requested task.
+- Prefer editing the scene for layout, anchors, sizing, spacing, typography, colors, images, and visibility whenever existing Unity components can achieve the requested result.
+- Avoid building, restyling, or positioning UI through scripts when it can be done in the scene.
+  Write or change UI code only when scene editing cannot achieve the required behavior or code clearly improves the visual result.
+- Keep authored UI presentation in the scene; retain scripts for necessary runtime behavior such as dialogue typing, input handling, and data updates.
+- Make targeted changes through supported Unity MCP tools and let Unity serialize the result; do not hand-edit scene YAML for UI work.
+  Save only scenes changed for the requested task. Preserve existing references, prefab overrides, GUIDs, and unrelated user work.
+- This preference applies to future UI work; it does not authorize rebuilding existing UI or removing scripts without a requested task.
 
 ## C# and lifecycle rules
 

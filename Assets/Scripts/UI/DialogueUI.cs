@@ -122,9 +122,10 @@ namespace CaseClosed.UI
         private Coroutine typewriterCoroutine;
         private bool isTyping = false;
         private string currentFullText = "";
-        private Image customDialoguePanel;
-        private TextMeshProUGUI customDialogueBody;
-        private TextMeshProUGUI customDialogueSpeaker;
+        [Header("Scene Dialogue Presentation")]
+        [SerializeField] private Image customDialoguePanel;
+        [SerializeField] private TextMeshProUGUI customDialogueBody;
+        [SerializeField] private TextMeshProUGUI customDialogueSpeaker;
 
         private bool _isSubscribed = false;
         private bool hiddenForEvidenceSelection;
@@ -181,17 +182,14 @@ namespace CaseClosed.UI
             {
                 nextButton.onClick.RemoveListener(OnNextButtonClicked);
                 nextButton.onClick.AddListener(OnNextButtonClicked);
-                DetectiveUITheme.Action(nextButton, "CONTINUE", DetectiveUITheme.Ink);
             }
             if (challengeButton != null)
             {
                 challengeButton.onClick.AddListener(OnChallengeButtonClicked);
-                DetectiveUITheme.Action(challengeButton, "CHALLENGE", DetectiveUITheme.StampRed);
             }
             if (closeDialogueButton != null)
             {
                 closeDialogueButton.onClick.AddListener(OnCloseButtonClicked);
-                DetectiveUITheme.Action(closeDialogueButton, "CLOSE", DetectiveUITheme.Ink);
             }
 
             SubscribeToInterrogationEvents();
@@ -212,7 +210,6 @@ namespace CaseClosed.UI
                 charactersPerSecond = CaseClosed.Services.GameSettingsService.Instance.TextSpeed;
             }
 
-            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         private int lastDialogueInputFrame = -1;
@@ -394,7 +391,6 @@ namespace CaseClosed.UI
         {
             IsDialogueOpen = false;
             DeactivateAllCharacterDialogBoxes();
-            if (customDialoguePanel != null) Destroy(customDialoguePanel.gameObject);
             if (_instance == this) _instance = null;
 
             if (_isSubscribed && InterrogationManager.Instance != null)
@@ -462,7 +458,17 @@ namespace CaseClosed.UI
         /// </summary>
         public void ActivateDialogBox(string characterKey, string speakerName = "")
         {
-            if (customDialoguePanel != null) customDialoguePanel.gameObject.SetActive(false);
+            if (customDialoguePanel != null && customDialogueBody != null && customDialogueSpeaker != null)
+            {
+                DeactivateAllCharacterDialogBoxes();
+                customDialogueSpeaker.text = speakerName;
+                customDialoguePanel.gameObject.SetActive(true);
+                _activeDialogBox = customDialoguePanel.gameObject;
+                _activeBoxTmpText = customDialogueBody;
+                _activeBoxLegacyText = null;
+                return;
+            }
+
             GameObject targetBox = GetDialogBoxForKey(characterKey);
 
             DeactivateBoxesExcept(targetBox);
@@ -498,7 +504,6 @@ namespace CaseClosed.UI
                     if (tmpDialogueText != null) tmpDialogueText.enabled = false;
                 }
 
-                ApplyUnifiedDialogueBoxStyle(targetBox, speakerName, string.Equals(characterKey, "Detective", StringComparison.OrdinalIgnoreCase));
             }
             else
             {
@@ -531,147 +536,6 @@ namespace CaseClosed.UI
             }
         }
 
-        private void ApplyUnifiedDialogueBoxStyle(GameObject box, string speakerName, bool isDetective)
-        {
-            if (box == null) return;
-
-            // 1. If Canvas Image based box
-            Image boxImage = box.GetComponent<Image>();
-            if (boxImage != null)
-            {
-                DetectiveUITheme.Surface(boxImage, dialoguePanelColor, true);
-            }
-
-            // 2. If World-space SpriteRenderer based speech bubble (VinceDialog, JaneDialog, etc.)
-            SpriteRenderer sr = box.GetComponent<SpriteRenderer>();
-            if (sr != null)
-            {
-                TextMeshProUGUI legacyBody = GetTextMeshProFromBox(box);
-                if (ShowCustomCanvasDialogue(speakerName, legacyBody))
-                {
-                    sr.enabled = false;
-                    if (legacyBody != null) legacyBody.enabled = false;
-                    if (_activeBoxLegacyText != null) _activeBoxLegacyText.enabled = false;
-                    _activeBoxTmpText = customDialogueBody;
-                    _activeBoxLegacyText = null;
-                    return;
-                }
-                Sprite roundedSprite = DetectiveUITheme.GetRoundedSprite();
-                if (roundedSprite != null)
-                {
-                    sr.sprite = roundedSprite;
-                    sr.drawMode = SpriteDrawMode.Sliced;
-                    sr.size = new Vector2(Mathf.Max(1f, dialogueWorldSize.x), Mathf.Max(1f, dialogueWorldSize.y));
-                }
-                sr.color = dialoguePanelColor;
-            }
-
-            // 3. Statement Text color: always dark antique ink for legibility on paper
-            TextMeshProUGUI tmpText = GetTextMeshProFromBox(box);
-            if (tmpText != null)
-            {
-                tmpText.color = dialogueInkColor;
-                tmpText.raycastTarget = false;
-
-                // Legacy banners baked the speaker into the image. Use an editable
-                // text header when replacing those banners with a custom surface.
-                if (sr != null && box.transform.Find("Text_Speaker") == null && box.transform.Find("SpeakerName") == null)
-                {
-                    GameObject headerObject = new GameObject("Text_Speaker", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-                    headerObject.transform.SetParent(box.transform, false);
-                    TextMeshProUGUI header = headerObject.GetComponent<TextMeshProUGUI>();
-                    RectTransform bodyRect = tmpText.rectTransform;
-                    header.rectTransform.anchorMin = bodyRect.anchorMin;
-                    header.rectTransform.anchorMax = bodyRect.anchorMax;
-                    header.rectTransform.localScale = bodyRect.localScale;
-                    header.rectTransform.sizeDelta = new Vector2(bodyRect.rect.width, 42f);
-                    header.rectTransform.anchoredPosition3D = new Vector3(bodyRect.anchoredPosition.x, sr.size.y * 0.5f - 1.1f, bodyRect.anchoredPosition3D.z);
-                    header.font = tmpText.font;
-                    header.fontSize = 24f;
-                    header.alignment = TextAlignmentOptions.MidlineLeft;
-                    header.raycastTarget = false;
-                }
-            }
-
-            Text legacyText = box.GetComponentInChildren<Text>(true);
-            if (legacyText != null)
-            {
-                legacyText.color = dialogueInkColor;
-            }
-
-            // 4. Speaker header styling if present
-            var boxSpeakerTmp = box.transform.Find("Text_Speaker")?.GetComponent<TextMeshProUGUI>() ??
-                                box.transform.Find("SpeakerName")?.GetComponent<TextMeshProUGUI>();
-            if (boxSpeakerTmp != null)
-            {
-                boxSpeakerTmp.color = dialogueInkColor;
-                boxSpeakerTmp.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
-                if (!string.IsNullOrEmpty(speakerName))
-                {
-                    boxSpeakerTmp.text = speakerName.ToUpperInvariant();
-                }
-            }
-
-            var boxSpeakerLegacy = box.transform.Find("Text_Speaker")?.GetComponent<Text>() ??
-                                   box.transform.Find("SpeakerName")?.GetComponent<Text>();
-            if (boxSpeakerLegacy != null)
-            {
-                boxSpeakerLegacy.color = isDetective ? DetectiveUITheme.Ink : DetectiveUITheme.WoodDark;
-                boxSpeakerLegacy.fontStyle = FontStyle.Bold;
-                if (!string.IsNullOrEmpty(speakerName))
-                {
-                    boxSpeakerLegacy.text = speakerName.ToUpperInvariant();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Reuses a Canvas panel instead of inheriting legacy banner transforms.
-        /// </summary>
-        private bool ShowCustomCanvasDialogue(string speakerName, TextMeshProUGUI legacyBody)
-        {
-            Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas == null) return false;
-            canvas = canvas.rootCanvas;
-            if (customDialoguePanel == null)
-            {
-                GameObject panelObject = new GameObject("CustomDialoguePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                panelObject.transform.SetParent(canvas.transform, false);
-                customDialoguePanel = panelObject.GetComponent<Image>();
-                customDialogueSpeaker = CreateCustomDialogueText("Speaker", panelObject.transform, 28f);
-                customDialogueSpeaker.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
-                DetectiveUITheme.Place(customDialogueSpeaker.rectTransform, new Vector2(0.04f, 0.73f), new Vector2(0.96f, 0.94f));
-                customDialogueBody = CreateCustomDialogueText("DialogueBody", panelObject.transform, 30f);
-                DetectiveUITheme.Place(customDialogueBody.rectTransform, new Vector2(0.04f, 0.12f), new Vector2(0.96f, 0.71f));
-            }
-            DetectiveUITheme.Place(customDialoguePanel.rectTransform, dialoguePanelAnchorMin, dialoguePanelAnchorMax);
-            DetectiveUITheme.Surface(customDialoguePanel, dialoguePanelColor, true);
-            customDialogueSpeaker.text = speakerName;
-            customDialogueSpeaker.color = dialogueInkColor;
-            customDialogueBody.color = dialogueInkColor;
-            if (legacyBody != null && legacyBody.font != null)
-            {
-                customDialogueBody.font = legacyBody.font;
-                customDialogueSpeaker.font = legacyBody.font;
-            }
-            customDialoguePanel.gameObject.SetActive(true);
-            return true;
-        }
-
-        private TextMeshProUGUI CreateCustomDialogueText(string objectName, Transform parent, float fontSize)
-        {
-            GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-            textObject.transform.SetParent(parent, false);
-            TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
-            text.font = DetectiveUITheme.GetStandardTmpFont();
-            text.fontSize = fontSize;
-            text.enableAutoSizing = true;
-            text.fontSizeMin = 20f;
-            text.fontSizeMax = fontSize;
-            text.alignment = TextAlignmentOptions.TopLeft;
-            text.raycastTarget = false;
-            return text;
-        }
 
         /// <summary>
         /// Resolves the dialogue box GameObject for a character key.
@@ -1293,123 +1157,15 @@ namespace CaseClosed.UI
         {
             if (challengeButton == null) return;
             string upper = !string.IsNullOrEmpty(text) ? text.ToUpperInvariant() : "";
-            bool isCancel = string.Equals(upper, "CANCEL", StringComparison.OrdinalIgnoreCase);
-            DetectiveUITheme.Action(challengeButton, upper, isCancel ? DetectiveUITheme.MutedInk : DetectiveUITheme.StampRed);
-        }
-
-        /// <summary>
-        /// Populates the evidence picker grid with clickable buttons representing all discovered evidence items.
-        /// Supports prefab instantiation with zero-GC fallbacks.
-        /// </summary>
-        private void PopulateEvidencePicker()
-        {
-            if (evidencePickerGrid == null) return;
-
-            foreach (Transform child in evidencePickerGrid)
+            TextMeshProUGUI tmpLabel = challengeButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmpLabel != null)
             {
-                if (Application.isPlaying)
-                    Destroy(child.gameObject);
-                else
-                    DestroyImmediate(child.gameObject);
+                tmpLabel.text = upper;
+                return;
             }
 
-            CaseManager caseManager = CaseManager.Instance;
-            CaseSO activeCase = caseManager?.ActiveCase;
-
-            if (activeCase == null || caseManager == null) return;
-
-            foreach (var ev in activeCase.evidenceItems)
-            {
-                if (ev != null && caseManager.IsEvidenceDiscovered(ev))
-                {
-                    EvidenceSO currentEv = ev;
-                    bool prefabSuccess = false;
-
-                    if (evidencePickerItemPrefab != null)
-                    {
-                        GameObject itemObj = Instantiate(evidencePickerItemPrefab, evidencePickerGrid, false);
-                        itemObj.name = $"Present_{currentEv.id}";
-
-                        Button btn = itemObj.GetComponent<Button>() ?? itemObj.GetComponentInChildren<Button>();
-                        Text titleText = itemObj.GetComponent<Text>() ?? itemObj.GetComponentInChildren<Text>();
-
-                        Image iconImg = null;
-                        Image[] images = itemObj.GetComponentsInChildren<Image>(true);
-                        foreach (var img in images)
-                        {
-                            if (img.gameObject.name.IndexOf("icon", StringComparison.OrdinalIgnoreCase) >= 0)
-                            {
-                                iconImg = img;
-                                break;
-                            }
-                        }
-
-                        if (iconImg == null && btn != null && btn.targetGraphic is Image targetGraphicImg)
-                        {
-                            foreach (var img in images)
-                            {
-                                if (img != targetGraphicImg)
-                                {
-                                    iconImg = img;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (iconImg == null && images.Length > 0)
-                        {
-                            iconImg = images[0];
-                        }
-
-                        if (btn != null && iconImg != null && titleText != null)
-                        {
-                            if (currentEv.normalSprite != null)
-                            {
-                                iconImg.sprite = currentEv.normalSprite;
-                                iconImg.enabled = true;
-                            }
-
-                            titleText.text = currentEv.evidenceName;
-                            titleText.fontStyle = FontStyle.Bold;
-
-                            btn.onClick.AddListener(() =>
-                            {
-                                Debug.Log($"[UI:Dialogue] Evidence picker selected item '{currentEv.evidenceName}' (ID: {currentEv.id}) to present");
-                                InterrogationManager.Instance?.PresentEvidenceToChallenge(currentEv);
-                            });
-
-                            prefabSuccess = true;
-                        }
-                        else
-                        {
-                            if (Application.isPlaying)
-                                Destroy(itemObj);
-                            else
-                                DestroyImmediate(itemObj);
-                        }
-                    }
-
-                    if (!prefabSuccess)
-                    {
-                        GameObject btnObj = new GameObject($"Present_{currentEv.id}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                        btnObj.transform.SetParent(evidencePickerGrid, false);
-
-                        Image img = btnObj.GetComponent<Image>();
-                        if (currentEv.normalSprite != null) img.sprite = currentEv.normalSprite;
-
-                        btnObj.GetComponent<Button>().onClick.AddListener(() =>
-                        {
-                            Debug.Log($"[UI:Dialogue] Evidence picker selected item '{currentEv.evidenceName}' (ID: {currentEv.id}) to present");
-                            InterrogationManager.Instance?.PresentEvidenceToChallenge(currentEv);
-                        });
-                    }
-                }
-            }
-
-            if (evidencePickerContainer != null)
-            {
-                UIButtonHighlightSystem.ApplyToHierarchy(evidencePickerContainer);
-            }
+            Text label = challengeButton.GetComponentInChildren<Text>(true);
+            if (label != null) label.text = upper;
         }
 
         /// <summary>

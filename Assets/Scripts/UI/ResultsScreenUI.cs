@@ -13,30 +13,17 @@ namespace CaseClosed.UI
         [Tooltip("Failure artwork for cases 1, 2, and 3, in that order.")]
         [SerializeField] private Sprite[] failedBackgroundSprites;
 
-        private GameObject resultsContainer;
-        private Image resultBackgroundImage;
-        private Button continueButton;
-        private Button nextLevelButton;
-        private Button returnToMainMenuButton;
+        [Header("Scene UI References")]
+        [SerializeField] private GameObject resultsContainer;
+        [SerializeField] private Image resultBackgroundImage;
+        [SerializeField] private Button continueButton;
+        [SerializeField] private Button nextLevelButton;
+        [SerializeField] private Button returnToMainMenuButton;
         private CaseEvaluationResult displayedResult;
 
         private void Awake()
         {
-            if (transform.childCount == 0) return;
-            resultsContainer = transform.GetChild(0).gameObject;
-            Transform background = resultsContainer.transform.Find("Image_SolvedBackground");
-            if (background != null) resultBackgroundImage = background.GetComponent<Image>();
-            foreach (Button button in resultsContainer.GetComponentsInChildren<Button>(true))
-            {
-                if (button.name == "Button_MainMenu") returnToMainMenuButton = button;
-                else if (button.name == "Button_NextLevel") nextLevelButton = button;
-            }
-            GameObject retry = DetectiveUITheme.CreateButton(resultsContainer.transform, "Button_Continue");
-            if (retry != null)
-            {
-                continueButton = retry.GetComponent<Button>();
-                continueButton.onClick.AddListener(OnContinueClicked);
-            }
+            if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
             if (returnToMainMenuButton != null) returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
             if (nextLevelButton != null) nextLevelButton.onClick.AddListener(OnNextLevelClicked);
         }
@@ -64,46 +51,10 @@ namespace CaseClosed.UI
                 resultBackgroundImage.sprite = artwork;
                 resultBackgroundImage.color = DetectiveUITheme.Paper;
                 if (artwork != null) resultBackgroundImage.color = Color.white;
-                resultBackgroundImage.preserveAspect = false;
-                resultBackgroundImage.transform.SetAsFirstSibling();
             }
-            foreach (Text text in resultsContainer.GetComponentsInChildren<Text>(true))
-            {
-                if (text.GetComponentInParent<Button>() == null)
-                {
-                    text.text = string.Empty;
-                    text.gameObject.SetActive(false);
-                }
-            }
-            if (allCorrect)
-            {
-                ConfigureButton(returnToMainMenuButton, "Main menu", new Vector2(-150f, 90f), new Vector2(240f, 65f), DetectiveUITheme.MutedInk);
-                ConfigureButton(nextLevelButton, "Next case", new Vector2(150f, 90f), new Vector2(240f, 65f), DetectiveUITheme.Ink);
-                if (continueButton != null) continueButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                ConfigureButton(returnToMainMenuButton, "Main menu", new Vector2(120f, 40f), new Vector2(200f, 50f), DetectiveUITheme.MutedInk);
-                ConfigureButton(continueButton, "Reopen case", new Vector2(-120f, 40f), new Vector2(200f, 50f), DetectiveUITheme.Ink);
-                if (nextLevelButton != null) nextLevelButton.gameObject.SetActive(false);
-            }
-            UIButtonHighlightSystem.ApplyToHierarchy(resultsContainer);
-        }
-
-        private static void ConfigureButton(Button button, string caption, Vector2 position, Vector2 size, Color color)
-        {
-            if (button == null) return;
-            button.gameObject.SetActive(true);
-            RectTransform rect = button.GetComponent<RectTransform>();
-            if (rect != null)
-            {
-                rect.anchorMin = new Vector2(0.5f, 0f);
-                rect.anchorMax = rect.anchorMin;
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = position;
-                rect.sizeDelta = size;
-            }
-            DetectiveUITheme.Action(button, caption, color);
+            if (returnToMainMenuButton != null) returnToMainMenuButton.gameObject.SetActive(true);
+            if (nextLevelButton != null) nextLevelButton.gameObject.SetActive(allCorrect);
+            if (continueButton != null) continueButton.gameObject.SetActive(!allCorrect);
         }
 
         /// <summary>

@@ -18,23 +18,6 @@ namespace CaseClosed.UI
         internal static readonly Color BrassLight = new Color(0.80f, 0.65f, 0.38f, 1f);
         private static Sprite roundedSprite;
         private static GameObject buttonPrefab;
-        private static GameObject cardPrefab;
-        private static GameObject dialogPrefab;
-
-        internal static DetectiveCard CreateCard(Transform parent)
-        {
-            if (cardPrefab == null) cardPrefab = Resources.Load<GameObject>("UI/DetectiveCard");
-            if (cardPrefab == null) return null;
-            return Object.Instantiate(cardPrefab, parent, false).GetComponent<DetectiveCard>();
-        }
-
-        internal static DetectiveDialog CreateDialog(Transform parent)
-        {
-            if (dialogPrefab == null) dialogPrefab = Resources.Load<GameObject>("UI/DetectiveDialog");
-            if (dialogPrefab == null) return null;
-            return Object.Instantiate(dialogPrefab, parent, false).GetComponent<DetectiveDialog>();
-        }
-
         internal static GameObject CreateButton(Transform parent, string name)
         {
             if (buttonPrefab == null) buttonPrefab = Resources.Load<GameObject>("UI/DetectiveButton");
@@ -189,6 +172,21 @@ namespace CaseClosed.UI
             if (button == null) return;
             DetectiveButton presentation = button.GetComponent<DetectiveButton>();
             if (presentation != null) presentation.SetPresentation(caption, color);
+            if (presentation != null && presentation.UsesScenePresentation)
+            {
+                string labelText = caption != null ? caption.ToUpperInvariant() : "";
+                TMPro.TextMeshProUGUI sceneTmp = button.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+                if (sceneTmp != null)
+                {
+                    sceneTmp.text = labelText;
+                }
+                else
+                {
+                    Text sceneLabel = button.GetComponentInChildren<Text>(true);
+                    if (sceneLabel != null) sceneLabel.text = labelText;
+                }
+                return;
+            }
             Image image = button.GetComponent<Image>();
             Color surface = DetectiveButtonUI.SecondarySlateColor;
             if (color == StampRed)

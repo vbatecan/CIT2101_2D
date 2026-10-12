@@ -13,6 +13,8 @@ namespace CaseClosed.UI
         [SerializeField] private Text bodyText;
         [SerializeField] private RectTransform footer;
         [SerializeField] private Image headerRule;
+        [SerializeField, Tooltip("Keep the scene's authored surface, typography, and divider styling.")]
+        private bool useScenePresentation;
 
         private TMP_Text _tmpClassification;
         private TMP_Text _tmpTitle;
@@ -33,6 +35,11 @@ namespace CaseClosed.UI
 
         public void ApplyTheme()
         {
+            if (useScenePresentation)
+            {
+                CacheTmpComponents();
+                return;
+            }
             if (background == null) background = GetComponent<Image>();
             DetectiveUITheme.Surface(background, DetectiveUITheme.Paper, true);
 

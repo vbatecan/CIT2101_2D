@@ -76,36 +76,34 @@ namespace CaseClosed.UI
         private readonly List<int> playerAnswers = new List<int>();
         private int _currentQuestionIndex = 0;
 
-        // Runtime UI containers & components
-        private GameObject _flowRoot;
-        private GameObject _startScreenObj;
-        private GameObject _questionScreenObj;
-        private Image _questionBoxImage;
-        private Text _questionBoxText;
-        private Transform _choicesContainer;
-        private Text _hintPromptText;
-        private GameObject _nextButtonObj;
-        private GameObject _confirmButtonObj;
-        private Button _nextButton;
-        private Button _confirmButton;
-        private Button returnToInvestigationButton;
-        private ScrollRect _choicesScroll;
-        private DetectiveCard conclusionCard;
+        // Scene-authored UI containers and components.
+        [SerializeField] private GameObject _flowRoot;
+        [SerializeField] private GameObject _startScreenObj;
+        [SerializeField] private GameObject _questionScreenObj;
+        [SerializeField] private Image _questionBoxImage;
+        [SerializeField] private Text _questionBoxText;
+        [SerializeField] private Transform _choicesContainer;
+        [SerializeField] private Text _hintPromptText;
+        [SerializeField] private GameObject _nextButtonObj;
+        [SerializeField] private GameObject _confirmButtonObj;
+        [SerializeField] private Button _nextButton;
+        [SerializeField] private Button _confirmButton;
+        [SerializeField] private Button returnToInvestigationButton;
+        [SerializeField] private ScrollRect _choicesScroll;
+        [SerializeField] private Text startDescriptionText;
+        [SerializeField] private Button startQuizButton;
+        [SerializeField] private Button choiceButtonTemplate;
+        private bool flowButtonsBound;
+        private readonly List<Button> choiceButtons = new List<Button>();
         private readonly List<Image> _choiceImages = new List<Image>();
         private readonly List<Text> _choiceTexts = new List<Text>();
-
-        private void Awake()
-        {
-            EnsureAssets();
-        }
 
         /// <summary>
         /// Binds UI button click listeners on start.
         /// </summary>
         private void Start()
         {
-            EnsureAssets();
-            EnsureResultsButtons();
+            BindFlowButtons();
 
             if (submitConclusionButton != null) submitConclusionButton.onClick.AddListener(OnSubmitClicked);
             if (continueButton != null) continueButton.onClick.AddListener(OnContinueClicked);
@@ -113,139 +111,6 @@ namespace CaseClosed.UI
             if (returnToMainMenuButton != null) returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
 
             if (resultsContainer != null) resultsContainer.SetActive(false);
-            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
-        }
-
-        /// <summary>
-        /// Loads a sprite from the specified asset path, searching sub-assets if imported as Multiple sprite sheet.
-        /// </summary>
-        private static Sprite LoadSprite(string path, Vector4 fallbackBorder = default)
-        {
-#if UNITY_EDITOR
-            Sprite found = null;
-            var all = UnityEditor.AssetDatabase.LoadAllAssetsAtPath(path);
-            if (all != null)
-            {
-                foreach (var obj in all)
-                {
-                    if (obj is Sprite s)
-                    {
-                        found = s;
-                        break;
-                    }
-                }
-            }
-
-            if (found == null)
-            {
-                found = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            }
-
-            if (found != null)
-            {
-                if (fallbackBorder != Vector4.zero && found.border == Vector4.zero)
-                {
-                    return Sprite.Create(found.texture, found.rect, new Vector2(0.5f, 0.5f), found.pixelsPerUnit, 0, SpriteMeshType.FullRect, fallbackBorder);
-                }
-                return found;
-            }
-
-            var tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(path);
-            if (tex != null)
-            {
-                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, fallbackBorder);
-            }
-#endif
-            return null;
-        }
-
-        /// <summary>
-        /// Ensures questionnaire and outcome sprites are loaded from assets when not assigned in Inspector.
-        /// </summary>
-        private void EnsureAssets()
-        {
-            if (questionBoxSprite == null)
-                questionBoxSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_BOX.png", new Vector4(8, 8, 8, 8));
-            if (startButtonSprite == null)
-                startButtonSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_START_BUTTON.png");
-            if (nextButtonSprite == null)
-                nextButtonSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_NEXT_BUTTON.png");
-            if (confirmButtonSprite == null)
-                confirmButtonSprite = LoadSprite("Assets/Assets/BUTTONS/QUESTION_CONFIRM_BUTTON.png");
-            if (failedBackgroundSprite == null)
-                failedBackgroundSprite = LoadSprite("Assets/Assets/BACKGROUNDS/case1FAILED.png");
-            if (solvedBackgroundSprite == null)
-                solvedBackgroundSprite = LoadSprite("Assets/Assets/BACKGROUNDS/CasesWIN.png");
-            if (menuGameButtonSprite == null)
-                menuGameButtonSprite = LoadSprite("Assets/Assets/BUTTONS/MenuGAME.png");
-            if (nextGameButtonSprite == null)
-                nextGameButtonSprite = LoadSprite("Assets/Assets/BUTTONS/NextGAME.png");
-        }
-
-        /// <summary>
-        /// Ensures MenuGAME, NextGAME, and Retry navigation buttons exist within the results container.
-        /// </summary>
-        private void EnsureResultsButtons()
-        {
-            Transform parent = (resultsContainer != null) ? resultsContainer.transform : transform;
-
-            // 1. Return to Main Menu (MenuGAME) button
-            if (returnToMainMenuButton == null)
-            {
-                Transform existing = parent.Find("Button_ReturnToMenu") ?? parent.Find("MenuButton");
-                if (existing != null)
-                {
-                    returnToMainMenuButton = existing.GetComponent<Button>();
-                }
-                else
-                {
-                    GameObject menuObj = DetectiveUITheme.CreateButton(parent, "Button_ReturnToMenu");
-                    returnToMainMenuButton = menuObj.GetComponent<Button>();
-                }
-            }
-
-            if (returnToMainMenuButton != null)
-            {
-                returnToMainMenuButton.onClick.RemoveListener(OnMainMenuClicked);
-                returnToMainMenuButton.onClick.AddListener(OnMainMenuClicked);
-            }
-
-            // 2. Next Level (NextGAME) button
-            if (nextLevelButton == null)
-            {
-                Transform existing = parent.Find("Button_NextLevel") ?? parent.Find("NextButton");
-                if (existing != null)
-                {
-                    nextLevelButton = existing.GetComponent<Button>();
-                }
-                else
-                {
-                    GameObject nextObj = DetectiveUITheme.CreateButton(parent, "Button_NextLevel");
-                    nextLevelButton = nextObj.GetComponent<Button>();
-                }
-            }
-
-            if (nextLevelButton != null)
-            {
-                nextLevelButton.onClick.RemoveListener(OnNextLevelClicked);
-                nextLevelButton.onClick.AddListener(OnNextLevelClicked);
-            }
-
-            // 3. Continue / Retry button on failed outcome
-            if (continueButton == null)
-            {
-                Transform existing = parent.Find("Button_Continue");
-                if (existing != null)
-                {
-                    continueButton = existing.GetComponent<Button>();
-                }
-            }
-
-            if (continueButton != null)
-            {
-                continueButton.onClick.RemoveListener(OnContinueClicked);
-                continueButton.onClick.AddListener(OnContinueClicked);
-            }
         }
 
         /// <summary>
@@ -261,30 +126,11 @@ namespace CaseClosed.UI
         /// </summary>
         private void SetupQuiz()
         {
-            EnsureAssets();
 
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
             if (activeCase == null || activeCase.conclusionQuestions == null) return;
 
             Debug.Log($"[UI:Conclusion] Setting up conclusion quiz for '{activeCase.caseTitle}' with {activeCase.conclusionQuestions.Count} questions");
-
-            // Configure modal frame with QUESTION_BOX background during the conclusion quiz
-            RectTransform rootRt = GetComponent<RectTransform>();
-            if (rootRt != null)
-            {
-                rootRt.anchorMin = new Vector2(0.12f, 0.08f);
-                rootRt.anchorMax = new Vector2(0.88f, 0.92f);
-                rootRt.offsetMin = Vector2.zero;
-                rootRt.offsetMax = Vector2.zero;
-                rootRt.sizeDelta = Vector2.zero;
-            }
-
-            Image panelBg = GetComponent<Image>();
-            if (panelBg != null)
-            {
-                panelBg.sprite = null;
-                panelBg.color = Color.clear;
-            }
 
             if (quizContainer != null) quizContainer.SetActive(true);
             if (resultsContainer != null) resultsContainer.SetActive(false);
@@ -313,129 +159,15 @@ namespace CaseClosed.UI
             }
 
             _currentQuestionIndex = 0;
-            EnsureFlowHierarchy();
-            ApplyFlowDesign();
+            BindFlowButtons();
+            UpdateStartContent(activeCase);
             ShowStartScreen();
         }
 
-        // Styles only the runtime conclusion flow; authored scenes and references stay intact.
-        private void ApplyFlowDesign()
+        private void UpdateStartContent(CaseSO activeCase)
         {
-            if (conclusionCard == null)
-            {
-                conclusionCard = DetectiveUITheme.CreateCard(_flowRoot.transform);
-                if (conclusionCard != null)
-                {
-                    DetectiveUITheme.Place(conclusionCard.Rect, Vector2.zero, Vector2.one);
-                    conclusionCard.transform.SetAsFirstSibling();
-                    conclusionCard.ShowReportText(false);
-                    conclusionCard.SetContent("CASE CLOSED / INVESTIGATION BUREAU / CONFIDENTIAL", "", "", HeaderDarkColor);
-                }
-            }
-            if (_startScreenObj != null)
-            {
-                Text title = _startScreenObj.transform.Find("StartTitle").GetComponent<Text>();
-                SetFlowRect(title.rectTransform, new Vector2(0.08f, 0.57f), new Vector2(0.92f, 0.78f));
-                title.fontSize = 52;
-                title.resizeTextForBestFit = true;
-                title.resizeTextMinSize = 40;
-                title.resizeTextMaxSize = 52;
-                title.text = "<size=22>D E T E C T I V E ' S   D O S S I E R</size>\nTHE FINAL VERDICT";
-                title.raycastTarget = false;
-
-                Text description = _startScreenObj.transform.Find("StartDesc").GetComponent<Text>();
-                SetFlowRect(description.rectTransform, new Vector2(0.08f, 0.34f), new Vector2(0.92f, 0.56f));
-                CaseSO activeCase = CaseManager.Instance.ActiveCase;
-                description.text = $"{activeCase.caseTitle}\n\nAnswer {playerAnswers.Count} questions using the evidence you gathered.\nEach answer is final when you move to the next question.";
-                description.fontSize = 28;
-                description.resizeTextForBestFit = true;
-                description.resizeTextMinSize = 24;
-                description.resizeTextMaxSize = 28;
-                description.raycastTarget = false;
-
-                Button start = _startScreenObj.transform.Find("StartButton").GetComponent<Button>();
-                SetFlowRect(start.GetComponent<RectTransform>(), new Vector2(0.25f, 0.18f), new Vector2(0.75f, 0.30f));
-                StyleFlowAction(start, "Begin final report");
-                Text startLabel = start.GetComponentInChildren<Text>(true);
-                if (startLabel != null)
-                {
-                    startLabel.fontSize = 28;
-                    startLabel.resizeTextMinSize = 24;
-                    startLabel.resizeTextMaxSize = 28;
-                }
-                TMPro.TextMeshProUGUI startTmpLabel = start.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
-                if (startTmpLabel != null)
-                {
-                    startTmpLabel.fontSize = 28;
-                    startTmpLabel.fontSizeMin = 24;
-                    startTmpLabel.fontSizeMax = 28;
-                }
-            }
-
-            if (_questionBoxImage != null)
-            {
-                SetFlowRect(_questionBoxImage.rectTransform, new Vector2(0.08f, 0.70f), new Vector2(0.92f, 0.89f));
-                _questionBoxImage.sprite = null;
-                _questionBoxImage.color = PaperColor;
-                _questionBoxImage.raycastTarget = false;
-                _questionBoxText.fontSize = 24;
-                _questionBoxText.resizeTextForBestFit = true;
-                _questionBoxText.resizeTextMinSize = 18;
-                _questionBoxText.resizeTextMaxSize = 24;
-                _questionBoxText.alignment = TextAnchor.MiddleLeft;
-                _questionBoxText.raycastTarget = false;
-            }
-
-            if (_choicesContainer != null && _choicesScroll == null)
-            {
-                GameObject viewport = new GameObject("AnswerViewport", typeof(RectTransform), typeof(RectMask2D), typeof(ScrollRect));
-                viewport.transform.SetParent(_questionScreenObj.transform, false);
-                RectTransform viewportRect = viewport.GetComponent<RectTransform>();
-                SetFlowRect(viewportRect, new Vector2(0.10f, 0.25f), new Vector2(0.90f, 0.68f));
-                _choicesContainer.SetParent(viewport.transform, false);
-                RectTransform content = (RectTransform)_choicesContainer;
-                content.anchorMin = new Vector2(0f, 1f);
-                content.anchorMax = Vector2.one;
-                content.pivot = new Vector2(0.5f, 1f);
-                content.anchoredPosition = Vector2.zero;
-                content.sizeDelta = Vector2.zero;
-                VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
-                layout.spacing = 12f;
-                layout.padding = new RectOffset(3, 3, 3, 3);
-                layout.childControlHeight = true;
-                ContentSizeFitter fitter = content.gameObject.AddComponent<ContentSizeFitter>();
-                fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-                _choicesScroll = viewport.GetComponent<ScrollRect>();
-                _choicesScroll.viewport = viewportRect;
-                _choicesScroll.content = content;
-                _choicesScroll.horizontal = false;
-                _choicesScroll.movementType = ScrollRect.MovementType.Clamped;
-            }
-
-            if (_hintPromptText != null)
-            {
-                SetFlowRect(_hintPromptText.rectTransform, new Vector2(0.10f, 0.17f), new Vector2(0.90f, 0.24f));
-                _hintPromptText.raycastTarget = false;
-            }
-            if (_nextButton != null)
-            {
-                SetFlowRect(_nextButton.GetComponent<RectTransform>(), new Vector2(0.46f, 0.05f), new Vector2(0.92f, 0.15f));
-                StyleFlowAction(_nextButton, "Next question  >");
-            }
-            if (_confirmButton != null)
-            {
-                SetFlowRect(_confirmButton.GetComponent<RectTransform>(), new Vector2(0.46f, 0.05f), new Vector2(0.92f, 0.15f));
-                StyleFlowAction(_confirmButton, "Submit conclusion");
-            }
-
-            if (returnToInvestigationButton == null)
-            {
-                GameObject action = DetectiveUITheme.CreateButton(_flowRoot.transform, "ReturnToInvestigationButton");
-                returnToInvestigationButton = action.GetComponent<Button>();
-                returnToInvestigationButton.onClick.AddListener(OnReturnToInvestigationClicked);
-            }
-            SetFlowRect(returnToInvestigationButton.GetComponent<RectTransform>(), new Vector2(0.08f, 0.05f), new Vector2(0.42f, 0.15f));
-            DetectiveUITheme.Action(returnToInvestigationButton, "Return to investigation", SubtitleDarkColor);
+            if (startDescriptionText == null) return;
+            startDescriptionText.text = $"{activeCase.caseTitle}\n\nAnswer {playerAnswers.Count} questions using the evidence you gathered.\nEach answer is final when you move to the next question.";
         }
 
         private void OnReturnToInvestigationClicked()
@@ -445,255 +177,15 @@ namespace CaseClosed.UI
                 UIManager.Instance.ShowPanel(UIPanelType.InvestigationTable);
         }
 
-        private static void SetFlowRect(RectTransform rect, Vector2 min, Vector2 max)
+        private void BindFlowButtons()
         {
-            rect.anchorMin = min;
-            rect.anchorMax = max;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-        }
-
-        private static void StyleFlowAction(Button button, string caption)
-        {
-            DetectiveUITheme.Action(button, caption, HeaderDarkColor);
-        }
-
-        /// <summary>
-        /// Builds the flow hierarchy for the Start screen, question box, choices, and navigation buttons.
-        /// </summary>
-        private void EnsureFlowHierarchy()
-        {
-            Transform parentTransform = (quizContainer != null) ? quizContainer.transform : transform;
-
-            if (_flowRoot == null)
-            {
-                Transform existing = parentTransform.Find("QuizFlowRoot");
-                if (existing != null)
-                {
-                    _flowRoot = existing.gameObject;
-                }
-                else
-                {
-                    _flowRoot = new GameObject("QuizFlowRoot", typeof(RectTransform));
-                    _flowRoot.transform.SetParent(parentTransform, false);
-                    RectTransform rt = _flowRoot.GetComponent<RectTransform>();
-                    rt.anchorMin = Vector2.zero;
-                    rt.anchorMax = Vector2.one;
-                    rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = Vector2.zero;
-                }
-            }
-
-            Font standardFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (standardFont == null && questionTitleText != null)
-            {
-                standardFont = questionTitleText.font;
-            }
-
-            // 1. Build Start Screen if missing
-            if (_startScreenObj == null)
-            {
-                Transform existingStart = _flowRoot.transform.Find("StartScreen");
-                if (existingStart != null)
-                {
-                    _startScreenObj = existingStart.gameObject;
-                }
-                else
-                {
-                    _startScreenObj = new GameObject("StartScreen", typeof(RectTransform));
-                    _startScreenObj.transform.SetParent(_flowRoot.transform, false);
-                    RectTransform srt = _startScreenObj.GetComponent<RectTransform>();
-                    srt.anchorMin = Vector2.zero;
-                    srt.anchorMax = Vector2.one;
-                    srt.anchoredPosition = Vector2.zero;
-                    srt.sizeDelta = Vector2.zero;
-
-                    // Title
-                    GameObject titleObj = new GameObject("StartTitle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    titleObj.transform.SetParent(_startScreenObj.transform, false);
-                    RectTransform trt = titleObj.GetComponent<RectTransform>();
-                    trt.anchoredPosition = new Vector2(0f, 90f);
-                    trt.sizeDelta = new Vector2(700f, 60f);
-                    Text titleTxt = titleObj.GetComponent<Text>();
-                    titleTxt.font = standardFont;
-                    titleTxt.fontSize = 30;
-                    titleTxt.fontStyle = FontStyle.Bold;
-                    titleTxt.alignment = TextAnchor.MiddleCenter;
-                    titleTxt.color = HeaderDarkColor;
-                    titleTxt.text = "CASE CONCLUSION";
-
-                    // Subtitle / Prompt
-                    GameObject descObj = new GameObject("StartDesc", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    descObj.transform.SetParent(_startScreenObj.transform, false);
-                    RectTransform drt = descObj.GetComponent<RectTransform>();
-                    drt.anchoredPosition = new Vector2(0f, 25f);
-                    drt.sizeDelta = new Vector2(650f, 60f);
-                    Text descTxt = descObj.GetComponent<Text>();
-                    descTxt.font = standardFont;
-                    descTxt.fontSize = 17;
-                    descTxt.alignment = TextAnchor.MiddleCenter;
-                    descTxt.color = SubtitleDarkColor;
-                    CaseSO activeCase = CaseManager.Instance?.ActiveCase;
-                    int totalQ = activeCase != null && activeCase.conclusionQuestions != null ? activeCase.conclusionQuestions.Count : 3;
-                    descTxt.text = $"Answer all {totalQ} questions based on your investigation to solve the case.\nClick Start to begin.";
-
-                    // Start Button
-                    GameObject btnObj = DetectiveUITheme.CreateButton(_startScreenObj.transform, "StartButton");
-                    RectTransform brt = btnObj.GetComponent<RectTransform>();
-                    brt.anchoredPosition = new Vector2(0f, -65f);
-                    brt.sizeDelta = new Vector2(200f, 60f);
-                    Image btnImg = btnObj.GetComponent<Image>();
-                    btnImg.sprite = startButtonSprite;
-                    btnImg.preserveAspect = true;
-                    Button btn = btnObj.GetComponent<Button>();
-                    btn.onClick.AddListener(OnStartQuizClicked);
-                }
-            }
-
-            if (_startScreenObj != null)
-            {
-                Image sBtnImg = _startScreenObj.transform.Find("StartButton")?.GetComponent<Image>();
-                if (sBtnImg != null && startButtonSprite != null)
-                {
-                    sBtnImg.sprite = startButtonSprite;
-                    sBtnImg.preserveAspect = true;
-                }
-            }
-
-            // 2. Build Question Screen if missing
-            if (_questionScreenObj == null)
-            {
-                Transform existingQ = _flowRoot.transform.Find("QuestionScreen");
-                if (existingQ != null)
-                {
-                    _questionScreenObj = existingQ.gameObject;
-                }
-                else
-                {
-                    _questionScreenObj = new GameObject("QuestionScreen", typeof(RectTransform));
-                    _questionScreenObj.transform.SetParent(_flowRoot.transform, false);
-                    RectTransform qrt = _questionScreenObj.GetComponent<RectTransform>();
-                    qrt.anchorMin = Vector2.zero;
-                    qrt.anchorMax = Vector2.one;
-                    qrt.anchoredPosition = Vector2.zero;
-                    qrt.sizeDelta = Vector2.zero;
-
-                    // Question Box
-                    GameObject qBoxObj = new GameObject("QuestionBox", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                    qBoxObj.transform.SetParent(_questionScreenObj.transform, false);
-                    RectTransform qbrt = qBoxObj.GetComponent<RectTransform>();
-                    qbrt.anchoredPosition = new Vector2(0f, 120f);
-                    qbrt.sizeDelta = new Vector2(720f, 110f);
-                    _questionBoxImage = qBoxObj.GetComponent<Image>();
-                    _questionBoxImage.sprite = questionBoxSprite;
-                    _questionBoxImage.type = Image.Type.Sliced;
-                    _questionBoxImage.color = Color.white;
-
-                    GameObject qTextObj = new GameObject("QuestionText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    qTextObj.transform.SetParent(qBoxObj.transform, false);
-                    RectTransform qtrt = qTextObj.GetComponent<RectTransform>();
-                    qtrt.anchorMin = Vector2.zero;
-                    qtrt.anchorMax = Vector2.one;
-                    qtrt.sizeDelta = new Vector2(-40f, -20f);
-                    qtrt.anchoredPosition = Vector2.zero;
-                    _questionBoxText = qTextObj.GetComponent<Text>();
-                    _questionBoxText.font = standardFont;
-                    _questionBoxText.fontSize = 17;
-                    _questionBoxText.fontStyle = FontStyle.Bold;
-                    _questionBoxText.alignment = TextAnchor.MiddleCenter;
-                    _questionBoxText.color = HeaderDarkColor;
-
-                    // Choices Container
-                    GameObject choicesObj = new GameObject("ChoicesContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
-                    choicesObj.transform.SetParent(_questionScreenObj.transform, false);
-                    RectTransform crt = choicesObj.GetComponent<RectTransform>();
-                    crt.anchoredPosition = new Vector2(0f, -25f);
-                    crt.sizeDelta = new Vector2(680f, 175f);
-                    VerticalLayoutGroup vlg = choicesObj.GetComponent<VerticalLayoutGroup>();
-                    vlg.spacing = 10f;
-                    vlg.childAlignment = TextAnchor.UpperCenter;
-                    vlg.childControlWidth = true;
-                    vlg.childControlHeight = false;
-                    vlg.childForceExpandWidth = true;
-                    vlg.childForceExpandHeight = false;
-                    _choicesContainer = choicesObj.transform;
-
-                    // Hint / Prompt Text
-                    GameObject hintObj = new GameObject("HintText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    hintObj.transform.SetParent(_questionScreenObj.transform, false);
-                    RectTransform hrt = hintObj.GetComponent<RectTransform>();
-                    hrt.anchoredPosition = new Vector2(0f, -130f);
-                    hrt.sizeDelta = new Vector2(600f, 30f);
-                    _hintPromptText = hintObj.GetComponent<Text>();
-                    _hintPromptText.font = standardFont;
-                    _hintPromptText.fontSize = 15;
-                    _hintPromptText.alignment = TextAnchor.MiddleCenter;
-                    _hintPromptText.color = new Color(0.8f, 0.15f, 0.15f, 1f);
-                    _hintPromptText.text = "";
-
-                    // Navigation Footer
-                    // Next Button (Arrow)
-                    _nextButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "NextButton");
-                    RectTransform nrt = _nextButtonObj.GetComponent<RectTransform>();
-                    nrt.anchoredPosition = new Vector2(0f, -180f);
-                    nrt.sizeDelta = new Vector2(130f, 50f);
-                    Image nImg = _nextButtonObj.GetComponent<Image>();
-                    nImg.sprite = nextButtonSprite;
-                    nImg.preserveAspect = true;
-                    _nextButton = _nextButtonObj.GetComponent<Button>();
-                    _nextButton.onClick.AddListener(OnNextQuestionClicked);
-
-                    // Confirm Button (Confirm)
-                    _confirmButtonObj = DetectiveUITheme.CreateButton(_questionScreenObj.transform, "ConfirmButton");
-                    RectTransform cbrt = _confirmButtonObj.GetComponent<RectTransform>();
-                    cbrt.anchoredPosition = new Vector2(0f, -180f);
-                    cbrt.sizeDelta = new Vector2(180f, 55f);
-                    Image cImg = _confirmButtonObj.GetComponent<Image>();
-                    cImg.sprite = confirmButtonSprite;
-                    cImg.preserveAspect = true;
-                    _confirmButton = _confirmButtonObj.GetComponent<Button>();
-                    _confirmButton.onClick.AddListener(OnConfirmCaseClicked);
-                }
-            }
-
-            if (_questionBoxImage == null && _questionScreenObj != null)
-            {
-                _questionBoxImage = _questionScreenObj.transform.Find("QuestionBox")?.GetComponent<Image>();
-                _questionBoxText = _questionScreenObj.transform.Find("QuestionBox/QuestionText")?.GetComponent<Text>();
-                _choicesContainer = _questionScreenObj.transform.Find("ChoicesContainer");
-                _hintPromptText = _questionScreenObj.transform.Find("HintText")?.GetComponent<Text>();
-                _nextButtonObj = _questionScreenObj.transform.Find("NextButton")?.gameObject;
-                _confirmButtonObj = _questionScreenObj.transform.Find("ConfirmButton")?.gameObject;
-                _nextButton = _nextButtonObj?.GetComponent<Button>();
-                _confirmButton = _confirmButtonObj?.GetComponent<Button>();
-            }
-
-            if (_questionBoxImage != null && questionBoxSprite != null)
-            {
-                _questionBoxImage.sprite = questionBoxSprite;
-                _questionBoxImage.type = Image.Type.Sliced;
-                _questionBoxImage.color = Color.white;
-            }
-
-            if (_nextButtonObj != null)
-            {
-                Image nImg = _nextButtonObj.GetComponent<Image>();
-                if (nImg != null && nextButtonSprite != null)
-                {
-                    nImg.sprite = nextButtonSprite;
-                    nImg.preserveAspect = true;
-                }
-            }
-
-            if (_confirmButtonObj != null)
-            {
-                Image cImg = _confirmButtonObj.GetComponent<Image>();
-                if (cImg != null && confirmButtonSprite != null)
-                {
-                    cImg.sprite = confirmButtonSprite;
-                    cImg.preserveAspect = true;
-                }
-            }
+            if (flowButtonsBound) return;
+            if (startQuizButton != null) startQuizButton.onClick.AddListener(OnStartQuizClicked);
+            if (_nextButton != null) _nextButton.onClick.AddListener(OnNextQuestionClicked);
+            if (_confirmButton != null) _confirmButton.onClick.AddListener(OnConfirmCaseClicked);
+            if (returnToInvestigationButton != null)
+                returnToInvestigationButton.onClick.AddListener(OnReturnToInvestigationClicked);
+            flowButtonsBound = true;
         }
 
         /// <summary>
@@ -704,7 +196,6 @@ namespace CaseClosed.UI
             if (_startScreenObj != null) _startScreenObj.SetActive(true);
             if (_questionScreenObj != null) _questionScreenObj.SetActive(false);
             if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(false);
-            UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
         /// <summary>
@@ -748,65 +239,33 @@ namespace CaseClosed.UI
                 _hintPromptText.color = SubtitleDarkColor;
             }
 
-            // Clear old choices
-            _choiceImages.Clear();
-            _choiceTexts.Clear();
-
-            if (_choicesContainer != null)
+            if (_choicesContainer != null && choiceButtonTemplate != null)
             {
-                foreach (Transform child in _choicesContainer)
+                while (choiceButtons.Count < q.options.Count)
                 {
-                    child.gameObject.SetActive(false);
-                    if (Application.isPlaying)
-                        Destroy(child.gameObject);
-                    else
-                        DestroyImmediate(child.gameObject);
+                    int choiceIndex = choiceButtons.Count;
+                    Button button = Instantiate(choiceButtonTemplate, _choicesContainer, false);
+                    button.name = $"Choice_{choiceIndex}";
+                    button.onClick.AddListener(() => SelectChoice(choiceIndex));
+                    choiceButtons.Add(button);
+                    _choiceImages.Add(button.GetComponent<Image>());
+                    _choiceTexts.Add(button.GetComponentInChildren<Text>(true));
                 }
 
-                Font standardFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                if (standardFont == null && questionTitleText != null) standardFont = questionTitleText.font;
-
-                // Render each choice option
-                for (int optIdx = 0; optIdx < q.options.Count; optIdx++)
+                float availableWidth = Mathf.Max(120f, ((RectTransform)_choicesContainer).rect.width - 80f);
+                for (int i = 0; i < choiceButtons.Count; i++)
                 {
-                    int choiceIndex = optIdx;
-                    GameObject choiceObj = new GameObject($"Choice_{optIdx}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-                    choiceObj.transform.SetParent(_choicesContainer, false);
-                    RectTransform chRt = choiceObj.GetComponent<RectTransform>();
-                    chRt.sizeDelta = new Vector2(660f, 48f);
-                    LayoutElement choiceLayout = choiceObj.AddComponent<LayoutElement>();
-                    choiceLayout.minHeight = 64f;
-                    choiceLayout.preferredHeight = 64f;
+                    bool isActive = i < q.options.Count;
+                    choiceButtons[i].gameObject.SetActive(isActive);
+                    if (!isActive) continue;
 
-                    Image chImg = choiceObj.GetComponent<Image>();
-                    DetectiveUITheme.Surface(chImg, ChoiceNormalColor);
-                    _choiceImages.Add(chImg);
-
-                    GameObject chTextObj = new GameObject("ChoiceText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-                    chTextObj.transform.SetParent(choiceObj.transform, false);
-                    RectTransform txtRt = chTextObj.GetComponent<RectTransform>();
-                    txtRt.anchorMin = Vector2.zero;
-                    txtRt.anchorMax = Vector2.one;
-                    txtRt.sizeDelta = new Vector2(-40f, 0f);
-                    txtRt.anchoredPosition = Vector2.zero;
-
-                    Text chTxt = chTextObj.GetComponent<Text>();
-                    chTxt.font = standardFont;
-                    chTxt.fontSize = 18;
-                    chTxt.alignment = TextAnchor.MiddleLeft;
-                    chTxt.raycastTarget = false;
-                    chTxt.supportRichText = false;
-                    float availableWidth = Mathf.Max(120f, ((RectTransform)_choicesContainer).rect.width - 80f);
-                    TextGenerationSettings textSettings = chTxt.GetGenerationSettings(new Vector2(availableWidth, 0f));
-                    string measuredText = $"[X]  {optIdx + 1:00}   {q.options[optIdx]}";
-                    textSettings.fontStyle = FontStyle.Bold;
-                    float textHeight = chTxt.cachedTextGeneratorForLayout.GetPreferredHeight(measuredText, textSettings) / chTxt.pixelsPerUnit;
-                    choiceLayout.preferredHeight = Mathf.Max(64f, textHeight + 28f);
-                    chTxt.color = ChoiceTextNormalColor;
-                    _choiceTexts.Add(chTxt);
-
-                    Button btn = choiceObj.GetComponent<Button>();
-                    btn.onClick.AddListener(() => SelectChoice(choiceIndex));
+                    Text label = _choiceTexts[i];
+                    LayoutElement layout = choiceButtons[i].GetComponent<LayoutElement>();
+                    TextGenerationSettings settings = label.GetGenerationSettings(new Vector2(availableWidth, 0f));
+                    settings.fontStyle = FontStyle.Bold;
+                    string measuredText = $"[X]  {i + 1:00}   {q.options[i]}";
+                    float textHeight = label.cachedTextGeneratorForLayout.GetPreferredHeight(measuredText, settings) / label.pixelsPerUnit;
+                    layout.preferredHeight = Mathf.Max(64f, textHeight + 28f);
                 }
 
                 UpdateChoiceVisuals();
@@ -823,7 +282,6 @@ namespace CaseClosed.UI
             if (_nextButtonObj != null) _nextButtonObj.SetActive(!isLastQuestion);
             if (_confirmButtonObj != null) _confirmButtonObj.SetActive(isLastQuestion);
 
-            UIButtonHighlightSystem.ApplyToHierarchy(_questionScreenObj);
         }
 
         /// <summary>

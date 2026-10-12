@@ -53,7 +53,6 @@ namespace CaseClosed.UI
         private EvidenceManager _subscribedEvidenceManager;
         private CaseManager _subscribedCaseManager;
         private InterrogationManager _subscribedInterrogationManager;
-        private DetectiveDialog mainMenuConfirmationView;
         private Button concludeNavigationButton;
         private CaseEvaluationResult pendingResult;
         private bool syncingOutcomeScenes;
@@ -218,9 +217,7 @@ namespace CaseClosed.UI
                 }
             }
 
-            InstallNavigationPrefabs();
-            StyleInGameMenu();
-            if (mainMenuConfirmPanel != null) StyleMainMenuConfirmation();
+            BindNavigationButtons();
 
             UIPanelType initialPanel = (mainMenuPanel != null) ? UIPanelType.MainMenu : UIPanelType.InvestigationTable;
             ShowPanel(initialPanel);
@@ -229,87 +226,29 @@ namespace CaseClosed.UI
             UIButtonHighlightSystem.ApplyToAllButtonsInScene();
         }
 
-        private void StyleInGameMenu()
+        private void BindNavigationButtons()
         {
-            if (inGameMenuPanel == null) return;
-            Image backdrop = inGameMenuPanel.GetComponent<Image>();
-            if (backdrop != null) backdrop.color = DetectiveUITheme.Backdrop;
-
-            Transform card = inGameMenuPanel.transform.Find("Card_InGameMenu");
-            if (card == null) return;
-            DetectiveUITheme.Surface(card.GetComponent<Image>(), DetectiveUITheme.Paper, true);
-            Transform title = card.Find("Text_Title");
-            if (title != null)
-            {
-                Text label = title.GetComponent<Text>();
-                if (label != null) DetectiveUITheme.TextStyle(label, label.fontSize, DetectiveUITheme.Paper);
-            }
-        }
-
-        private void InstallNavigationPrefabs()
-        {
-            returnToMenuButton = ReplaceNavigationControl(returnToMenuButton, "Main menu", ToggleInGameMenu);
-            notebookButton = ReplaceNavigationControl(notebookButton, "Case notebook", ToggleNotebookPanel);
-            concludeCaseButton = ReplaceNavigationControl(concludeCaseButton, "Conclude case", HandleConcludeNavigationClicked);
+            returnToMenuButton = BindNavigationControl(returnToMenuButton, ToggleInGameMenu);
+            notebookButton = BindNavigationControl(notebookButton, ToggleNotebookPanel);
+            concludeCaseButton = BindNavigationControl(concludeCaseButton, HandleConcludeNavigationClicked);
             if (concludeCaseButton != null)
                 concludeNavigationButton = concludeCaseButton.GetComponent<Button>();
-            deductionBoardButton = ReplaceNavigationControl(deductionBoardButton, "Deduction board", ToggleDeductionBoardPanel);
+            deductionBoardButton = BindNavigationControl(deductionBoardButton, ToggleDeductionBoardPanel);
 
             if (resumeGameButton != null)
-                resumeGameButton = ReplaceNavigationControl(resumeGameButton.gameObject, "Keep investigating", CloseInGameMenu).GetComponent<Button>();
+                resumeGameButton = BindNavigationControl(resumeGameButton.gameObject, CloseInGameMenu).GetComponent<Button>();
             if (inGameMainMenuButton != null)
-                inGameMainMenuButton = ReplaceNavigationControl(inGameMainMenuButton.gameObject, "Main menu", OpenMainMenuConfirmation).GetComponent<Button>();
+                inGameMainMenuButton = BindNavigationControl(inGameMainMenuButton.gameObject, OpenMainMenuConfirmation).GetComponent<Button>();
         }
 
-        private GameObject ReplaceNavigationControl(GameObject original, string caption, UnityAction onClick)
+        private GameObject BindNavigationControl(GameObject original, UnityAction onClick)
         {
             if (original == null) return null;
-            // Already authored as a prefab: retain its Inspector event bindings and layout.
-            if (original.GetComponent<DetectiveButton>() != null)
-            {
-                DetectiveUITheme.Action(original.GetComponent<Button>(), caption, DetectiveUITheme.Ink);
-                return original;
-            }
-
-            Transform parent = original.transform.parent;
-            GameObject replacement = DetectiveUITheme.CreateButton(parent, original.name + "_Dossier");
-            RectTransform rect = replacement.GetComponent<RectTransform>();
-            SpriteRenderer artwork = original.GetComponent<SpriteRenderer>();
-            RectTransform originalRect = original.GetComponent<RectTransform>();
-            if (artwork != null && artwork.sprite != null && parent != null)
-            {
-                // The original header artwork lives in scaled world transforms under the Canvas.
-                // Convert its visible sprite bounds into the parent's UI coordinates.
-                Bounds bounds = artwork.sprite.bounds;
-                Vector3 min = parent.InverseTransformPoint(artwork.transform.TransformPoint(bounds.min));
-                Vector3 max = parent.InverseTransformPoint(artwork.transform.TransformPoint(bounds.max));
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = rect.anchorMin;
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.localPosition = (min + max) * 0.5f;
-                rect.sizeDelta = new Vector2(Mathf.Abs(max.x - min.x), Mathf.Abs(max.y - min.y));
-            }
-            else if (originalRect != null)
-            {
-                rect.anchorMin = originalRect.anchorMin;
-                rect.anchorMax = originalRect.anchorMax;
-                rect.pivot = originalRect.pivot;
-                rect.sizeDelta = originalRect.sizeDelta;
-                rect.anchoredPosition3D = originalRect.anchoredPosition3D;
-                rect.localRotation = originalRect.localRotation;
-                rect.localScale = originalRect.localScale;
-            }
-            else
-            {
-                rect.localPosition = original.transform.localPosition;
-            }
-            replacement.transform.SetSiblingIndex(original.transform.GetSiblingIndex());
-            Button button = replacement.GetComponent<Button>();
-            DetectiveUITheme.Action(button, caption, DetectiveUITheme.Ink);
+            Button button = original.GetComponent<Button>();
+            if (button == null) return original;
+            button.onClick.RemoveListener(onClick);
             button.onClick.AddListener(onClick);
-            replacement.SetActive(original.activeSelf);
-            original.SetActive(false);
-            return replacement;
+            return original;
         }
 
         private void HandleConcludeNavigationClicked()
@@ -751,33 +690,9 @@ namespace CaseClosed.UI
             if (currentPanel != UIPanelType.InGameMenu) return;
             if (mainMenuConfirmPanel != null)
             {
-                StyleMainMenuConfirmation();
                 mainMenuConfirmPanel.SetActive(true);
                 mainMenuConfirmPanel.transform.SetAsLastSibling();
             }
-        }
-
-        private void StyleMainMenuConfirmation()
-        {
-            if (mainMenuConfirmationView == null)
-            {
-                mainMenuConfirmationView = mainMenuConfirmPanel.GetComponentInChildren<DetectiveDialog>(true);
-                if (mainMenuConfirmationView == null)
-                    mainMenuConfirmationView = DetectiveUITheme.CreateDialog(mainMenuConfirmPanel.transform);
-                if (mainMenuConfirmationView == null) return;
-                mainMenuConfirmationView.PrimaryButton.onClick.AddListener(CloseMainMenuConfirmation);
-                mainMenuConfirmationView.SecondaryButton.onClick.AddListener(ConfirmReturnToMainMenu);
-                confirmMainMenuNoButton = mainMenuConfirmationView.PrimaryButton;
-                confirmMainMenuYesButton = mainMenuConfirmationView.SecondaryButton;
-                Transform legacyCard = mainMenuConfirmPanel.transform.Find("Card_Confirm");
-                if (legacyCard != null) legacyCard.gameObject.SetActive(false);
-                Image backdrop = mainMenuConfirmPanel.GetComponent<Image>();
-                if (backdrop != null) backdrop.color = Color.clear;
-            }
-            DetectiveUITheme.Place(mainMenuConfirmationView.Card.Rect, new Vector2(0.28f, 0.27f), new Vector2(0.72f, 0.73f));
-            mainMenuConfirmationView.SetContent("INVESTIGATION BUREAU / LEAVE CASE", "Leave this investigation?",
-                "Your current investigation progress will be lost.\nReturn to the main menu or keep the case open.", DetectiveUITheme.Ink);
-            mainMenuConfirmationView.SetActions("Keep investigating", "Leave case", true);
         }
 
         /// <summary>Closes the leave-case confirmation and keeps the in-game menu open.</summary>
