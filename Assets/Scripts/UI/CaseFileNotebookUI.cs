@@ -67,6 +67,18 @@ namespace CaseClosed.UI
         public Image suspectPortraitImage;
         public Text suspectNameLabel;
 
+        [Header("Suspect Navigation")]
+        [Tooltip("Button to cycle to previous suspect.")]
+        public Button prevSuspectButton;
+        [Tooltip("Button to cycle to next suspect.")]
+        public Button nextSuspectButton;
+        [Tooltip("Label displaying suspect index/page, e.g. '[ 1 / 2 ]'.")]
+        public Text suspectIndexLabel;
+
+        private int currentSuspectIndex = 0;
+        /// <summary>Index of the currently focused suspect within the active case.</summary>
+        public int CurrentSuspectIndex => currentSuspectIndex;
+
         [Tooltip("Card container displaying evidence item preview.")]
         public GameObject evidenceCardSection;
         public Image evidencePreviewImage;
@@ -211,6 +223,25 @@ namespace CaseClosed.UI
                 ResetView();
             }
 
+            // Keyboard shortcuts: 1-4 for quick tab switching, Tab to cycle
+            if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) SelectSummaryTab();
+            else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) SelectSuspectsTab();
+            else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) SelectEvidenceTab();
+            else if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)) SelectCluesTab();
+            else if (Input.GetKeyDown(KeyCode.Tab)) CycleNextTab();
+
+            // Keyboard shortcuts: Arrow keys (Left/Right) or A/D to cycle active items
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            {
+                if (currentTab == NotebookTab.Evidence) PreviousEvidence();
+                else if (currentTab == NotebookTab.Suspects) PreviousSuspect();
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            {
+                if (currentTab == NotebookTab.Evidence) NextEvidence();
+                else if (currentTab == NotebookTab.Suspects) NextSuspect();
+            }
+
             // While animating slide in/out, do not apply regular zoom/pan lerp
             if (slideCoroutine != null) return;
             if (clipboardRoot == null) return;
@@ -333,6 +364,7 @@ namespace CaseClosed.UI
         private void HandleCaseStateChanged(CaseSO c)
         {
             currentEvidenceIndex = 0;
+            currentSuspectIndex = 0;
             SwitchTab(currentTab);
         }
 
@@ -507,30 +539,145 @@ namespace CaseClosed.UI
             {
                 CharacterProfileSO investigator = GetEffectiveInvestigator(activeCase);
                 string lead = investigator != null ? investigator.fullName : "Detective Bureau";
-                summaryCaseMetaLabel.text = $"<b>CASE #{activeCase.levelNumber}</b>\n\n<b>Lead:</b> {lead}\n<b>Location:</b> {activeCase.dateAndLocation}\n<b>Victim:</b> {activeCase.victimInfo}\n\n<b>STATUS:</b> <color=#166534><b>ACTIVE FILE</b></color>";
+
+                int totalEvidence = activeCase.evidenceItems != null ? activeCase.evidenceItems.Count : 0;
+                int discoveredEvidence = 0;
+                if (activeCase.evidenceItems != null)
+                {
+                    foreach (var ev in activeCase.evidenceItems)
+                    {
+                        if (ev != null && IsEvidenceDiscovered(ev.id)) discoveredEvidence++;
+                    }
+                }
+
+                var clues = GetUnlockedClues();
+                int clueCount = clues != null ? clues.Count : 0;
+
+                summaryCaseMetaLabel.text = $"<b>CASE #{activeCase.levelNumber:00}</b>\n\n" +
+                    $"<b>Lead:</b> {lead}\n" +
+                    $"<b>Location:</b> {activeCase.dateAndLocation}\n" +
+                    $"<b>Victim:</b> {activeCase.victimInfo}\n\n" +
+                    $"<b>DOSSIER PROGRESS:</b>\n" +
+                    $"• Evidence Logged: <b>{discoveredEvidence} / {totalEvidence}</b>\n" +
+                    $"• Clues Synthesized: <b>{clueCount}</b>\n\n" +
+                    $"<b>STATUS:</b> <color=#166534><b>ACTIVE INVESTIGATION</b></color>";
             }
+        }
+
+        /// <summary>
+        /// Retrieves all unique suspects authored on the active case file (primary suspect first, followed by additional suspects).
+        /// </summary>
+        public List<CharacterProfileSO> GetAllSuspects(CaseSO activeCase)
+        {
+            var list = new List<CharacterProfileSO>();
+            if (activeCase == null) return list;
+
+            if (activeCase.primarySuspect != null)
+            {
+                list.Add(activeCase.primarySuspect);
+            }
+
+            if (activeCase.additionalSuspects != null)
+            {
+                foreach (var suspect in activeCase.additionalSuspects)
+                {
+                    if (suspect != null && !list.Contains(suspect))
+                    {
+                        list.Add(suspect);
+                    }
+                }
+            }
+
+            return list;
         }
 
         private void SetupSuspectCard(CaseSO activeCase)
         {
             if (suspectCardSection == null) return;
 
-            if (activeCase.primarySuspect != null && activeCase.primarySuspect.defaultSittingPose != null)
-            {
-                suspectCardSection.SetActive(true);
-                if (suspectPortraitImage != null)
-                {
-                    suspectPortraitImage.sprite = activeCase.primarySuspect.defaultSittingPose;
-                    suspectPortraitImage.preserveAspect = true;
-                }
-                if (suspectNameLabel != null)
-                {
-                    suspectNameLabel.text = activeCase.primarySuspect.fullName;
-                }
-            }
-            else
+            var suspects = GetAllSuspects(activeCase);
+            if (suspects.Count == 0)
             {
                 suspectCardSection.SetActive(false);
+                return;
+            }
+
+            suspectCardSection.SetActive(true);
+            EnsureSuspectControlsExist();
+
+            currentSuspectIndex = Mathf.Clamp(currentSuspectIndex, 0, suspects.Count - 1);
+            CharacterProfileSO suspect = suspects[currentSuspectIndex];
+
+            if (suspectPortraitImage != null)
+            {
+                Sprite portrait = suspect != null ? (suspect.defaultSittingPose != null ? suspect.defaultSittingPose : suspect.GetSpriteForExpression(CharacterExpression.Neutral)) : null;
+                suspectPortraitImage.gameObject.SetActive(portrait != null);
+                if (portrait != null)
+                {
+                    suspectPortraitImage.sprite = portrait;
+                    suspectPortraitImage.preserveAspect = true;
+                }
+            }
+
+            if (suspectNameLabel != null && suspect != null)
+            {
+                bool isPrimary = (activeCase.primarySuspect != null && suspect == activeCase.primarySuspect);
+                string roleText = isPrimary ? "PRIMARY SUSPECT" : "PERSON OF INTEREST";
+                suspectNameLabel.text = $"<b>{suspect.fullName.ToUpper()}</b>\n<size=12><color=#5C4033>[{roleText}]</color></size>";
+            }
+
+            if (suspectIndexLabel != null)
+            {
+                suspectIndexLabel.text = $"[ {currentSuspectIndex + 1} / {suspects.Count} ]";
+            }
+
+            if (prevSuspectButton != null)
+            {
+                prevSuspectButton.interactable = suspects.Count > 1;
+            }
+            if (nextSuspectButton != null)
+            {
+                nextSuspectButton.interactable = suspects.Count > 1;
+            }
+        }
+
+        /// <summary>
+        /// Cycles to the next suspect in the active case file.
+        /// </summary>
+        public void NextSuspect()
+        {
+            CaseSO activeCase = GetActiveCase();
+            var suspects = GetAllSuspects(activeCase);
+            if (suspects.Count <= 1) return;
+            currentSuspectIndex = (currentSuspectIndex + 1) % suspects.Count;
+            AudioManager.Instance?.PlayPaperFlip();
+            SetupSuspectCard(activeCase);
+        }
+
+        /// <summary>
+        /// Cycles to the previous suspect in the active case file.
+        /// </summary>
+        public void PreviousSuspect()
+        {
+            CaseSO activeCase = GetActiveCase();
+            var suspects = GetAllSuspects(activeCase);
+            if (suspects.Count <= 1) return;
+            currentSuspectIndex = (currentSuspectIndex - 1 + suspects.Count) % suspects.Count;
+            AudioManager.Instance?.PlayPaperFlip();
+            SetupSuspectCard(activeCase);
+        }
+
+        /// <summary>
+        /// Cycles to the next tab bookmark in sequence.
+        /// </summary>
+        public void CycleNextTab()
+        {
+            switch (currentTab)
+            {
+                case NotebookTab.CaseSummary: SwitchTab(NotebookTab.Suspects); break;
+                case NotebookTab.Suspects: SwitchTab(NotebookTab.Evidence); break;
+                case NotebookTab.Evidence: SwitchTab(NotebookTab.Clues); break;
+                case NotebookTab.Clues: SwitchTab(NotebookTab.CaseSummary); break;
             }
         }
 
@@ -722,17 +869,224 @@ namespace CaseClosed.UI
                 evidenceLockedLabel = evidenceLockedPlaceholder.GetComponentInChildren<Text>();
             }
 
-            // Bind click listeners
+            // Fallback: If navigation row does not exist in prefab, dynamically generate it
+            if (prevEvidenceButton == null || nextEvidenceButton == null || evidenceIndexLabel == null)
+            {
+                CreateEvidenceNavRow(cardTransform);
+            }
+
+            // Bind click listeners and style
             if (prevEvidenceButton != null)
             {
                 prevEvidenceButton.onClick.RemoveListener(PreviousEvidence);
                 prevEvidenceButton.onClick.AddListener(PreviousEvidence);
+                StyleNavButton(prevEvidenceButton, "<");
             }
             if (nextEvidenceButton != null)
             {
                 nextEvidenceButton.onClick.RemoveListener(NextEvidence);
                 nextEvidenceButton.onClick.AddListener(NextEvidence);
+                StyleNavButton(nextEvidenceButton, ">");
             }
+        }
+
+        private void EnsureSuspectControlsExist()
+        {
+            if (suspectCardSection == null) return;
+
+            Transform cardTransform = suspectCardSection.transform;
+
+            if (prevSuspectButton == null)
+            {
+                var prevTransform = cardTransform.Find("Suspect_Nav_Row/Button_Prev") ?? cardTransform.Find("Button_Prev");
+                if (prevTransform != null) prevSuspectButton = prevTransform.GetComponent<Button>();
+            }
+
+            if (nextSuspectButton == null)
+            {
+                var nextTransform = cardTransform.Find("Suspect_Nav_Row/Button_Next") ?? cardTransform.Find("Button_Next");
+                if (nextTransform != null) nextSuspectButton = nextTransform.GetComponent<Button>();
+            }
+
+            if (suspectIndexLabel == null)
+            {
+                var indexTransform = cardTransform.Find("Suspect_Nav_Row/Text_Index") ?? cardTransform.Find("Text_Index");
+                if (indexTransform != null) suspectIndexLabel = indexTransform.GetComponent<Text>();
+            }
+
+            if (prevSuspectButton == null || nextSuspectButton == null || suspectIndexLabel == null)
+            {
+                CreateSuspectNavRow(cardTransform);
+            }
+
+            if (prevSuspectButton != null)
+            {
+                prevSuspectButton.onClick.RemoveListener(PreviousSuspect);
+                prevSuspectButton.onClick.AddListener(PreviousSuspect);
+                StyleNavButton(prevSuspectButton, "<");
+            }
+            if (nextSuspectButton != null)
+            {
+                nextSuspectButton.onClick.RemoveListener(NextSuspect);
+                nextSuspectButton.onClick.AddListener(NextSuspect);
+                StyleNavButton(nextSuspectButton, ">");
+            }
+        }
+
+        private void CreateEvidenceNavRow(Transform parent)
+        {
+            Transform existingRow = parent.Find("Evidence_Nav_Row");
+            GameObject rowObj = existingRow != null ? existingRow.gameObject : new GameObject("Evidence_Nav_Row", typeof(RectTransform));
+            rowObj.transform.SetParent(parent, false);
+
+            RectTransform rowRt = rowObj.GetComponent<RectTransform>();
+            rowRt.anchorMin = new Vector2(0.05f, 0f);
+            rowRt.anchorMax = new Vector2(0.95f, 0f);
+            rowRt.pivot = new Vector2(0.5f, 1f);
+            rowRt.anchoredPosition = new Vector2(0f, -6f);
+            rowRt.sizeDelta = new Vector2(0f, 34f);
+
+            if (prevEvidenceButton == null)
+            {
+                prevEvidenceButton = CreateNavButton(rowRt, "Button_Prev", "<", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(24f, 0f), new Vector2(44f, 32f));
+            }
+            if (nextEvidenceButton == null)
+            {
+                nextEvidenceButton = CreateNavButton(rowRt, "Button_Next", ">", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-24f, 0f), new Vector2(44f, 32f));
+            }
+            if (evidenceIndexLabel == null)
+            {
+                evidenceIndexLabel = CreateNavText(rowRt, "Text_Index", "[ 1 / 1 ]", Vector2.zero, Vector2.one, Vector2.zero, new Vector2(-96f, 0f));
+            }
+        }
+
+        private void CreateSuspectNavRow(Transform parent)
+        {
+            Transform existingRow = parent.Find("Suspect_Nav_Row");
+            GameObject rowObj = existingRow != null ? existingRow.gameObject : new GameObject("Suspect_Nav_Row", typeof(RectTransform));
+            rowObj.transform.SetParent(parent, false);
+
+            RectTransform rowRt = rowObj.GetComponent<RectTransform>();
+            rowRt.anchorMin = new Vector2(0.05f, 0f);
+            rowRt.anchorMax = new Vector2(0.95f, 0f);
+            rowRt.pivot = new Vector2(0.5f, 1f);
+            rowRt.anchoredPosition = new Vector2(0f, -6f);
+            rowRt.sizeDelta = new Vector2(0f, 34f);
+
+            if (prevSuspectButton == null)
+            {
+                prevSuspectButton = CreateNavButton(rowRt, "Button_Prev", "<", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(24f, 0f), new Vector2(44f, 32f));
+            }
+            if (nextSuspectButton == null)
+            {
+                nextSuspectButton = CreateNavButton(rowRt, "Button_Next", ">", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-24f, 0f), new Vector2(44f, 32f));
+            }
+            if (suspectIndexLabel == null)
+            {
+                suspectIndexLabel = CreateNavText(rowRt, "Text_Index", "[ 1 / 1 ]", Vector2.zero, Vector2.one, Vector2.zero, new Vector2(-96f, 0f));
+            }
+        }
+
+        private static Button CreateNavButton(Transform parent, string name, string labelText, Vector2 anchorMin, Vector2 anchorMax, Vector2 pos, Vector2 size)
+        {
+            Transform existing = parent.Find(name);
+            GameObject btnObj = existing != null ? existing.gameObject : new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            btnObj.transform.SetParent(parent, false);
+
+            RectTransform rt = btnObj.GetComponent<RectTransform>();
+            rt.anchorMin = anchorMin;
+            rt.anchorMax = anchorMax;
+            rt.anchoredPosition = pos;
+            rt.sizeDelta = size;
+
+            Button btn = btnObj.GetComponent<Button>();
+            Image img = btnObj.GetComponent<Image>();
+            img.color = new Color(0.95f, 0.91f, 0.82f, 1f);
+            btn.targetGraphic = img;
+
+            Outline outline = btnObj.GetComponent<Outline>() ?? btnObj.AddComponent<Outline>();
+            outline.effectColor = new Color(0.40f, 0.30f, 0.20f, 0.85f);
+            outline.effectDistance = new Vector2(1.2f, -1.2f);
+
+            Transform labelTransform = btnObj.transform.Find("Label");
+            GameObject txtObj = labelTransform != null ? labelTransform.gameObject : new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            txtObj.transform.SetParent(btnObj.transform, false);
+
+            RectTransform txtRt = txtObj.GetComponent<RectTransform>();
+            txtRt.anchorMin = Vector2.zero;
+            txtRt.anchorMax = Vector2.one;
+            txtRt.sizeDelta = Vector2.zero;
+
+            Text txt = txtObj.GetComponent<Text>();
+            txt.font = DetectiveUITheme.GetStandardFont();
+            txt.text = labelText;
+            txt.fontStyle = FontStyle.Bold;
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.color = new Color(0.20f, 0.16f, 0.12f, 1f);
+            txt.fontSize = 18;
+            txt.raycastTarget = false;
+
+            ColorBlock cb = btn.colors;
+            cb.normalColor = Color.white;
+            cb.highlightedColor = new Color(1f, 0.96f, 0.86f, 1f);
+            cb.pressedColor = new Color(0.85f, 0.80f, 0.70f, 1f);
+            cb.disabledColor = new Color(0.85f, 0.85f, 0.85f, 0.5f);
+            btn.colors = cb;
+
+            return btn;
+        }
+
+        private static Text CreateNavText(Transform parent, string name, string defaultText, Vector2 anchorMin, Vector2 anchorMax, Vector2 pos, Vector2 size)
+        {
+            Transform existing = parent.Find(name);
+            GameObject txtObj = existing != null ? existing.gameObject : new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            txtObj.transform.SetParent(parent, false);
+
+            RectTransform rt = txtObj.GetComponent<RectTransform>();
+            rt.anchorMin = anchorMin;
+            rt.anchorMax = anchorMax;
+            rt.anchoredPosition = pos;
+            rt.sizeDelta = size;
+
+            Text txt = txtObj.GetComponent<Text>();
+            txt.font = DetectiveUITheme.GetStandardFont();
+            txt.text = defaultText;
+            txt.fontStyle = FontStyle.Bold;
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.color = new Color(0.35f, 0.27f, 0.18f, 1f);
+            txt.fontSize = 14;
+            txt.raycastTarget = false;
+            return txt;
+        }
+
+        private static void StyleNavButton(Button btn, string labelText)
+        {
+            if (btn == null) return;
+            Image img = btn.GetComponent<Image>();
+            if (img == null) img = btn.gameObject.AddComponent<Image>();
+            img.color = new Color(0.95f, 0.91f, 0.82f, 1f);
+            btn.targetGraphic = img;
+
+            Outline outline = btn.GetComponent<Outline>() ?? btn.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0.40f, 0.30f, 0.20f, 0.85f);
+            outline.effectDistance = new Vector2(1.2f, -1.2f);
+
+            Text label = btn.GetComponentInChildren<Text>();
+            if (label != null)
+            {
+                label.font = DetectiveUITheme.GetStandardFont();
+                label.text = labelText;
+                label.fontStyle = FontStyle.Bold;
+                label.alignment = TextAnchor.MiddleCenter;
+                label.color = new Color(0.20f, 0.16f, 0.12f, 1f);
+            }
+
+            ColorBlock cb = btn.colors;
+            cb.normalColor = Color.white;
+            cb.highlightedColor = new Color(1f, 0.96f, 0.86f, 1f);
+            cb.pressedColor = new Color(0.85f, 0.80f, 0.70f, 1f);
+            cb.disabledColor = new Color(0.85f, 0.85f, 0.85f, 0.5f);
+            btn.colors = cb;
         }
 
         private void SetupCluesCard(CaseSO activeCase, IReadOnlyDictionary<string, string> cluesDict)
@@ -742,7 +1096,10 @@ namespace CaseClosed.UI
             int count = cluesDict != null ? cluesDict.Count : 0;
             if (cluesCountLabel != null)
             {
-                cluesCountLabel.text = $"<b>DEDUCTION JOURNAL</b>\n\n<b>Unlocked Clues:</b> {count}\n\n<i>Cross-reference suspect testimonies and gathered physical evidence to uncover critical contradictions.</i>";
+                cluesCountLabel.text = $"<b>DEDUCTION JOURNAL</b>\n\n" +
+                    $"<b>Synthesized Clues:</b> <size=18><b>{count}</b></size>\n\n" +
+                    $"<i>Cross-reference suspect testimonies and gathered physical evidence to uncover critical contradictions.</i>\n\n" +
+                    $"<color=#5C4033><b>TIP:</b> Open the Deduction Board to connect clues.</color>";
             }
         }
 
@@ -770,13 +1127,13 @@ namespace CaseClosed.UI
             if (button == null) return;
             RectTransform rt = (RectTransform)button.transform;
             Vector2 pos = rt.anchoredPosition;
-            pos.x = isSelected ? baseX + 20f : baseX;
+            pos.x = isSelected ? baseX + 24f : baseX;
             rt.anchoredPosition = pos;
 
             Image img = button.GetComponent<Image>();
             if (img != null)
             {
-                img.color = isSelected ? Color.white : new Color(0.82f, 0.82f, 0.82f, 0.92f);
+                img.color = isSelected ? Color.white : new Color(0.85f, 0.83f, 0.80f, 0.92f);
             }
         }
 

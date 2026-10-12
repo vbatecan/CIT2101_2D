@@ -10,6 +10,9 @@ namespace CaseClosed.Services
     /// </summary>
     public class NotebookFormattingService
     {
+        private const string PageDivider = "<color=#8C7B6B>────────────────────────────────────────────</color>";
+        private const string SubtleDivider = "<color=#A69B8F>────────────────────────────</color>";
+
         /// <summary>
         /// Formats the overview, level designation, assigned investigator, victim, summary, and objective of a case.
         /// </summary>
@@ -29,16 +32,18 @@ namespace CaseClosed.Services
             if (activeCase == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"<size=22><b>CASE FILE #{activeCase.levelNumber}</b></size>");
-            sb.AppendLine($"<size=18><b>{activeCase.caseTitle}</b></size>\n");
+            sb.AppendLine($"<size=22><b>CASE FILE #{activeCase.levelNumber:00} : {activeCase.caseTitle.ToUpper()}</b></size>");
+            sb.AppendLine(PageDivider);
             if (effectiveInvestigator != null)
             {
-                sb.AppendLine($"<b>Lead Investigator:</b> {effectiveInvestigator.fullName} ({effectiveInvestigator.occupation})");
+                sb.AppendLine($"<b>LEAD INVESTIGATOR:</b> {effectiveInvestigator.fullName.ToUpper()} <color=#5C4033>[{effectiveInvestigator.occupation.ToUpper()}]</color>");
             }
-            sb.AppendLine($"<b>Date & Location:</b> {activeCase.dateAndLocation}");
-            sb.AppendLine($"<b>Victim:</b> {activeCase.victimInfo}\n");
-            sb.AppendLine($"<size=16><b>[ INCIDENT SUMMARY ]</b></size>\n{activeCase.incidentDescription}\n");
-            sb.AppendLine($"<size=16><b>[ CURRENT OBJECTIVE ]</b></size>\n{activeCase.objective}");
+            sb.AppendLine($"<b>DATE & LOCATION:</b> {activeCase.dateAndLocation}");
+            sb.AppendLine($"<b>VICTIM:</b> {activeCase.victimInfo}");
+            sb.AppendLine(PageDivider + "\n");
+            sb.AppendLine($"<size=16><b>[ INCIDENT REPORT ]</b></size>\n{activeCase.incidentDescription}\n");
+            sb.AppendLine($"<size=16><b>[ INVESTIGATION OBJECTIVE ]</b></size>\n{activeCase.objective}\n");
+            sb.AppendLine(PageDivider);
             return sb.ToString();
         }
 
@@ -52,6 +57,9 @@ namespace CaseClosed.Services
             if (activeCase == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<size=20><b>PERSONS OF INTEREST & DOSSIERS</b></size>");
+            sb.AppendLine(PageDivider + "\n");
+
             if (activeCase.primarySuspect != null)
             {
                 sb.Append(FormatSuspectProfile(activeCase.primarySuspect, true));
@@ -82,14 +90,25 @@ namespace CaseClosed.Services
             if (profile == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"<size=20><b>{profile.fullName.ToUpper()}</b></size> {(isPrimary ? "<color=#991B1B><b>[PRIMARY SUSPECT]</b></color>" : "<color=#475569>[PERSON OF INTEREST]</color>")}");
-            sb.AppendLine($"<b>Age:</b> {profile.age}  |  <b>Occupation:</b> {profile.occupation}");
-            sb.AppendLine($"<b>Personality:</b> {profile.personalityTrait}");
-            sb.AppendLine($"<b>Relationship to Victim:</b> {profile.relationshipToVictim}\n");
-            sb.AppendLine($"<b>Alibi:</b>\n<i>\"{profile.alibi}\"</i>\n");
-            sb.AppendLine($"<b>Possible Motive:</b>\n{profile.possibleMotives}\n");
-            sb.AppendLine($"<b>Known Conflicts:</b>\n{profile.knownConflicts}\n");
-            sb.AppendLine("<color=#64748B>────────────────────────────</color>\n");
+            string roleBadge = isPrimary
+                ? "<color=#8B0000><b>[★ PRIMARY SUSPECT]</b></color>"
+                : "<color=#4A3B32><b>[PERSON OF INTEREST]</b></color>";
+
+            sb.AppendLine($"<size=19><b>{profile.fullName.ToUpper()}</b></size> {roleBadge}");
+            sb.AppendLine($"<b>AGE:</b> {profile.age}   |   <b>OCCUPATION:</b> {profile.occupation}");
+            sb.AppendLine($"<b>BEHAVIORAL TRAIT:</b> {profile.personalityTrait}");
+            sb.AppendLine($"<b>RELATION TO VICTIM:</b> {profile.relationshipToVictim}\n");
+
+            sb.AppendLine("<size=15><b>[ RECORDED ALIBI ]</b></size>");
+            sb.AppendLine($"<i>\"{profile.alibi}\"</i>\n");
+
+            sb.AppendLine("<size=15><b>[ SUSPECT MOTIVE ]</b></size>");
+            sb.AppendLine($"{profile.possibleMotives}\n");
+
+            sb.AppendLine("<size=15><b>[ KNOWN CONFLICTS ]</b></size>");
+            sb.AppendLine($"{profile.knownConflicts}\n");
+
+            sb.AppendLine(PageDivider + "\n");
             return sb.ToString();
         }
 
@@ -117,20 +136,27 @@ namespace CaseClosed.Services
             if (activeCase == null || activeCase.evidenceItems == null) return string.Empty;
 
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<size=20><b>PHYSICAL EVIDENCE CATALOG</b></size>");
+            sb.AppendLine(PageDivider + "\n");
+
             bool any = false;
             foreach (var ev in activeCase.evidenceItems)
             {
                 if (ev != null && Contains(discoveredIds, ev.id))
                 {
                     any = true;
-                    sb.AppendLine($"<size=18><b>• {ev.evidenceName}</b></size> <color=#475569>[{ev.category}]</color>");
-                    sb.AppendLine($"  {ev.baseDescription}");
                     bool examined = isEvidenceExamined != null ? isEvidenceExamined(ev) : ev.isExamined;
+                    string statusTag = examined
+                        ? "<color=#1B4D3E><b>[✓ EXAMINED]</b></color>"
+                        : "<color=#8B5A2B><b>[● DISCOVERED]</b></color>";
+
+                    sb.AppendLine($"<size=18><b>• {ev.evidenceName}</b></size> <color=#5C4033>[{ev.category}]</color> {statusTag}");
+                    sb.AppendLine($"  {ev.baseDescription}");
                     if (examined && !string.IsNullOrEmpty(ev.detailedObservation))
                     {
-                        sb.AppendLine($"  <color=#0F766E><b>[EXAMINED]:</b> {ev.detailedObservation}</color>");
+                        sb.AppendLine($"  <color=#1B4D3E><b>[FORENSIC FINDINGS]:</b> {ev.detailedObservation}</color>");
                     }
-                    sb.AppendLine("<color=#94A3B8>────────────────────────────</color>\n");
+                    sb.AppendLine(SubtleDivider + "\n");
                 }
             }
 
@@ -186,54 +212,58 @@ namespace CaseClosed.Services
         {
             if (evidence == null)
             {
-                return "<i>No evidence selected.</i>";
+                return "<i>No evidence item selected.</i>";
             }
 
             StringBuilder sb = new StringBuilder();
-            string countHeader = totalCount > 0 ? $"<color=#64748B>[EVIDENCE {index} OF {totalCount}]</color>\n" : string.Empty;
+            string countHeader = totalCount > 0 ? $"<color=#5C4033><b>[ EVIDENCE {index:00} OF {totalCount:00} ]</b></color>\n" : string.Empty;
 
             if (isDiscovered)
             {
                 sb.AppendLine(countHeader + $"<size=20><b>{evidence.evidenceName.ToUpper()}</b></size>");
-                sb.AppendLine($"<color=#1E293B><b>Category:</b></color> <color=#475569>[{evidence.category}]</color>");
-                sb.AppendLine($"<color=#1E293B><b>Status:</b></color> <color=#166534><b>LOGGED & VERIFIED</b></color>\n");
+                sb.AppendLine($"<b>CATEGORY:</b> <color=#5C4033>[{evidence.category}]</color>");
+                string statusText = isExamined
+                    ? "<color=#1B4D3E><b>✓ FULLY EXAMINED & CATALOGED</b></color>"
+                    : "<color=#8B5A2B><b>● LOGGED IN EVIDENCE — REQUIRES FORENSIC INSPECTION</b></color>";
+                sb.AppendLine($"<b>STATUS:</b> {statusText}");
+                sb.AppendLine(PageDivider + "\n");
 
                 sb.AppendLine("<size=15><b>[ PHYSICAL DESCRIPTION ]</b></size>");
                 sb.AppendLine(evidence.baseDescription + "\n");
 
+                sb.AppendLine("<size=15><b>[ FORENSIC FINDINGS ]</b></size>");
                 if (isExamined && !string.IsNullOrEmpty(evidence.detailedObservation))
                 {
-                    sb.AppendLine("<size=15><b>[ EXAMINATION FINDINGS ]</b></size>");
-                    sb.AppendLine($"<color=#0F766E>{evidence.detailedObservation}</color>\n");
+                    sb.AppendLine($"<color=#1B4D3E>{evidence.detailedObservation}</color>\n");
                 }
                 else
                 {
-                    sb.AppendLine("<size=15><b>[ EXAMINATION FINDINGS ]</b></size>");
-                    sb.AppendLine("<i>Item has not been closely examined on the table yet. Double-click or inspect to reveal forensic details.</i>\n");
+                    sb.AppendLine("<i>Item has not been examined on the inspection table yet. Inspect this evidence to reveal forensic details and find hidden hotspots.</i>\n");
                 }
 
                 if (!string.IsNullOrEmpty(evidence.unlockedClueText))
                 {
                     sb.AppendLine("<size=15><b>[ UNLOCKED CLUE & DEDUCTION ]</b></size>");
-                    sb.AppendLine($"<color=#B45309>{evidence.unlockedClueText}</color>\n");
+                    sb.AppendLine($"<color=#8B5A2B><b>★ {evidence.unlockedClueText}</b></color>\n");
                 }
 
                 if (evidence.hotspots != null && evidence.hotspots.Count > 0)
                 {
-                    sb.AppendLine($"<b>Forensic Hotspots Discovered:</b> {discoveredHotspotCount} / {evidence.hotspots.Count}");
+                    sb.AppendLine($"<b>Forensic Hotspots Examined:</b> <b>{discoveredHotspotCount} / {evidence.hotspots.Count}</b>\n");
                 }
             }
             else
             {
                 sb.AppendLine(countHeader + "<size=20><b>[ ??? UNDISCOVERED EVIDENCE ]</b></size>");
-                sb.AppendLine("<color=#1E293B><b>Category:</b></color> <color=#64748B>[CLASSIFIED]</color>");
-                sb.AppendLine("<color=#1E293B><b>Status:</b></color> <color=#991B1B><b>NOT YET RECOVERED</b></color>\n");
+                sb.AppendLine("<b>CATEGORY:</b> <color=#5C4033>[CLASSIFIED]</color>");
+                sb.AppendLine("<b>STATUS:</b> <color=#8B0000><b>NOT YET RECOVERED AT CRIME SCENE</b></color>");
+                sb.AppendLine(PageDivider + "\n");
 
                 sb.AppendLine("<size=15><b>[ EVIDENCE STATUS ]</b></size>");
-                sb.AppendLine("<i>This piece of evidence has not yet been discovered by the detective.\n\nExplore the crime scene, interrogate the suspects, and inspect contradictory statements to uncover this item.</i>\n");
+                sb.AppendLine("<i>This piece of evidence has not yet been discovered by the investigator.\n\nSearch the crime scene, interrogate suspects, and follow leads to bring this evidence to light.</i>\n");
             }
 
-            sb.AppendLine("<color=#94A3B8>────────────────────────────</color>");
+            sb.AppendLine(PageDivider);
             return sb.ToString();
         }
 
@@ -246,18 +276,34 @@ namespace CaseClosed.Services
         {
             if (unlockedClues == null || unlockedClues.Count == 0)
             {
-                return "<i>No deduction clues unlocked yet.\nExamine evidence hotspots and confront suspects with contradictions.</i>";
+                return "<i>No deduction clues synthesized yet.\n\nExamine physical evidence on the inspection table and cross-examine suspects to synthesize breakthrough clues.</i>";
             }
 
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"<size=20><b>DEDUCTION JOURNAL ({unlockedClues.Count} CLUES)</b></size>");
+            sb.AppendLine(PageDivider + "\n");
+
+            int idx = 1;
             foreach (var kvp in unlockedClues)
             {
-                sb.AppendLine($"<size=18><b>[CLUE #{kvp.Key}]</b></size>");
+                string title = CleanClueTitle(kvp.Key);
+                sb.AppendLine($"<size=17><b>★ CLUE {idx:00}: {title}</b></size>");
                 sb.AppendLine($"  {kvp.Value}\n");
-                sb.AppendLine("<color=#94A3B8>────────────────────────────</color>\n");
+                sb.AppendLine(SubtleDivider + "\n");
+                idx++;
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts raw clue keys (e.g. 'evidence_safe_scratches' or 'clue_01') into human-readable titles.
+        /// </summary>
+        public static string CleanClueTitle(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return "RECORD";
+            string title = key.Replace("evidence_", "").Replace("clue_", "").Replace("_", " ").Trim().ToUpperInvariant();
+            return !string.IsNullOrEmpty(title) ? title : key.ToUpperInvariant();
         }
 
         private static bool Contains(IReadOnlyCollection<string> values, string value)

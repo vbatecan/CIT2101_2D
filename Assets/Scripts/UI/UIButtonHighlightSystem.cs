@@ -92,6 +92,17 @@ namespace CaseClosed.UI
                 return;
             }
 
+            if (button.GetComponentInParent<CaseFileNotebookUI>() != null)
+            {
+                // Tab bookmarks and notebook close control have custom authored illustrations and layout.
+                // Exempt them from DetectiveButtonUI to preserve their authentic tab sprites and avoid label injection.
+                if (bName.IndexOf("tab", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    bName.IndexOf("close", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return;
+                }
+            }
+
             if (button.GetComponent<CaseFileNotebookUI>() != null || button.GetComponent<SuspectFolderUI>() != null || button.GetComponentInParent<SuspectFolderButton>() != null)
             {
                 return;

@@ -226,6 +226,14 @@ namespace CaseClosed.UI
 
             string bName = gameObject.name.ToLowerInvariant();
 
+            // Notebook tab bookmarks and notebook close control preserve authored artwork
+            if (bName.StartsWith("button_tab") || bName.Contains("tab_") || bName.Contains("tabsummary") ||
+                bName.Contains("tabsuspects") || bName.Contains("tabevidence") || bName.Contains("tabclues") ||
+                bName.Contains("closenotebook"))
+            {
+                return DetectiveButtonVariant.DossierCard;
+            }
+
             // A folder's close control is an action, even when its name contains "folder".
             if (bName.Contains("close")) return DetectiveButtonVariant.SmallIcon;
 
@@ -258,7 +266,7 @@ namespace CaseClosed.UI
             // Small / Icon / Utility
             if (bName.Contains("back") || bName.Contains("close") || bName.Contains("return") ||
                 bName.Contains("mute") || bName.Contains("reset") || bName.Contains("prev") ||
-                bName.Contains("next") || bName.Contains("zoom") || bName.Contains("rotate") || bName.Contains("tab") ||
+                bName.Contains("next") || bName.Contains("zoom") || bName.Contains("rotate") ||
                 (_rectTransform != null && (_rectTransform.rect.width < 90f || _rectTransform.rect.height < 44f)))
             {
                 return DetectiveButtonVariant.SmallIcon;
