@@ -475,5 +475,26 @@ namespace CaseClosed.Managers
             OnContradictionExposed?.Invoke(rule);
             AudioManager.Instance?.PlayContradictionFound();
         }
+
+        /// <summary>Returns the collection of player answers recorded for conclusion questions in this session.</summary>
+        public IReadOnlyList<int> ConclusionAnswers => sessionState.ConclusionAnswers;
+
+        /// <summary>Records an answer index for a conclusion question in this session.</summary>
+        public void SetConclusionAnswer(int questionIndex, int answerIndex)
+        {
+            sessionState.SetConclusionAnswer(questionIndex, answerIndex);
+        }
+
+        /// <summary>Returns the recorded answer index for a conclusion question, or -1 if not answered.</summary>
+        public int GetConclusionAnswer(int questionIndex)
+        {
+            return sessionState.GetConclusionAnswer(questionIndex);
+        }
+
+        /// <summary>Clears any recorded conclusion answers in this session.</summary>
+        public void ClearConclusionAnswers()
+        {
+            sessionState.ClearConclusionAnswers();
+        }
     }
 }

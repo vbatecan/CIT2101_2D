@@ -96,11 +96,11 @@ namespace CaseClosed.UI
         [SerializeField, Tooltip("Color of dialogue text and dynamically displayed speaker names.")]
         private Color dialogueInkColor = new Color(0.06f, 0.04f, 0.02f, 1f);
         [SerializeField, Tooltip("Width and height of the custom world-space dialogue surface.")]
-        private Vector2 dialogueWorldSize = new Vector2(35.69f, 6.78f);
-        [SerializeField, Tooltip("Lower-left anchor of the custom Canvas dialogue panel.")]
-        private Vector2 dialoguePanelAnchorMin = new Vector2(0.14f, 0f);
-        [SerializeField, Tooltip("Upper-right anchor of the custom Canvas dialogue panel.")]
-        private Vector2 dialoguePanelAnchorMax = new Vector2(0.86f, 0.20f);
+        private Vector2 dialogueWorldSize = new Vector2(35.69f, 5.2f);
+        [SerializeField, Tooltip("Lower-left anchor of the custom Canvas dialogue panel. Lifted above bottom to prevent extending to the lower-most screen edge.")]
+        private Vector2 dialoguePanelAnchorMin = new Vector2(0.14f, 0.035f);
+        [SerializeField, Tooltip("Upper-right anchor of the custom Canvas dialogue panel, limiting panel height.")]
+        private Vector2 dialoguePanelAnchorMax = new Vector2(0.86f, 0.185f);
 
         [Header("Typewriter Settings")]
         public float charactersPerSecond = 35f;

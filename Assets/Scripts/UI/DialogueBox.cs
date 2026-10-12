@@ -87,6 +87,21 @@ namespace CaseClosed.UI
             _instance = this;
             if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
             if (panelRect == null) panelRect = GetComponent<RectTransform>();
+            if (panelRect != null)
+            {
+                // Ensure dialog box does not extend to the lower-most edge of the screen and limits its height
+                if (panelRect.anchorMin.y < 0.025f && panelRect.anchorMax.y > 0.05f && panelRect.anchorMax.y <= 0.35f)
+                {
+                    Vector2 min = panelRect.anchorMin;
+                    Vector2 max = panelRect.anchorMax;
+                    min.y = 0.035f;
+                    if (max.y - min.y > 0.16f)
+                    {
+                        max.y = min.y + 0.15f;
+                    }
+                    DetectiveUITheme.Place(panelRect, min, max);
+                }
+            }
 
             if (nextIndicatorArrow != null)
             {
