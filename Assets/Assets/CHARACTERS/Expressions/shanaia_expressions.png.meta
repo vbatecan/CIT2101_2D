@@ -1,0 +1,126 @@
+fileFormatVersion: 2
+guid: dc2d719fe972463a97b8cd58b39ee9bb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300001
+    second: shanaia_nervous
+  - first:
+      213: 21300002
+    second: shanaia_angry
+  - first:
+      213: 21300003
+    second: shanaia_shocked
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    enableMipMap: 0
+    sRGBTexture: 1
+  isReadable: 0
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  maxTextureSize: 2048
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 9.174696271470465
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  textureType: 8
+  textureShape: 1
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: shanaia_nervous
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 512
+        height: 876
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc2d719fe972463a97b8cd5800000001
+      internalID: 21300001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shanaia_angry
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 66
+        width: 512
+        height: 876
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc2d719fe972463a97b8cd5800000002
+      internalID: 21300002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shanaia_shocked
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 66
+        width: 512
+        height: 876
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc2d719fe972463a97b8cd5800000003
+      internalID: 21300003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    secondaryTextures: []
+    nameFileIdTable:
+      shanaia_nervous: 21300001
+      shanaia_angry: 21300002
+      shanaia_shocked: 21300003
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+

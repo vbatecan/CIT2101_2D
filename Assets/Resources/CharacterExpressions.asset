@@ -23,3 +23,53 @@ MonoBehaviour:
       sprite: {fileID: 2312496710705426280, guid: cb9ce90eda7cba36e9e41a9e1b52570d, type: 3}
     - expression: 7
       sprite: {fileID: -5403492796577020502, guid: a25c0b6cef4eb1bfdb69b2814606a016, type: 3}
+    - expression: 3
+      sprite: {fileID: 21300001, guid: b68482d4829ca63899b9ec46bcbf6549, type: 3}
+  - characterId: CHAR_CHARL_PASCUAL
+    expressions:
+    - expression: 6
+      sprite: {fileID: 21300001, guid: 2970485d345d4464b32c338d497cb42f, type: 3}
+    - expression: 2
+      sprite: {fileID: 21300002, guid: 2970485d345d4464b32c338d497cb42f, type: 3}
+    - expression: 7
+      sprite: {fileID: 21300003, guid: 2970485d345d4464b32c338d497cb42f, type: 3}
+  - characterId: CHAR_PAUL_CAMACHO
+    expressions:
+    - expression: 9
+      sprite: {fileID: 21300001, guid: 30dd019c313e4d98b1efbcb845e7b462, type: 3}
+    - expression: 3
+      sprite: {fileID: 21300002, guid: 30dd019c313e4d98b1efbcb845e7b462, type: 3}
+    - expression: 7
+      sprite: {fileID: 21300003, guid: 30dd019c313e4d98b1efbcb845e7b462, type: 3}
+    - expression: 6
+      sprite: {fileID: 21300001, guid: cd0dadcdcd3c9b89995e90505b75b050, type: 3}
+  - characterId: CHAR_SHANAIA_ORTEGA
+    expressions:
+    - expression: 2
+      sprite: {fileID: 21300001, guid: dc2d719fe972463a97b8cd58b39ee9bb, type: 3}
+    - expression: 3
+      sprite: {fileID: 21300002, guid: dc2d719fe972463a97b8cd58b39ee9bb, type: 3}
+    - expression: 7
+      sprite: {fileID: 21300003, guid: dc2d719fe972463a97b8cd58b39ee9bb, type: 3}
+    - expression: 6
+      sprite: {fileID: 21300001, guid: 9948c4aa2e41b269d99ed088fcc7e838, type: 3}
+  - characterId: CHAR_CASE1_FEMALE
+    expressions:
+    - expression: 1
+      sprite: {fileID: 21300001, guid: 23f94254a2a5446b8cb80babefde01f7, type: 3}
+    - expression: 8
+      sprite: {fileID: 21300002, guid: 23f94254a2a5446b8cb80babefde01f7, type: 3}
+    - expression: 5
+      sprite: {fileID: 21300003, guid: 23f94254a2a5446b8cb80babefde01f7, type: 3}
+    - expression: 4
+      sprite: {fileID: 21300004, guid: 23f94254a2a5446b8cb80babefde01f7, type: 3}
+  - characterId: CHAR_SHAN_JARABA
+    expressions:
+    - expression: 8
+      sprite: {fileID: 21300001, guid: eb2328d0f38a4c8085d2a856c744f88d, type: 3}
+    - expression: 1
+      sprite: {fileID: 21300002, guid: eb2328d0f38a4c8085d2a856c744f88d, type: 3}
+    - expression: 4
+      sprite: {fileID: 21300003, guid: eb2328d0f38a4c8085d2a856c744f88d, type: 3}
+    - expression: 2
+      sprite: {fileID: 21300001, guid: 8fb3d5f0ceebca95dafb1c31f14f82c4, type: 3}
