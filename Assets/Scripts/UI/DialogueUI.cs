@@ -190,6 +190,14 @@ namespace CaseClosed.UI
                 charactersPerSecond = CaseClosed.Services.GameSettingsService.Instance.TextSpeed;
             }
 
+            if (customDialogueBody != null)
+            {
+                ConfigureDialogueTmpText(customDialogueBody, isCustomPanel: true);
+            }
+            if (tmpDialogueText != null)
+            {
+                ConfigureDialogueTmpText(tmpDialogueText, isCustomPanel: true);
+            }
         }
 
         private int lastDialogueInputFrame = -1;
@@ -425,6 +433,7 @@ namespace CaseClosed.UI
                 _activeDialogBox = customDialoguePanel.gameObject;
                 _activeBoxTmpText = customDialogueBody;
                 _activeBoxLegacyText = null;
+                ConfigureDialogueTmpText(customDialogueBody, isCustomPanel: true);
                 return;
             }
 
@@ -441,6 +450,10 @@ namespace CaseClosed.UI
                 targetBox.SetActive(true);
                 _activeBoxTmpText = GetTextMeshProFromBox(targetBox);
                 _activeBoxLegacyText = targetBox.GetComponentInChildren<Text>(true);
+                if (_activeBoxTmpText != null)
+                {
+                    ConfigureDialogueTmpText(_activeBoxTmpText, isCustomPanel: false);
+                }
 
                 var boxSpeakerTmp = targetBox.transform.Find("Text_Speaker")?.GetComponent<TextMeshProUGUI>() ??
                                     targetBox.transform.Find("SpeakerName")?.GetComponent<TextMeshProUGUI>();
@@ -477,6 +490,7 @@ namespace CaseClosed.UI
                 {
                     tmpDialogueText.enabled = true;
                     tmpDialogueText.color = DetectiveUITheme.Ink;
+                    ConfigureDialogueTmpText(tmpDialogueText, isCustomPanel: true);
                 }
                 if (speakerNameText != null)
                 {
@@ -488,6 +502,24 @@ namespace CaseClosed.UI
                     tmpSpeakerNameText.color = DetectiveUITheme.WoodDark;
                     tmpSpeakerNameText.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
                 }
+            }
+        }
+
+        private void ConfigureDialogueTmpText(TextMeshProUGUI tmp, bool isCustomPanel)
+        {
+            if (tmp == null) return;
+            tmp.enableWordWrapping = true;
+            tmp.textWrappingMode = TextWrappingModes.Normal;
+            tmp.enableAutoSizing = true;
+            if (isCustomPanel)
+            {
+                tmp.fontSizeMin = 18f;
+                tmp.fontSizeMax = 32f;
+            }
+            else
+            {
+                tmp.fontSizeMin = 20f;
+                tmp.fontSizeMax = 44f;
             }
         }
 

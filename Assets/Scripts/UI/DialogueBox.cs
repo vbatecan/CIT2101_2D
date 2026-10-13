@@ -104,6 +104,15 @@ namespace CaseClosed.UI
 
             if (choiceContainer != null) choiceContainer.gameObject.SetActive(false);
 
+            if (dialogueBodyText != null)
+            {
+                dialogueBodyText.enableWordWrapping = true;
+                dialogueBodyText.textWrappingMode = TextWrappingModes.Normal;
+                dialogueBodyText.enableAutoSizing = true;
+                dialogueBodyText.fontSizeMin = 18f;
+                dialogueBodyText.fontSizeMax = 32f;
+            }
+
             if (canvasGroup != null)
             {
                 canvasGroup.alpha = 0f;
