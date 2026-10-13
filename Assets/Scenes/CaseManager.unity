@@ -1624,6 +1624,8 @@ GameObject:
   - component: {fileID: 399712770}
   - component: {fileID: 399712769}
   - component: {fileID: 399712771}
+  - component: {fileID: 399712773}
+  - component: {fileID: 399712772}
   m_Layer: 0
   m_Name: TimerText
   m_TagString: Untagged
@@ -1701,15 +1703,15 @@ MonoBehaviour:
     rgba: 4294967295
   m_fontSize: 36
   m_fontSizeBase: 36
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontWeight: 700
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 20
+  m_fontSizeMax: 36
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 0
+  m_characterSpacing: 3.5
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -1767,13 +1769,47 @@ MonoBehaviour:
   timerText: {fileID: 399712769}
   timerIcon: {fileID: 0}
   backgroundBadge: {fileID: 0}
+  matchThemePalette: 1
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   warningColor: {r: 1, g: 0.78, b: 0.15, a: 1}
   urgentColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  enforceDetectiveTypography: 1
+  timePrefix: 'TIME  '
+  showTimePrefix: 1
   hideWhenUntimed: 0
   enableTickSFX: 1
   pulseScaleMagnitude: 0.12
   pulseSpeed: 4
+--- !u!114 &399712772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399712767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
+  m_EffectColor: {r: 0.08, g: 0.05, b: 0.03, a: 0.85}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 0
+--- !u!114 &399712773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399712767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Shadow
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.55}
+  m_EffectDistance: {x: 0, y: -2}
+  m_UseGraphicAlpha: 1
 --- !u!1 &404027215
 GameObject:
   m_ObjectHideFlags: 0
@@ -5668,7 +5704,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 4136529636852166605, guid: a431443b958b0c136be057549edd7eb7, type: 3}
+  m_Sprite: {fileID: 7417639108202151377, guid: e9aeb05f6dc50a942b6d2b902c5e3536, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6815,7 +6851,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3721677353766021362, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -31.000488
+      value: -31.000244
       objectReference: {fileID: 0}
     - target: {fileID: 3721677353766021362, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_AnchoredPosition.y
