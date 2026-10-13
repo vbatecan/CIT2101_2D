@@ -24,6 +24,12 @@ namespace CaseClosed.Managers
         public AudioSource sfxSource;
         public AudioSource typewriterSource;
 
+        [SerializeField, Tooltip("Loop played while character dialogue is being revealed.")]
+        private AudioClip mumblingSFX;
+
+        private AudioSource mumblingSource;
+        private Object mumblingOwner;
+
         [Header("Audio Clips - Music")]
         [Tooltip("Main menu and table investigation background theme.")]
         public AudioClip investigationBGM;
@@ -134,6 +140,14 @@ namespace CaseClosed.Managers
             sfxSource.loop = false;
             typewriterSource.loop = false;
 
+            if (mumblingSource == null)
+            {
+                mumblingSource = gameObject.AddComponent<AudioSource>();
+                mumblingSource.playOnAwake = false;
+                mumblingSource.spatialBlend = 0f;
+                mumblingSource.loop = true;
+            }
+
             ApplyVolumes();
         }
 
@@ -142,6 +156,7 @@ namespace CaseClosed.Managers
             if (bgmSource != null) bgmSource.volume = isBgmMuted ? 0f : bgmVolume;
             if (sfxSource != null) sfxSource.volume = isSfxMuted ? 0f : sfxVolume;
             if (typewriterSource != null) typewriterSource.volume = isDialogMuted ? 0f : (dialogVolume * 0.5f);
+            if (mumblingSource != null) mumblingSource.volume = isDialogMuted ? 0f : dialogVolume;
         }
 
         public void SetBGMVolume(float volume)
@@ -342,6 +357,24 @@ namespace CaseClosed.Managers
             }
         }
 
+        public void StartDialogueMumbling(Object owner)
+        {
+            if (mumblingSource == null || mumblingSFX == null || owner == null) return;
+
+            mumblingSource.Stop();
+            mumblingOwner = owner;
+            mumblingSource.clip = mumblingSFX;
+            mumblingSource.Play();
+        }
+
+        public void StopDialogueMumbling(Object owner)
+        {
+            if (mumblingOwner != owner) return;
+
+            if (mumblingSource != null) mumblingSource.Stop();
+            mumblingOwner = null;
+        }
+
         public void PlayButtonClick() => PlaySFX(buttonClickSFX);
 
         public void PlayPaperFlip() => PlaySFX(paperFlipSFX);
@@ -406,6 +439,7 @@ namespace CaseClosed.Managers
             if (paperFlipSFX == null) paperFlipSFX = LoadClip("Assets/Audio/PAPER FLIP SFX.mp3");
             if (examineZoomSFX == null) examineZoomSFX = LoadClip("Assets/Audio/EXAMINE ZOOM SFX.mp3");
             if (typewriterKeySFX == null) typewriterKeySFX = LoadClip("Assets/Audio/TYPEWRITER KEY SFX.mp3");
+            if (mumblingSFX == null) mumblingSFX = LoadClip("Assets/Audio/MUMBLING SFX.mp3");
 
             if (contradictionFoundSFX == null) contradictionFoundSFX = LoadClip("Assets/Audio/CONTRADICTION SFX.mp3");
             if (clueDiscoveredSFX == null) clueDiscoveredSFX = LoadClip("Assets/Audio/CLUE DISCOVERED SFX.mp3");

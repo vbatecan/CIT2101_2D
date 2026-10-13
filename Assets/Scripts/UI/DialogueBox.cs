@@ -66,6 +66,7 @@ namespace CaseClosed.UI
         private string _fullLineText = "";
 
         private Coroutine _typewriterCoroutine;
+        private AudioManager dialogueAudio;
         private Coroutine _fadeCoroutine;
         private Coroutine _bounceCoroutine;
         private Vector2 _indicatorInitialPos;
@@ -140,6 +141,17 @@ namespace CaseClosed.UI
             {
                 Advance();
             }
+        }
+
+        private void OnDisable()
+        {
+            StopDialogueMumbling();
+        }
+
+        private void StopDialogueMumbling()
+        {
+            if (dialogueAudio != null) dialogueAudio.StopDialogueMumbling(this);
+            dialogueAudio = null;
         }
 
         private bool CheckAdvanceInput()
@@ -262,6 +274,7 @@ namespace CaseClosed.UI
 
         public void CompleteTypingImmediately()
         {
+            StopDialogueMumbling();
             if (_typewriterCoroutine != null)
             {
                 StopCoroutine(_typewriterCoroutine);
@@ -292,7 +305,9 @@ namespace CaseClosed.UI
             }
             if (nextIndicatorArrow != null) nextIndicatorArrow.gameObject.SetActive(false);
 
-            AudioManager audio = AudioManager.Instance;
+            StopDialogueMumbling();
+            dialogueAudio = AudioManager.Instance;
+            if (characterCount > 0 && dialogueAudio != null) dialogueAudio.StartDialogueMumbling(this);
             float elapsed = 0f;
             int visibleCharacters = 0;
             while (visibleCharacters < characterCount)
@@ -302,12 +317,12 @@ namespace CaseClosed.UI
                 if (nextVisible > visibleCharacters)
                 {
                     if (dialogueBodyText != null) dialogueBodyText.maxVisibleCharacters = nextVisible;
-                    if (audio != null && nextVisible / 3 > visibleCharacters / 3) audio.PlayTypewriterKey();
                     visibleCharacters = nextVisible;
                 }
                 yield return null;
             }
             if (dialogueBodyText != null) dialogueBodyText.maxVisibleCharacters = int.MaxValue;
+            StopDialogueMumbling();
             _isTyping = false;
             OnTypingFinished();
         }
@@ -450,6 +465,7 @@ namespace CaseClosed.UI
 
         public void EndDialogue()
         {
+            StopDialogueMumbling();
             if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
             ShowNextArrow(false);
             ClearChoices();

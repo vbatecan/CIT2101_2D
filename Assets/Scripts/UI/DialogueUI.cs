@@ -106,6 +106,7 @@ namespace CaseClosed.UI
         public bool IsTyping => isTyping;
 
         private Coroutine typewriterCoroutine;
+        private AudioManager dialogueAudio;
         private bool isTyping = false;
         private string currentFullText = "";
         [Header("Scene Dialogue Presentation")]
@@ -348,6 +349,7 @@ namespace CaseClosed.UI
 
         private void OnDisable()
         {
+            StopDialogueMumbling();
             IsDialogueOpen = false;
             DeactivateAllCharacterDialogBoxes();
         }
@@ -923,7 +925,9 @@ namespace CaseClosed.UI
                 characterCount = body.textInfo.characterCount;
             }
             SetVisibleBodyCharacters(0, body != null);
-            AudioManager audio = AudioManager.Instance;
+            StopDialogueMumbling();
+            dialogueAudio = AudioManager.Instance;
+            if (characterCount > 0 && dialogueAudio != null) dialogueAudio.StartDialogueMumbling(this);
             float elapsed = 0f;
             int visibleCharacters = 0;
             while (visibleCharacters < characterCount)
@@ -933,12 +937,12 @@ namespace CaseClosed.UI
                 if (nextVisible > visibleCharacters)
                 {
                     SetVisibleBodyCharacters(nextVisible, body != null);
-                    if (audio != null && nextVisible / 3 > visibleCharacters / 3) audio.PlayTypewriterKey();
                     visibleCharacters = nextVisible;
                 }
                 yield return null;
             }
             SetBodyText(currentFullText);
+            StopDialogueMumbling();
             isTyping = false;
             EnableCompletedLineInteraction();
         }
@@ -958,6 +962,7 @@ namespace CaseClosed.UI
 
         public void CompleteTypingImmediately()
         {
+            StopDialogueMumbling();
             if (typewriterCoroutine != null)
             {
                 StopCoroutine(typewriterCoroutine);
@@ -984,6 +989,12 @@ namespace CaseClosed.UI
             {
                 InterrogationManager.Instance.ToggleChallengeMode(true);
             }
+        }
+
+        private void StopDialogueMumbling()
+        {
+            if (dialogueAudio != null) dialogueAudio.StopDialogueMumbling(this);
+            dialogueAudio = null;
         }
 
         private void SetNextButtonInteractable(bool interactable)
@@ -1046,6 +1057,7 @@ namespace CaseClosed.UI
                         typewriterCoroutine = null;
                     }
                     SetBodyText(currentFullText);
+                    StopDialogueMumbling();
                     isTyping = false;
                     SetNextButtonInteractable(true);
                     if (challengeButton != null)
@@ -1082,6 +1094,7 @@ namespace CaseClosed.UI
 
         public void HideDialoguePanel()
         {
+            StopDialogueMumbling();
             hiddenForEvidenceSelection = false;
             IsDialogueOpen = false;
             if (typewriterCoroutine != null)
