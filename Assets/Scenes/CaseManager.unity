@@ -6104,6 +6104,15 @@ MonoBehaviour:
   sfxSource: {fileID: 1357520879}
   typewriterSource: {fileID: 1357520878}
   mumblingSFX: {fileID: 8300000, guid: 3b75f9540a6c7d94482915d3b75f488b, type: 3}
+  womanMumblingSFX: {fileID: 8300000, guid: 4441e4a74f3239ac7bfa4327bd52f28c, type: 3}
+  womanMumblingSpeakers:
+  - CHAR_CASE1_FEMALE
+  - Jane Reyes
+  - Jane
+  - CHAR_SHANAIA_ORTEGA
+  - Shanaia Ortega
+  - Shanaia
+  - Shania
   investigationBGM: {fileID: 8300000, guid: 0c6bded5a422898588230db4e9f5c6e9, type: 3}
   interrogationBGM: {fileID: 8300000, guid: 5c4a30598df2e047198cd1df1250045d, type: 3}
   highTensionBGM: {fileID: 8300000, guid: de847f7e7fb89cd78a318441c7b080c9, type: 3}

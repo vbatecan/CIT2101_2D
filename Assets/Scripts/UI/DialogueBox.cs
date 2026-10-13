@@ -206,7 +206,7 @@ namespace CaseClosed.UI
             ClearChoices();
 
             if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
-            _typewriterCoroutine = StartCoroutine(TypeText(line.text));
+            _typewriterCoroutine = StartCoroutine(TypeText(line.text, line.speakerId, line.speakerName));
 
             OnLineStarted?.Invoke(line);
         }
@@ -291,7 +291,7 @@ namespace CaseClosed.UI
             OnTypingFinished();
         }
 
-        private IEnumerator TypeText(string text)
+        private IEnumerator TypeText(string text, string speakerId, string speakerName)
         {
             _isTyping = true;
             _fullLineText = text ?? "";
@@ -307,7 +307,10 @@ namespace CaseClosed.UI
 
             StopDialogueMumbling();
             dialogueAudio = AudioManager.Instance;
-            if (characterCount > 0 && dialogueAudio != null) dialogueAudio.StartDialogueMumbling(this);
+            if (characterCount > 0 && dialogueAudio != null)
+            {
+                dialogueAudio.StartDialogueMumbling(this, speakerId, speakerName);
+            }
             float elapsed = 0f;
             int visibleCharacters = 0;
             while (visibleCharacters < characterCount)

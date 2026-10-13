@@ -27,6 +27,16 @@ namespace CaseClosed.Managers
         [SerializeField, Tooltip("Loop played while character dialogue is being revealed.")]
         private AudioClip mumblingSFX;
 
+        [SerializeField, Tooltip("Loop played while a woman character speaks.")]
+        private AudioClip womanMumblingSFX;
+
+        [SerializeField, Tooltip("Exact speaker IDs or names that use the woman's mumbling clip. Matching ignores case.")]
+        private string[] womanMumblingSpeakers =
+        {
+            "CHAR_CASE1_FEMALE", "Jane Reyes", "Jane",
+            "CHAR_SHANAIA_ORTEGA", "Shanaia Ortega", "Shanaia", "Shania"
+        };
+
         private AudioSource mumblingSource;
         private Object mumblingOwner;
 
@@ -359,12 +369,36 @@ namespace CaseClosed.Managers
 
         public void StartDialogueMumbling(Object owner)
         {
-            if (mumblingSource == null || mumblingSFX == null || owner == null) return;
+            StartDialogueMumbling(owner, null, null);
+        }
+
+        public void StartDialogueMumbling(Object owner, string speakerId, string speakerName)
+        {
+            AudioClip clip = GetDialogueMumblingClip(speakerId, speakerName);
+            if (mumblingSource == null || clip == null || owner == null) return;
 
             mumblingSource.Stop();
             mumblingOwner = owner;
-            mumblingSource.clip = mumblingSFX;
+            mumblingSource.clip = clip;
             mumblingSource.Play();
+        }
+
+        public AudioClip GetDialogueMumblingClip(string speakerId, string speakerName)
+        {
+            if (womanMumblingSpeakers != null)
+            {
+                foreach (string speaker in womanMumblingSpeakers)
+                {
+                    if (string.IsNullOrWhiteSpace(speaker)) continue;
+                    if (string.Equals(speaker, speakerId, System.StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(speaker, speakerName, System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        return womanMumblingSFX;
+                    }
+                }
+            }
+
+            return mumblingSFX;
         }
 
         public void StopDialogueMumbling(Object owner)
@@ -440,6 +474,7 @@ namespace CaseClosed.Managers
             if (examineZoomSFX == null) examineZoomSFX = LoadClip("Assets/Audio/EXAMINE ZOOM SFX.mp3");
             if (typewriterKeySFX == null) typewriterKeySFX = LoadClip("Assets/Audio/TYPEWRITER KEY SFX.mp3");
             if (mumblingSFX == null) mumblingSFX = LoadClip("Assets/Audio/MUMBLING SFX.mp3");
+            if (womanMumblingSFX == null) womanMumblingSFX = LoadClip("Assets/Audio/MUMBLING WOMAN SFX.mp3");
 
             if (contradictionFoundSFX == null) contradictionFoundSFX = LoadClip("Assets/Audio/CONTRADICTION SFX.mp3");
             if (clueDiscoveredSFX == null) clueDiscoveredSFX = LoadClip("Assets/Audio/CLUE DISCOVERED SFX.mp3");

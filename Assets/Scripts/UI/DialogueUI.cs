@@ -412,7 +412,7 @@ namespace CaseClosed.UI
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
             SetNextButtonInteractable(false);
-            typewriterCoroutine = StartCoroutine(TypeText(node.statementText));
+            typewriterCoroutine = StartCoroutine(TypeText(node.statementText, node.speakerId, resolvedSpeakerName));
         }
 
         public void ActivateDialogBox(string characterKey, string speakerName = "")
@@ -906,7 +906,7 @@ namespace CaseClosed.UI
             }
         }
 
-        private IEnumerator TypeText(string text)
+        private IEnumerator TypeText(string text, string speakerId, string speakerName)
         {
             isTyping = true;
             SetNextButtonInteractable(false);
@@ -927,7 +927,10 @@ namespace CaseClosed.UI
             SetVisibleBodyCharacters(0, body != null);
             StopDialogueMumbling();
             dialogueAudio = AudioManager.Instance;
-            if (characterCount > 0 && dialogueAudio != null) dialogueAudio.StartDialogueMumbling(this);
+            if (characterCount > 0 && dialogueAudio != null)
+            {
+                dialogueAudio.StartDialogueMumbling(this, speakerId, speakerName);
+            }
             float elapsed = 0f;
             int visibleCharacters = 0;
             while (visibleCharacters < characterCount)
@@ -1144,7 +1147,9 @@ namespace CaseClosed.UI
 
             if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
             SetNextButtonInteractable(false);
-            typewriterCoroutine = StartCoroutine(TypeText(reactionMessage));
+            string speakerId = null;
+            if (suspect != null) speakerId = suspect.characterId;
+            typewriterCoroutine = StartCoroutine(TypeText(reactionMessage, speakerId, speakerName));
         }
     }
 }
