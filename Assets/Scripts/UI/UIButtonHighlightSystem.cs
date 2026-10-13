@@ -3,10 +3,6 @@ using UnityEngine.UI;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Centralized coordinator for consistent hover, keyboard focus, pressed and disabled feedback.
-    /// Can be used as a static utility or attached directly to a Canvas / UI Panel.
-    /// </summary>
     [DisallowMultipleComponent]
     public class UIButtonHighlightSystem : MonoBehaviour
     {
@@ -41,10 +37,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Creates and returns a standardized ColorBlock configured for the white hover highlight.
-        /// </summary>
-        /// <returns>A configured <see cref="ColorBlock"/>.</returns>
         public static ColorBlock GetHighlightColorBlock()
         {
             ColorBlock cb = ColorBlock.defaultColorBlock;
@@ -71,11 +63,6 @@ namespace CaseClosed.UI
             ApplyToAllButtonsInScene();
         }
 
-        /// <summary>
-        /// Applies the standardized detective button styling and interaction system to a single Button component.
-        /// Ensures DetectiveButtonUI is attached and configured, and sets up transitions.
-        /// </summary>
-        /// <param name="button">The button to configure.</param>
         public static void ApplyTo(Button button)
         {
             if (button == null) return;
@@ -83,7 +70,6 @@ namespace CaseClosed.UI
             DetectiveButton presentation = button.GetComponent<DetectiveButton>();
             if (presentation != null && presentation.UsesScenePresentation) return;
 
-            // Skip full-screen backdrop click dismissers so hovering empty areas does not flash white or animate
             string bName = button.name;
             if (bName.IndexOf("backdrop", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                 bName.IndexOf("overlay", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -94,8 +80,6 @@ namespace CaseClosed.UI
 
             if (button.GetComponentInParent<CaseFileNotebookUI>() != null)
             {
-                // Tab bookmarks and notebook close control have custom authored illustrations and layout.
-                // Exempt them from DetectiveButtonUI to preserve their authentic tab sprites and avoid label injection.
                 if (bName.IndexOf("tab", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
                     bName.IndexOf("close", System.StringComparison.OrdinalIgnoreCase) >= 0)
                 {
@@ -108,7 +92,6 @@ namespace CaseClosed.UI
                 return;
             }
 
-            // Ensure a valid targetGraphic exists so ColorTint has a visual target to manipulate
             if (button.targetGraphic == null)
             {
                 Graphic graphic = button.GetComponent<Graphic>() ?? button.GetComponentInChildren<Graphic>(true);
@@ -118,7 +101,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Ensure DetectiveButtonUI is attached and styled with authentic detective aesthetics
             DetectiveButtonUI detBtn = button.GetComponent<DetectiveButtonUI>();
             if (detBtn == null)
             {
@@ -133,11 +115,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Traverses a GameObject hierarchy and applies the white hover highlight to every Button found.
-        /// </summary>
-        /// <param name="root">The root GameObject containing buttons.</param>
-        /// <param name="includeInactive">Whether to include inactive children.</param>
         public static void ApplyToHierarchy(GameObject root, bool includeInactive = true)
         {
             if (root == null) return;
@@ -154,9 +131,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Finds and applies the white hover highlight to all active and inactive buttons currently loaded in the scene.
-        /// </summary>
         public static void ApplyToAllButtonsInScene()
         {
             Button[] buttons = Object.FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None);

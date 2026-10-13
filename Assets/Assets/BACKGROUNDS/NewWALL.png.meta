@@ -1,0 +1,1729 @@
+fileFormatVersion: 2
+guid: e9aeb05f6dc50a942b6d2b902c5e3536
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7417639108202151377
+    second: NewWALL_0
+  - first:
+      213: 19473369378043325
+    second: NewWALL_1
+  - first:
+      213: 1274018101019294572
+    second: NewWALL_2
+  - first:
+      213: 6802494993926788642
+    second: NewWALL_3
+  - first:
+      213: 2141334662156028036
+    second: NewWALL_4
+  - first:
+      213: 7566408394059677448
+    second: NewWALL_5
+  - first:
+      213: 8881489867670950695
+    second: NewWALL_6
+  - first:
+      213: -8871218555385562786
+    second: NewWALL_7
+  - first:
+      213: -8004602361738839654
+    second: NewWALL_8
+  - first:
+      213: 2564654597675473035
+    second: NewWALL_9
+  - first:
+      213: -5665309300925326513
+    second: NewWALL_10
+  - first:
+      213: -3956516077538428416
+    second: NewWALL_11
+  - first:
+      213: -382709628830313349
+    second: NewWALL_12
+  - first:
+      213: 8669944390555447275
+    second: NewWALL_13
+  - first:
+      213: -101409145824521134
+    second: NewWALL_14
+  - first:
+      213: 1614182456646448568
+    second: NewWALL_15
+  - first:
+      213: 5606853344612764162
+    second: NewWALL_16
+  - first:
+      213: -8441080581866332693
+    second: NewWALL_17
+  - first:
+      213: 574952415380532182
+    second: NewWALL_18
+  - first:
+      213: -145024202937983758
+    second: NewWALL_19
+  - first:
+      213: -3586077376483162791
+    second: NewWALL_20
+  - first:
+      213: 6020299778425947269
+    second: NewWALL_21
+  - first:
+      213: -8024750216818339864
+    second: NewWALL_22
+  - first:
+      213: 2253805474692054327
+    second: NewWALL_23
+  - first:
+      213: 9163911383526637848
+    second: NewWALL_24
+  - first:
+      213: 7067142869893343033
+    second: NewWALL_25
+  - first:
+      213: -1909086673665123852
+    second: NewWALL_26
+  - first:
+      213: 5335665786021671387
+    second: NewWALL_27
+  - first:
+      213: 6430649894688649679
+    second: NewWALL_28
+  - first:
+      213: 6184867494396199586
+    second: NewWALL_29
+  - first:
+      213: -3910110105356605138
+    second: NewWALL_30
+  - first:
+      213: 6499420265784362585
+    second: NewWALL_31
+  - first:
+      213: 2363998199561858219
+    second: NewWALL_32
+  - first:
+      213: 2406157036385114632
+    second: NewWALL_33
+  - first:
+      213: 1719427830137021905
+    second: NewWALL_34
+  - first:
+      213: 6698834391530648253
+    second: NewWALL_35
+  - first:
+      213: 8035057494059134983
+    second: NewWALL_36
+  - first:
+      213: 53634076814310055
+    second: NewWALL_37
+  - first:
+      213: 7786908126527621375
+    second: NewWALL_38
+  - first:
+      213: -4489272482348927759
+    second: NewWALL_39
+  - first:
+      213: 938762650934074464
+    second: NewWALL_40
+  - first:
+      213: 3672052912163880137
+    second: NewWALL_41
+  - first:
+      213: -4502426309614009119
+    second: NewWALL_42
+  - first:
+      213: 8345309673496968592
+    second: NewWALL_43
+  - first:
+      213: -288562581038688033
+    second: NewWALL_44
+  - first:
+      213: -7514744815809848822
+    second: NewWALL_45
+  - first:
+      213: -8624958689744535713
+    second: NewWALL_46
+  - first:
+      213: 1786582877996868297
+    second: NewWALL_47
+  - first:
+      213: -5572210203377054115
+    second: NewWALL_48
+  - first:
+      213: 3844200642371893934
+    second: NewWALL_49
+  - first:
+      213: -3513330173759400902
+    second: NewWALL_50
+  - first:
+      213: -5258329037394529302
+    second: NewWALL_51
+  - first:
+      213: 5327942066275731877
+    second: NewWALL_52
+  - first:
+      213: 1204168016344698408
+    second: NewWALL_53
+  - first:
+      213: -4752514923254671149
+    second: NewWALL_54
+  - first:
+      213: -3388635439055582135
+    second: NewWALL_55
+  - first:
+      213: -4912014870063130322
+    second: NewWALL_56
+  - first:
+      213: 8658221990519424044
+    second: NewWALL_57
+  - first:
+      213: -5425789070201017598
+    second: NewWALL_58
+  - first:
+      213: 5511096453859848209
+    second: NewWALL_59
+  - first:
+      213: -3532269522067399395
+    second: NewWALL_60
+  - first:
+      213: -8932159438973265021
+    second: NewWALL_61
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: NewWALL_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 405
+        width: 3840
+        height: 1755
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dd3f64f77fb0f660800000000000000
+      internalID: 7417639108202151377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_1
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 404
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db5bb502dee254000800000000000000
+      internalID: 19473369378043325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_2
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 404
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6b3cac76b83ea110800000000000000
+      internalID: 1274018101019294572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_3
+      rect:
+        serializedVersion: 2
+        x: 2638
+        y: 404
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2261163e721576e50800000000000000
+      internalID: 6802494993926788642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_4
+      rect:
+        serializedVersion: 2
+        x: 2673
+        y: 402
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4888a0ba78c87bd10800000000000000
+      internalID: 2141334662156028036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_5
+      rect:
+        serializedVersion: 2
+        x: 2749
+        y: 404
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80ff5798858410960800000000000000
+      internalID: 7566408394059677448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_6
+      rect:
+        serializedVersion: 2
+        x: 2908
+        y: 404
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72312ce7af3614b70800000000000000
+      internalID: 8881489867670950695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_7
+      rect:
+        serializedVersion: 2
+        x: 2944
+        y: 402
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e59b361c9b913e480800000000000000
+      internalID: -8871218555385562786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_8
+      rect:
+        serializedVersion: 2
+        x: 2964
+        y: 402
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a99bd4cef80f9e090800000000000000
+      internalID: -8004602361738839654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_9
+      rect:
+        serializedVersion: 2
+        x: 3014
+        y: 400
+        width: 9
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b88d40ab4cb779320800000000000000
+      internalID: 2564654597675473035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_10
+      rect:
+        serializedVersion: 2
+        x: 3058
+        y: 402
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4b11a7f437c061b0800000000000000
+      internalID: -5665309300925326513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_11
+      rect:
+        serializedVersion: 2
+        x: 3086
+        y: 402
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00a333a0791a719c0800000000000000
+      internalID: -3956516077538428416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_12
+      rect:
+        serializedVersion: 2
+        x: 3171
+        y: 404
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b749279ce9750baf0800000000000000
+      internalID: -382709628830313349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_13
+      rect:
+        serializedVersion: 2
+        x: 3284
+        y: 404
+        width: 23
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: befa275ec74d15870800000000000000
+      internalID: 8669944390555447275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_14
+      rect:
+        serializedVersion: 2
+        x: 3318
+        y: 402
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 254572e4be8b79ef0800000000000000
+      internalID: -101409145824521134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_15
+      rect:
+        serializedVersion: 2
+        x: 3342
+        y: 402
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b5341b546ab66610800000000000000
+      internalID: 1614182456646448568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_16
+      rect:
+        serializedVersion: 2
+        x: 3362
+        y: 402
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20aca59196b8fcd40800000000000000
+      internalID: 5606853344612764162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_17
+      rect:
+        serializedVersion: 2
+        x: 3392
+        y: 402
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bedd86dfee14bda80800000000000000
+      internalID: -8441080581866332693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_18
+      rect:
+        serializedVersion: 2
+        x: 3529
+        y: 403
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6db6281fc24aaf700800000000000000
+      internalID: 574952415380532182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_19
+      rect:
+        serializedVersion: 2
+        x: 3540
+        y: 404
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fc1c0c7145ccfdf0800000000000000
+      internalID: -145024202937983758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_20
+      rect:
+        serializedVersion: 2
+        x: 3552
+        y: 402
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95508ad30a1bb3ec0800000000000000
+      internalID: -3586077376483162791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_21
+      rect:
+        serializedVersion: 2
+        x: 3716
+        y: 394
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 584017660c66c8350800000000000000
+      internalID: 6020299778425947269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_22
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 394
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8efcd4bd13c52a090800000000000000
+      internalID: -8024750216818339864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_23
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 398
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73db9d75320274f10800000000000000
+      internalID: 2253805474692054327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_24
+      rect:
+        serializedVersion: 2
+        x: 3544
+        y: 394
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8118340d9d0cc2f70800000000000000
+      internalID: 9163911383526637848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_25
+      rect:
+        serializedVersion: 2
+        x: 3578
+        y: 394
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9376de03ff8831260800000000000000
+      internalID: 7067142869893343033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_26
+      rect:
+        serializedVersion: 2
+        x: 3640
+        y: 392
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f912caf8cf8185e0800000000000000
+      internalID: -1909086673665123852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_27
+      rect:
+        serializedVersion: 2
+        x: 3662
+        y: 390
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd1f60843c71c0a40800000000000000
+      internalID: 5335665786021671387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_28
+      rect:
+        serializedVersion: 2
+        x: 3815
+        y: 393
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc1f1d712024e3950800000000000000
+      internalID: 6430649894688649679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_29
+      rect:
+        serializedVersion: 2
+        x: 3828
+        y: 391
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a28852a73015d550800000000000000
+      internalID: 6184867494396199586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_30
+      rect:
+        serializedVersion: 2
+        x: 3614
+        y: 386
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e29ed89639f7cb9c0800000000000000
+      internalID: -3910110105356605138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_31
+      rect:
+        serializedVersion: 2
+        x: 3624
+        y: 386
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9564d0cdb44923a50800000000000000
+      internalID: 6499420265784362585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_32
+      rect:
+        serializedVersion: 2
+        x: 3680
+        y: 386
+        width: 20
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bac2c8666db9ec020800000000000000
+      internalID: 2363998199561858219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_33
+      rect:
+        serializedVersion: 2
+        x: 3798
+        y: 384
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80a9a838313646120800000000000000
+      internalID: 2406157036385114632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_34
+      rect:
+        serializedVersion: 2
+        x: 3815
+        y: 379
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d5ec386082acd710800000000000000
+      internalID: 1719427830137021905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_35
+      rect:
+        serializedVersion: 2
+        x: 3834
+        y: 372
+        width: 6
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db2ba5c136a07fc50800000000000000
+      internalID: 6698834391530648253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_36
+      rect:
+        serializedVersion: 2
+        x: 3770
+        y: 370
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7003c332832428f60800000000000000
+      internalID: 8035057494059134983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_37
+      rect:
+        serializedVersion: 2
+        x: 3792
+        y: 370
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7aa7f50a8eb8eb000800000000000000
+      internalID: 53634076814310055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_38
+      rect:
+        serializedVersion: 2
+        x: 3803
+        y: 374
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff8084c2fa7a01c60800000000000000
+      internalID: 7786908126527621375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_39
+      rect:
+        serializedVersion: 2
+        x: 3823
+        y: 369
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f4f7a56676e2b1c0800000000000000
+      internalID: -4489272482348927759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_40
+      rect:
+        serializedVersion: 2
+        x: 3781
+        y: 356
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06c545148a7270d00800000000000000
+      internalID: 938762650934074464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_41
+      rect:
+        serializedVersion: 2
+        x: 3804
+        y: 358
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cc77f11ba0c5f230800000000000000
+      internalID: 3672052912163880137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_42
+      rect:
+        serializedVersion: 2
+        x: 3822
+        y: 356
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e48514502b2481c0800000000000000
+      internalID: -4502426309614009119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_43
+      rect:
+        serializedVersion: 2
+        x: 3828
+        y: 362
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09dfa65ceee70d370800000000000000
+      internalID: 8345309673496968592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_44
+      rect:
+        serializedVersion: 2
+        x: 3834
+        y: 360
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd818b58cd1defbf0800000000000000
+      internalID: -288562581038688033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_45
+      rect:
+        serializedVersion: 2
+        x: 3769
+        y: 348
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0a12f3a76346b790800000000000000
+      internalID: -7514744815809848822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_46
+      rect:
+        serializedVersion: 2
+        x: 3808
+        y: 350
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5fbb57c4cdfd4880800000000000000
+      internalID: -8624958689744535713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_47
+      rect:
+        serializedVersion: 2
+        x: 3835
+        y: 346
+        width: 5
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c26ccc69a73bc810800000000000000
+      internalID: 1786582877996868297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_48
+      rect:
+        serializedVersion: 2
+        x: 3811
+        y: 336
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5e47e5c7588ba2b0800000000000000
+      internalID: -5572210203377054115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_49
+      rect:
+        serializedVersion: 2
+        x: 3832
+        y: 336
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eaab7e5ed18595530800000000000000
+      internalID: 3844200642371893934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_50
+      rect:
+        serializedVersion: 2
+        x: 3785
+        y: 318
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a34d86642d42e3fc0800000000000000
+      internalID: -3513330173759400902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_51
+      rect:
+        serializedVersion: 2
+        x: 3820
+        y: 323
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae33afda999a607b0800000000000000
+      internalID: -5258329037394529302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_52
+      rect:
+        serializedVersion: 2
+        x: 3804
+        y: 312
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a9c934a417a0f940800000000000000
+      internalID: 5327942066275731877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_53
+      rect:
+        serializedVersion: 2
+        x: 3789
+        y: 301
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82ecc105e6016b010800000000000000
+      internalID: 1204168016344698408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_54
+      rect:
+        serializedVersion: 2
+        x: 3805
+        y: 291
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d899a17bdcab0eb0800000000000000
+      internalID: -4752514923254671149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_55
+      rect:
+        serializedVersion: 2
+        x: 3832
+        y: 280
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94ccacd950629f0d0800000000000000
+      internalID: -3388635439055582135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_56
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 167
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e29537a208405dbb0800000000000000
+      internalID: -4912014870063130322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_57
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 148
+        width: 21
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c24c263f60f282870800000000000000
+      internalID: 8658221990519424044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_58
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 164
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20ba8747699b3b4b0800000000000000
+      internalID: -5425789070201017598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_59
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 146
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1103b3796095b7c40800000000000000
+      internalID: 5511096453859848209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_60
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 142
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1ddb3e959bdafec0800000000000000
+      internalID: -3532269522067399395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewWALL_61
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 150
+        width: 17
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38b98da90589a0480800000000000000
+      internalID: -8932159438973265021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      NewWALL_0: 7417639108202151377
+      NewWALL_1: 19473369378043325
+      NewWALL_10: -5665309300925326513
+      NewWALL_11: -3956516077538428416
+      NewWALL_12: -382709628830313349
+      NewWALL_13: 8669944390555447275
+      NewWALL_14: -101409145824521134
+      NewWALL_15: 1614182456646448568
+      NewWALL_16: 5606853344612764162
+      NewWALL_17: -8441080581866332693
+      NewWALL_18: 574952415380532182
+      NewWALL_19: -145024202937983758
+      NewWALL_2: 1274018101019294572
+      NewWALL_20: -3586077376483162791
+      NewWALL_21: 6020299778425947269
+      NewWALL_22: -8024750216818339864
+      NewWALL_23: 2253805474692054327
+      NewWALL_24: 9163911383526637848
+      NewWALL_25: 7067142869893343033
+      NewWALL_26: -1909086673665123852
+      NewWALL_27: 5335665786021671387
+      NewWALL_28: 6430649894688649679
+      NewWALL_29: 6184867494396199586
+      NewWALL_3: 6802494993926788642
+      NewWALL_30: -3910110105356605138
+      NewWALL_31: 6499420265784362585
+      NewWALL_32: 2363998199561858219
+      NewWALL_33: 2406157036385114632
+      NewWALL_34: 1719427830137021905
+      NewWALL_35: 6698834391530648253
+      NewWALL_36: 8035057494059134983
+      NewWALL_37: 53634076814310055
+      NewWALL_38: 7786908126527621375
+      NewWALL_39: -4489272482348927759
+      NewWALL_4: 2141334662156028036
+      NewWALL_40: 938762650934074464
+      NewWALL_41: 3672052912163880137
+      NewWALL_42: -4502426309614009119
+      NewWALL_43: 8345309673496968592
+      NewWALL_44: -288562581038688033
+      NewWALL_45: -7514744815809848822
+      NewWALL_46: -8624958689744535713
+      NewWALL_47: 1786582877996868297
+      NewWALL_48: -5572210203377054115
+      NewWALL_49: 3844200642371893934
+      NewWALL_5: 7566408394059677448
+      NewWALL_50: -3513330173759400902
+      NewWALL_51: -5258329037394529302
+      NewWALL_52: 5327942066275731877
+      NewWALL_53: 1204168016344698408
+      NewWALL_54: -4752514923254671149
+      NewWALL_55: -3388635439055582135
+      NewWALL_56: -4912014870063130322
+      NewWALL_57: 8658221990519424044
+      NewWALL_58: -5425789070201017598
+      NewWALL_59: 5511096453859848209
+      NewWALL_6: 8881489867670950695
+      NewWALL_60: -3532269522067399395
+      NewWALL_61: -8932159438973265021
+      NewWALL_7: -8871218555385562786
+      NewWALL_8: -8004602361738839654
+      NewWALL_9: 2564654597675473035
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

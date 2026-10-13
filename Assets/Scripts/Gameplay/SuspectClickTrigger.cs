@@ -6,10 +6,6 @@ using CaseClosed.UI;
 
 namespace CaseClosed.Gameplay
 {
-    /// <summary>
-    /// Attaches to suspect GameObjects to receive 2D mouse clicks and pointer events,
-    /// triggering interrogation dialogue and providing tactile hover feedback.
-    /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class SuspectClickTrigger : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
@@ -71,14 +67,12 @@ namespace CaseClosed.Gameplay
         {
             AudioManager.Instance?.PlayButtonClick();
 
-            // 1. If custom DialogueData is assigned, launch modern DialogueBox
             if (customDialogueData != null && DialogueBox.Instance != null)
             {
                 DialogueBox.Instance.StartDialogue(customDialogueData);
                 return;
             }
 
-            // 2. Connect to InterrogationManager session
             if (InterrogationManager.Instance != null)
             {
                 CaseSO activeCase = CaseManager.Instance?.ActiveCase;

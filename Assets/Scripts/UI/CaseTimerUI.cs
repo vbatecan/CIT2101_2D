@@ -8,23 +8,14 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the countdown timer display in Panel_HeaderNav.
-    /// Aligns with the detective button and settings aesthetic:
-    /// - Palette: Warm aged parchment numerals, antique brass gold label, warm amber warning, and vintage stamp crimson urgency.
-    /// - Typography: Bold, uppercase, letter-spaced chronometer typeface matching game buttons and settings.
-    /// - Tactile Depth: Crisp shadow and backing outline for high legibility against the header box.
-    /// - Urgency Pulse: Critical countdown (<= 30s) visual breathing pulse with container glow and audio ticks.
-    /// </summary>
     public class CaseTimerUI : MonoBehaviour
     {
-        // Authentic detective theme palette matching DetectiveButtonUI, UITheme, and Settings
-        public static readonly Color ThemeParchmentNumeral = new Color(0.96f, 0.94f, 0.88f, 1f);  // #F5EFEB Warm aged parchment ivory
-        public static readonly Color ThemeBrassGold = new Color(0.85f, 0.73f, 0.45f, 1f);         // #D9BA73 Antique brass gold (UITheme.goldBorder / button headers)
-        public static readonly Color ThemeWarningAmber = new Color(0.98f, 0.68f, 0.22f, 1f);       // #FAA538 Warm amber warning (UITheme.warningAmber)
-        public static readonly Color ThemeUrgentCrimson = new Color(0.85f, 0.22f, 0.18f, 1f);      // #D9382E Vintage stamp crimson red (DetectiveUITheme.StampRed)
-        public static readonly Color ThemeWoodDark = new Color(0.36f, 0.22f, 0.13f, 1f);           // #5C3821 Rich dark wood frame
-        public static readonly Color ThemeBrassBorder = new Color(0.68f, 0.52f, 0.28f, 0.85f);      // #AE8547 Antique brass border (DetectiveButtonUI.BrassAccentColor)
+        public static readonly Color ThemeParchmentNumeral = new Color(0.96f, 0.94f, 0.88f, 1f);
+        public static readonly Color ThemeBrassGold = new Color(0.85f, 0.73f, 0.45f, 1f);
+        public static readonly Color ThemeWarningAmber = new Color(0.98f, 0.68f, 0.22f, 1f);
+        public static readonly Color ThemeUrgentCrimson = new Color(0.85f, 0.22f, 0.18f, 1f);
+        public static readonly Color ThemeWoodDark = new Color(0.36f, 0.22f, 0.13f, 1f);
+        public static readonly Color ThemeBrassBorder = new Color(0.68f, 0.52f, 0.28f, 0.85f);
 
         [Header("UI Text & Visuals")]
         [Tooltip("The TextMesh or UI Text component displaying the MM:SS timer.")]
@@ -44,10 +35,10 @@ namespace CaseClosed.UI
         [SerializeField] private Color normalColor = new Color(0.96f, 0.94f, 0.88f, 1f);
 
         [Tooltip("Fallback warning color if theme palette matching is disabled.")]
-        [SerializeField] private Color warningColor = new Color(0.98f, 0.68f, 0.22f, 1f); // Warm Amber
+        [SerializeField] private Color warningColor = new Color(0.98f, 0.68f, 0.22f, 1f);
 
         [Tooltip("Fallback urgent color if theme palette matching is disabled.")]
-        [SerializeField] private Color urgentColor = new Color(0.85f, 0.22f, 0.18f, 1f);  // Vintage Crimson Red
+        [SerializeField] private Color urgentColor = new Color(0.85f, 0.22f, 0.18f, 1f);
 
         [Header("Typography & Styling")]
         [Tooltip("When enabled, styles the timer font with the bold uppercase letter-spaced detective typeface matching buttons and settings.")]
@@ -155,22 +146,18 @@ namespace CaseClosed.UI
                     timerText.font = themeFont;
                 }
 
-                // Bold and Uppercase, matching DetectiveButtonUI and UITheme (FontRole.UIButton)
                 timerText.fontStyle &= ~FontStyles.LowerCase;
                 timerText.fontStyle |= FontStyles.Bold | FontStyles.UpperCase;
                 timerText.fontWeight = FontWeight.Bold;
 
-                // Elegant letter-spacing matching buttons and settings plaques
                 timerText.characterSpacing = 3.5f;
                 timerText.alignment = TextAlignmentOptions.Center;
 
-                // Enable autosizing within safe bounds to preserve crisp layout
                 timerText.enableAutoSizing = true;
                 timerText.fontSizeMin = 20f;
                 timerText.fontSizeMax = 36f;
                 timerText.fontSize = 32f;
 
-                // Tactile depth components matching buttons (Shadow & subtle frame outline)
                 EnsureDepthEffects();
             }
 
@@ -184,7 +171,6 @@ namespace CaseClosed.UI
         {
             if (timerText == null) return;
 
-            // Drop shadow for tactile depth
             Shadow shadow = timerText.GetComponent<Shadow>();
             if (shadow == null)
             {
@@ -197,7 +183,6 @@ namespace CaseClosed.UI
                 shadow.useGraphicAlpha = true;
             }
 
-            // Subtle dark ink frame outline for legibility
             Outline outline = timerText.GetComponent<Outline>();
             if (outline == null)
             {
@@ -257,7 +242,6 @@ namespace CaseClosed.UI
                 TrySubscribe();
             }
 
-            // Zero-allocation visual pulse animation only active during urgent state (<= 30s)
             if (_currentUrgency == TimerUrgencyState.Urgent && CaseManager.Instance != null && CaseManager.Instance.IsTimerRunning)
             {
                 float sine = Mathf.Sin(Time.time * pulseSpeed);
@@ -265,7 +249,6 @@ namespace CaseClosed.UI
                 float currentScale = 1f + (normalizedSine * pulseScaleMagnitude);
                 transform.localScale = _originalScale * currentScale;
 
-                // Subtle urgent breathing glow on container box
                 if (_parentSpriteRenderer != null)
                 {
                     _parentSpriteRenderer.color = Color.Lerp(_originalSpriteColor, new Color(1f, 0.72f, 0.72f, 1f), normalizedSine * 0.6f);
@@ -316,9 +299,6 @@ namespace CaseClosed.UI
             ResetVisualState();
         }
 
-        /// <summary>
-        /// Synchronizes the UI elements with current remaining seconds, throttling string allocations to 1/sec.
-        /// </summary>
         public void SyncTimerState(float remainingSeconds, float elapsedSeconds)
         {
             if (CaseManager.Instance == null) return;
@@ -345,7 +325,6 @@ namespace CaseClosed.UI
 
             int currentIntSecond = Mathf.Max(0, Mathf.CeilToInt(remainingSeconds));
 
-            // Only format string and evaluate urgency when integer seconds roll over (GC-friendly)
             if (currentIntSecond != _lastDisplayedSecond)
             {
                 _lastDisplayedSecond = currentIntSecond;
@@ -361,7 +340,6 @@ namespace CaseClosed.UI
 
                 ApplyUrgencyVisuals(newUrgency);
 
-                // Urgent ticking audio feedback every second when <= 30s
                 if (newUrgency == TimerUrgencyState.Urgent && enableTickSFX && currentIntSecond > 0 && CaseManager.Instance.IsTimerRunning)
                 {
                     AudioManager.Instance?.PlayClockTick();

@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Storage abstraction interface for saving and retrieving game settings.
-    /// Keeps settings rules separate from the persistence backend.
-    /// </summary>
     public interface ISettingsStorage
     {
         bool HasKey(string key);
@@ -17,9 +13,6 @@ namespace CaseClosed.Services
         void Save();
     }
 
-    /// <summary>
-    /// Unity PlayerPrefs-backed settings storage implementation.
-    /// </summary>
     public class PlayerPrefsSettingsStorage : ISettingsStorage
     {
         public bool HasKey(string key) => PlayerPrefs.HasKey(key);
@@ -30,10 +23,6 @@ namespace CaseClosed.Services
         public void Save() => PlayerPrefs.Save();
     }
 
-    /// <summary>
-    /// Pure C# domain service managing game audio levels, display presentation, and dialogue text pacing.
-    /// Zero MonoBehaviour dependencies.
-    /// </summary>
     public class GameSettingsService
     {
         public const string PrefKeyBgmVolume = "CaseClosed_BGM_Volume";

@@ -5,11 +5,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Interactive button component for the Conclude Case Button in the investigation view.
-    /// Manages locked/unlocked visual feedback (dimmed vs active), uGUI pointer clicks,
-    /// standard Button onClick, and 2D physics clicks to transition to the Conclusion Quiz.
-    /// </summary>
     public class ConcludeCaseButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("Visual Feedback Settings")]
@@ -17,7 +12,7 @@ namespace CaseClosed.UI
         public float hoverScaleMultiplier = 1.05f;
 
         [Tooltip("Color tint when conclusion requirements are not yet satisfied (locked).")]
-        public Color lockedColor = new Color(0.35f, 0.40f, 0.45f, 0.45f); // Semi-transparent slate
+        public Color lockedColor = new Color(0.35f, 0.40f, 0.45f, 0.45f);
 
         [Tooltip("Color tint when all dialogues are done and all evidence is unlocked (ready).")]
         public Color unlockedColor = Color.white;
@@ -113,9 +108,6 @@ namespace CaseClosed.UI
         private void HandleDialogueNodeDisplayed(Data.DialogueNode node) => UpdateReadinessState();
         private void HandleDialogueClosed() => UpdateReadinessState();
 
-        /// <summary>
-        /// Updates the visual tint and interactability based on CaseManager readiness.
-        /// </summary>
         public void UpdateReadinessState()
         {
             _isReady = CaseManager.Instance != null && CaseManager.Instance.IsReadyForConclusion();
@@ -134,7 +126,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Keep the invisible hitbox transparent
             if (_buttonImage != null)
             {
                 _buttonImage.color = Color.clear;
@@ -153,9 +144,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Ensures both 2D physics collider and uGUI click target are present and ready.
-        /// </summary>
         public void EnsureClickable()
         {
             if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -177,7 +165,7 @@ namespace CaseClosed.UI
             {
                 GameObject go = new GameObject("ConcludeClickTarget", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
                 go.transform.SetParent(transform, false);
-                go.layer = 5; // UI layer
+                go.layer = 5;
                 clickTarget = go.transform;
 
                 Image image = go.GetComponent<Image>();
@@ -214,9 +202,6 @@ namespace CaseClosed.UI
             EnsureButtonBinding();
         }
 
-        /// <summary>
-        /// Ensures the underlying Button component is hooked to OnClick.
-        /// </summary>
         public void EnsureButtonBinding()
         {
             _boundButton = GetComponent<Button>();
@@ -246,9 +231,6 @@ namespace CaseClosed.UI
             OnClick();
         }
 
-        /// <summary>
-        /// Invoked when the Conclude Case button is clicked.
-        /// </summary>
         public void OnClick()
         {
             UpdateReadinessState();

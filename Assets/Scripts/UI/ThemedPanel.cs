@@ -5,9 +5,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Standardizes panel background framing and smooth CanvasGroup transitions across screens.
-    /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
     public class ThemedPanel : MonoBehaviour
     {

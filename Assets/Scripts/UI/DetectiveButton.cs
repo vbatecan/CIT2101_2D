@@ -42,7 +42,6 @@ namespace CaseClosed.UI
             }
         }
 
-        // Keep runtime labels and colors when a panel is closed and reopened.
         internal void SetPresentation(string label, Color color)
         {
             caption = label;

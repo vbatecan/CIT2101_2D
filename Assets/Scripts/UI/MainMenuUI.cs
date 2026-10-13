@@ -6,12 +6,6 @@ using CaseClosed.Prototype;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Master UI View coordinator for the Main Menu screen.
-    /// Coordinates sub-panels (Title Buttons, Case Select dossier cards, Audio & Gameplay Settings,
-    /// How to Play handbook, Credits, and Exit Confirmation Modal) and launches cases.
-    /// Can be dragged directly onto the MainMenuPanel GameObject in the Unity Inspector.
-    /// </summary>
     public class MainMenuUI : MonoBehaviour
     {
         [Header("Sub-View Containers")]
@@ -129,7 +123,6 @@ namespace CaseClosed.UI
 
         private void Update()
         {
-            // Keyboard shortcuts & Escape navigation
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (exitConfirmContainer != null && exitConfirmContainer.activeSelf)
@@ -155,9 +148,6 @@ namespace CaseClosed.UI
                    (creditsContainer != null && creditsContainer.activeSelf);
         }
 
-        /// <summary>
-        /// Attempts to locate missing button or panel references in the hierarchy if unassigned in Inspector.
-        /// </summary>
         private void AutoResolveReferences(bool force = false)
         {
             if (_referencesResolved && !force) return;
@@ -221,9 +211,6 @@ namespace CaseClosed.UI
             _referencesResolved = true;
         }
 
-        /// <summary>
-        /// Toggles the main navigation buttons container or individual buttons if no container object exists.
-        /// </summary>
         private void SetMainButtonsActive(bool active)
         {
             if (mainButtonsContainer != null)
@@ -261,37 +248,30 @@ namespace CaseClosed.UI
 
         private void BindSettingsButtons()
         {
-            // Music Volume & Mute
             if (bgmVolumeSlider != null)
                 bgmVolumeSlider.onValueChanged.AddListener(OnBgmVolumeSliderChanged);
             if (bgmMuteButton != null)
                 bgmMuteButton.onClick.AddListener(OnBgmMuteButtonClicked);
 
-            // SFX Volume & Mute
             if (sfxVolumeSlider != null)
                 sfxVolumeSlider.onValueChanged.AddListener(OnSfxVolumeSliderChanged);
             if (sfxMuteButton != null)
                 sfxMuteButton.onClick.AddListener(OnSfxMuteButtonClicked);
 
-            // Dialogue Volume & Mute
             if (dialogVolumeSlider != null)
                 dialogVolumeSlider.onValueChanged.AddListener(OnDialogVolumeSliderChanged);
             if (dialogMuteButton != null)
                 dialogMuteButton.onClick.AddListener(OnDialogMuteButtonClicked);
 
-            // Display Mode
             if (fullscreenToggle != null)
                 fullscreenToggle.onValueChanged.AddListener(OnFullscreenToggleChanged);
 
-            // Text Speed
             if (textSpeedSlider != null)
                 textSpeedSlider.onValueChanged.AddListener(OnTextSpeedSliderChanged);
 
-            // Typewriter SFX
             if (typewriterToggle != null)
                 typewriterToggle.onValueChanged.AddListener(OnTypewriterToggleChanged);
 
-            // Reset Settings
             if (resetSettingsButton != null)
                 resetSettingsButton.onClick.AddListener(OnResetSettingsClicked);
         }
@@ -309,14 +289,8 @@ namespace CaseClosed.UI
             if (backFromCreditsButton != null) backFromCreditsButton.onClick.AddListener(ReturnToMainView);
         }
 
-        /// <summary>
-        /// Displays the default primary buttons view and hides all sub-view overlays.
-        /// </summary>
         public void ReturnToMainView() => ReturnToMainView(true);
 
-        /// <summary>
-        /// Displays the default primary buttons view and hides all sub-view overlays, optionally playing button click SFX.
-        /// </summary>
         public void ReturnToMainView(bool playAudio)
         {
             SetMainButtonsActive(true);
@@ -332,9 +306,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Activates the specified sub-view overlay and hides the main buttons view.
-        /// </summary>
         public void OpenSubView(GameObject targetSubView)
         {
             SetMainButtonsActive(false);
@@ -347,10 +318,6 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayButtonClick();
         }
 
-        /// <summary>
-        /// Opens the Case Selection screen and refreshes locked/unlocked statuses.
-        /// If a dedicated LevelSelect scene is registered, loads that scene; otherwise opens the in-menu subview.
-        /// </summary>
         public void OpenCaseSelect()
         {
             if (UnityEngine.Application.CanStreamedLevelBeLoaded("LevelSelect"))
@@ -364,9 +331,6 @@ namespace CaseClosed.UI
             OpenSubView(caseSelectContainer);
         }
 
-        /// <summary>
-        /// Updates button interactability and status badge texts based on CaseProgressionService.
-        /// </summary>
         public void RefreshCaseSelectUI()
         {
             var progression = CaseClosed.Services.CaseProgressionService.Instance;
@@ -412,11 +376,10 @@ namespace CaseClosed.UI
                 {
                     int requiredLevel = levelIndex - 1;
                     statusText.text = $"[ LOCKED \uD83D\uDD12 (BEAT CASE 0{requiredLevel}) ]";
-                    statusText.color = new Color(0.7f, 0.35f, 0.35f, 0.85f); // Dim Red
+                    statusText.color = new Color(0.7f, 0.35f, 0.35f, 0.85f);
                 }
             }
 
-            // Keep folder artwork light; labels and interactability convey the lock state.
             Image btnImg = btn.GetComponent<Image>();
             if (btnImg != null)
             {
@@ -426,12 +389,10 @@ namespace CaseClosed.UI
                 }
                 else
                 {
-                    // Unlocked / Completed: vivid full color folder artwork
                     btnImg.color = Color.white;
                 }
             }
 
-            // Legacy dark overlays are not part of the light theme.
             Transform shadeChild = btn.transform.Find("BlackShade") ?? btn.transform.Find("Image_BlackShade") ?? btn.transform.Find("Shade");
             if (shadeChild != null)
             {
@@ -452,9 +413,6 @@ namespace CaseClosed.UI
             LaunchCase(levelIndex);
         }
 
-        /// <summary>
-        /// Handles Play button click: loads the next uncompleted available case or Case 1.
-        /// </summary>
         private void OnPlayClicked()
         {
             int targetLevel = 1;
@@ -464,7 +422,7 @@ namespace CaseClosed.UI
                 if (!progression.IsCaseCompleted(1)) targetLevel = 1;
                 else if (!progression.IsCaseCompleted(2)) targetLevel = 2;
                 else if (!progression.IsCaseCompleted(3)) targetLevel = 3;
-                else targetLevel = 1; // All completed, replay Case 1
+                else targetLevel = 1;
             }
 
             Debug.Log($"[UI:MainMenu] Play clicked -> Launching Case 0{targetLevel}");
@@ -472,24 +430,17 @@ namespace CaseClosed.UI
             LaunchCase(targetLevel);
         }
 
-        /// <summary>
-        /// Opens the settings sub-view and synchronizes all controls with GameSettingsService.
-        /// </summary>
         public void OpenSettings()
         {
             RefreshSettingsUI();
             OpenSubView(settingsContainer);
         }
 
-        /// <summary>
-        /// Synchronizes all settings sliders, mute labels, toggles, and text speeds with runtime data.
-        /// </summary>
         public void RefreshSettingsUI()
         {
             var settings = CaseClosed.Services.GameSettingsService.Instance;
             var audio = AudioManager.Instance;
 
-            // BGM
             float bgmVal = audio != null ? audio.bgmVolume : (settings?.BgmVolume ?? 0.8f);
             bool bgmMuted = audio != null ? audio.isBgmMuted : (settings?.IsBgmMuted ?? false);
             if (bgmVolumeSlider != null) bgmVolumeSlider.value = bgmVal;
@@ -497,7 +448,6 @@ namespace CaseClosed.UI
             if (bgmMuteText != null) bgmMuteText.text = bgmMuted ? "MUTED" : "MUTE";
             UpdateMuteButtonPresentation(bgmMuteButton, bgmMuted);
 
-            // SFX
             float sfxVal = audio != null ? audio.sfxVolume : (settings?.SfxVolume ?? 1.0f);
             bool sfxMuted = audio != null ? audio.isSfxMuted : (settings?.IsSfxMuted ?? false);
             if (sfxVolumeSlider != null) sfxVolumeSlider.value = sfxVal;
@@ -505,7 +455,6 @@ namespace CaseClosed.UI
             if (sfxMuteText != null) sfxMuteText.text = sfxMuted ? "MUTED" : "MUTE";
             UpdateMuteButtonPresentation(sfxMuteButton, sfxMuted);
 
-            // Dialogue
             float dlgVal = audio != null ? audio.dialogVolume : (settings?.DialogVolume ?? 1.0f);
             bool dlgMuted = audio != null ? audio.isDialogMuted : (settings?.IsDialogMuted ?? false);
             if (dialogVolumeSlider != null) dialogVolumeSlider.value = dlgVal;
@@ -513,17 +462,14 @@ namespace CaseClosed.UI
             if (dialogMuteText != null) dialogMuteText.text = dlgMuted ? "MUTED" : "MUTE";
             UpdateMuteButtonPresentation(dialogMuteButton, dlgMuted);
 
-            // Display Mode
             bool isFull = Screen.fullScreen;
             if (fullscreenToggle != null) fullscreenToggle.isOn = isFull;
             if (fullscreenStatusText != null) fullscreenStatusText.text = isFull ? "FULLSCREEN (Borderless)" : "WINDOWED";
 
-            // Text Speed
             float speedVal = settings != null ? settings.TextSpeed : 35f;
             if (textSpeedSlider != null) textSpeedSlider.value = speedVal;
             if (textSpeedText != null) textSpeedText.text = CaseClosed.Services.GameSettingsService.GetTextSpeedLabel(speedVal);
 
-            // Typewriter SFX
             bool typewriterOn = audio != null ? audio.isTypewriterEnabled : (settings?.IsTypewriterEnabled ?? true);
             if (typewriterToggle != null) typewriterToggle.isOn = typewriterOn;
         }
@@ -619,9 +565,6 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayButtonClick();
         }
 
-        /// <summary>
-        /// Restores all audio, display, and dialogue settings to default values.
-        /// </summary>
         public void OnResetSettingsClicked()
         {
             Debug.Log("[UI:MainMenu] Resetting all settings to defaults...");
@@ -633,9 +576,6 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayButtonClick();
         }
 
-        /// <summary>
-        /// Displays the Exit Confirmation Modal prompt.
-        /// </summary>
         public void OpenExitConfirmation()
         {
             Debug.Log("[UI:MainMenu] Opening exit confirmation prompt...");
@@ -647,9 +587,6 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayButtonClick();
         }
 
-        /// <summary>
-        /// Closes the Exit Confirmation Modal prompt, returning focus to menu.
-        /// </summary>
         public void CloseExitConfirmation()
         {
             Debug.Log("[UI:MainMenu] Exit cancelled. Returning to menu.");
@@ -660,9 +597,6 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayButtonClick();
         }
 
-        /// <summary>
-        /// Exits the game application or stops editor play mode.
-        /// </summary>
         public void OnExitConfirmed()
         {
             Debug.Log("[UI:MainMenu] Exit confirmed. Closing application...");
@@ -674,10 +608,6 @@ namespace CaseClosed.UI
 #endif
         }
 
-        /// <summary>
-        /// Loads the chosen case index via SceneManager or falls back to <see cref="GameBootstrap"/>.
-        /// </summary>
-        /// <param name="caseIndex">The 1-based case index (1, 2, or 3).</param>
         public void LaunchCase(int caseIndex)
         {
             Debug.Log($"[UI:MainMenu] Launching Case {caseIndex}...");
@@ -706,7 +636,6 @@ namespace CaseClosed.UI
                 return;
             }
 
-            // Fallback: If dedicated scene isn't built but Case001 is available, load Case001
             if (activeScene != "Case001" && Application.CanStreamedLevelBeLoaded("Case001"))
             {
                 Debug.Log($"[UI:MainMenu] '{sceneName}' not streamable. Loading Case001 scene fallback...");

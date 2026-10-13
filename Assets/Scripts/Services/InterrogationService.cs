@@ -3,19 +3,8 @@ using CaseClosed.Enums;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Service responsible for validating contradiction challenges during interrogations,
-    /// calculating emotional reaction expressions, and generating contextual character dialogue.
-    /// </summary>
     public class InterrogationService
     {
-        /// <summary>
-        /// Searches the active case for a contradiction rule that matches a presented evidence against the current statement node.
-        /// </summary>
-        /// <param name="activeCase">The active case containing contradiction rules.</param>
-        /// <param name="statementNodeId">The ID of the statement node being challenged.</param>
-        /// <param name="evidenceId">The ID of the evidence presented by the player.</param>
-        /// <returns>The matching <see cref="ContradictionRuleSO"/> if a contradiction exists; otherwise, null.</returns>
         public ContradictionRuleSO FindMatchingContradiction(CaseSO activeCase, string statementNodeId, string evidenceId)
         {
             if (activeCase == null || activeCase.contradictionRules == null) return null;
@@ -34,11 +23,6 @@ namespace CaseClosed.Services
             return null;
         }
 
-        /// <summary>
-        /// Determines the emotional expression a suspect displays when a player presents irrelevant evidence or fails a challenge.
-        /// </summary>
-        /// <param name="profile">The character profile of the interrogated suspect.</param>
-        /// <returns>The corresponding <see cref="CharacterExpression"/> suited to the character's personality.</returns>
         public CharacterExpression GetFailureExpression(CharacterProfileSO profile)
         {
             if (profile == null) return CharacterExpression.Neutral;
@@ -61,12 +45,6 @@ namespace CaseClosed.Services
             }
         }
 
-        /// <summary>
-        /// Generates dialogue text spoken by a suspect when a challenge fails.
-        /// </summary>
-        /// <param name="profile">The character profile of the interrogated suspect.</param>
-        /// <param name="evidence">The irrelevant evidence presented by the player.</param>
-        /// <returns>A formatted dialogue string representing the suspect's dismissive reaction.</returns>
         public string GetFailureResponseText(CharacterProfileSO profile, EvidenceSO evidence)
         {
             string suspectName = profile != null ? profile.fullName : "The suspect";

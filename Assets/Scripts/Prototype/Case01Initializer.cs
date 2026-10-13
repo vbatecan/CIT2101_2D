@@ -7,10 +7,6 @@ using CaseClosed.UI;
 
 namespace CaseClosed.Prototype
 {
-    /// <summary>
-    /// Prototype Level 1 Initializer: Generates the "Missing Necklace" case data at runtime.
-    /// Can be dragged directly onto a GameObject in the Unity Inspector.
-    /// </summary>
     public class Case01Initializer : MonoBehaviour
     {
         [Header("Case Data Source (Optional)")]
@@ -22,7 +18,6 @@ namespace CaseClosed.Prototype
             set => _caseDataAsset = value;
         }
 
-        /// <summary>Whether to automatically initialize and load Case 01 on Start.</summary>
         public bool initializeOnStart = false;
 
         [Header("Suspect Portraits & Visuals")]
@@ -39,9 +34,6 @@ namespace CaseClosed.Prototype
         public Sprite teacupZoomedSprite;
         public Sprite kitchenLogZoomedSprite;
 
-        /// <summary>
-        /// Automatically loads Case 01 on start if <see cref="initializeOnStart"/> is enabled.
-        /// </summary>
         private void Start()
         {
             if (initializeOnStart)
@@ -73,8 +65,6 @@ namespace CaseClosed.Prototype
 
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
 
-                // Replay the opening node only when no dialogue view received the initial
-                // interrogation event during cold-start initialization.
                 if (!DialogueUI.IsDialogueOpen && InterrogationManager.Instance != null && InterrogationManager.Instance.CurrentNode != null)
                 {
                     DialogueUI.Instance?.DisplayNode(InterrogationManager.Instance.CurrentNode);
@@ -82,11 +72,6 @@ namespace CaseClosed.Prototype
             }
         }
 
-        /// <summary>
-        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 1: The Missing Necklace,
-        /// or returns the assigned pre-configured <see cref="CaseSO"/> data asset if available.
-        /// </summary>
-        /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase01Data()
         {
             if (_caseDataAsset != null)
@@ -110,8 +95,7 @@ namespace CaseClosed.Prototype
             c.totalKeyEvidenceCount = 3;
             c.totalContradictionsCount = 1;
             c.hasTimeLimit = true;
-            c.timeLimitSeconds = 300f; // 5 mins default
-            // Primary Suspect: Vince Angelo Batecan (Nephew)
+            c.timeLimitSeconds = 300f;
             CharacterProfileSO vince = ScriptableObject.CreateInstance<CharacterProfileSO>();
             vince.characterId = "CHAR_VINCE_BATECAN";
             vince.fullName = "Vince Angelo Batecan";
@@ -125,7 +109,6 @@ namespace CaseClosed.Prototype
             vince.defaultSittingPose = maleSuspectSprite;
             c.primarySuspect = vince;
 
-            // Secondary Suspect / Witness: Jane Arie Reyes (Key Witness)
             CharacterProfileSO witnessFemale = ScriptableObject.CreateInstance<CharacterProfileSO>();
             witnessFemale.characterId = "CHAR_CASE1_FEMALE";
             witnessFemale.fullName = "Jane Arie Reyes";
@@ -139,8 +122,6 @@ namespace CaseClosed.Prototype
             witnessFemale.defaultSittingPose = femaleSuspectSprite;
             c.additionalSuspects.Add(witnessFemale);
 
-            // Evidence Items
-            // 1. Family Photograph (Doorway Clue)
             EvidenceSO evPhoto = ScriptableObject.CreateInstance<EvidenceSO>();
             evPhoto.id = "EVD_FAMILY_PHOTO";
             evPhoto.evidenceName = "Family Photograph";
@@ -162,7 +143,6 @@ namespace CaseClosed.Prototype
             evPhoto.hotspots.Add(spotDoor);
             c.evidenceItems.Add(evPhoto);
 
-            // 2. Broken Teacup
             EvidenceSO evTeacup = ScriptableObject.CreateInstance<EvidenceSO>();
             evTeacup.id = "EVD_BROKEN_TEACUP";
             evTeacup.evidenceName = "Broken Teacup";
@@ -177,7 +157,6 @@ namespace CaseClosed.Prototype
             evTeacup.dialogueNodeToTriggerOnInspect = "NODE_03_TEACUP_LEAD";
             c.evidenceItems.Add(evTeacup);
 
-            // 3. Kitchen Receipt / Log
             EvidenceSO evKitchenLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evKitchenLog.id = "EVD_KITCHEN_LOG";
             evKitchenLog.evidenceName = "Kitchen Pantry Log";
@@ -191,13 +170,11 @@ namespace CaseClosed.Prototype
             evKitchenLog.requiredDialogueNodeId = "NODE_03_TEACUP_LEAD";
             c.evidenceItems.Add(evKitchenLog);
 
-            // Dialogue Tree
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_VINCE_01";
             tree.characterId = vince.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Alibi - Vince)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = vince.characterId;
@@ -207,7 +184,6 @@ namespace CaseClosed.Prototype
             node1.defaultNextNodeId = "NODE_01B_JANE_INTERJECTION";
             tree.nodes.Add(node1);
 
-            // Node 1B (Witness Interjection - Jane)
             DialogueNode node1b = new DialogueNode();
             node1b.nodeId = "NODE_01B_JANE_INTERJECTION";
             node1b.speakerId = witnessFemale.characterId;
@@ -217,7 +193,6 @@ namespace CaseClosed.Prototype
             node1b.defaultNextNodeId = "NODE_01C_VINCE_RETORT";
             tree.nodes.Add(node1b);
 
-            // Node 1C (Defensive Retort - Vince)
             DialogueNode node1c = new DialogueNode();
             node1c.nodeId = "NODE_01C_VINCE_RETORT";
             node1c.speakerId = vince.characterId;
@@ -227,7 +202,6 @@ namespace CaseClosed.Prototype
             node1c.defaultNextNodeId = "NODE_01D_DETECTIVE_PRESS";
             tree.nodes.Add(node1c);
 
-            // Node 1D (Investigator Query - Detective)
             DialogueNode node1d = new DialogueNode();
             node1d.nodeId = "NODE_01D_DETECTIVE_PRESS";
             node1d.speakerName = "Detective";
@@ -235,7 +209,6 @@ namespace CaseClosed.Prototype
             node1d.defaultNextNodeId = "NODE_02_ROOM_LEAD";
             tree.nodes.Add(node1d);
 
-            // Node 2 (First Evidence Lead - Vince)
             DialogueNode node2 = new DialogueNode();
             node2.nodeId = "NODE_02_ROOM_LEAD";
             node2.speakerId = vince.characterId;
@@ -246,7 +219,6 @@ namespace CaseClosed.Prototype
             node2.defaultNextNodeId = "NODE_02B_JANE_HEARD_CRASH";
             tree.nodes.Add(node2);
 
-            // Node 2B (Crash Observation - Jane)
             DialogueNode node2b = new DialogueNode();
             node2b.nodeId = "NODE_02B_JANE_HEARD_CRASH";
             node2b.speakerId = witnessFemale.characterId;
@@ -256,14 +228,12 @@ namespace CaseClosed.Prototype
             node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_INSPECT";
             tree.nodes.Add(node2b);
 
-            // Node 2C (Detective Table Direction)
             DialogueNode node2c = new DialogueNode();
             node2c.nodeId = "NODE_02C_DETECTIVE_INSPECT";
             node2c.speakerName = "Detective";
             node2c.statementText = "A porcelain crash inside a locked study... We should examine that broken teacup on the table.";
             tree.nodes.Add(node2c);
 
-            // Node 3 (Teacup Lead - Vince)
             DialogueNode node3 = new DialogueNode();
             node3.nodeId = "NODE_03_TEACUP_LEAD";
             node3.speakerId = vince.characterId;
@@ -274,7 +244,6 @@ namespace CaseClosed.Prototype
             node3.unlockEvidenceOnComplete.Add("EVD_KITCHEN_LOG");
             tree.nodes.Add(node3);
 
-            // Node 3B (Kitchen Lock Observation - Jane)
             DialogueNode node3b = new DialogueNode();
             node3b.nodeId = "NODE_03B_JANE_KITCHEN_LOCK";
             node3b.speakerId = witnessFemale.characterId;
@@ -284,7 +253,6 @@ namespace CaseClosed.Prototype
             node3b.defaultNextNodeId = "NODE_03C_DETECTIVE_CHALLENGE";
             tree.nodes.Add(node3b);
 
-            // Node 3C (Detective Warning - Detective)
             DialogueNode node3c = new DialogueNode();
             node3c.nodeId = "NODE_03C_DETECTIVE_CHALLENGE";
             node3c.speakerName = "Detective";
@@ -292,7 +260,6 @@ namespace CaseClosed.Prototype
             node3c.defaultNextNodeId = "NODE_04_FINAL_ALIBI";
             tree.nodes.Add(node3c);
 
-            // Node 4 (Contradictory Alibi - Vince)
             DialogueNode node4 = new DialogueNode();
             node4.nodeId = "NODE_04_FINAL_ALIBI";
             node4.speakerId = vince.characterId;
@@ -303,7 +270,6 @@ namespace CaseClosed.Prototype
             node4.targetContradictionRuleId = "RULE_VINCE_ALIBI_LIE";
             tree.nodes.Add(node4);
 
-            // Node 5 (Confession - Vince)
             DialogueNode node5 = new DialogueNode();
             node5.nodeId = "NODE_05_CONFESSION";
             node5.speakerId = vince.characterId;
@@ -313,7 +279,6 @@ namespace CaseClosed.Prototype
             node5.defaultNextNodeId = "NODE_05B_JANE_SHOCKED";
             tree.nodes.Add(node5);
 
-            // Node 5B (Jane Shocked)
             DialogueNode node5b = new DialogueNode();
             node5b.nodeId = "NODE_05B_JANE_SHOCKED";
             node5b.speakerId = witnessFemale.characterId;
@@ -323,7 +288,6 @@ namespace CaseClosed.Prototype
             node5b.defaultNextNodeId = "NODE_05C_VINCE_DESPERATE";
             tree.nodes.Add(node5b);
 
-            // Node 5C (Vince Desperate)
             DialogueNode node5c = new DialogueNode();
             node5c.nodeId = "NODE_05C_VINCE_DESPERATE";
             node5c.speakerId = vince.characterId;
@@ -333,7 +297,6 @@ namespace CaseClosed.Prototype
             node5c.defaultNextNodeId = "NODE_05D_DETECTIVE_CLOSE";
             tree.nodes.Add(node5c);
 
-            // Node 5D (Detective Conclusion)
             DialogueNode node5d = new DialogueNode();
             node5d.nodeId = "NODE_05D_DETECTIVE_CLOSE";
             node5d.speakerName = "Detective";
@@ -342,7 +305,6 @@ namespace CaseClosed.Prototype
 
             c.dialogueTrees.Add(tree);
 
-            // Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_VINCE_ALIBI_LIE";
             rule1.ruleTitle = "Locked Kitchen Contradiction";
@@ -355,7 +317,6 @@ namespace CaseClosed.Prototype
             rule1.unlockedClueText = "Vince Angelo Batecan confessed to staging the break-in for debt money!";
             c.contradictionRules.Add(rule1);
 
-            // Clue Connection
             ClueConnectionSO conn1 = ScriptableObject.CreateInstance<ClueConnectionSO>();
             conn1.connectionId = "CONN_VINCE_TIMELINE";
             conn1.connectionTitle = "Photo Silhouette & Kitchen Log";
@@ -366,7 +327,6 @@ namespace CaseClosed.Prototype
             conn1.deductionText = "The kitchen log proves Vince was not in the kitchen, while the photo places him right outside the study door!";
             c.clueConnections.Add(conn1);
 
-            // Conclusion Questions
             ConclusionQuestion q1 = new ConclusionQuestion();
             q1.questionId = "Q_SUSPECT";
             q1.questionText = "Who stole Kirby Raymundo's necklace?";

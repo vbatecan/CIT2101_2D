@@ -29,7 +29,6 @@ namespace CaseClosed.Editor
                 AssetDatabase.Refresh();
             }
 
-            // 1. Load Sprites
             Sprite shanaiaSprite = LoadSprite("Assets/Assets/CHARACTERS/Shania Ortega.png", "NEWSHANIA_0") ?? LoadSprite("Assets/Assets/CHARACTERS/Shania Ortega.png");
             Sprite shanSprite = LoadSprite("Assets/Assets/CHARACTERS/Shan Jaraba.png", "NEWSHAN_0") ?? LoadSprite("Assets/Assets/CHARACTERS/Shan Jaraba.png");
 
@@ -42,7 +41,6 @@ namespace CaseClosed.Editor
             Sprite terminationTableSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TerminationPOV.png", "TerminationPOV_0") ?? LoadSprite("Assets/Assets/EVIDENCES/TablePOV/TerminationPOV.png");
             Sprite terminationZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TerminationTOP.png", "TerminationTOP_0") ?? LoadSprite("Assets/Assets/EVIDENCES/TopPOV/TerminationTOP.png");
 
-            // 2. Suspects & Characters
             CharacterProfileSO shanaia = ScriptableObject.CreateInstance<CharacterProfileSO>();
             shanaia.characterId = "CHAR_SHANAIA_ORTEGA";
             shanaia.fullName = "Shanaia Ortega";
@@ -82,8 +80,6 @@ namespace CaseClosed.Editor
                 SaveAsset(miguel, $"{FolderPath}/Char_MiguelBorja.asset");
             }
 
-            // 3. Evidence Items
-            // 3.1 Smartphone Call Log
             EvidenceSO evPhoneLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evPhoneLog.id = "EVD_SMARTPHONE_LOG";
             evPhoneLog.evidenceName = "Victim's Smartphone Call Log";
@@ -97,7 +93,6 @@ namespace CaseClosed.Editor
             evPhoneLog.startsDiscovered = true;
             SaveAsset(evPhoneLog, $"{FolderPath}/Evidence_SmartphoneLog.asset");
 
-            // 3.2 Coffee Shop CCTV Frame
             EvidenceSO evCctv = ScriptableObject.CreateInstance<EvidenceSO>();
             evCctv.id = "EVD_CCTV_STILL";
             evCctv.evidenceName = "Coffee Shop CCTV Frame";
@@ -123,7 +118,6 @@ namespace CaseClosed.Editor
             evCctv.hotspots.Add(spotJacket);
             SaveAsset(evCctv, $"{FolderPath}/Evidence_CctvStill.asset");
 
-            // 3.3 Termination Notice Draft
             EvidenceSO evDraft = ScriptableObject.CreateInstance<EvidenceSO>();
             evDraft.id = "EVD_RESIGNATION_LETTER";
             evDraft.evidenceName = "Termination Notice Draft";
@@ -138,13 +132,11 @@ namespace CaseClosed.Editor
             evDraft.requiredDialogueNodeId = "NODE_03_CCTV_LEAD";
             SaveAsset(evDraft, $"{FolderPath}/Evidence_TerminationNotice.asset");
 
-            // 4. Dialogue Tree
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_SHANAIA_01";
             tree.characterId = shanaia.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Statement - Shanaia)
             DialogueNode node1 = new DialogueNode
             {
                 nodeId = "NODE_01",
@@ -156,7 +148,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1);
 
-            // Node 1B (Manager Testimony - Shan)
             DialogueNode node1b = new DialogueNode
             {
                 nodeId = "NODE_01B_SHAN_STATEMENT",
@@ -168,7 +159,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1b);
 
-            // Node 1C (Shanaia Dismissive - Shanaia)
             DialogueNode node1c = new DialogueNode
             {
                 nodeId = "NODE_01C_SHANAIA_DISMISS",
@@ -180,7 +170,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1c);
 
-            // Node 1D (Detective Interview)
             DialogueNode node1d = new DialogueNode
             {
                 nodeId = "NODE_01D_DETECTIVE_INTERVIEW",
@@ -190,7 +179,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1d);
 
-            // Node 2 (Phone Lead - Shanaia)
             DialogueNode node2 = new DialogueNode
             {
                 nodeId = "NODE_02_PHONE_LEAD",
@@ -203,7 +191,6 @@ namespace CaseClosed.Editor
             node2.unlockEvidenceOnComplete.Add("EVD_CCTV_STILL");
             tree.nodes.Add(node2);
 
-            // Node 2B (Shan Mentioning Call - Shan)
             DialogueNode node2b = new DialogueNode
             {
                 nodeId = "NODE_02B_SHAN_ALARMED",
@@ -215,7 +202,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node2b);
 
-            // Node 2C (Detective Table Direction)
             DialogueNode node2c = new DialogueNode
             {
                 nodeId = "NODE_02C_DETECTIVE_CCTV",
@@ -224,7 +210,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node2c);
 
-            // Node 3 (CCTV Lead - Shanaia)
             DialogueNode node3 = new DialogueNode
             {
                 nodeId = "NODE_03_CCTV_LEAD",
@@ -237,7 +222,6 @@ namespace CaseClosed.Editor
             node3.unlockEvidenceOnComplete.Add("EVD_RESIGNATION_LETTER");
             tree.nodes.Add(node3);
 
-            // Node 3B (Shan Identifying Jacket - Shan)
             DialogueNode node3b = new DialogueNode
             {
                 nodeId = "NODE_03B_SHAN_JACKET",
@@ -249,7 +233,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3b);
 
-            // Node 3C (Detective Confirmation)
             DialogueNode node3c = new DialogueNode
             {
                 nodeId = "NODE_03C_CONFIRMATION",
@@ -259,7 +242,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3c);
 
-            // Node 3D (Detective Termination Notice Draft)
             DialogueNode node3d = new DialogueNode
             {
                 nodeId = "NODE_03D_DETECTIVE_DRAFT",
@@ -269,7 +251,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3d);
 
-            // Node 4 (Final Statement - Shanaia)
             DialogueNode node4 = new DialogueNode
             {
                 nodeId = "NODE_04_FINAL_STATEMENT",
@@ -282,7 +263,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node4);
 
-            // Node 5 (Confession - Shanaia)
             DialogueNode node5 = new DialogueNode
             {
                 nodeId = "NODE_05_CONFESSION",
@@ -294,7 +274,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5);
 
-            // Node 5B (Shan Disappointed - Shan)
             DialogueNode node5b = new DialogueNode
             {
                 nodeId = "NODE_05B_SHAN_DISAPPOINTED",
@@ -306,7 +285,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5b);
 
-            // Node 5C (Shanaia Bitter - Shanaia)
             DialogueNode node5c = new DialogueNode
             {
                 nodeId = "NODE_05C_SHANAIA_BITTER",
@@ -318,7 +296,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5c);
 
-            // Node 5D (Detective Conclusion)
             DialogueNode node5d = new DialogueNode
             {
                 nodeId = "NODE_05D_DETECTIVE_CLOSE",
@@ -329,7 +306,6 @@ namespace CaseClosed.Editor
 
             SaveAsset(tree, $"{FolderPath}/Dialogue_Shanaia01.asset");
 
-            // 5. Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_SHANAIA_TIMELINE_LIE";
             rule1.ruleTitle = "False Departure Claim";
@@ -342,7 +318,6 @@ namespace CaseClosed.Editor
             rule1.unlockedClueText = "Shanaia Ortega confessed to sneaking back at 7:10 PM and stealing the prototype drive!";
             SaveAsset(rule1, $"{FolderPath}/Rule_ShanaiaTimelineLie.asset");
 
-            // 6. Clue Connection
             ClueConnectionSO conn1 = ScriptableObject.CreateInstance<ClueConnectionSO>();
             conn1.connectionId = "CONN_SHANAIA_DIGITAL_TRAIL";
             conn1.connectionTitle = "CCTV Entry & Encrypted Phone Call";
@@ -353,7 +328,6 @@ namespace CaseClosed.Editor
             conn1.deductionText = "CCTV footage places Shanaia at the back door at 7:10 PM, right before her 7:15 PM encrypted phone call!";
             SaveAsset(conn1, $"{FolderPath}/Conn_ShanaiaDigitalTrail.asset");
 
-            // 7. CaseSO
             CaseSO case03 = ScriptableObject.CreateInstance<CaseSO>();
             case03.levelNumber = 3;
             case03.caseId = "LEVEL_03";

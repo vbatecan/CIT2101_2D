@@ -7,11 +7,6 @@ using UnityEditor;
 
 namespace CaseClosed.Managers
 {
-    /// <summary>
-    /// Controller MonoBehaviour managing background music and audio sound effects playback.
-    /// Can be dragged directly onto a GameObject in the Unity Inspector.
-    /// Automatically self-heals by assigning audio clips from Assets/Audio in Editor or runtime fallback.
-    /// </summary>
     public class AudioManager : MonoBehaviour
     {
         private const string PrefKeyBgmVolume = "CaseClosed_BGM_Volume";
@@ -22,7 +17,6 @@ namespace CaseClosed.Managers
         private const string PrefKeyDialogMuted = "CaseClosed_Dialog_Muted";
         private const string PrefKeyTypewriterEnabled = "CaseClosed_Typewriter_Enabled";
 
-        /// <summary>Singleton instance of the AudioManager.</summary>
         public static AudioManager Instance { get; private set; }
 
         [Header("Audio Sources")]
@@ -83,9 +77,6 @@ namespace CaseClosed.Managers
 
         private Coroutine crossFadeCoroutine;
 
-        /// <summary>
-        /// Initializes the singleton instance, loads saved volume settings, and configures audio sources.
-        /// </summary>
         private void Awake()
         {
             Instance = this;
@@ -102,9 +93,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>
-        /// Loads user-configured volume and typewriter settings from PlayerPrefs.
-        /// </summary>
         private void LoadSavedAudioSettings()
         {
             bgmVolume = PlayerPrefs.GetFloat(PrefKeyBgmVolume, 0.8f);
@@ -119,30 +107,27 @@ namespace CaseClosed.Managers
             isTypewriterEnabled = PlayerPrefs.GetInt(PrefKeyTypewriterEnabled, 1) == 1;
         }
 
-        /// <summary>
-        /// Verifies and attaches required AudioSource components if not assigned in Inspector.
-        /// </summary>
         public void EnsureAudioSources()
         {
             if (bgmSource == null)
             {
                 bgmSource = gameObject.AddComponent<AudioSource>();
                 bgmSource.playOnAwake = false;
-                bgmSource.spatialBlend = 0f; // 2D Audio
+                bgmSource.spatialBlend = 0f;
             }
 
             if (sfxSource == null)
             {
                 sfxSource = gameObject.AddComponent<AudioSource>();
                 sfxSource.playOnAwake = false;
-                sfxSource.spatialBlend = 0f; // 2D Audio
+                sfxSource.spatialBlend = 0f;
             }
 
             if (typewriterSource == null)
             {
                 typewriterSource = gameObject.AddComponent<AudioSource>();
                 typewriterSource.playOnAwake = false;
-                typewriterSource.spatialBlend = 0f; // 2D Audio
+                typewriterSource.spatialBlend = 0f;
             }
 
             bgmSource.loop = true;
@@ -152,9 +137,6 @@ namespace CaseClosed.Managers
             ApplyVolumes();
         }
 
-        /// <summary>
-        /// Applies current volume settings to audio sources considering mute states.
-        /// </summary>
         public void ApplyVolumes()
         {
             if (bgmSource != null) bgmSource.volume = isBgmMuted ? 0f : bgmVolume;
@@ -162,9 +144,6 @@ namespace CaseClosed.Managers
             if (typewriterSource != null) typewriterSource.volume = isDialogMuted ? 0f : (dialogVolume * 0.5f);
         }
 
-        /// <summary>
-        /// Sets BGM volume level (0.0 to 1.0) and persists the value to PlayerPrefs.
-        /// </summary>
         public void SetBGMVolume(float volume)
         {
             bgmVolume = Mathf.Clamp01(volume);
@@ -173,9 +152,6 @@ namespace CaseClosed.Managers
             ApplyVolumes();
         }
 
-        /// <summary>
-        /// Sets whether BGM is muted.
-        /// </summary>
         public void SetBgmMuted(bool muted)
         {
             isBgmMuted = muted;
@@ -186,9 +162,6 @@ namespace CaseClosed.Managers
 
         public void ToggleBgmMute() => SetBgmMuted(!isBgmMuted);
 
-        /// <summary>
-        /// Sets SFX volume level (0.0 to 1.0) and persists the value to PlayerPrefs.
-        /// </summary>
         public void SetSFXVolume(float volume)
         {
             sfxVolume = Mathf.Clamp01(volume);
@@ -197,9 +170,6 @@ namespace CaseClosed.Managers
             ApplyVolumes();
         }
 
-        /// <summary>
-        /// Sets whether SFX is muted.
-        /// </summary>
         public void SetSfxMuted(bool muted)
         {
             isSfxMuted = muted;
@@ -210,9 +180,6 @@ namespace CaseClosed.Managers
 
         public void ToggleSfxMute() => SetSfxMuted(!isSfxMuted);
 
-        /// <summary>
-        /// Sets Dialog volume level (0.0 to 1.0) and persists the value to PlayerPrefs.
-        /// </summary>
         public void SetDialogVolume(float volume)
         {
             dialogVolume = Mathf.Clamp01(volume);
@@ -221,9 +188,6 @@ namespace CaseClosed.Managers
             ApplyVolumes();
         }
 
-        /// <summary>
-        /// Sets whether Dialog audio is muted.
-        /// </summary>
         public void SetDialogMuted(bool muted)
         {
             isDialogMuted = muted;
@@ -234,9 +198,6 @@ namespace CaseClosed.Managers
 
         public void ToggleDialogMute() => SetDialogMuted(!isDialogMuted);
 
-        /// <summary>
-        /// Resets all audio settings to their standard factory defaults.
-        /// </summary>
         public void ResetAudioSettingsToDefault()
         {
             bgmVolume = 0.8f;
@@ -259,9 +220,6 @@ namespace CaseClosed.Managers
             ApplyVolumes();
         }
 
-        /// <summary>
-        /// Toggles typewriter sound effect clicks and persists the value to PlayerPrefs.
-        /// </summary>
         public void SetTypewriterEnabled(bool enabled)
         {
             isTypewriterEnabled = enabled;
@@ -269,10 +227,6 @@ namespace CaseClosed.Managers
             PlayerPrefs.Save();
         }
 
-        /// <summary>
-        /// Plays looping background music clip, ignoring if already playing the same clip.
-        /// </summary>
-        /// <param name="clip">The music audio clip to play.</param>
         public void PlayBGM(AudioClip clip)
         {
             if (clip == null) return;
@@ -293,11 +247,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>
-        /// Performs a smooth cross-fade transition to a new BGM track over a specified duration.
-        /// </summary>
-        /// <param name="newClip">The target audio clip to cross-fade into.</param>
-        /// <param name="duration">Duration of the fade transition in seconds.</param>
         public void CrossFadeBGM(AudioClip newClip, float duration = 1.0f)
         {
             if (newClip == null) return;
@@ -317,7 +266,6 @@ namespace CaseClosed.Managers
             float startVolume = bgmSource.isPlaying ? bgmSource.volume : 0f;
             float halfDuration = duration * 0.5f;
 
-            // Fade out current track
             if (bgmSource.isPlaying && startVolume > 0.01f)
             {
                 for (float t = 0f; t < halfDuration; t += Time.unscaledDeltaTime)
@@ -327,11 +275,9 @@ namespace CaseClosed.Managers
                 }
             }
 
-            // Switch clip & play
             bgmSource.clip = targetClip;
             bgmSource.Play();
 
-            // Fade in new track
             for (float t = 0f; t < halfDuration; t += Time.unscaledDeltaTime)
             {
                 bgmSource.volume = Mathf.Lerp(0f, bgmVolume, t / halfDuration);
@@ -342,7 +288,6 @@ namespace CaseClosed.Managers
             crossFadeCoroutine = null;
         }
 
-        /// <summary>Stops background music with an optional quick fade-out.</summary>
         public void StopBGM(float fadeDuration = 0.5f)
         {
             if (bgmSource == null || !bgmSource.isPlaying) return;
@@ -375,31 +320,20 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Plays the main menu / investigation background music theme.</summary>
         public void PlayMenuBGM() => PlayBGM(investigationBGM);
 
-        /// <summary>Plays the investigation desk background music theme.</summary>
         public void PlayInvestigationBGM() => PlayBGM(investigationBGM);
 
-        /// <summary>Plays the interrogation dialogue background music theme.</summary>
         public void PlayInterrogationBGM() => PlayBGM(interrogationBGM);
 
-        /// <summary>Plays the high-tension confrontation background music theme.</summary>
         public void PlayHighTensionBGM() => PlayBGM(highTensionBGM);
 
-        /// <summary>
-        /// Plays a one-shot sound effect.
-        /// </summary>
-        /// <param name="clip">The sound effect audio clip to play.</param>
         public void PlaySFX(AudioClip clip)
         {
             if (clip == null || sfxSource == null || isSfxMuted) return;
             sfxSource.PlayOneShot(clip, sfxVolume);
         }
 
-        /// <summary>
-        /// Plays a typewriter key click sound effect if not already playing.
-        /// </summary>
         public void PlayTypewriterKey()
         {
             if (isTypewriterEnabled && !isDialogMuted && typewriterKeySFX != null && typewriterSource != null && !typewriterSource.isPlaying)
@@ -408,31 +342,22 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Plays standard button click sound effect.</summary>
         public void PlayButtonClick() => PlaySFX(buttonClickSFX);
 
-        /// <summary>Plays notebook paper flip sound effect.</summary>
         public void PlayPaperFlip() => PlaySFX(paperFlipSFX);
 
-        /// <summary>Plays evidence inspect zoom sound effect.</summary>
         public void PlayExamineZoom() => PlaySFX(examineZoomSFX);
 
-        /// <summary>Plays contradiction exposed sound effect.</summary>
         public void PlayContradictionFound() => PlaySFX(contradictionFoundSFX);
 
-        /// <summary>Plays clue discovery sound effect.</summary>
         public void PlayClueDiscovered() => PlaySFX(clueDiscoveredSFX);
 
-        /// <summary>Plays deduction link success sound effect.</summary>
         public void PlayDeductionLinked() => PlaySFX(deductionLinkedSFX != null ? deductionLinkedSFX : clueDiscoveredSFX);
 
-        /// <summary>Plays case solved victory fanfare.</summary>
         public void PlayCaseSolved() => PlaySFX(caseSolvedSFX);
 
-        /// <summary>Plays case failed sound effect.</summary>
         public void PlayCaseFailed() => PlaySFX(caseFailedSFX);
 
-        /// <summary>Plays clock ticking sound effect when investigation time is running out.</summary>
         public void PlayClockTick()
         {
             if (clockTickSFX != null)
@@ -449,9 +374,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>
-        /// Self-healing fallback to auto-assign clips from Assets/Audio if any are missing.
-        /// </summary>
         public void AutoAssignClipsIfMissing()
         {
 #if UNITY_EDITOR
@@ -473,9 +395,6 @@ namespace CaseClosed.Managers
             if (typewriterSource != null) typewriterSource.volume = sfxVolume * 0.4f;
         }
 
-        /// <summary>
-        /// Automatically loads and binds all audio clips from Assets/Audio/ into their corresponding fields in the Editor.
-        /// </summary>
         [ContextMenu("Auto-Assign Audio Clips from Assets/Audio")]
         public void AutoAssignClipsFromAssetsAudio()
         {

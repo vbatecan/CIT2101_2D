@@ -4,29 +4,16 @@ using CaseClosed.Data;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Service responsible for compiling and formatting case data, suspect dossiers,
-    /// evidence records, and deduction logs into clean text strings for the notebook UI.
-    /// </summary>
     public class NotebookFormattingService
     {
         private const string PageDivider = "<color=#8C7B6B>────────────────────────────────────────────</color>";
         private const string SubtleDivider = "<color=#A69B8F>────────────────────────────</color>";
 
-        /// <summary>
-        /// Formats the overview, level designation, assigned investigator, victim, summary, and objective of a case.
-        /// </summary>
-        /// <param name="activeCase">The case data to format.</param>
-        /// <returns>A formatted synopsis string.</returns>
         public string FormatCaseSummary(CaseSO activeCase)
         {
             return FormatCaseSummary(activeCase, activeCase != null ? activeCase.leadInvestigator : null);
         }
 
-        /// <summary>
-        /// Formats a case summary using the investigator effective for the current session without
-        /// changing the investigator reference authored on the case asset.
-        /// </summary>
         public string FormatCaseSummary(CaseSO activeCase, CharacterProfileSO effectiveInvestigator)
         {
             if (activeCase == null) return string.Empty;
@@ -47,11 +34,6 @@ namespace CaseClosed.Services
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Formats the dossier profiles of the primary suspect and all secondary suspects in a case.
-        /// </summary>
-        /// <param name="activeCase">The case containing suspect profiles.</param>
-        /// <returns>A formatted dossier string detailing all suspects.</returns>
         public string FormatSuspectProfiles(CaseSO activeCase)
         {
             if (activeCase == null) return string.Empty;
@@ -79,12 +61,6 @@ namespace CaseClosed.Services
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Formats an individual suspect's background, personality, alibi, and motives.
-        /// </summary>
-        /// <param name="profile">The character profile to format.</param>
-        /// <param name="isPrimary">Whether the character is the primary suspect in the investigation.</param>
-        /// <returns>A formatted dossier entry string.</returns>
         public string FormatSuspectProfile(CharacterProfileSO profile, bool isPrimary)
         {
             if (profile == null) return string.Empty;
@@ -112,22 +88,11 @@ namespace CaseClosed.Services
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Formats the list of evidence discovered by the player along with examination notes.
-        /// </summary>
-        /// <param name="activeCase">The active case containing evidence definitions.</param>
-        /// <param name="discoveredIds">Set of evidence IDs that have been found by the player.</param>
-        /// <returns>A formatted list of discovered evidence items.</returns>
         public string FormatDiscoveredEvidence(CaseSO activeCase, IReadOnlyCollection<string> discoveredIds)
         {
             return FormatDiscoveredEvidence(activeCase, discoveredIds, null);
         }
 
-        /// <summary>
-        /// Formats discovered evidence from an explicit session-state examination predicate.
-        /// Supplying the predicate prevents this presentation service from reading legacy runtime
-        /// flags retained on authored evidence assets for serialized-data compatibility.
-        /// </summary>
         public string FormatDiscoveredEvidence(
             CaseSO activeCase,
             IReadOnlyCollection<string> discoveredIds,
@@ -168,16 +133,6 @@ namespace CaseClosed.Services
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Formats a complete single evidence dossier entry for the right-hand lined page of the notebook.
-        /// If discovered, reveals full category, description, examination findings, and unlocked clues.
-        /// If undiscovered / locked, presents a redacted placeholder with guidance to keep investigating.
-        /// </summary>
-        /// <param name="evidence">The evidence item to format.</param>
-        /// <param name="isDiscovered">Whether the player has discovered this evidence item.</param>
-        /// <param name="index">Current 1-based index (e.g. 1).</param>
-        /// <param name="totalCount">Total evidence count (e.g. 3).</param>
-        /// <returns>Rich text formatted dossier entry.</returns>
         public string FormatEvidenceDossier(EvidenceSO evidence, bool isDiscovered, int index = 0, int totalCount = 0)
         {
             int legacyDiscoveredHotspotCount = 0;
@@ -198,10 +153,6 @@ namespace CaseClosed.Services
                 totalCount);
         }
 
-        /// <summary>
-        /// Formats an evidence dossier from explicit runtime session state rather than mutable
-        /// fields on the authored evidence object.
-        /// </summary>
         public string FormatEvidenceDossier(
             EvidenceSO evidence,
             bool isDiscovered,
@@ -267,11 +218,6 @@ namespace CaseClosed.Services
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Formats unlocked clues and synthesized deduction notes into a readable log.
-        /// </summary>
-        /// <param name="unlockedClues">Dictionary of clue IDs and their unlocked description text.</param>
-        /// <returns>A formatted string of all unlocked clues, or an empty prompt message.</returns>
         public string FormatUnlockedClues(IReadOnlyDictionary<string, string> unlockedClues)
         {
             if (unlockedClues == null || unlockedClues.Count == 0)
@@ -296,9 +242,6 @@ namespace CaseClosed.Services
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Converts raw clue keys (e.g. 'evidence_safe_scratches' or 'clue_01') into human-readable titles.
-        /// </summary>
         public static string CleanClueTitle(string key)
         {
             if (string.IsNullOrEmpty(key)) return "RECORD";

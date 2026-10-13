@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 namespace CaseClosed.UI
 {
-    /// <summary>Presentation only; callers bind their existing actions to these buttons.</summary>
     public class DetectiveDialog : MonoBehaviour
     {
         [SerializeField] private DetectiveCard card;

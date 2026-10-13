@@ -10,11 +10,6 @@ using CaseClosed.Services;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the detective's suspect dossiers folder modal.
-    /// Animates smooth slide transitions, displays the active case's suspect file,
-    /// and provides smooth mouse scroll zoom and left-click drag movement.
-    /// </summary>
     public class SuspectFolderUI : MonoBehaviour, IScrollHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
         [Header("Hierarchy & Animations")]
@@ -176,20 +171,17 @@ namespace CaseClosed.UI
         {
             if (_isClosing) return;
 
-            // Keyboard shortcut: Escape to close
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 OnCloseClicked();
                 return;
             }
 
-            // Keyboard shortcut: 'R' to reset view
             if (Input.GetKeyDown(KeyCode.R))
             {
                 ResetView();
             }
 
-            // While animating slide in/out, do not apply regular zoom/pan lerp
             if (_slideCoroutine != null) return;
             if (folderRoot == null) return;
 
@@ -239,9 +231,6 @@ namespace CaseClosed.UI
             _buttonsConfigured = true;
         }
 
-        /// <summary>
-        /// Handles clicks on the backdrop button. If the pointer was over the folder, the click is ignored.
-        /// </summary>
         public void OnBackdropClicked()
         {
             if (IsPointerOverFolder())
@@ -251,9 +240,6 @@ namespace CaseClosed.UI
             OnCloseClicked();
         }
 
-        /// <summary>
-        /// Checks whether the mouse cursor is currently positioned over folderRoot or any of its children.
-        /// </summary>
         public bool IsPointerOverFolder()
         {
             if (folderRoot == null) return false;
@@ -280,9 +266,6 @@ namespace CaseClosed.UI
             return RectTransformUtility.RectangleContainsScreenPoint(folderRoot, Input.mousePosition, cam);
         }
 
-        /// <summary>
-        /// Updates the folder display image and title according to the active case.
-        /// </summary>
         public void RefreshDossierView()
         {
             CaseSO activeCase = activeCaseOverride;
@@ -320,9 +303,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Retrieves the configured or loaded sprite for the given case index.
-        /// </summary>
         public Sprite GetSpriteForCase(int caseIndex)
         {
             switch (caseIndex)
@@ -337,18 +317,12 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Manually switches the active case folder view.
-        /// </summary>
         public void SetCaseFolder(int caseIndex)
         {
             forcedCaseIndex = Mathf.Clamp(caseIndex, 1, 3);
             RefreshDossierView();
         }
 
-        /// <summary>
-        /// Sets target zoom scale factor clamped between minZoom and maxZoom.
-        /// </summary>
         public void SetTargetZoom(float zoom)
         {
             _targetZoom = Mathf.Clamp(zoom, minZoom, maxZoom);
@@ -362,9 +336,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Sets target position clamped within allowable screen bounds.
-        /// </summary>
         public void SetTargetPosition(Vector2 position)
         {
             _targetPosition = position;
@@ -377,9 +348,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Resets target zoom to minZoom (1.0x) and centers position at (0, 0).
-        /// </summary>
         public void ResetView()
         {
             _targetZoom = minZoom;
@@ -393,9 +361,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Directly applies current scale and position to folderRoot.
-        /// </summary>
         public void ApplyTransform()
         {
             if (folderRoot != null)
@@ -405,9 +370,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Clamps target position so the folder stays partially on screen by safetyMargin pixels.
-        /// </summary>
         public void ClampTargetPosition()
         {
             _targetPosition = _service.ClampFolderPosition(_targetPosition, GetFolderSize(), _targetZoom, GetParentSize(), safetyMargin);
@@ -452,9 +414,6 @@ namespace CaseClosed.UI
             return transform as RectTransform;
         }
 
-        /// <summary>
-        /// Handles mouse scroll wheel events over the folder, smoothly zooming towards cursor position.
-        /// </summary>
         public void OnScroll(PointerEventData eventData)
         {
             if (_isClosing || _slideCoroutine != null) return;
@@ -480,9 +439,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles beginning of drag operation on the suspect folder.
-        /// </summary>
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (_isClosing || _slideCoroutine != null) return;
@@ -495,9 +451,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles continuous mouse drag, moving Folder_Root around on screen.
-        /// </summary>
         public void OnDrag(PointerEventData eventData)
         {
             if (!_isDragging) return;
@@ -518,19 +471,11 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles end of drag operation.
-        /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
             _isDragging = false;
         }
 
-        /// <summary>
-        /// Handles pointer clicks:
-        /// - Right-Click anywhere resets zoom (1.0x) and position (0, 0).
-        /// - Left-Click directly on background outside folder dismisses the folder.
-        /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
@@ -542,7 +487,6 @@ namespace CaseClosed.UI
             if (eventData.button == PointerEventData.InputButton.Left && !eventData.dragging)
             {
                 GameObject clicked = eventData.pointerCurrentRaycast.gameObject;
-                // Left-click on suspect folder or any child of folderRoot does NOTHING!
                 if (clicked != null && folderRoot != null && (clicked == folderRoot.gameObject || clicked.transform.IsChildOf(folderRoot)))
                 {
                     return;
@@ -555,9 +499,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Dismisses the suspect folder with a smooth slide-down exit animation.
-        /// </summary>
         public void OnCloseClicked()
         {
             if (_isClosing) return;

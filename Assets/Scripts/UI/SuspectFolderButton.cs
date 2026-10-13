@@ -5,11 +5,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Interactive button component for the Suspect Folder Button in the hierarchy.
-    /// Supports uGUI pointer clicks, standard Button onClick, 2D physics clicks,
-    /// and optional hover animations.
-    /// </summary>
     public class SuspectFolderButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("Hover Feedback (Optional)")]
@@ -43,9 +38,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Uses a Canvas click target or a 2D collider for world-space folders.
-        /// </summary>
         public void EnsureClickable()
         {
             SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
@@ -80,8 +72,6 @@ namespace CaseClosed.UI
             }
             if (spriteRenderer != null && spriteRenderer.sprite != null && button.targetGraphic is Image folderImage)
             {
-                // Keep the authored folder art on the Canvas click target so it
-                // follows the same rendering and input path as the other UI.
                 folderImage.sprite = spriteRenderer.sprite;
                 folderImage.color = Color.white;
                 folderImage.preserveAspect = true;
@@ -101,9 +91,6 @@ namespace CaseClosed.UI
             EnsureButtonBinding();
         }
 
-        /// <summary>
-        /// Ensures an underlying Button component is present or hooked.
-        /// </summary>
         public void EnsureButtonBinding()
         {
             Button button = GetComponent<Button>();
@@ -121,9 +108,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles click via IPointerClickHandler interface.
-        /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (_boundButton == null && eventData.button == PointerEventData.InputButton.Left)
@@ -132,9 +116,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Invoked when the suspect folder button is clicked.
-        /// </summary>
         public void OnClick()
         {
             Debug.Log("[UI:SuspectFolderButton] Clicked — toggling Suspect Folder modal");
@@ -144,7 +125,6 @@ namespace CaseClosed.UI
             }
             else
             {
-                // Fallback for standalone scenes without UIManager
                 var suspectUI = Object.FindFirstObjectByType<SuspectFolderUI>(FindObjectsInactive.Include);
                 if (suspectUI != null)
                 {

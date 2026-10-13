@@ -11,9 +11,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Configuration mapping associating a character identifier to a specific dialogue box GameObject/prefab.
-    /// </summary>
     [Serializable]
     public class CharacterDialogueBoxEntry
     {
@@ -25,15 +22,9 @@ namespace CaseClosed.UI
         public TextMeshProUGUI dialogueText;
     }
 
-    /// <summary>
-    /// UI View MonoBehaviour managing dialogue presentation, typewriter text rendering,
-    /// character-specific speech bubble selection, and evidence challenge presentation.
-    /// Supports both legacy UnityEngine.UI.Text and TMPro.TextMeshProUGUI.
-    /// </summary>
     public class DialogueUI : MonoBehaviour
     {
         private static DialogueUI _instance;
-        /// <summary>Singleton instance of the DialogueUI.</summary>
         public static DialogueUI Instance
         {
             get
@@ -69,7 +60,6 @@ namespace CaseClosed.UI
         [Tooltip("Mappings for character dialogue boxes.")]
         public List<CharacterDialogueBoxEntry> characterDialogBoxes = new List<CharacterDialogueBoxEntry>();
 
-        /// <summary>Alias for characterDialogBoxes to support alternative naming conventions.</summary>
         public List<CharacterDialogueBoxEntry> characterDialogueBoxes
         {
             get => characterDialogBoxes;
@@ -105,18 +95,14 @@ namespace CaseClosed.UI
         [Header("Typewriter Settings")]
         public float charactersPerSecond = 35f;
 
-        /// <summary>Global state indicating whether the dialogue window is currently visible and active.</summary>
         public static bool IsDialogueOpen { get; private set; } = false;
 
-        /// <summary>Whether the current dialogue node allows contradiction challenges.</summary>
         public bool isCurrentNodeChallengeable { get; private set; } = false;
         public bool IsCurrentNodeChallengeable => isCurrentNodeChallengeable;
 
-        /// <summary>Whether a failed challenge reaction is currently being displayed.</summary>
         public bool isShowingFailureReaction { get; private set; } = false;
         public bool IsShowingFailureReaction => isShowingFailureReaction;
 
-        /// <summary>Whether the typewriter is currently animating text.</summary>
         public bool IsTyping => isTyping;
 
         private Coroutine typewriterCoroutine;
@@ -130,7 +116,6 @@ namespace CaseClosed.UI
         private bool _isSubscribed = false;
         private bool hiddenForEvidenceSelection;
 
-        // Active dialogue box state
         private GameObject _activeDialogBox;
         private TextMeshProUGUI _activeBoxTmpText;
         private Text _activeBoxLegacyText;
@@ -142,9 +127,6 @@ namespace CaseClosed.UI
         private readonly List<RaycastResult> _raycastResults = new List<RaycastResult>();
         private PointerEventData _pointerEventData;
 
-        /// <summary>
-        /// Clears placeholder text and ensures dialogue references are initialized.
-        /// </summary>
         private void Awake()
         {
             _instance = this;
@@ -173,9 +155,6 @@ namespace CaseClosed.UI
             SubscribeToInterrogationEvents();
         }
 
-        /// <summary>
-        /// Binds UI button click listeners and subscribes to interrogation manager events.
-        /// </summary>
         private void Start()
         {
             if (nextButton != null)
@@ -234,9 +213,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Checks keyboard shortcuts (Space, Enter) and mouse clicks to determine whether advance input occurred.
-        /// </summary>
         private bool CheckAdvanceInput()
         {
             bool keyPressed = false;
@@ -288,10 +264,6 @@ namespace CaseClosed.UI
             return false;
         }
 
-        /// <summary>
-        /// Checks whether pointer is hovering over specific non-advancing UI elements (Challenge button, Close button, Evidence picker).
-        /// Zero allocation implementation.
-        /// </summary>
         private bool IsPointerOverIgnoredUI()
         {
             var eventSystem = EventSystem.current;
@@ -340,10 +312,6 @@ namespace CaseClosed.UI
             return Input.mousePosition;
         }
 
-        /// <summary>
-        /// Advances dialogue upon user click or keypress after the current line finishes typing.
-        /// If the completed line is not challengeable, calls AdvanceDialogue().
-        /// </summary>
         public void HandleDialogueAdvanceInput()
         {
             if (!CanHandleDialogueInput()) return;
@@ -373,9 +341,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Updates the typewriter dialogue text speed (characters per second).
-        /// </summary>
         public void SetTextSpeed(float speed)
         {
             charactersPerSecond = Mathf.Clamp(speed, 15f, 100f);
@@ -403,10 +368,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Displays a dialogue node statement with character-specific speech bubble and typewriter effect.
-        /// </summary>
-        /// <param name="node">The dialogue node being presented.</param>
         public void DisplayNode(DialogueNode node)
         {
             if (node == null) return;
@@ -439,7 +400,6 @@ namespace CaseClosed.UI
 
             SetSpeakerName(resolvedSpeakerName);
 
-            // Activate corresponding character dialogue box
             string characterKey = ResolveCharacterKey(node.speakerId, node.speakerName, isDetective);
             ActivateDialogBox(characterKey, resolvedSpeakerName);
 
@@ -453,9 +413,6 @@ namespace CaseClosed.UI
             typewriterCoroutine = StartCoroutine(TypeText(node.statementText));
         }
 
-        /// <summary>
-        /// Resolves which dialogue box should be active based on the character key.
-        /// </summary>
         public void ActivateDialogBox(string characterKey, string speakerName = "")
         {
             if (customDialoguePanel != null && customDialogueBody != null && customDialogueSpeaker != null)
@@ -483,7 +440,6 @@ namespace CaseClosed.UI
                 _activeBoxTmpText = GetTextMeshProFromBox(targetBox);
                 _activeBoxLegacyText = targetBox.GetComponentInChildren<Text>(true);
 
-                // Optional speaker name text inside the character box
                 var boxSpeakerTmp = targetBox.transform.Find("Text_Speaker")?.GetComponent<TextMeshProUGUI>() ??
                                     targetBox.transform.Find("SpeakerName")?.GetComponent<TextMeshProUGUI>();
                 if (boxSpeakerTmp != null && !string.IsNullOrEmpty(speakerName))
@@ -491,13 +447,11 @@ namespace CaseClosed.UI
                     boxSpeakerTmp.text = speakerName;
                 }
 
-                // Hide default panel image so the character's speech bubble sprite is cleanly visible
                 if (_panelImage != null && targetBox != gameObject)
                 {
                     _panelImage.enabled = false;
                 }
 
-                // Hide main panel text if character box provides its own text renderer
                 if (_activeBoxTmpText != null || _activeBoxLegacyText != null)
                 {
                     if (dialogueBodyText != null) dialogueBodyText.enabled = false;
@@ -507,7 +461,6 @@ namespace CaseClosed.UI
             }
             else
             {
-                // Fallback to default panel background (DialogBLACK) and main text components
                 if (_panelImage != null)
                 {
                     _panelImage.enabled = true;
@@ -536,10 +489,6 @@ namespace CaseClosed.UI
             }
         }
 
-
-        /// <summary>
-        /// Resolves the dialogue box GameObject for a character key.
-        /// </summary>
         public GameObject GetDialogBoxForKey(string key)
         {
             if (string.IsNullOrEmpty(key)) return null;
@@ -581,9 +530,6 @@ namespace CaseClosed.UI
             return null;
         }
 
-        /// <summary>
-        /// Determines whether a speaker is the Detective / Player.
-        /// </summary>
         public bool IsDetectiveSpeaker(string speakerId, string speakerName)
         {
             if (string.Equals(speakerName, "Detective", StringComparison.OrdinalIgnoreCase) ||
@@ -608,9 +554,6 @@ namespace CaseClosed.UI
             return false;
         }
 
-        /// <summary>
-        /// Determines character key from node speakerId and speakerName.
-        /// </summary>
         public string ResolveCharacterKey(string speakerId, string speakerName, bool isDetective)
         {
             if (isDetective) return "Detective";
@@ -633,7 +576,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Check Shania before Shan because Shan is a substring of Shania
             if (ContainsIgnoreCase(id, "shania") || ContainsIgnoreCase(name, "shania"))
                 return "Shania";
             if (ContainsIgnoreCase(id, "shan") || ContainsIgnoreCase(name, "shan"))
@@ -652,7 +594,6 @@ namespace CaseClosed.UI
                 ContainsIgnoreCase(id, "pascual") || ContainsIgnoreCase(name, "pascual"))
                 return "Vonn";
 
-            // Fallback to active suspect profile
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.CurrentSuspect != null)
             {
                 string suspectName = InterrogationManager.Instance.CurrentSuspect.fullName ?? "";
@@ -685,9 +626,6 @@ namespace CaseClosed.UI
             return source != null && target != null && source.IndexOf(target, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        /// <summary>
-        /// Retrieves or instantiates a dialogue box instance from a prefab or scene reference.
-        /// </summary>
         private GameObject EnsureInstance(ref GameObject boxRef, string fallbackName)
         {
             if (boxRef == null)
@@ -732,9 +670,6 @@ namespace CaseClosed.UI
             return newInst;
         }
 
-        /// <summary>
-        /// Ensures the dialogue box has proper Canvas sorting order so text renders above the speech bubble sprite.
-        /// </summary>
         private void ConfigureBoxComponents(GameObject box)
         {
             if (box == null) return;
@@ -753,9 +688,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Searches child GameObjects for the TMPro.TextMeshProUGUI text component.
-        /// </summary>
         public TextMeshProUGUI GetTextMeshProFromBox(GameObject box)
         {
             if (box == null) return null;
@@ -832,9 +764,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Hides all active character dialogue boxes.
-        /// </summary>
         public void DeactivateAllCharacterDialogBoxes()
         {
             if (customDialoguePanel != null) customDialoguePanel.gameObject.SetActive(false);
@@ -954,9 +883,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Places the optional bubble above a world-space evidence item.
-        /// </summary>
         public void AlignToWorldTarget(Transform target)
         {
             if (target == null || bubbleRect == null) return;
@@ -978,10 +904,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Coroutine that animates text character by character with optional typewriter audio clicks.
-        /// Parses TMP text once and reveals characters using unscaled elapsed time.
-        /// </summary>
         private IEnumerator TypeText(string text)
         {
             isTyping = true;
@@ -1026,7 +948,6 @@ namespace CaseClosed.UI
             if (tmpDialogueText != null) tmpDialogueText.maxVisibleCharacters = count;
             if (_activeBoxTmpText != null) _activeBoxTmpText.maxVisibleCharacters = count;
 
-            // Retain support for scenes that still use the legacy Text component.
             if (dialogueBodyText == null && _activeBoxLegacyText == null) return;
             if (hasTmpBody && _activeBoxLegacyText == null &&
                 (dialogueBodyText == null || !dialogueBodyText.isActiveAndEnabled)) return;
@@ -1035,9 +956,6 @@ namespace CaseClosed.UI
             if (_activeBoxLegacyText != null) _activeBoxLegacyText.text = visibleText;
         }
 
-        /// <summary>
-        /// Instantly finishes typing out the current dialogue text, enabling interaction and challenge buttons.
-        /// </summary>
         public void CompleteTypingImmediately()
         {
             if (typewriterCoroutine != null)
@@ -1064,8 +982,6 @@ namespace CaseClosed.UI
             }
             else if (canChallenge && InterrogationManager.Instance != null && !InterrogationManager.Instance.IsChallengeModeActive)
             {
-                // Character-specific dialogue boxes have no challenge button. Once a
-                // challengeable line is readable, immediately enable evidence selection.
                 InterrogationManager.Instance.ToggleChallengeMode(true);
             }
         }
@@ -1081,9 +997,6 @@ namespace CaseClosed.UI
                 (EvidenceManager.Instance == null || !EvidenceManager.Instance.isInspectingModalOpen);
         }
 
-        /// <summary>
-        /// Handles next button clicks after the current line has finished typing.
-        /// </summary>
         private void OnNextButtonClicked()
         {
             if (!CanHandleDialogueInput()) return;
@@ -1098,9 +1011,6 @@ namespace CaseClosed.UI
             InterrogationManager.Instance?.AdvanceDialogue();
         }
 
-        /// <summary>
-        /// Handles challenge button click, toggling challenge mode in the interrogation controller.
-        /// </summary>
         private void OnChallengeButtonClicked()
         {
             bool currentState = InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive;
@@ -1109,10 +1019,6 @@ namespace CaseClosed.UI
             InterrogationManager.Instance?.ToggleChallengeMode(newState);
         }
 
-        /// <summary>
-        /// Hides dialogue during evidence selection and restores the statement when selection is cancelled.
-        /// </summary>
-        /// <param name="isActive">Whether challenge mode is currently enabled.</param>
         private void UpdateChallengeState(bool isActive)
         {
             if (challengeHighlight != null) challengeHighlight.SetActive(isActive);
@@ -1168,18 +1074,12 @@ namespace CaseClosed.UI
             if (label != null) label.text = upper;
         }
 
-        /// <summary>
-        /// Handles dialogue close button click, returning immediately to table exploration mode.
-        /// </summary>
         private void OnCloseButtonClicked()
         {
             Debug.Log("[UI:Dialogue] Close dialogue button clicked");
             InterrogationManager.Instance?.CloseDialogue();
         }
 
-        /// <summary>
-        /// Hides the dialogue panel and all character speech bubbles when dialogue finishes or is closed.
-        /// </summary>
         public void HideDialoguePanel()
         {
             hiddenForEvidenceSelection = false;
@@ -1206,12 +1106,6 @@ namespace CaseClosed.UI
             ArmPointerController.Instance?.ForceSyncState();
         }
 
-        /// <summary>
-        /// Displays the reaction dialogue and updates the speaker name following a challenge attempt.
-        /// Activates the current suspect's character speech bubble.
-        /// </summary>
-        /// <param name="success">Whether the challenge exposed a contradiction.</param>
-        /// <param name="reactionMessage">The reaction dialogue text returned from the challenge.</param>
         private void HandleChallengeResult(bool success, string reactionMessage)
         {
             hiddenForEvidenceSelection = false;

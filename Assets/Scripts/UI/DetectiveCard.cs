@@ -4,7 +4,6 @@ using TMPro;
 
 namespace CaseClosed.UI
 {
-    /// <summary>Reusable dossier surface with authored header, content and footer slots.</summary>
     public class DetectiveCard : MonoBehaviour
     {
         [SerializeField] private Image background;

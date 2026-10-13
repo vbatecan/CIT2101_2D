@@ -4,11 +4,6 @@ using System.IO;
 
 namespace CaseClosed.Editor
 {
-    /// <summary>
-    /// Editor utility under Tools/CaseClosed for applying verified Sprite 2D and UI import settings,
-    /// Full Rect mesh, Bilinear filtering, and 9-slice borders across Assets/Assets.
-    /// Does not move, delete, or rename any project files.
-    /// </summary>
     public static class BulkSpriteImporter
     {
         [MenuItem("Tools/CaseClosed/Apply Bulk Sprite Import Settings")]
@@ -48,7 +43,6 @@ namespace CaseClosed.Editor
                         changed = true;
                     }
 
-                    // Sliced buttons require Full Rect mesh type
                     if (path.Contains("/BUTTONS/"))
                     {
                         TextureImporterSettings texSettings = new TextureImporterSettings();
@@ -61,13 +55,12 @@ namespace CaseClosed.Editor
                         }
                     }
 
-                    // Apply verified 9-slice borders for button templates
                     string filename = Path.GetFileNameWithoutExtension(path);
                     Vector4 targetBorder = Vector4.zero;
 
                     if (filename.Equals("PLAINbox", System.StringComparison.OrdinalIgnoreCase))
                     {
-                        targetBorder = new Vector4(48, 48, 48, 48); // L, B, R, T
+                        targetBorder = new Vector4(48, 48, 48, 48);
                     }
                     else if (filename.Equals("QUESTION_BOX", System.StringComparison.OrdinalIgnoreCase))
                     {

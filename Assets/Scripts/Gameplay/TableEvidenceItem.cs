@@ -6,11 +6,6 @@ using CaseClosed.UI;
 
 namespace CaseClosed.Gameplay
 {
-    /// <summary>
-    /// Gameplay MonoBehaviour attached to physical evidence and interactive items placed on the investigation desk,
-    /// providing luminous glowing aura feedback when hovered by the detective's arm pointer, hover highlights,
-    /// single-click selection/explanation, double-click zoom inspection, and case file notebook opening triggers.
-    /// </summary>
     [RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
     public class TableEvidenceItem : MonoBehaviour
     {
@@ -80,7 +75,6 @@ namespace CaseClosed.Gameplay
         [Tooltip("If true, undiscovered items remain hidden on the desk until discovered. If false, shows as silhouette.")]
         public bool hideWhenUndiscovered = true;
 
-        // Runtime animation state
         private bool isHovered = false;
         private float currentGlowIntensity = 0f;
         private float discoveryCueTimer = 0f;
@@ -88,7 +82,6 @@ namespace CaseClosed.Gameplay
         private bool hasCachedBaseScale = false;
         private Color originalColor = Color.white;
 
-        // Auto-generated glow halo child
         private GameObject haloObj;
         private SpriteRenderer haloRenderer;
         private Collider2D itemCollider;
@@ -209,11 +202,9 @@ namespace CaseClosed.Gameplay
             Camera cam = _cachedMainCamera;
             if (cam == null) return;
 
-            // Disallow desk interaction if UI modal or inspection modal is currently active
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
 
-            // If dialogue is open but challenge mode is NOT active, ignore direct clicks so dialogue input advances text instead
             if (DialogueUI.IsDialogueOpen && (InterrogationManager.Instance == null || !InterrogationManager.Instance.IsChallengeModeActive)) return;
 
             if (itemCollider == null) itemCollider = GetComponent<Collider2D>();
@@ -225,7 +216,6 @@ namespace CaseClosed.Gameplay
 
             bool isOver = itemCollider.OverlapPoint(mouseWorld);
 
-            // If arm pointer is inactive or absent, provide direct cursor hover highlights
             if (ArmPointerController.Instance == null || !ArmPointerController.Instance.isArmActive)
             {
                 if (isOver && !isHovered) SetHoverState(true);
@@ -245,9 +235,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Creates and configures the dedicated glowing silhouette child object behind the evidence item.
-        /// </summary>
         private void SetupGlowHalo()
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
@@ -285,10 +272,6 @@ namespace CaseClosed.Gameplay
             haloObj.SetActive(false);
         }
 
-        /// <summary>
-        /// Smoothly animates glow intensity, breathing pulse oscillation, discovery cue, and subtle scale lift.
-        /// When in Challenge Mode, pulses with a golden selectable aura. Undiscovered items remain black silhouettes.
-        /// </summary>
         private void UpdateGlowAnimation()
         {
             EnsureBaseScaleCached();
@@ -298,7 +281,6 @@ namespace CaseClosed.Gameplay
                 SetupGlowHalo();
             }
 
-            // If undiscovered or doesn't belong to current case, lock state and disable glowing aura
             if (!CheckIsDiscovered() && !openNotebookOnClick)
             {
                 if (haloObj != null && haloObj.activeSelf) haloObj.SetActive(false);
@@ -374,7 +356,6 @@ namespace CaseClosed.Gameplay
 
                     if (isChallengeActive)
                     {
-                        // Pulsating golden challenge aura when waiting for evidence selection
                         activeColor = new Color(1.0f, 0.85f, 0.2f, 0.9f);
                         pulse = 1.0f + Mathf.Sin(Time.time * 5.0f) * 0.08f;
                     }
@@ -449,9 +430,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Auto-sizes BoxCollider2D to match the active sprite's size and center if needed.
-        /// </summary>
         public void AdjustColliderToSprite()
         {
             if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
@@ -468,9 +446,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Attempts to resolve the EvidenceSO data from the active case or assigned identifier.
-        /// </summary>
         public EvidenceSO ResolveEvidenceData()
         {
             CaseManager manager = subscribedCaseManager != null ? subscribedCaseManager : CaseManager.Instance;
@@ -493,7 +468,6 @@ namespace CaseClosed.Gameplay
                 var evList = manager.ActiveCase.evidenceItems;
                 if (evList != null)
                 {
-                    // 1. Exact ID match
                     if (!string.IsNullOrEmpty(evidenceId))
                     {
                         foreach (var ev in evList)
@@ -507,7 +481,6 @@ namespace CaseClosed.Gameplay
                         }
                     }
 
-                    // 2. Loose / partial name match fallback
                     string cleanObjName = gameObject.name.ToUpper();
                     foreach (var ev in evList)
                     {
@@ -524,7 +497,6 @@ namespace CaseClosed.Gameplay
                         }
                     }
 
-                    // 3. Fallback by sibling index among TableEvidenceItem components on the investigation table
                     if (transform.parent != null)
                     {
                         var siblings = transform.parent.GetComponentsInChildren<TableEvidenceItem>(true);
@@ -582,9 +554,6 @@ namespace CaseClosed.Gameplay
             UpdateVisibilityState();
         }
 
-        /// <summary>
-        /// Evaluates whether this item has been discovered yet based on initial case data or runtime CaseManager.
-        /// </summary>
         public bool CheckIsDiscovered()
         {
             if (openNotebookOnClick) return true;
@@ -601,9 +570,6 @@ namespace CaseClosed.Gameplay
             return isDiscovered;
         }
 
-        /// <summary>
-        /// Updates sprite visibility, collider responsiveness, and halo state based on current discovery status.
-        /// </summary>
         public void UpdateVisibilityState()
         {
             if (openNotebookOnClick)
@@ -616,9 +582,6 @@ namespace CaseClosed.Gameplay
             SetItemVisibility(isDiscovered);
         }
 
-        /// <summary>
-        /// Checks whether this evidence item belongs to the active case.
-        /// </summary>
         public bool BelongsToActiveCase()
         {
             if (openNotebookOnClick) return true;
@@ -641,10 +604,6 @@ namespace CaseClosed.Gameplay
             return false;
         }
 
-        /// <summary>
-        /// Updates the visual rendering and collider responsiveness of this table evidence item.
-        /// Discovered items display in full color with interactive glow; items from other cases or undiscovered clues are hidden.
-        /// </summary>
         public void SetItemVisibility(bool visible)
         {
             bool belongs = BelongsToActiveCase();
@@ -695,10 +654,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Callback invoked when any evidence is discovered in CaseManager.
-        /// If this item matches the discovered evidence, reveals it on desk and triggers the discovery glow cue.
-        /// </summary>
         public void HandleEvidenceDiscovered(EvidenceSO ev)
         {
             if (ev == null || openNotebookOnClick) return;
@@ -734,9 +689,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Triggers a luminous discovery flash and pulse glow cue to draw player focus to newly placed clues.
-        /// </summary>
         public void TriggerDiscoveryCue(float duration = -1f)
         {
             discoveryCueTimer = duration > 0f ? duration : discoveryCueDuration;
@@ -770,9 +722,6 @@ namespace CaseClosed.Gameplay
             Debug.Log($"[Gameplay:TableEvidence] Triggered discovery glow cue on '{gameObject.name}' (Duration: {discoveryCueTimer:F1}s)");
         }
 
-        /// <summary>
-        /// Stops any active discovery cue immediately.
-        /// </summary>
         public void StopDiscoveryCue()
         {
             discoveryCueTimer = 0f;
@@ -818,11 +767,6 @@ namespace CaseClosed.Gameplay
             TriggerClick(false);
         }
 
-        /// <summary>
-        /// Programmatically sets the hover visual state (used by ArmPointerController).
-        /// Triggers glowing aura, scale lift, and highlighted sprite change.
-        /// Undiscovered items do not display hover glowing highlights.
-        /// </summary>
         public void SetHoverState(bool isHovered)
         {
             if (isHovered && !CheckIsDiscovered() && !openNotebookOnClick)
@@ -866,18 +810,11 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Programmatically triggers the interaction click on this table item (used by ArmPointerController).
-        /// During Challenge Mode, clicking a discovered item presents it to contradiction verification.
-        /// Undiscovered items play a subtle locked cue.
-        /// </summary>
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
-            // OnMouseDown can reach this handler through UI, bypassing the polling guards.
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
 
-            // 0. If item is undiscovered, clicking gives a locked/dull cue and cannot be inspected or presented
             if (!CheckIsDiscovered() && !openNotebookOnClick)
             {
                 Debug.Log($"[Gameplay:TableEvidence] Clicked undiscovered item '{gameObject.name}'. Clue is not yet revealed.");
@@ -885,7 +822,6 @@ namespace CaseClosed.Gameplay
                 return;
             }
 
-            // 1. Check if configured to open notebook (Open Case Book on desk)
             if (openNotebookOnClick)
             {
                 Debug.Log("[Gameplay:TableEvidence] Opening Case File Notebook from table book click");
@@ -913,10 +849,8 @@ namespace CaseClosed.Gameplay
             string itemName = evidenceData.evidenceName;
             Debug.Log($"[Gameplay:TableEvidence] TriggerClick on '{itemName}' (InspectMode: {isInspectOrRightClick}, OpenNotebook: {openNotebookOnClick})");
 
-            // 2. Select evidence in EvidenceManager
             EvidenceManager.Instance?.SelectEvidence(evidenceData);
 
-            // 3. Challenge selection inspects unread evidence before it can be presented.
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
                 if (isInspectOrRightClick)
@@ -932,10 +866,8 @@ namespace CaseClosed.Gameplay
                 return;
             }
 
-            // If dialogue is open but not in challenge mode, do not inspect items
             if (DialogueUI.IsDialogueOpen) return;
 
-            // 4. Otherwise (exploration mode / dialogue closed), single-click opens close-up inspect modal
             Debug.Log($"[Gameplay:TableEvidence] Opening inspect modal for '{evidenceData.evidenceName}'");
             EvidenceInspectPreviewUI.Instance?.DisplayEvidence(evidenceData);
             string nodeToTrigger = evidenceData != null && !string.IsNullOrEmpty(evidenceData.dialogueNodeToTriggerOnInspect)

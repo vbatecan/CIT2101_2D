@@ -20,7 +20,6 @@ namespace CaseClosed.Editor
                 AssetDatabase.Refresh();
             }
 
-            // 1. Sprites
             Sprite maleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/Case001_Male.png");
             Sprite femaleSprite = LoadSprite("Assets/Assets/CHARACTERS/Jane Reyes.png");
             Sprite photoSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/DoorwayPOV.png", "DoorwayPOV_0");
@@ -30,7 +29,6 @@ namespace CaseClosed.Editor
             Sprite kitchenSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/KitchenPOV.png", "KitchenPOV_0");
             Sprite kitchenZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/KitchenlogTOP.png", "KitchenlogTOP_0");
 
-            // 2. Suspects & Characters
             CharacterProfileSO vince = ScriptableObject.CreateInstance<CharacterProfileSO>();
             vince.characterId = "CHAR_VINCE_BATECAN";
             vince.fullName = "Vince Angelo Batecan";
@@ -75,7 +73,6 @@ namespace CaseClosed.Editor
             miguel.background = "Analytical cyber forensics specialist skilled in digital trails, encrypted logs, and meticulous investigative deduction.";
             SaveAsset(miguel, $"{FolderPath}/Char_MiguelBorja.asset");
 
-            // 3. Evidence Items
             EvidenceSO evPhoto = ScriptableObject.CreateInstance<EvidenceSO>();
             evPhoto.id = "EVD_FAMILY_PHOTO";
             evPhoto.evidenceName = "Family Photograph";
@@ -125,13 +122,11 @@ namespace CaseClosed.Editor
             evKitchen.requiredDialogueNodeId = "NODE_03_TEACUP_LEAD";
             SaveAsset(evKitchen, $"{FolderPath}/Evidence_KitchenLog.asset");
 
-            // 4. Dialogue Tree
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_VINCE_01";
             tree.characterId = vince.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Alibi - Vince)
             DialogueNode node1 = new DialogueNode
             {
                 nodeId = "NODE_01",
@@ -143,7 +138,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1);
 
-            // Node 1B (Witness Interjection - Jane)
             DialogueNode node1b = new DialogueNode
             {
                 nodeId = "NODE_01B_JANE_INTERJECTION",
@@ -155,7 +149,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1b);
 
-            // Node 1C (Defensive Retort - Vince)
             DialogueNode node1c = new DialogueNode
             {
                 nodeId = "NODE_01C_VINCE_RETORT",
@@ -167,7 +160,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1c);
 
-            // Node 1D (Investigator Query - Detective)
             DialogueNode node1d = new DialogueNode
             {
                 nodeId = "NODE_01D_DETECTIVE_PRESS",
@@ -177,7 +169,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1d);
 
-            // Node 2 (First Evidence Lead - Vince)
             DialogueNode node2 = new DialogueNode
             {
                 nodeId = "NODE_02_ROOM_LEAD",
@@ -190,7 +181,6 @@ namespace CaseClosed.Editor
             node2.unlockEvidenceOnComplete.Add("EVD_BROKEN_TEACUP");
             tree.nodes.Add(node2);
 
-            // Node 2B (Crash Observation - Jane)
             DialogueNode node2b = new DialogueNode
             {
                 nodeId = "NODE_02B_JANE_HEARD_CRASH",
@@ -202,7 +192,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node2b);
 
-            // Node 2C (Detective Table Direction)
             DialogueNode node2c = new DialogueNode
             {
                 nodeId = "NODE_02C_DETECTIVE_INSPECT",
@@ -211,7 +200,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node2c);
 
-            // Node 3 (Teacup Lead - Vince)
             DialogueNode node3 = new DialogueNode
             {
                 nodeId = "NODE_03_TEACUP_LEAD",
@@ -224,7 +212,6 @@ namespace CaseClosed.Editor
             node3.unlockEvidenceOnComplete.Add("EVD_KITCHEN_LOG");
             tree.nodes.Add(node3);
 
-            // Node 3B (Kitchen Lock Observation - Jane)
             DialogueNode node3b = new DialogueNode
             {
                 nodeId = "NODE_03B_JANE_KITCHEN_LOCK",
@@ -236,7 +223,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3b);
 
-            // Node 3C (Detective Warning - Detective)
             DialogueNode node3c = new DialogueNode
             {
                 nodeId = "NODE_03C_DETECTIVE_CHALLENGE",
@@ -246,7 +232,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3c);
 
-            // Node 4 (Contradictory Alibi - Vince)
             DialogueNode node4 = new DialogueNode
             {
                 nodeId = "NODE_04_FINAL_ALIBI",
@@ -259,7 +244,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node4);
 
-            // Node 5 (Confession - Vince)
             DialogueNode node5 = new DialogueNode
             {
                 nodeId = "NODE_05_CONFESSION",
@@ -271,7 +255,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5);
 
-            // Node 5B (Jane Shocked)
             DialogueNode node5b = new DialogueNode
             {
                 nodeId = "NODE_05B_JANE_SHOCKED",
@@ -283,7 +266,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5b);
 
-            // Node 5C (Vince Desperate)
             DialogueNode node5c = new DialogueNode
             {
                 nodeId = "NODE_05C_VINCE_DESPERATE",
@@ -295,7 +277,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5c);
 
-            // Node 5D (Detective Conclusion)
             DialogueNode node5d = new DialogueNode
             {
                 nodeId = "NODE_05D_DETECTIVE_CLOSE",
@@ -305,7 +286,6 @@ namespace CaseClosed.Editor
             tree.nodes.Add(node5d);
             SaveAsset(tree, $"{FolderPath}/Dialogue_Vince01.asset");
 
-            // 5. Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_VINCE_ALIBI_LIE";
             rule1.ruleTitle = "Locked Kitchen Contradiction";
@@ -318,7 +298,6 @@ namespace CaseClosed.Editor
             rule1.unlockedClueText = "Vince Angelo Batecan confessed to staging the break-in for debt money!";
             SaveAsset(rule1, $"{FolderPath}/Rule_VinceAlibiLie.asset");
 
-            // 6. Clue Connection
             ClueConnectionSO conn1 = ScriptableObject.CreateInstance<ClueConnectionSO>();
             conn1.connectionId = "CONN_VINCE_TIMELINE";
             conn1.connectionTitle = "Photo Silhouette & Kitchen Log";
@@ -329,7 +308,6 @@ namespace CaseClosed.Editor
             conn1.deductionText = "The kitchen log proves Vince was not in the kitchen, while the photo places him right outside the study door!";
             SaveAsset(conn1, $"{FolderPath}/Conn_VinceTimeline.asset");
 
-            // 7. CaseSO
             CaseSO case01 = ScriptableObject.CreateInstance<CaseSO>();
             case01.levelNumber = 1;
             case01.caseId = "LEVEL_01";

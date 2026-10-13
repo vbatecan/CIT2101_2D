@@ -6,15 +6,10 @@ using CaseClosed.Services;
 
 namespace CaseClosed.Managers
 {
-    /// <summary>
-    /// Unity-facing adapter for interrogation flow. Inspector defaults remain serialized on this
-    /// component while <see cref="InterrogationSessionState"/> owns mutable conversation state.
-    /// </summary>
     public class InterrogationManager : MonoBehaviour
     {
         private static InterrogationManager _instance;
 
-        /// <summary>Singleton instance of the InterrogationManager.</summary>
         public static InterrogationManager Instance
         {
             get
@@ -39,40 +34,28 @@ namespace CaseClosed.Managers
         private readonly InterrogationService interrogationService = new InterrogationService();
         private bool hasStartedSession;
 
-        /// <summary>The current suspect or witness being interrogated.</summary>
         public CharacterProfileSO CurrentSuspect => hasStartedSession ? sessionState.CurrentSuspect : currentSuspect;
 
-        /// <summary>The active dialogue tree.</summary>
         public DialogueTreeSO CurrentDialogueTree => hasStartedSession ? sessionState.CurrentDialogueTree : currentDialogueTree;
 
-        /// <summary>The current active dialogue statement node.</summary>
         public DialogueNode CurrentNode => hasStartedSession ? sessionState.CurrentNode : currentNode;
 
-        /// <summary>Whether challenge mode is active and awaiting evidence presentation.</summary>
         public bool IsChallengeModeActive => hasStartedSession ? sessionState.IsChallengeModeActive : isChallengeModeActive;
 
-        /// <summary>Whether the failure reaction is currently being displayed.</summary>
         public bool IsShowingFailureReaction => hasStartedSession ? sessionState.IsShowingFailureReaction : isShowingFailureReaction;
 
-        /// <summary>The last challengeable statement node before a failed challenge.</summary>
         public DialogueNode LastChallengeableNode => hasStartedSession ? sessionState.LastChallengeableNode : null;
 
-        /// <summary>Event raised when the interrogated suspect changes.</summary>
         public event Action<CharacterProfileSO> OnSuspectChanged;
 
-        /// <summary>Event raised when a dialogue node is presented.</summary>
         public event Action<DialogueNode> OnDialogueNodeDisplayed;
 
-        /// <summary>Event raised when the suspect's facial expression changes.</summary>
         public event Action<CharacterExpression> OnExpressionChanged;
 
-        /// <summary>Event raised when challenge mode is toggled on or off.</summary>
         public event Action<bool> OnChallengeModeToggled;
 
-        /// <summary>Event raised when a challenge attempt completes (success flag, response message).</summary>
         public event Action<bool, string> OnChallengeResult;
 
-        /// <summary>Event raised when dialogue is dismissed or completed.</summary>
         public event Action OnDialogueClosed;
 
         private void Awake()
@@ -88,7 +71,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Starts from optional Inspector defaults when both a suspect and tree are configured.</summary>
         private void Start()
         {
             if (!hasStartedSession && currentSuspect != null && currentDialogueTree != null && currentNode == null)
@@ -101,7 +83,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Sets the active suspect and dialogue tree for a new interrogation session.</summary>
         public void SetInterrogationTarget(CharacterProfileSO suspect, DialogueTreeSO dialogueTree)
         {
             sessionState.Begin(suspect, dialogueTree);
@@ -116,7 +97,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Navigates to a specific dialogue node by its identifier.</summary>
         public void JumpToNode(string nodeId)
         {
             DialogueTreeSO dialogueTree = CurrentDialogueTree;
@@ -140,7 +120,6 @@ namespace CaseClosed.Managers
             OnExpressionChanged?.Invoke(CurrentNode.expression);
         }
 
-        /// <summary>Defers an evidence explanation until the player finishes inspecting.</summary>
         public void QueueInspectionDialogue(string nodeId)
         {
             EnsureSessionState();
@@ -158,7 +137,6 @@ namespace CaseClosed.Managers
             sessionState.QueueInspectionEvidence(evidence);
         }
 
-        /// <summary>Plays an unseen explanation once per interrogation session.</summary>
         public void PlayPendingInspectionDialogue()
         {
             EnsureSessionState();
@@ -172,7 +150,6 @@ namespace CaseClosed.Managers
             if (!string.IsNullOrEmpty(nodeId)) JumpToNode(nodeId);
         }
 
-        /// <summary>Advances the dialogue to its default next node when no challenge is active.</summary>
         public void AdvanceDialogue()
         {
             EnsureSessionState();
@@ -209,7 +186,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Applies story evidence rewards after the player finishes a dialogue node.</summary>
         private static void CompleteCurrentNode(DialogueNode node)
         {
             if (node == null || CaseManager.Instance == null || node.unlockEvidenceOnComplete == null) return;
@@ -220,7 +196,6 @@ namespace CaseClosed.Managers
             }
         }
 
-        /// <summary>Closes the active dialogue window and resets transient challenge state.</summary>
         public void CloseDialogue()
         {
             EnsureSessionState();
@@ -234,7 +209,6 @@ namespace CaseClosed.Managers
             OnDialogueClosed?.Invoke();
         }
 
-        /// <summary>Toggles challenge mode on the current node if that node is challengeable.</summary>
         public void ToggleChallengeMode(bool enable)
         {
             DialogueNode node = CurrentNode;
@@ -251,7 +225,6 @@ namespace CaseClosed.Managers
             OnChallengeModeToggled?.Invoke(IsChallengeModeActive);
         }
 
-        /// <summary>Evaluates evidence presented against the current challengeable statement.</summary>
         public void PresentEvidenceToChallenge(EvidenceSO presentedEvidence)
         {
             PresentEvidenceToChallenge(presentedEvidence, false);
@@ -271,8 +244,6 @@ namespace CaseClosed.Managers
             if (evidenceManager != null && (evidenceManager.isInspectingModalOpen ||
                 (!inspectionCompleted && evidenceManager.LastInspectionClosedFrame == Time.frameCount))) return;
 
-            // Keep the statement active while the player reads. Closing inspection
-            // submits the queued evidence automatically.
             if (!caseManager.IsEvidenceExamined(presentedEvidence))
             {
                 if (evidenceManager != null) evidenceManager.OpenInspectModal(presentedEvidence, null);

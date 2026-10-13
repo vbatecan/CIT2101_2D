@@ -5,15 +5,12 @@ using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
-    /// <summary>
-    /// Represents an inspectable 2D hotspot region located on an evidence item during close-up examination.
-    /// </summary>
     [Serializable]
     public class EvidenceHotspot
     {
         public string hotspotId;
         public string hotspotTitle;
-        public Vector2 normalizedPosition; // Normalized (0 to 1) offset on zoomed sprite
+        public Vector2 normalizedPosition;
         public float radius = 0.1f;
         [TextArea(2, 5)]
         public string observationText;
@@ -22,9 +19,6 @@ namespace CaseClosed.Data
         public bool isDiscovered;
     }
 
-    /// <summary>
-    /// ScriptableObject defining an evidence item, including visual sprites, detailed descriptions, and inspectable hotspots.
-    /// </summary>
     [CreateAssetMenu(fileName = "NewEvidence", menuName = "Case Closed/Evidence Item")]
     public class EvidenceSO : ScriptableObject
     {
@@ -42,9 +36,6 @@ namespace CaseClosed.Data
         [Tooltip("Optional custom background sprite for top-down inspection. If null, defaults to TableTOPVIEW.")]
         public Sprite customInspectBackground;
 
-        /// <summary>
-        /// Gets the top-down perspective sprite (TopPOV) for this evidence item, falling back to zoomedSprite or normalSprite if unassigned.
-        /// </summary>
         public Sprite GetTopPovSprite()
         {
             if (topPovSprite != null) return topPovSprite;
@@ -75,10 +66,6 @@ namespace CaseClosed.Data
         [Header("Inspectable Hotspots")]
         public List<EvidenceHotspot> hotspots = new List<EvidenceHotspot>();
 
-        /// <summary>
-        /// Legacy no-op retained for source compatibility. Runtime session state is reset by
-        /// <see cref="CaseClosed.Services.CaseSessionState.Begin"/> instead of mutating this asset.
-        /// </summary>
         [Obsolete("Runtime evidence state belongs to CaseSessionState. Load a new case session instead.")]
         public void ResetRuntimeState()
         {

@@ -6,10 +6,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.Editor
 {
-    /// <summary>
-    /// Editor utility for automatically finding, creating, and wiring up the <see cref="AudioManager"/>
-    /// and its associated audio clips across all scenes in the project.
-    /// </summary>
     public static class AudioManagerSetupUtility
     {
         private static readonly string[] ScenePaths = new string[]
@@ -47,7 +43,6 @@ namespace CaseClosed.Editor
                 }
             }
 
-            // Return to initial scene if applicable
             if (!string.IsNullOrEmpty(currentActiveScene) && File.Exists(currentActiveScene))
             {
                 EditorSceneManager.OpenScene(currentActiveScene, OpenSceneMode.Single);
@@ -75,10 +70,6 @@ namespace CaseClosed.Editor
             Debug.Log($"[AudioManagerSetup] Auto-assigned audio clips to AudioManager on '{target.gameObject.name}'.");
         }
 
-        /// <summary>
-        /// Finds or creates an AudioManager GameObject in the active scene and assigns all clips and audio sources.
-        /// </summary>
-        /// <returns>True if modifications were made; otherwise false.</returns>
         public static bool SetupAudioManagerInCurrentScene()
         {
             AudioManager audioMgr = Object.FindFirstObjectByType<AudioManager>();
@@ -104,15 +95,10 @@ namespace CaseClosed.Editor
             return true;
         }
 
-        /// <summary>
-        /// Assigns all audio clips from Assets/Audio/ and configures 3 AudioSources (BGM, SFX, Typewriter).
-        /// </summary>
-        /// <param name="audioMgr">The target AudioManager component.</param>
         public static void AssignClipsAndSources(AudioManager audioMgr)
         {
             if (audioMgr == null) return;
 
-            // 1. Configure Audio Sources on GameObject
             AudioSource[] sources = audioMgr.GetComponents<AudioSource>();
             AudioSource bgm = null;
             AudioSource sfx = null;
@@ -126,7 +112,6 @@ namespace CaseClosed.Editor
             if (sfx == null) sfx = audioMgr.gameObject.AddComponent<AudioSource>();
             if (typewriter == null) typewriter = audioMgr.gameObject.AddComponent<AudioSource>();
 
-            // Setup 2D properties
             bgm.playOnAwake = false;
             bgm.loop = true;
             bgm.spatialBlend = 0f;
@@ -146,7 +131,6 @@ namespace CaseClosed.Editor
             audioMgr.sfxSource = sfx;
             audioMgr.typewriterSource = typewriter;
 
-            // 2. Load Clips from Assets/Audio
             audioMgr.investigationBGM = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/INVESTIGATION BGM.mp3");
             audioMgr.interrogationBGM = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/INTERROGATION BGM.mp3");
             audioMgr.highTensionBGM = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/HIGH TENSION BGM.mp3");
@@ -158,7 +142,7 @@ namespace CaseClosed.Editor
 
             audioMgr.contradictionFoundSFX = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/CONTRADICTION SFX.mp3");
             audioMgr.clueDiscoveredSFX = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/CLUE DISCOVERED SFX.mp3");
-            audioMgr.deductionLinkedSFX = audioMgr.clueDiscoveredSFX; // Fallback link
+            audioMgr.deductionLinkedSFX = audioMgr.clueDiscoveredSFX;
             audioMgr.caseSolvedSFX = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/CASE SOLVED SFX.mp3");
             audioMgr.caseFailedSFX = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/CASE FAILED SFX.mp3");
         }

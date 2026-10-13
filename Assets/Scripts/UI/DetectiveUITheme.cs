@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 namespace CaseClosed.UI
 {
-    /// <summary>Shared runtime presentation for dossier panels and their actions.</summary>
     internal static class DetectiveUITheme
     {
         internal static readonly Color Paper = new Color(0.98f, 0.97f, 0.93f, 1f);
@@ -39,7 +38,6 @@ namespace CaseClosed.UI
         {
             if (roundedSprite != null) return roundedSprite;
 
-            // One small antialiased sprite, shared and nine-sliced instead of stretching corners.
             const int size = 64;
             const float radius = 16f;
             Color[] pixels = new Color[size * size];

@@ -3,10 +3,6 @@ using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
-    /// <summary>
-    /// ScriptableObject defining a contradiction rule, mapping statement nodes to required evidence items
-    /// and character reaction states.
-    /// </summary>
     [CreateAssetMenu(fileName = "NewContradictionRule", menuName = "Case Closed/Contradiction Rule")]
     public class ContradictionRuleSO : ScriptableObject
     {
@@ -17,7 +13,7 @@ namespace CaseClosed.Data
         [Header("Trigger Requirements")]
         public string targetStatementNodeId;
         public string requiredEvidenceId;
-        public string requiredClueId; // Optional specific clue requirement
+        public string requiredClueId;
 
         [Header("Character Reaction")]
         public CharacterExpression reactionExpression = CharacterExpression.Shocked;

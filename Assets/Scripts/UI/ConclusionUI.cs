@@ -7,11 +7,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the conclusion quiz presentation, option selection,
-    /// and final results scorecard rendering.
-    /// Can be dragged directly onto the ConclusionPanel GameObject in the Unity Inspector.
-    /// </summary>
     public class ConclusionUI : MonoBehaviour
     {
         [Header("Quiz Elements")]
@@ -80,7 +75,6 @@ namespace CaseClosed.UI
         private bool _hasStartedQuiz = false;
         private CaseSO _loadedCase = null;
 
-        // Scene-authored UI containers and components.
         [SerializeField] private GameObject _flowRoot;
         [SerializeField] private GameObject _startScreenObj;
         [SerializeField] private GameObject _questionScreenObj;
@@ -105,9 +99,6 @@ namespace CaseClosed.UI
         private readonly List<Text> _choiceTexts = new List<Text>();
         private readonly List<Outline> _choiceOutlines = new List<Outline>();
 
-        /// <summary>
-        /// Binds UI button click listeners on start.
-        /// </summary>
         private void Start()
         {
             BindFlowButtons();
@@ -120,17 +111,11 @@ namespace CaseClosed.UI
             if (resultsContainer != null) resultsContainer.SetActive(false);
         }
 
-        /// <summary>
-        /// Rebuilds quiz options whenever the conclusion UI panel is enabled, restoring any saved answers.
-        /// </summary>
         private void OnEnable()
         {
             SetupQuiz();
         }
 
-        /// <summary>
-        /// Initializes or restores the player answer list and displays the appropriate screen.
-        /// </summary>
         private void SetupQuiz()
         {
 
@@ -159,7 +144,6 @@ namespace CaseClosed.UI
                 resultTitleText.gameObject.SetActive(false);
             }
 
-            // If activeCase has changed, reset state for the new case
             CaseManager manager = CaseManager.Instance;
             bool sessionWasReset = manager != null && manager.ConclusionAnswers.Count == 0 &&
                 playerAnswers.Exists(answer => answer >= 0);
@@ -181,7 +165,6 @@ namespace CaseClosed.UI
                 playerAnswers.RemoveRange(totalQ, playerAnswers.Count - totalQ);
             }
 
-            // Restore from CaseManager session state
             if (manager != null)
             {
                 for (int i = 0; i < totalQ; i++)
@@ -243,9 +226,6 @@ namespace CaseClosed.UI
             flowButtonsBound = true;
         }
 
-        /// <summary>
-        /// Shows the initial Start prompt screen.
-        /// </summary>
         private void ShowStartScreen()
         {
             if (_startScreenObj != null)
@@ -267,9 +247,6 @@ namespace CaseClosed.UI
             if (returnToInvestigationButton != null) returnToInvestigationButton.gameObject.SetActive(true);
         }
 
-        /// <summary>
-        /// Handler for Start button click: initiates or resumes the questionnaire.
-        /// </summary>
         private void OnStartQuizClicked()
         {
             AudioManager.Instance?.PlayButtonClick();
@@ -285,9 +262,6 @@ namespace CaseClosed.UI
             RenderCurrentQuestion();
         }
 
-        /// <summary>
-        /// Renders the current question and choice option buttons using QUESTION_BOX.
-        /// </summary>
         private void RenderCurrentQuestion()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -299,7 +273,6 @@ namespace CaseClosed.UI
 
             ConclusionQuestion q = activeCase.conclusionQuestions[_currentQuestionIndex];
 
-            // Render Question Box
             if (_questionBoxText != null)
             {
                 _questionBoxText.text = $"<size=14>FINAL REPORT   /   QUESTION {_currentQuestionIndex + 1} OF {totalQuestions}</size>\n\n{q.questionText}";
@@ -358,7 +331,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Update Navigation Buttons: Next on Q1..Q4, Confirm on Q5
             bool isLastQuestion = (_currentQuestionIndex == totalQuestions - 1);
             if (_nextButtonObj != null) _nextButtonObj.SetActive(!isLastQuestion);
             if (_confirmButtonObj != null) _confirmButtonObj.SetActive(isLastQuestion);
@@ -373,10 +345,6 @@ namespace CaseClosed.UI
             RenderCurrentQuestion();
         }
 
-        /// <summary>
-        /// Selects a choice for the current question and updates button highlight.
-        /// </summary>
-        /// <param name="choiceIndex">The option index chosen by the player.</param>
         private void SelectChoice(int choiceIndex)
         {
             AudioManager.Instance?.PlayButtonClick();
@@ -390,9 +358,6 @@ namespace CaseClosed.UI
             UpdateChoiceVisuals();
         }
 
-        /// <summary>
-        /// Updates the visual highlight and text labels for choice buttons based on current selection.
-        /// </summary>
         private void UpdateChoiceVisuals()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -427,9 +392,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Advances to the next question after recording an answer.
-        /// </summary>
         private void OnNextQuestionClicked()
         {
             if (playerAnswers[_currentQuestionIndex] < 0)
@@ -448,9 +410,6 @@ namespace CaseClosed.UI
             RenderCurrentQuestion();
         }
 
-        /// <summary>
-        /// Confirms the final question and concludes the case.
-        /// </summary>
         private void OnConfirmCaseClicked()
         {
             if (playerAnswers[_currentQuestionIndex] < 0)
@@ -468,9 +427,6 @@ namespace CaseClosed.UI
             OnSubmitClicked();
         }
 
-        /// <summary>
-        /// Handles case evaluation submission in <see cref="CaseConclusionManager"/> and displaying results.
-        /// </summary>
         private void OnSubmitClicked()
         {
             Debug.Log($"[UI:Conclusion] Submit conclusion button clicked. Answers count: {playerAnswers.Count}");
@@ -525,10 +481,6 @@ namespace CaseClosed.UI
             }
         }
 
-
-        /// <summary>
-        /// Handles a failed conclusion by restarting the active level from its initial state.
-        /// </summary>
         private void OnContinueClicked()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -546,9 +498,6 @@ namespace CaseClosed.UI
                 UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
 
-        /// <summary>
-        /// Handles click on next level button, progressing from Level 1 -> Level 2 -> Level 3 or opening selection.
-        /// </summary>
         private void OnNextLevelClicked()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -583,9 +532,6 @@ namespace CaseClosed.UI
             OnMainMenuClicked();
         }
 
-        /// <summary>
-        /// Handles click on return to main menu button, navigating back to the main menu.
-        /// </summary>
         private void OnMainMenuClicked()
         {
             Debug.Log("[UI:Conclusion] Return to Main Menu button clicked");

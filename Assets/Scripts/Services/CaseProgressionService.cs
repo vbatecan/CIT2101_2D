@@ -2,10 +2,6 @@ using System;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Storage abstraction interface for saving and retrieving case progression data.
-    /// Keeps progression rules separate from the persistence backend.
-    /// </summary>
     public interface IProgressionStorage
     {
         bool HasKey(string key);
@@ -15,9 +11,6 @@ namespace CaseClosed.Services
         void Save();
     }
 
-    /// <summary>
-    /// Unity PlayerPrefs-backed progression storage implementation.
-    /// </summary>
     public class PlayerPrefsProgressionStorage : IProgressionStorage
     {
         public bool HasKey(string key) => UnityEngine.PlayerPrefs.HasKey(key);
@@ -27,10 +20,6 @@ namespace CaseClosed.Services
         public void Save() => UnityEngine.PlayerPrefs.Save();
     }
 
-    /// <summary>
-    /// Pure C# domain service tracking unlocked and completed cases across the detective campaign.
-    /// Zero MonoBehaviour dependencies.
-    /// </summary>
     public class CaseProgressionService
     {
         public const string PrefKeyCaseCompletedPrefix = "CaseClosed_CaseCompleted_";
@@ -52,46 +41,26 @@ namespace CaseClosed.Services
 
         private IProgressionStorage _storage;
 
-        /// <summary>Event raised whenever case completion or unlock status changes.</summary>
         public event Action OnProgressionChanged;
 
-        /// <summary>
-        /// Initializes the service with a specified storage backend (defaults to PlayerPrefs).
-        /// </summary>
-        /// <param name="storage">Custom storage implementation or null for PlayerPrefs.</param>
         public CaseProgressionService(IProgressionStorage storage = null)
         {
             _storage = storage ?? new PlayerPrefsProgressionStorage();
         }
 
-        /// <summary>
-        /// Configures a new storage backend.
-        /// </summary>
         public void SetStorage(IProgressionStorage storage)
         {
             _storage = storage ?? new PlayerPrefsProgressionStorage();
             OnProgressionChanged?.Invoke();
         }
 
-        /// <summary>
-        /// Determines whether the specified case level is unlocked and available to play.
-        /// Case 01 is always unlocked by default. Case N is unlocked if Case N-1 is completed.
-        /// </summary>
-        /// <param name="levelNumber">1-based level index (1, 2, 3, etc.).</param>
-        /// <returns>True if the case is unlocked; otherwise false.</returns>
         public bool IsCaseUnlocked(int levelNumber)
         {
             if (levelNumber <= 1) return true;
 
-            // Level N is unlocked if level N - 1 has been completed
             return IsCaseCompleted(levelNumber - 1);
         }
 
-        /// <summary>
-        /// Checks whether the specified case level has been solved and completed.
-        /// </summary>
-        /// <param name="levelNumber">1-based level index.</param>
-        /// <returns>True if completed; otherwise false.</returns>
         public bool IsCaseCompleted(int levelNumber)
         {
             if (levelNumber < 1) return false;
@@ -99,11 +68,6 @@ namespace CaseClosed.Services
             return _storage.GetInt(key, 0) == 1;
         }
 
-        /// <summary>
-        /// Marks a case as completed (or incomplete) and persists the state.
-        /// </summary>
-        /// <param name="levelNumber">1-based level index.</param>
-        /// <param name="completed">Whether the case was completed.</param>
         public void SetCaseCompleted(int levelNumber, bool completed = true)
         {
             if (levelNumber < 1) return;
@@ -125,9 +89,6 @@ namespace CaseClosed.Services
             OnProgressionChanged?.Invoke();
         }
 
-        /// <summary>
-        /// Returns the highest level number unlocked so far.
-        /// </summary>
         public int GetHighestUnlockedLevel()
         {
             int highest = 1;
@@ -139,9 +100,6 @@ namespace CaseClosed.Services
             return highest;
         }
 
-        /// <summary>
-        /// Resets all campaign progress, locking all cases except Case 01.
-        /// </summary>
         public void ResetProgression(int maxCasesToClear = 10)
         {
             for (int i = 1; i <= maxCasesToClear; i++)

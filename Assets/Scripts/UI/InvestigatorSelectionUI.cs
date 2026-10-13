@@ -8,10 +8,6 @@ using CaseClosed.Prototype;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the case level selector.
-    /// Allows the player to choose which case level (Level 1, Level 2, Level 3) to investigate.
-    /// </summary>
     public class InvestigatorSelectionUI : MonoBehaviour
     {
 
@@ -24,9 +20,6 @@ namespace CaseClosed.UI
         [Header("Navigation Buttons")]
         public Button closeSelectionButton;
 
-        /// <summary>
-        /// Binds UI button listeners for level selection and close actions.
-        /// </summary>
         private void Start()
         {
             if (level1Button != null)
@@ -60,17 +53,11 @@ namespace CaseClosed.UI
             UIButtonHighlightSystem.ApplyToHierarchy(gameObject);
         }
 
-        /// <summary>
-        /// Refreshes UI indicators whenever the selection panel is enabled.
-        /// </summary>
         private void OnEnable()
         {
             RefreshUI();
         }
 
-        /// <summary>
-        /// Refreshes the display text showing the active level.
-        /// </summary>
         public void RefreshUI()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -83,10 +70,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles loading a specific case level (1, 2, or 3).
-        /// </summary>
-        /// <param name="levelIndex">The 1-based level index.</param>
         private void OnSelectLevel(int levelIndex)
         {
             GameBootstrap bootstrap = FindFirstObjectByType<GameBootstrap>();
@@ -106,9 +89,6 @@ namespace CaseClosed.UI
             UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
         }
 
-        /// <summary>
-        /// Closes the selection modal and returns to the investigation table.
-        /// </summary>
         private void OnCloseClicked()
         {
             UIManager.Instance?.ToggleInvestigatorSelectPanel();

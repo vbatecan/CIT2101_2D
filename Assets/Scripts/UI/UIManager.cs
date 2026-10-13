@@ -10,13 +10,8 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Master UI View coordinator MonoBehaviour managing canvas panel states, modal dialogs, and navigation buttons.
-    /// Can be dragged directly onto the Canvas/UIManager GameObject in the Unity Inspector.
-    /// </summary>
     public class UIManager : MonoBehaviour
     {
-        /// <summary>Singleton instance of the UIManager.</summary>
         public static UIManager Instance { get; private set; }
 
         [Header("UI Panels")]
@@ -59,17 +54,12 @@ namespace CaseClosed.UI
         private const string ResultsSceneName = "ResultScreen";
         private const string GameOverSceneName = "GameOver";
 
-        /// <summary>The currently active UI panel type.</summary>
         public UIPanelType currentPanel => _currentPanel;
 
-        /// <summary>
-        /// Initializes the singleton instance.
-        /// </summary>
         private void Awake()
         {
             Instance = this;
 
-            // Enforce sharp font rasterization and pixel-perfect canvas alignment at runtime
             Canvas canvas = GetComponent<Canvas>();
             if (canvas != null)
             {
@@ -93,9 +83,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Shows the initial UI panel and hooks event listeners on start.
-        /// </summary>
         private void Start()
         {
             if (returnToMenuButton != null)
@@ -267,9 +254,6 @@ namespace CaseClosed.UI
             UnregisterEvents();
         }
 
-        /// <summary>
-        /// Registers event handlers for modal transitions and case expiration notifications.
-        /// </summary>
         private void RegisterEvents()
         {
             EvidenceManager evidenceManager = EvidenceManager.Instance;
@@ -454,15 +438,10 @@ namespace CaseClosed.UI
             ShowPanel(UIPanelType.GameOver);
         }
 
-        /// <summary>
-        /// Activates the requested UI panel and deactivates all other mutually exclusive panels.
-        /// </summary>
-        /// <param name="panelType">The target <see cref="UIPanelType"/> to activate.</param>
         public void ShowPanel(UIPanelType panelType)
         {
             RegisterEvents();
 
-            // Keep old serialized navigation callbacks compatible with the retired selector.
             if (panelType == UIPanelType.InvestigatorSelect)
                 panelType = UIPanelType.InvestigationTable;
 
@@ -533,7 +512,6 @@ namespace CaseClosed.UI
                 gameOverPanel.SetActive(false);
             }
 
-            // Toggle in-game header navigation visibility (hidden during MainMenu, Evidence Inspection, Results, and GameOver)
             bool showHeaderNav = !isMainMenu && !isInspect && !isGameOver && !isResults && !isInGameMenu;
             if (timerContainer != null) timerContainer.SetActive(showHeaderNav);
             if (notebookButton != null) notebookButton.SetActive(showHeaderNav);
@@ -543,7 +521,6 @@ namespace CaseClosed.UI
             if (investigatorSelectButton != null) investigatorSelectButton.SetActive(false);
             if (returnToMenuButton != null) returnToMenuButton.SetActive(showHeaderNav);
 
-            // Control countdown timer state across panels
             if (isMainMenu || isResults || isGameOver || isInGameMenu)
             {
                 CaseManager.Instance?.PauseTimer();
@@ -559,7 +536,6 @@ namespace CaseClosed.UI
             UpdateOutcomeScenes();
         }
 
-        /// <summary>Displays an evaluated case in the separate result scene.</summary>
         public void ShowResults(CaseEvaluationResult result)
         {
             if (result == null) return;
@@ -616,7 +592,6 @@ namespace CaseClosed.UI
                         break;
                     }
                     yield return SceneManager.LoadSceneAsync(requestedScene, LoadSceneMode.Additive);
-                    // Navigation may have changed while the scene was loading.
                     continue;
                 }
                 SetOutcomeSceneVisible(requestedScene, true);
@@ -643,9 +618,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Navigates back to the main menu screen.
-        /// </summary>
         public void ReturnToMainMenu()
         {
             Debug.Log("[UI:Manager] Returning to Main Menu");
@@ -662,7 +634,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>Opens or closes the in-game menu without unloading the active case.</summary>
         public void ToggleInGameMenu()
         {
             if (currentPanel == UIPanelType.InGameMenu)
@@ -677,14 +648,12 @@ namespace CaseClosed.UI
             ShowPanel(UIPanelType.InGameMenu);
         }
 
-        /// <summary>Returns from the in-game menu to the panel that was open before it.</summary>
         public void CloseInGameMenu()
         {
             if (currentPanel != UIPanelType.InGameMenu) return;
             ShowPanel(_panelBeforeInGameMenu);
         }
 
-        /// <summary>Displays the confirmation prompt before leaving the active case.</summary>
         public void OpenMainMenuConfirmation()
         {
             if (currentPanel != UIPanelType.InGameMenu) return;
@@ -695,30 +664,22 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>Closes the leave-case confirmation and keeps the in-game menu open.</summary>
         public void CloseMainMenuConfirmation()
         {
             if (mainMenuConfirmPanel != null) mainMenuConfirmPanel.SetActive(false);
         }
 
-        /// <summary>Leaves the active case after the player confirms the main-menu navigation.</summary>
         public void ConfirmReturnToMainMenu()
         {
             CloseMainMenuConfirmation();
             ReturnToMainMenu();
         }
 
-        /// <summary>
-        /// Compatibility callback for old investigator selection button bindings.
-        /// </summary>
         public void ToggleInvestigatorSelectPanel()
         {
             ShowPanel(UIPanelType.InvestigationTable);
         }
 
-        /// <summary>
-        /// Toggles the case file notebook panel on and off.
-        /// </summary>
         public void ToggleNotebookPanel()
         {
             Debug.Log("[UI:Manager] Toggle notebook panel clicked");
@@ -728,9 +689,6 @@ namespace CaseClosed.UI
                 ShowPanel(UIPanelType.CaseFileNotebook);
         }
 
-        /// <summary>
-        /// Toggles the suspect dossier folder panel on and off.
-        /// </summary>
         public void ToggleSuspectFolderPanel()
         {
             Debug.Log("[UI:Manager] Toggle suspect folder panel clicked");
@@ -740,9 +698,6 @@ namespace CaseClosed.UI
                 ShowPanel(UIPanelType.SuspectFolder);
         }
 
-        /// <summary>
-        /// Toggles the deduction board panel on and off.
-        /// </summary>
         public void ToggleDeductionBoardPanel()
         {
             Debug.Log("[UI:Manager] Toggle deduction board panel clicked");
@@ -752,9 +707,6 @@ namespace CaseClosed.UI
                 ShowPanel(UIPanelType.DeductionBoard);
         }
 
-        /// <summary>
-        /// Opens the final case conclusion quiz panel.
-        /// </summary>
         public void OpenConclusionQuiz()
         {
             if (CaseManager.Instance == null || !CaseManager.Instance.IsReadyForConclusion()) return;

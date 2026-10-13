@@ -4,11 +4,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Attaches to any TextMeshProUGUI element to enforce standardized font, sizing, colors,
-    /// and spacing based on its designated FontRole in UITheme.
-    /// Preserves the existing text string while upgrading typography.
-    /// </summary>
     [ExecuteAlways]
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class ThemedText : MonoBehaviour
@@ -78,7 +73,7 @@ namespace CaseClosed.UI
                 _tmp.fontSizeMax = style.maxFontSize;
             }
 
-            _tmp.lineSpacing = (style.lineSpacing - 1f) * 100f; // TMP line spacing adjustment
+            _tmp.lineSpacing = (style.lineSpacing - 1f) * 100f;
             _tmp.characterSpacing = style.characterSpacing;
 
             if (!overrideColor)

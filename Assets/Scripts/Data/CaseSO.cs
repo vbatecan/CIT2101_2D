@@ -4,9 +4,6 @@ using UnityEngine;
 
 namespace CaseClosed.Data
 {
-    /// <summary>
-    /// Represents a multiple-choice question presented in the case conclusion quiz.
-    /// </summary>
     [Serializable]
     public class ConclusionQuestion
     {
@@ -17,9 +14,6 @@ namespace CaseClosed.Data
         public int pointValue = 250;
     }
 
-    /// <summary>
-    /// ScriptableObject defining an entire detective case file, including suspects, evidence, dialogue trees, and conclusion quiz.
-    /// </summary>
     [CreateAssetMenu(fileName = "NewCase", menuName = "Case Closed/Case File")]
     public class CaseSO : ScriptableObject
     {
@@ -55,13 +49,13 @@ namespace CaseClosed.Data
         [Header("Scoring Criteria")]
         public int totalKeyEvidenceCount = 5;
         public int totalContradictionsCount = 3;
-        public float parCompletionTimeSeconds = 300f; // 5 mins
+        public float parCompletionTimeSeconds = 300f;
 
         [Header("Time Limit Configuration")]
         [Tooltip("Whether this case has an active countdown time limit.")]
         public bool hasTimeLimit = true;
 
         [Tooltip("Configurable countdown time limit in seconds for solving the case before investigation fails (Game Over).")]
-        public float timeLimitSeconds = 300f; // 5 mins default
+        public float timeLimitSeconds = 300f;
     }
 }

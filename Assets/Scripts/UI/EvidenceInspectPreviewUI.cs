@@ -7,10 +7,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Transforms the top-right placeholder frame into a live evidence inspection preview.
-    /// Displays zoomed artwork, evidence title, observations, and an 'Add to Notebook' button.
-    /// </summary>
     public class EvidenceInspectPreviewUI : MonoBehaviour
     {
         public static EvidenceInspectPreviewUI Instance { get; private set; }

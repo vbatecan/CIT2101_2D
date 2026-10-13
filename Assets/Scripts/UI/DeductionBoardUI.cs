@@ -7,12 +7,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View coordinator for the Deduction Board (Mind Palace).
-    /// Dynamically renders discovered clues as interactive pins/cards, highlights active pair selections,
-    /// presents deduction feedback banners, and provides a close button to return to the investigation desk.
-    /// Can be attached directly to the Panel_DeductionBoard GameObject in the Unity Inspector.
-    /// </summary>
     public class DeductionBoardUI : MonoBehaviour
     {
         [Header("Header & Close Controls")]
@@ -98,9 +92,6 @@ namespace CaseClosed.UI
             eventsRegistered = false;
         }
 
-        /// <summary>
-        /// Refreshes the clues list, completed deductions, and current selection status.
-        /// </summary>
         public void RefreshBoard()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -116,11 +107,6 @@ namespace CaseClosed.UI
             RenderCompletedDeductions(activeCase);
         }
 
-        /// <summary>
-        /// Dynamically renders clickable cards/buttons for all unlocked clues and discovered evidence base clues.
-        /// Supports clueCardPrefab instantiation with zero-GC fallbacks.
-        /// </summary>
-        /// <param name="activeCase">The currently active case.</param>
         private void RenderClueCards(CaseSO activeCase)
         {
             if (cluesContainer == null) return;
@@ -136,10 +122,8 @@ namespace CaseClosed.UI
             CaseManager caseManager = CaseManager.Instance;
             var unlockedClues = caseManager?.UnlockedCluesText;
 
-            // Collect unique clue entries: (ClueID, DisplayTitle, BodyText)
             var clueEntries = new List<(string id, string title, string text)>();
 
-            // 1. Evidence base clues
             if (activeCase.evidenceItems != null && caseManager != null)
             {
                 foreach (var ev in activeCase.evidenceItems)
@@ -153,7 +137,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // 2. Unlocked clues from hotspots / contradictions
             if (unlockedClues != null)
             {
                 foreach (var kvp in unlockedClues)
@@ -161,7 +144,6 @@ namespace CaseClosed.UI
                     string clueId = kvp.Key;
                     string clueText = kvp.Value;
 
-                    // Avoid duplicate if already added via base clue
                     if (clueEntries.Exists(c => c.id == clueId)) continue;
 
                     string displayTitle = GetClueTitle(activeCase, clueId);
@@ -171,7 +153,6 @@ namespace CaseClosed.UI
 
             string selectedA = DeductionBoardController.Instance?.FirstSelectedClueId;
 
-            // Instantiate buttons for each clue entry
             foreach (var entry in clueEntries)
             {
                 string currentId = entry.id;
@@ -236,7 +217,6 @@ namespace CaseClosed.UI
                     continue;
                 }
 
-                // Procedural fallback
                 GameObject fallbackObj = new GameObject($"ClueCard_{currentId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
                 fallbackObj.transform.SetParent(cluesContainer, false);
 
@@ -246,7 +226,6 @@ namespace CaseClosed.UI
                 Image fallbackImg = fallbackObj.GetComponent<Image>();
                 fallbackImg.color = isSelected ? SelectedCardColor : NormalCardColor;
 
-                // Add text child
                 GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
                 textObj.transform.SetParent(fallbackObj.transform, false);
 
@@ -277,10 +256,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Formats and displays the list of completed deductions.
-        /// </summary>
-        /// <param name="activeCase">The active case containing clue connections.</param>
         private void RenderCompletedDeductions(CaseSO activeCase)
         {
             if (completedDeductionsBody == null) return;
@@ -399,9 +374,6 @@ namespace CaseClosed.UI
             RefreshBoard();
         }
 
-        /// <summary>
-        /// Handles click on close button, returning to the investigation desk view.
-        /// </summary>
         private void OnCloseClicked()
         {
             Debug.Log("[UI:DeductionBoard] Close button clicked -> returning to desk");

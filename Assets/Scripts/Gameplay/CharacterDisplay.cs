@@ -6,11 +6,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.Gameplay
 {
-    /// <summary>
-    /// Gameplay MonoBehaviour managing character portraits/sprites across table views.
-    /// Supports multi-character setups (Primary and Secondary suspects) sitting side-by-side across the interrogation table.
-    /// Can be dragged directly onto character GameObjects in the Unity Inspector.
-    /// </summary>
     public class CharacterDisplay : MonoBehaviour
     {
         [Header("Character Slot Assignment")]
@@ -32,9 +27,6 @@ namespace CaseClosed.Gameplay
             expressionLibrary = Resources.Load<CharacterExpressionLibrarySO>("CharacterExpressions");
         }
 
-        /// <summary>
-        /// Subscribes to case and interrogation manager events.
-        /// </summary>
         private void Start()
         {
             if (InterrogationManager.Instance != null)
@@ -57,14 +49,10 @@ namespace CaseClosed.Gameplay
                     UpdateSuspectProfile(CaseManager.Instance.EffectiveInvestigator);
                 }
             }
-            // The initializer may have displayed the opening node before this component subscribed.
             if (InterrogationManager.Instance != null)
                 HandleDialogueNodeDisplayed(InterrogationManager.Instance.CurrentNode);
         }
 
-        /// <summary>
-        /// Unsubscribes from case and interrogation manager events when destroyed.
-        /// </summary>
         private void OnDestroy()
         {
             if (InterrogationManager.Instance != null)
@@ -81,10 +69,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Handles case loading event, populating character portrait based on slot configuration.
-        /// </summary>
-        /// <param name="activeCase">The newly loaded case.</param>
         private void HandleCaseLoaded(CaseSO activeCase)
         {
             if (activeCase == null) return;
@@ -137,10 +121,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Handles investigator change event from case manager.
-        /// </summary>
-        /// <param name="investigator">The new active investigator profile.</param>
         private void HandleInvestigatorChanged(CharacterProfileSO investigator)
         {
             if (characterSlot == CharacterSlot.Investigator)
@@ -149,10 +129,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Handles suspect change event from interrogation manager.
-        /// </summary>
-        /// <param name="suspect">The new suspect profile.</param>
         private void HandleSuspectChanged(CharacterProfileSO suspect)
         {
             if (characterSlot == CharacterSlot.AutoDetect)
@@ -161,10 +137,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Handles dialogue node display event to dynamically update expressions for the speaking character.
-        /// </summary>
-        /// <param name="node">The currently displayed dialogue node.</param>
         private void HandleDialogueNodeDisplayed(DialogueNode node)
         {
             if (node == null || activeSuspect == null) return;
@@ -178,10 +150,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Handles character expression change event.
-        /// </summary>
-        /// <param name="expression">The new expression state.</param>
         private void HandleExpressionChanged(CharacterExpression expression)
         {
             if (activeSuspect != null)
@@ -196,7 +164,6 @@ namespace CaseClosed.Gameplay
                     return;
                 }
 
-                // Fallback: only react if this display corresponds to the active suspect being interrogated
                 CharacterProfileSO currentInterrogated = InterrogationManager.Instance?.CurrentSuspect;
                 if (characterSlot == CharacterSlot.AutoDetect || currentInterrogated == null || currentInterrogated.characterId == activeSuspect.characterId)
                 {
@@ -205,10 +172,6 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Updates the displayed character to a new suspect profile, setting their default sitting pose sprite.
-        /// </summary>
-        /// <param name="suspect">The suspect profile to display.</param>
         public void UpdateSuspectProfile(CharacterProfileSO suspect)
         {
             activeSuspect = suspect;
@@ -221,14 +184,9 @@ namespace CaseClosed.Gameplay
             }
         }
 
-        /// <summary>
-        /// Changes the active suspect's facial expression to match the requested emotion.
-        /// </summary>
-        /// <param name="expression">The <see cref="CharacterExpression"/> to display.</param>
         public void SetExpression(CharacterExpression expression)
         {
             if (activeSuspect == null) return;
-            // Explicit profile mappings override the shared art library.
             if (activeSuspect.expressions != null)
             {
                 foreach (ExpressionSpriteMapping mapping in activeSuspect.expressions)
@@ -253,10 +211,6 @@ namespace CaseClosed.Gameplay
             if (sprite != null) SetSprite(sprite);
         }
 
-        /// <summary>
-        /// Applies a sprite to either the UI Image or the SpriteRenderer component.
-        /// </summary>
-        /// <param name="sprite">The sprite to render.</param>
         private void SetSprite(Sprite sprite)
         {
             if (characterPortraitImage != null)

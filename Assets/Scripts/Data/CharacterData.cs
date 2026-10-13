@@ -7,14 +7,10 @@ namespace CaseClosed.Data
     [Serializable]
     public class MoodExpression
     {
-        public string mood; // e.g. "Normal", "Nervous", "Defensive", "Shocked"
+        public string mood;
         public Sprite expressionSprite;
     }
 
-    /// <summary>
-    /// Single source of truth ScriptableObject for a character/suspect, linking
-    /// dialogue strips, portrait boxes, facial expressions, and dossier descriptions.
-    /// </summary>
     [CreateAssetMenu(fileName = "NewCharacterData", menuName = "Case Closed/Character Data")]
     public class CharacterData : ScriptableObject
     {

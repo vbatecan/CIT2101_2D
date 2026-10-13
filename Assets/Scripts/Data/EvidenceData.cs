@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace CaseClosed.Data
 {
-    /// <summary>
-    /// Single source of truth ScriptableObject for an Evidence Item.
-    /// Connects desk perspective (TablePOV) and enlarged inspect perspective (TopPOV).
-    /// </summary>
     [CreateAssetMenu(fileName = "NewEvidenceData", menuName = "Case Closed/Evidence Data")]
     public class EvidenceData : ScriptableObject
     {

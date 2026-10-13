@@ -5,7 +5,6 @@ using CaseClosed.Enums;
 
 namespace CaseClosed.Data
 {
-    /// <summary>Shared authored art for both asset-backed and runtime-created character profiles.</summary>
     [CreateAssetMenu(fileName = "CharacterExpressions", menuName = "Case Closed/Character Expression Library")]
     public class CharacterExpressionLibrarySO : ScriptableObject
     {

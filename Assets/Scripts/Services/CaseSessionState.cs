@@ -4,10 +4,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Owns all mutable state for one loaded case. Authoring ScriptableObjects are read only;
-    /// callers must use the named operations below for every case-session transition.
-    /// </summary>
     public sealed class CaseSessionState
     {
         private readonly HashSet<string> _discoveredEvidenceIds = new HashSet<string>();
@@ -23,13 +19,10 @@ namespace CaseClosed.Services
         private float _accumulatedElapsedTime;
         private float _lastResumeTimestamp;
 
-        /// <summary>Authored case data currently being played.</summary>
         public CaseSO ActiveCase { get; private set; }
 
-        /// <summary>Player-selected investigator for this session, if one was selected.</summary>
         public CharacterProfileSO SelectedInvestigator { get; private set; }
 
-        /// <summary>Investigator that should be presented to the player for this session.</summary>
         public CharacterProfileSO EffectiveInvestigator => SelectedInvestigator ?? ActiveCase?.leadInvestigator;
 
         public IReadOnlyCollection<string> DiscoveredEvidenceIds => _discoveredEvidenceIds;
@@ -54,10 +47,6 @@ namespace CaseClosed.Services
 
         public float CaseTimeLimit => ActiveCase != null ? ActiveCase.timeLimitSeconds : 0f;
 
-        /// <summary>
-        /// Starts a new isolated session. The supplied time is infrastructure input so this
-        /// type remains independent of Unity's clock and can be tested without a scene.
-        /// </summary>
         public void Begin(CaseSO caseData, CharacterProfileSO investigator, float currentTime)
         {
             ActiveCase = caseData;
@@ -171,7 +160,6 @@ namespace CaseClosed.Services
             return key != null && _discoveredHotspotKeys.Contains(key);
         }
 
-        /// <summary>Counts discovered hotspots for an authored evidence item in this session.</summary>
         public int GetDiscoveredHotspotCount(EvidenceSO evidence)
         {
             if (evidence == null || evidence.hotspots == null) return 0;

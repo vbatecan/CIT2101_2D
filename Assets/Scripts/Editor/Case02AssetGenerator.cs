@@ -20,7 +20,6 @@ namespace CaseClosed.Editor
                 AssetDatabase.Refresh();
             }
 
-            // 1. Load Sprites
             Sprite charlSprite = LoadSprite("Assets/Assets/CHARACTERS/Vonn Pascual.png", "Vonn_0") ?? LoadSprite("Assets/Assets/CHARACTERS/Vonn.png", "Vonn_0");
             Sprite paulSprite = LoadSprite("Assets/Assets/CHARACTERS/Paul Camacho.png", "Paul_0") ?? LoadSprite("Assets/Assets/CHARACTERS/Paul.png", "Paul_0");
 
@@ -33,7 +32,6 @@ namespace CaseClosed.Editor
             Sprite insuranceTableSprite = LoadSprite("Assets/Assets/EVIDENCES/TablePOV/InsurancePOV.png", "InsurancePOV_0") ?? LoadSprite("Assets/Assets/EVIDENCES/TablePOV/InsurancePOV.png");
             Sprite insuranceZoomSprite = LoadSprite("Assets/Assets/EVIDENCES/TopPOV/InsuranceTOP.png", "InsuranceTOP_0") ?? LoadSprite("Assets/Assets/EVIDENCES/TopPOV/InsuranceTOP.png");
 
-            // 2. Suspects & Characters
             CharacterProfileSO charl = ScriptableObject.CreateInstance<CharacterProfileSO>();
             charl.characterId = "CHAR_CHARL_PASCUAL";
             charl.fullName = "Charl Vonn Pascual";
@@ -58,8 +56,6 @@ namespace CaseClosed.Editor
             paul.defaultSittingPose = paulSprite;
             SaveOrUpdateAsset(paul, $"{FolderPath}/Char_PaulCamacho.asset");
 
-            // 3. Evidence Items
-            // 3.1 Crime Scene Photo (Window Frame)
             EvidenceSO evWindowPhoto = ScriptableObject.CreateInstance<EvidenceSO>();
             evWindowPhoto.id = "EVD_WINDOW_PHOTO";
             evWindowPhoto.evidenceName = "Window Frame Crime Scene Photo";
@@ -84,7 +80,6 @@ namespace CaseClosed.Editor
             evWindowPhoto.hotspots.Add(spotGlass);
             SaveOrUpdateAsset(evWindowPhoto, $"{FolderPath}/Evidence_WindowPhoto.asset");
 
-            // 3.2 Security Guard Shift Log
             EvidenceSO evShiftLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evShiftLog.id = "EVD_SHIFT_LOG";
             evShiftLog.evidenceName = "Security Guard Shift Log";
@@ -100,7 +95,6 @@ namespace CaseClosed.Editor
             evShiftLog.dialogueNodeToTriggerOnInspect = "NODE_03_SHIFT_LEAD";
             SaveOrUpdateAsset(evShiftLog, $"{FolderPath}/Evidence_SecurityLog.asset");
 
-            // 3.3 Art Insurance Policy
             EvidenceSO evInsurance = ScriptableObject.CreateInstance<EvidenceSO>();
             evInsurance.id = "EVD_INSURANCE_POLICY";
             evInsurance.evidenceName = "Art Insurance Policy";
@@ -115,13 +109,11 @@ namespace CaseClosed.Editor
             evInsurance.requiredDialogueNodeId = "NODE_03_SHIFT_LEAD";
             SaveOrUpdateAsset(evInsurance, $"{FolderPath}/Evidence_InsurancePolicy.asset");
 
-            // 4. Dialogue Tree (TREE_CHARL_01)
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_CHARL_01";
             tree.characterId = charl.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Guard Statement - Charl)
             DialogueNode node1 = new DialogueNode
             {
                 nodeId = "NODE_01",
@@ -134,7 +126,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1);
 
-            // Node 1B (Gallery Owner Backing - Paul)
             DialogueNode node1b = new DialogueNode
             {
                 nodeId = "NODE_01B_PAUL_DEFENDS",
@@ -147,7 +138,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1b);
 
-            // Node 1C (Detective Pressing)
             DialogueNode node1c = new DialogueNode
             {
                 nodeId = "NODE_01C_DETECTIVE_INTERVIEW",
@@ -158,7 +148,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node1c);
 
-            // Node 2 (Window Lead - Charl)
             DialogueNode node2 = new DialogueNode
             {
                 nodeId = "NODE_02_WINDOW_LEAD",
@@ -172,7 +161,6 @@ namespace CaseClosed.Editor
             node2.unlockEvidenceOnComplete.Add("EVD_SHIFT_LOG");
             tree.nodes.Add(node2);
 
-            // Node 2B (Paul Diverting Attention - Paul)
             DialogueNode node2b = new DialogueNode
             {
                 nodeId = "NODE_02B_PAUL_DIVERT",
@@ -185,7 +173,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node2b);
 
-            // Node 2C (Detective Table Direction)
             DialogueNode node2c = new DialogueNode
             {
                 nodeId = "NODE_02C_DETECTIVE_PHOTO",
@@ -196,7 +183,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node2c);
 
-            // Node 3 (Shift Lead - Charl)
             DialogueNode node3 = new DialogueNode
             {
                 nodeId = "NODE_03_SHIFT_LEAD",
@@ -210,7 +196,6 @@ namespace CaseClosed.Editor
             node3.unlockEvidenceOnComplete.Add("EVD_INSURANCE_POLICY");
             tree.nodes.Add(node3);
 
-            // Node 3B (Detective Evidence Confrontation)
             DialogueNode node3b = new DialogueNode
             {
                 nodeId = "NODE_03B_CONFIRMATION",
@@ -221,7 +206,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3b);
 
-            // Node 3C (Paul Defensive on Motive - Paul)
             DialogueNode node3c = new DialogueNode
             {
                 nodeId = "NODE_03C_PAUL_DEFENSIVE",
@@ -234,7 +218,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3c);
 
-            // Node 3D (Detective Stamping Policy)
             DialogueNode node3d = new DialogueNode
             {
                 nodeId = "NODE_03D_DETECTIVE_POLICY",
@@ -245,7 +228,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node3d);
 
-            // Node 4 (Final Guard Statement - Challengeable)
             DialogueNode node4 = new DialogueNode
             {
                 nodeId = "NODE_04_FINAL_STATEMENT",
@@ -259,7 +241,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node4);
 
-            // Node 5 (Exposed Guard Confession - Charl)
             DialogueNode node5 = new DialogueNode
             {
                 nodeId = "NODE_05_CONFESSION",
@@ -272,7 +253,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5);
 
-            // Node 5B (Paul Panicking & Furious - Paul)
             DialogueNode node5b = new DialogueNode
             {
                 nodeId = "NODE_05B_PAUL_OUTRAGED",
@@ -285,7 +265,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5b);
 
-            // Node 5C (Charl Countering Paul - Charl)
             DialogueNode node5c = new DialogueNode
             {
                 nodeId = "NODE_05C_CHARL_EVIDENCE",
@@ -298,7 +277,6 @@ namespace CaseClosed.Editor
             };
             tree.nodes.Add(node5c);
 
-            // Node 5D (Detective Conclusion)
             DialogueNode node5d = new DialogueNode
             {
                 nodeId = "NODE_05D_DETECTIVE_CLOSE",
@@ -311,7 +289,6 @@ namespace CaseClosed.Editor
 
             SaveOrUpdateAsset(tree, $"{FolderPath}/Dialogue_Charl01.asset");
 
-            // 5. Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_CHARL_LOCATION_LIE";
             rule1.ruleTitle = "False Guard Location";
@@ -325,7 +302,6 @@ namespace CaseClosed.Editor
             rule1.scoreBonus = 100;
             SaveOrUpdateAsset(rule1, $"{FolderPath}/Rule_CharlLocationLie.asset");
 
-            // 6. Clue Connection
             ClueConnectionSO conn1 = ScriptableObject.CreateInstance<ClueConnectionSO>();
             conn1.connectionId = "CONN_INSURANCE_FRAUD";
             conn1.connectionTitle = "Outside Glass & Doubled Insurance";
@@ -336,7 +312,6 @@ namespace CaseClosed.Editor
             conn1.deductionText = "The window broken from the inside combined with Paul doubling insurance 48h earlier confirms staged fraud!";
             SaveOrUpdateAsset(conn1, $"{FolderPath}/Conn_InsuranceFraud.asset");
 
-            // 7. CaseSO Data
             CaseSO case02 = ScriptableObject.CreateInstance<CaseSO>();
             case02.levelNumber = 2;
             case02.caseId = "LEVEL_02";
@@ -362,7 +337,6 @@ namespace CaseClosed.Editor
             case02.hasTimeLimit = true;
             case02.timeLimitSeconds = 300f;
 
-            // Conclusion Questions (canonical from docs)
             case02.conclusionQuestions.Add(new ConclusionQuestion
             {
                 questionId = "Q_SUSPECT",

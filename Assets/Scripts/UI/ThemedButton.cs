@@ -8,10 +8,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Unified button component driven by UITheme. Manages variant styling (Primary, Danger, Secondary, etc.),
-    /// smooth hover/press transitions, accessible keyboard navigation, audio feedback, and disabled state tooltips.
-    /// </summary>
     [RequireComponent(typeof(Button))]
     public class ThemedButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
     {
@@ -109,7 +105,7 @@ namespace CaseClosed.UI
                         textColor = theme.creamPaper;
                         break;
                     case ButtonVariant.FolderCardButton:
-                        baseColor = Color.white; // uses sliced folder sprite
+                        baseColor = Color.white;
                         textColor = theme.deepInk;
                         break;
                     case ButtonVariant.Primary:
@@ -122,7 +118,6 @@ namespace CaseClosed.UI
 
             if (_button != null)
             {
-                // Configure clean color tints for standard uGUI button
                 _button.transition = Selectable.Transition.ColorTint;
                 ColorBlock colors = _button.colors;
                 colors.normalColor = baseColor;

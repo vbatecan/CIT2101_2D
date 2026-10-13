@@ -7,10 +7,6 @@ using CaseClosed.UI;
 
 namespace CaseClosed.Prototype
 {
-    /// <summary>
-    /// Prototype Level 3 Initializer: Generates the "The Last Call" case data at runtime.
-    /// Can be dragged directly onto a GameObject in the Unity Inspector.
-    /// </summary>
     public class Case03Initializer : MonoBehaviour
     {
         [Header("Case Data Source (Optional)")]
@@ -22,7 +18,6 @@ namespace CaseClosed.Prototype
             set => _caseDataAsset = value;
         }
 
-        /// <summary>Whether to automatically initialize and load Case 03 on Start.</summary>
         public bool initializeOnStart = false;
 
         [Header("Character Portraits")]
@@ -39,9 +34,6 @@ namespace CaseClosed.Prototype
         public Sprite cctvZoomedSprite;
         public Sprite terminationZoomedSprite;
 
-        /// <summary>
-        /// Automatically loads Case 03 on start if <see cref="initializeOnStart"/> is enabled.
-        /// </summary>
         private void Start()
         {
             if (initializeOnStart)
@@ -58,11 +50,6 @@ namespace CaseClosed.Prototype
             }
         }
 
-        /// <summary>
-        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 3: The Last Call,
-        /// or returns the assigned pre-configured <see cref="CaseSO"/> data asset if available.
-        /// </summary>
-        /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase03Data()
         {
             if (_caseDataAsset != null)
@@ -95,7 +82,6 @@ namespace CaseClosed.Prototype
             c.totalContradictionsCount = 1;
             c.hasTimeLimit = true;
             c.timeLimitSeconds = 300f;
-            // Primary Witness / Suspect: Shanaia Ortega (Lead Software Developer)
             CharacterProfileSO shanaia = ScriptableObject.CreateInstance<CharacterProfileSO>();
             shanaia.characterId = "CHAR_SHANAIA_ORTEGA";
             shanaia.fullName = "Shanaia Ortega";
@@ -108,7 +94,6 @@ namespace CaseClosed.Prototype
             shanaia.defaultSittingPose = shanaiaSuspectSprite;
             c.primarySuspect = shanaia;
 
-            // Secondary Witness / Key Informant: Shan Jaraba
             CharacterProfileSO shan = ScriptableObject.CreateInstance<CharacterProfileSO>();
             shan.characterId = "CHAR_SHAN_JARABA";
             shan.fullName = "Shan Jaraba";
@@ -120,7 +105,6 @@ namespace CaseClosed.Prototype
             shan.defaultSittingPose = shanWitnessSprite;
             c.additionalSuspects.Add(shan);
 
-            // Register Investigator Profile: Detective Miguel Borja
             CharacterProfileSO miguel = ScriptableObject.CreateInstance<CharacterProfileSO>();
             miguel.characterId = "CHAR_MIGUEL_BORJA";
             miguel.fullName = "Detective Miguel Borja";
@@ -130,8 +114,6 @@ namespace CaseClosed.Prototype
             miguel.background = "High-tech forensics specialist with expertise in electronic logs, cyber forensics, and spotting technical alibi inconsistencies.";
             CaseManager.Instance?.RegisterAvailableInvestigator(miguel);
 
-            // Evidence Items
-            // 1. Victim's Smartphone Log
             EvidenceSO evPhoneLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evPhoneLog.id = "EVD_SMARTPHONE_LOG";
             evPhoneLog.evidenceName = "Victim's Smartphone Call Log";
@@ -145,7 +127,6 @@ namespace CaseClosed.Prototype
             evPhoneLog.startsDiscovered = true;
             c.evidenceItems.Add(evPhoneLog);
 
-            // 2. Coffee Shop CCTV Still
             EvidenceSO evCctv = ScriptableObject.CreateInstance<EvidenceSO>();
             evCctv.id = "EVD_CCTV_STILL";
             evCctv.evidenceName = "Coffee Shop CCTV Frame";
@@ -169,7 +150,6 @@ namespace CaseClosed.Prototype
             evCctv.hotspots.Add(spotJacket);
             c.evidenceItems.Add(evCctv);
 
-            // 3. Resignation Letter Draft
             EvidenceSO evDraft = ScriptableObject.CreateInstance<EvidenceSO>();
             evDraft.id = "EVD_RESIGNATION_LETTER";
             evDraft.evidenceName = "Termination Notice Draft";
@@ -183,13 +163,11 @@ namespace CaseClosed.Prototype
             evDraft.requiredDialogueNodeId = "NODE_03_CCTV_LEAD";
             c.evidenceItems.Add(evDraft);
 
-            // Dialogue Tree for Shanaia Ortega and Shan Jaraba
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_SHANAIA_01";
             tree.characterId = shanaia.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Statement - Shanaia)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = shanaia.characterId;
@@ -199,7 +177,6 @@ namespace CaseClosed.Prototype
             node1.defaultNextNodeId = "NODE_01B_SHAN_STATEMENT";
             tree.nodes.Add(node1);
 
-            // Node 1B (Manager Testimony - Shan)
             DialogueNode node1b = new DialogueNode();
             node1b.nodeId = "NODE_01B_SHAN_STATEMENT";
             node1b.speakerId = shan.characterId;
@@ -209,7 +186,6 @@ namespace CaseClosed.Prototype
             node1b.defaultNextNodeId = "NODE_01C_SHANAIA_DISMISS";
             tree.nodes.Add(node1b);
 
-            // Node 1C (Shanaia Dismissive - Shanaia)
             DialogueNode node1c = new DialogueNode();
             node1c.nodeId = "NODE_01C_SHANAIA_DISMISS";
             node1c.speakerId = shanaia.characterId;
@@ -219,7 +195,6 @@ namespace CaseClosed.Prototype
             node1c.defaultNextNodeId = "NODE_01D_DETECTIVE_INTERVIEW";
             tree.nodes.Add(node1c);
 
-            // Node 1D (Detective Interview)
             DialogueNode node1d = new DialogueNode();
             node1d.nodeId = "NODE_01D_DETECTIVE_INTERVIEW";
             node1d.speakerName = "Detective";
@@ -227,7 +202,6 @@ namespace CaseClosed.Prototype
             node1d.defaultNextNodeId = "NODE_02_PHONE_LEAD";
             tree.nodes.Add(node1d);
 
-            // Node 2 (Phone Lead - Shanaia)
             DialogueNode node2 = new DialogueNode();
             node2.nodeId = "NODE_02_PHONE_LEAD";
             node2.speakerId = shanaia.characterId;
@@ -238,7 +212,6 @@ namespace CaseClosed.Prototype
             node2.defaultNextNodeId = "NODE_02B_SHAN_ALARMED";
             tree.nodes.Add(node2);
 
-            // Node 2B (Shan Mentioning Call - Shan)
             DialogueNode node2b = new DialogueNode();
             node2b.nodeId = "NODE_02B_SHAN_ALARMED";
             node2b.speakerId = shan.characterId;
@@ -248,14 +221,12 @@ namespace CaseClosed.Prototype
             node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_CCTV";
             tree.nodes.Add(node2b);
 
-            // Node 2C (Detective Table Direction)
             DialogueNode node2c = new DialogueNode();
             node2c.nodeId = "NODE_02C_DETECTIVE_CCTV";
             node2c.speakerName = "Detective";
             node2c.statementText = "An encrypted call at 7:15 PM... The security still from the cafe's back exit camera should verify who arrived right before that call.";
             tree.nodes.Add(node2c);
 
-            // Node 3 (CCTV Lead - Shanaia)
             DialogueNode node3 = new DialogueNode();
             node3.nodeId = "NODE_03_CCTV_LEAD";
             node3.speakerId = shanaia.characterId;
@@ -266,7 +237,6 @@ namespace CaseClosed.Prototype
             node3.defaultNextNodeId = "NODE_03B_SHAN_JACKET";
             tree.nodes.Add(node3);
 
-            // Node 3B (Shan Identifying Jacket - Shan)
             DialogueNode node3b = new DialogueNode();
             node3b.nodeId = "NODE_03B_SHAN_JACKET";
             node3b.speakerId = shan.characterId;
@@ -276,7 +246,6 @@ namespace CaseClosed.Prototype
             node3b.defaultNextNodeId = "NODE_03C_CONFIRMATION";
             tree.nodes.Add(node3b);
 
-            // Node 3C (Detective Confirmation)
             DialogueNode node3c = new DialogueNode();
             node3c.nodeId = "NODE_03C_CONFIRMATION";
             node3c.speakerName = "Detective";
@@ -284,7 +253,6 @@ namespace CaseClosed.Prototype
             node3c.defaultNextNodeId = "NODE_03D_DETECTIVE_DRAFT";
             tree.nodes.Add(node3c);
 
-            // Node 3D (Detective Termination Notice Draft)
             DialogueNode node3d = new DialogueNode();
             node3d.nodeId = "NODE_03D_DETECTIVE_DRAFT";
             node3d.speakerName = "Detective";
@@ -292,7 +260,6 @@ namespace CaseClosed.Prototype
             node3d.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
             tree.nodes.Add(node3d);
 
-            // Node 4 (Final Statement - Shanaia)
             DialogueNode node4 = new DialogueNode();
             node4.nodeId = "NODE_04_FINAL_STATEMENT";
             node4.speakerId = shanaia.characterId;
@@ -303,7 +270,6 @@ namespace CaseClosed.Prototype
             node4.targetContradictionRuleId = "RULE_SHANAIA_TIMELINE_LIE";
             tree.nodes.Add(node4);
 
-            // Node 5 (Angry / Shocked Confession - Shanaia)
             DialogueNode node5 = new DialogueNode();
             node5.nodeId = "NODE_05_CONFESSION";
             node5.speakerId = shanaia.characterId;
@@ -313,7 +279,6 @@ namespace CaseClosed.Prototype
             node5.defaultNextNodeId = "NODE_05B_SHAN_DISAPPOINTED";
             tree.nodes.Add(node5);
 
-            // Node 5B (Shan Disappointed - Shan)
             DialogueNode node5b = new DialogueNode();
             node5b.nodeId = "NODE_05B_SHAN_DISAPPOINTED";
             node5b.speakerId = shan.characterId;
@@ -323,7 +288,6 @@ namespace CaseClosed.Prototype
             node5b.defaultNextNodeId = "NODE_05C_SHANAIA_BITTER";
             tree.nodes.Add(node5b);
 
-            // Node 5C (Shanaia Bitter - Shanaia)
             DialogueNode node5c = new DialogueNode();
             node5c.nodeId = "NODE_05C_SHANAIA_BITTER";
             node5c.speakerId = shanaia.characterId;
@@ -333,7 +297,6 @@ namespace CaseClosed.Prototype
             node5c.defaultNextNodeId = "NODE_05D_DETECTIVE_CLOSE";
             tree.nodes.Add(node5c);
 
-            // Node 5D (Detective Conclusion)
             DialogueNode node5d = new DialogueNode();
             node5d.nodeId = "NODE_05D_DETECTIVE_CLOSE";
             node5d.speakerName = "Detective";
@@ -342,7 +305,6 @@ namespace CaseClosed.Prototype
 
             c.dialogueTrees.Add(tree);
 
-            // Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_SHANAIA_TIMELINE_LIE";
             rule1.ruleTitle = "False Departure Claim";
@@ -355,7 +317,6 @@ namespace CaseClosed.Prototype
             rule1.unlockedClueText = "Shanaia Ortega confessed to sneaking back at 7:10 PM and stealing the prototype drive!";
             c.contradictionRules.Add(rule1);
 
-            // Clue Connection
             ClueConnectionSO conn1 = ScriptableObject.CreateInstance<ClueConnectionSO>();
             conn1.connectionId = "CONN_SHANAIA_DIGITAL_TRAIL";
             conn1.connectionTitle = "CCTV Entry & Encrypted Phone Call";
@@ -366,7 +327,6 @@ namespace CaseClosed.Prototype
             conn1.deductionText = "CCTV footage places Shanaia at the back door at 7:10 PM, right before her 7:15 PM encrypted phone call!";
             c.clueConnections.Add(conn1);
 
-            // Conclusion Questions
             ConclusionQuestion q1 = new ConclusionQuestion();
             q1.questionId = "Q_SUSPECT";
             q1.questionText = "Who stole Kurt Miguel Ancheta's prototype drive?";

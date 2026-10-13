@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Handles smooth tactile transitions (hover lift, click punch, reset) for buttons
-    /// using coroutines without per-frame allocations.
-    /// </summary>
     public class ButtonStateAnimator : MonoBehaviour
     {
         [Header("Animation Properties")]

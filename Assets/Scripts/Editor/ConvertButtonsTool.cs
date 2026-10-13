@@ -6,10 +6,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.Editor
 {
-    /// <summary>
-    /// Editor tool under Tools/CaseClosed/Convert Buttons to ThemedButton that upgrades
-    /// standard uGUI Buttons to ThemedButton in place, preserving existing OnClick listeners.
-    /// </summary>
     public static class ConvertButtonsTool
     {
         [MenuItem("Tools/CaseClosed/Convert Buttons to ThemedButton")]

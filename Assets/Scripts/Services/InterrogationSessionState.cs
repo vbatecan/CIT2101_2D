@@ -3,10 +3,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Owns the mutable flow state of one interrogation. Dialogue trees and profiles remain
-    /// authored data; this type records only the player's current position and challenge state.
-    /// </summary>
     public sealed class InterrogationSessionState
     {
         private readonly HashSet<string> displayedNodeIds = new HashSet<string>();

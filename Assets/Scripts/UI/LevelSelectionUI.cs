@@ -6,11 +6,6 @@ using CaseClosed.Services;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Dedicated UI coordinator for the standalone Level / Case Selection scene.
-    /// Displays dossier cards for Case 01, Case 02, and Case 03 with unlock/completion badges,
-    /// launches the selected case, and provides navigation back to the Main Menu.
-    /// </summary>
     public class LevelSelectionUI : MonoBehaviour
     {
         [Header("Case Dossier Buttons")]
@@ -66,9 +61,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Automatically resolves UI element references in the hierarchy if unassigned.
-        /// </summary>
         public void AutoResolveReferences()
         {
             if (_referencesResolved) return;
@@ -142,9 +134,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Updates button interactability and status badges based on case progression.
-        /// </summary>
         public void RefreshUI()
         {
             var progression = CaseProgressionService.Instance;
@@ -183,18 +172,18 @@ namespace CaseClosed.UI
                 if (isCompleted)
                 {
                     statusText.text = "[ COMPLETED \u2605 ]";
-                    statusText.color = new Color(0.25f, 0.85f, 0.45f, 1f); // Vibrant Green
+                    statusText.color = new Color(0.25f, 0.85f, 0.45f, 1f);
                 }
                 else if (isUnlocked)
                 {
                     statusText.text = "[ AVAILABLE ]";
-                    statusText.color = new Color(1f, 0.85f, 0.45f, 1f); // Warm Gold
+                    statusText.color = new Color(1f, 0.85f, 0.45f, 1f);
                 }
                 else
                 {
                     int requiredLevel = levelIndex - 1;
                     statusText.text = $"[ LOCKED \uD83D\uDD12 (BEAT CASE 0{requiredLevel}) ]";
-                    statusText.color = new Color(0.75f, 0.35f, 0.35f, 0.85f); // Dim Red
+                    statusText.color = new Color(0.75f, 0.35f, 0.35f, 0.85f);
                 }
             }
 
@@ -227,10 +216,6 @@ namespace CaseClosed.UI
             LaunchCase(levelIndex);
         }
 
-        /// <summary>
-        /// Stores the chosen level into PlayerPrefs and loads the gameplay scene.
-        /// </summary>
-        /// <param name="levelIndex">1-based case index (1, 2, or 3).</param>
         public void LaunchCase(int levelIndex)
         {
             Debug.Log($"[UI:LevelSelection] Launching Case {levelIndex}...");
@@ -248,7 +233,6 @@ namespace CaseClosed.UI
                 return;
             }
 
-            // Fallback: If dedicated scene isn't built but Case001 is available, load Case001
             if (Application.CanStreamedLevelBeLoaded("Case001"))
             {
                 Debug.Log($"[UI:LevelSelection] '{sceneName}' not streamable. Loading Case001 scene fallback...");
@@ -265,9 +249,6 @@ namespace CaseClosed.UI
             Debug.LogError($"[UI:LevelSelection] No gameplay scene is available for '{sceneName}'.");
         }
 
-        /// <summary>
-        /// Returns back to the Main Menu scene.
-        /// </summary>
         public void OnBackClicked()
         {
             Debug.Log("[UI:LevelSelection] Returning to Main Menu...");

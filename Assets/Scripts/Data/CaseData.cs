@@ -11,10 +11,6 @@ namespace CaseClosed.Data
         Completed
     }
 
-    /// <summary>
-    /// Single source of truth ScriptableObject for a Case Dossier.
-    /// Resolves canonical titles across Archive, Gameplay HUD, and Notebook.
-    /// </summary>
     [CreateAssetMenu(fileName = "NewCaseData", menuName = "Case Closed/Case Data")]
     public class CaseData : ScriptableObject
     {

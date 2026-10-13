@@ -10,11 +10,6 @@ using CaseClosed.Services;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the detective's case file notebook / clipboard.
-    /// Handles tab navigation, smooth slide transitions, right-edge tab pop-outs,
-    /// and delegates text compilation to <see cref="NotebookFormattingService"/>.
-    /// </summary>
     public class CaseFileNotebookUI : MonoBehaviour, IScrollHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
         [Header("Hierarchy & Animations")]
@@ -76,7 +71,6 @@ namespace CaseClosed.UI
         public Text suspectIndexLabel;
 
         private int currentSuspectIndex = 0;
-        /// <summary>Index of the currently focused suspect within the active case.</summary>
         public int CurrentSuspectIndex => currentSuspectIndex;
 
         [Tooltip("Card container displaying evidence item preview.")]
@@ -97,7 +91,6 @@ namespace CaseClosed.UI
         public Text evidenceLockedLabel;
 
         private int currentEvidenceIndex = 0;
-        /// <summary>Index of the currently focused evidence item within activeCase.evidenceItems.</summary>
         public int CurrentEvidenceIndex => currentEvidenceIndex;
 
         [Tooltip("Card container displaying case overview dossier card.")]
@@ -112,9 +105,7 @@ namespace CaseClosed.UI
         [Header("Case Data (Optional Override)")]
         [Tooltip("Direct reference to the active case file, or leave empty to fetch from CaseManager.")]
         public CaseSO activeCaseData;
-        /// <summary>Optional override for discovered evidence IDs (useful for isolated tests or static mock previews).</summary>
         public HashSet<string> evidenceOverride;
-        /// <summary>Optional override for unlocked clues dictionary (useful for isolated tests or static mock previews).</summary>
         public Dictionary<string, string> cluesOverride;
 
         private NotebookTab currentTab = NotebookTab.CaseSummary;
@@ -124,7 +115,6 @@ namespace CaseClosed.UI
         private bool isClosing = false;
         private bool isSubscribed = false;
 
-        // Zoom & Drag state
         private float _currentZoom = 1.0f;
         private float _targetZoom = 1.0f;
         private Vector2 _currentPosition = Vector2.zero;
@@ -140,7 +130,6 @@ namespace CaseClosed.UI
         public bool IsDragging => _isDragging;
         public bool IsClosing => isClosing;
 
-        // Base X offsets for tab pop-out animation
         private float summaryBaseX = 0f;
         private float suspectsBaseX = 0f;
         private float evidenceBaseX = 0f;
@@ -210,27 +199,23 @@ namespace CaseClosed.UI
         {
             if (isClosing) return;
 
-            // Keyboard shortcut: Escape to close
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 OnCloseClicked();
                 return;
             }
 
-            // Keyboard shortcut: 'R' to reset view
             if (Input.GetKeyDown(KeyCode.R))
             {
                 ResetView();
             }
 
-            // Keyboard shortcuts: 1-4 for quick tab switching, Tab to cycle
             if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1)) SelectSummaryTab();
             else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)) SelectSuspectsTab();
             else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3)) SelectEvidenceTab();
             else if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Keypad4)) SelectCluesTab();
             else if (Input.GetKeyDown(KeyCode.Tab)) CycleNextTab();
 
-            // Keyboard shortcuts: Arrow keys (Left/Right) or A/D to cycle active items
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
             {
                 if (currentTab == NotebookTab.Evidence) PreviousEvidence();
@@ -242,7 +227,6 @@ namespace CaseClosed.UI
                 else if (currentTab == NotebookTab.Suspects) NextSuspect();
             }
 
-            // While animating slide in/out, do not apply regular zoom/pan lerp
             if (slideCoroutine != null) return;
             if (clipboardRoot == null) return;
 
@@ -334,7 +318,6 @@ namespace CaseClosed.UI
             if (evidenceTabButton != null) evidenceBaseX = ((RectTransform)evidenceTabButton.transform).anchoredPosition.x;
             if (cluesTabButton != null) cluesBaseX = ((RectTransform)cluesTabButton.transform).anchoredPosition.x;
 
-            // If summary tab was already popped out at design time, normalize its base position
             if (summaryTabButton != null && suspectsTabButton != null && summaryBaseX > suspectsBaseX + 10f)
             {
                 summaryBaseX = suspectsBaseX;
@@ -431,11 +414,6 @@ namespace CaseClosed.UI
             return manager != null ? manager.EffectiveInvestigator : caseData?.leadInvestigator;
         }
 
-        /// <summary>
-        /// Switches the active notebook tab, formats case data, and updates tab highlights.
-        /// </summary>
-        /// <param name="tab">The target notebook tab to display.</param>
-        /// <param name="smartFocus">Whether to automatically focus the first discovered evidence if currently focused is undiscovered.</param>
         public void SwitchTab(NotebookTab tab, bool smartFocus = true)
         {
             currentTab = tab;
@@ -564,9 +542,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Retrieves all unique suspects authored on the active case file (primary suspect first, followed by additional suspects).
-        /// </summary>
         public List<CharacterProfileSO> GetAllSuspects(CaseSO activeCase)
         {
             var list = new List<CharacterProfileSO>();
@@ -641,9 +616,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Cycles to the next suspect in the active case file.
-        /// </summary>
         public void NextSuspect()
         {
             CaseSO activeCase = GetActiveCase();
@@ -654,9 +626,6 @@ namespace CaseClosed.UI
             SetupSuspectCard(activeCase);
         }
 
-        /// <summary>
-        /// Cycles to the previous suspect in the active case file.
-        /// </summary>
         public void PreviousSuspect()
         {
             CaseSO activeCase = GetActiveCase();
@@ -667,9 +636,6 @@ namespace CaseClosed.UI
             SetupSuspectCard(activeCase);
         }
 
-        /// <summary>
-        /// Cycles to the next tab bookmark in sequence.
-        /// </summary>
         public void CycleNextTab()
         {
             switch (currentTab)
@@ -681,9 +647,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Cycles to the next evidence item in the active case file.
-        /// </summary>
         public void NextEvidence()
         {
             CaseSO activeCase = GetActiveCase();
@@ -698,9 +661,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Cycles to the previous evidence item in the active case file.
-        /// </summary>
         public void PreviousEvidence()
         {
             CaseSO activeCase = GetActiveCase();
@@ -715,10 +675,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Focuses a specific evidence item by ID and switches to the Evidence Repository tab.
-        /// </summary>
-        /// <param name="evidenceId">The unique ID of the evidence item.</param>
         public void FocusEvidence(string evidenceId)
         {
             CaseSO activeCase = GetActiveCase();
@@ -755,13 +711,11 @@ namespace CaseClosed.UI
 
             bool isDiscovered = currentEv != null && IsEvidenceDiscovered(currentEv.id);
 
-            // Update Page Indicator
             if (evidenceIndexLabel != null)
             {
                 evidenceIndexLabel.text = $"[ {currentEvidenceIndex + 1} / {count} ]";
             }
 
-            // Update Navigation Buttons
             if (prevEvidenceButton != null)
             {
                 prevEvidenceButton.interactable = count > 1;
@@ -833,7 +787,6 @@ namespace CaseClosed.UI
 
             Transform cardTransform = evidenceCardSection.transform;
 
-            // Try resolving serialized references from existing hierarchy if unassigned
             if (prevEvidenceButton == null)
             {
                 var prevTransform = cardTransform.Find("Evidence_Nav_Row/Button_Prev") ?? cardTransform.Find("Button_Prev");
@@ -869,13 +822,11 @@ namespace CaseClosed.UI
                 evidenceLockedLabel = evidenceLockedPlaceholder.GetComponentInChildren<Text>();
             }
 
-            // Fallback: If navigation row does not exist in prefab, dynamically generate it
             if (prevEvidenceButton == null || nextEvidenceButton == null || evidenceIndexLabel == null)
             {
                 CreateEvidenceNavRow(cardTransform);
             }
 
-            // Bind click listeners and style
             if (prevEvidenceButton != null)
             {
                 prevEvidenceButton.onClick.RemoveListener(PreviousEvidence);
@@ -1111,9 +1062,6 @@ namespace CaseClosed.UI
             if (cluesCardSection != null) cluesCardSection.SetActive(false);
         }
 
-        /// <summary>
-        /// Updates tab button visuals (offset pop-out and brightness tint) to reflect current selection.
-        /// </summary>
         private void UpdateTabVisualStates()
         {
             ApplyTabState(summaryTabButton, summaryBaseX, currentTab == NotebookTab.CaseSummary);
@@ -1137,9 +1085,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles close action with a smooth slide-down exit animation.
-        /// </summary>
         public void OnCloseClicked()
         {
             if (isClosing) return;
@@ -1212,9 +1157,6 @@ namespace CaseClosed.UI
 
         #region Zoom, Pan & Drag Event Handlers
 
-        /// <summary>
-        /// Sets target zoom scale factor clamped between minZoom and maxZoom.
-        /// </summary>
         public void SetTargetZoom(float zoom)
         {
             _targetZoom = Mathf.Clamp(zoom, minZoom, maxZoom);
@@ -1228,9 +1170,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Sets target position clamped within allowable screen bounds.
-        /// </summary>
         public void SetTargetPosition(Vector2 position)
         {
             _targetPosition = position;
@@ -1243,9 +1182,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Resets target zoom to minZoom (1.0x) and centers position at (0, 0).
-        /// </summary>
         public void ResetView()
         {
             _targetZoom = minZoom;
@@ -1259,9 +1195,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Directly applies current scale and position to clipboardRoot.
-        /// </summary>
         public void ApplyTransform()
         {
             if (clipboardRoot != null)
@@ -1271,9 +1204,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Clamps target position so the notebook stays partially on screen by safetyMargin pixels.
-        /// </summary>
         public void ClampTargetPosition()
         {
             _targetPosition = _zoomService.ClampNotebookPosition(_targetPosition, GetNotebookSize(), _targetZoom, GetParentSize(), safetyMargin);
@@ -1318,9 +1248,6 @@ namespace CaseClosed.UI
             return transform as RectTransform;
         }
 
-        /// <summary>
-        /// Checks whether the mouse cursor is currently positioned over clipboardRoot or any of its children.
-        /// </summary>
         public bool IsPointerOverClipboard()
         {
             if (clipboardRoot == null) return false;
@@ -1347,9 +1274,6 @@ namespace CaseClosed.UI
             return RectTransformUtility.RectangleContainsScreenPoint(clipboardRoot, Input.mousePosition, cam);
         }
 
-        /// <summary>
-        /// Handles clicks on the backdrop button. If the pointer was over the clipboard, the click is ignored.
-        /// </summary>
         public void OnBackdropClicked()
         {
             if (IsPointerOverClipboard())
@@ -1383,9 +1307,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles mouse scroll wheel events over the notebook, smoothly zooming towards cursor position.
-        /// </summary>
         public void OnScroll(PointerEventData eventData)
         {
             if (isClosing || slideCoroutine != null) return;
@@ -1411,9 +1332,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles beginning of drag operation on the case file notebook.
-        /// </summary>
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (isClosing || slideCoroutine != null) return;
@@ -1426,9 +1344,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles continuous mouse drag, moving clipboardRoot around on screen.
-        /// </summary>
         public void OnDrag(PointerEventData eventData)
         {
             if (!_isDragging) return;
@@ -1449,19 +1364,11 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles end of drag operation.
-        /// </summary>
         public void OnEndDrag(PointerEventData eventData)
         {
             _isDragging = false;
         }
 
-        /// <summary>
-        /// Handles pointer clicks:
-        /// - Right-Click anywhere resets zoom (1.0x) and position (0, 0).
-        /// - Left-Click directly on background outside clipboard dismisses the notebook.
-        /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
@@ -1473,7 +1380,6 @@ namespace CaseClosed.UI
             if (eventData.button == PointerEventData.InputButton.Left && !eventData.dragging)
             {
                 GameObject clicked = eventData.pointerCurrentRaycast.gameObject;
-                // Left-click on clipboard or any child of clipboardRoot does NOTHING!
                 if (clicked != null && clipboardRoot != null && (clicked == clipboardRoot.gameObject || clicked.transform.IsChildOf(clipboardRoot)))
                 {
                     return;

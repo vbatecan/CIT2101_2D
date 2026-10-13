@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace CaseClosed.UI
 {
-    /// <summary>Displays the authored title artwork for the active case.</summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public class CaseTitleUI : MonoBehaviour
     {
@@ -26,7 +25,6 @@ namespace CaseClosed.UI
 
         private void Start()
         {
-            // Other objects may initialize their managers after our OnEnable.
             SubscribeToCaseManager();
         }
 

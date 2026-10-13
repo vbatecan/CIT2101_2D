@@ -6,10 +6,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.Editor
 {
-    /// <summary>
-    /// One-click Editor tool under Tools/CaseClosed/Apply Fonts that finds every TMP_Text
-    /// in the current scene and applies the right ThemedText style by role without altering text content.
-    /// </summary>
     public static class ApplyFontsTool
     {
         [MenuItem("Tools/CaseClosed/Apply Fonts")]
@@ -36,7 +32,6 @@ namespace CaseClosed.Editor
                     Undo.RecordObject(themed, "Update Font Role");
                 }
 
-                // Infer role from name or parent context
                 string goName = text.gameObject.name.ToLowerInvariant();
                 string parentName = text.transform.parent != null ? text.transform.parent.name.ToLowerInvariant() : "";
 

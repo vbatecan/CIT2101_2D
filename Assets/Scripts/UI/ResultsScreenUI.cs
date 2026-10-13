@@ -5,7 +5,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>Renders case outcomes in the additive ResultScreen scene.</summary>
     public class ResultsScreenUI : MonoBehaviour
     {
         [Header("Outcome Artwork")]
@@ -57,9 +56,6 @@ namespace CaseClosed.UI
             if (continueButton != null) continueButton.gameObject.SetActive(!allCorrect);
         }
 
-        /// <summary>
-        /// Handles a failed conclusion by restarting the active level from its initial state.
-        /// </summary>
         private void OnContinueClicked()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -77,9 +73,6 @@ namespace CaseClosed.UI
                 UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
 
-        /// <summary>
-        /// Handles click on next level button, progressing from Level 1 -> Level 2 -> Level 3 or opening selection.
-        /// </summary>
         private void OnNextLevelClicked()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;
@@ -114,9 +107,6 @@ namespace CaseClosed.UI
             OnMainMenuClicked();
         }
 
-        /// <summary>
-        /// Handles click on return to main menu button, navigating back to the main menu.
-        /// </summary>
         private void OnMainMenuClicked()
         {
             Debug.Log("[UI:Conclusion] Return to Main Menu button clicked");

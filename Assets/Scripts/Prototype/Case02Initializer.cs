@@ -7,10 +7,6 @@ using CaseClosed.UI;
 
 namespace CaseClosed.Prototype
 {
-    /// <summary>
-    /// Prototype Level 2 Initializer: Generates the "Shattered Mirror" case data at runtime.
-    /// Can be dragged directly onto a GameObject in the Unity Inspector.
-    /// </summary>
     public class Case02Initializer : MonoBehaviour
     {
         [Header("Case Data Source (Optional)")]
@@ -22,7 +18,6 @@ namespace CaseClosed.Prototype
             set => _caseDataAsset = value;
         }
 
-        /// <summary>Whether to automatically initialize and load Case 02 on Start.</summary>
         public bool initializeOnStart = false;
 
         [Header("Suspect Portraits & Visuals")]
@@ -39,9 +34,6 @@ namespace CaseClosed.Prototype
         public Sprite securityLogZoomedSprite;
         public Sprite insurancePolicyZoomedSprite;
 
-        /// <summary>
-        /// Automatically loads Case 02 on start if <see cref="initializeOnStart"/> is enabled.
-        /// </summary>
         private void Start()
         {
             if (initializeOnStart)
@@ -58,11 +50,6 @@ namespace CaseClosed.Prototype
             }
         }
 
-        /// <summary>
-        /// Creates and populates the runtime <see cref="CaseSO"/> data for Level 2: The Shattered Mirror,
-        /// or returns the assigned pre-configured <see cref="CaseSO"/> data asset if available.
-        /// </summary>
-        /// <returns>A fully configured <see cref="CaseSO"/> ScriptableObject instance.</returns>
         public CaseSO CreateCase02Data()
         {
             if (_caseDataAsset != null)
@@ -97,8 +84,7 @@ namespace CaseClosed.Prototype
             c.totalKeyEvidenceCount = 3;
             c.totalContradictionsCount = 1;
             c.hasTimeLimit = true;
-            c.timeLimitSeconds = 300f; // 5 mins default
-            // Primary Witness / Suspect: Charl Vonn Pascual (Night Security Guard)
+            c.timeLimitSeconds = 300f;
             CharacterProfileSO charl = ScriptableObject.CreateInstance<CharacterProfileSO>();
             charl.characterId = "CHAR_CHARL_PASCUAL";
             charl.fullName = "Charl Vonn Pascual";
@@ -111,7 +97,6 @@ namespace CaseClosed.Prototype
             charl.defaultSittingPose = guardSuspectSprite;
             c.primarySuspect = charl;
 
-            // Secondary Suspect: Paul Gabriel Camacho (Gallery Owner)
             CharacterProfileSO paul = ScriptableObject.CreateInstance<CharacterProfileSO>();
             paul.characterId = "CHAR_PAUL_CAMACHO";
             paul.fullName = "Paul Gabriel Camacho";
@@ -124,7 +109,6 @@ namespace CaseClosed.Prototype
             paul.defaultSittingPose = ownerSuspectSprite;
             c.additionalSuspects.Add(paul);
 
-            // Register Investigator Profile: Detective Kyle Gabriel Pastrana
             CharacterProfileSO kyle = ScriptableObject.CreateInstance<CharacterProfileSO>();
             kyle.characterId = "CHAR_KYLE_PASTRANA";
             kyle.fullName = "Detective Kyle Gabriel Pastrana";
@@ -134,8 +118,6 @@ namespace CaseClosed.Prototype
             kyle.background = "Seasoned field investigator with sharp instincts for physical evidence, crime scene reconstruction, and spotting fabrications.";
             CaseManager.Instance?.RegisterAvailableInvestigator(kyle);
 
-            // Evidence Items
-            // 1. Crime Scene Photo (Window Frame)
             EvidenceSO evWindowPhoto = ScriptableObject.CreateInstance<EvidenceSO>();
             evWindowPhoto.id = "EVD_WINDOW_PHOTO";
             evWindowPhoto.evidenceName = "Window Frame Crime Scene Photo";
@@ -157,7 +139,6 @@ namespace CaseClosed.Prototype
             evWindowPhoto.hotspots.Add(spotGlass);
             c.evidenceItems.Add(evWindowPhoto);
 
-            // 2. Security Guard Shift Log
             EvidenceSO evShiftLog = ScriptableObject.CreateInstance<EvidenceSO>();
             evShiftLog.id = "EVD_SHIFT_LOG";
             evShiftLog.evidenceName = "Security Guard Shift Log";
@@ -173,7 +154,6 @@ namespace CaseClosed.Prototype
             evShiftLog.dialogueNodeToTriggerOnInspect = "NODE_03_SHIFT_LEAD";
             c.evidenceItems.Add(evShiftLog);
 
-            // 3. Insurance Policy Document
             EvidenceSO evInsurance = ScriptableObject.CreateInstance<EvidenceSO>();
             evInsurance.id = "EVD_INSURANCE_POLICY";
             evInsurance.evidenceName = "Art Insurance Policy";
@@ -188,13 +168,11 @@ namespace CaseClosed.Prototype
             evInsurance.requiredDialogueNodeId = "NODE_03_SHIFT_LEAD";
             c.evidenceItems.Add(evInsurance);
 
-            // Dialogue Tree for Charl Vonn Pascual and Paul Gabriel Camacho
             DialogueTreeSO tree = ScriptableObject.CreateInstance<DialogueTreeSO>();
             tree.treeId = "TREE_CHARL_01";
             tree.characterId = charl.characterId;
             tree.startNodeId = "NODE_01";
 
-            // Node 1 (Opening Guard Statement - Charl)
             DialogueNode node1 = new DialogueNode();
             node1.nodeId = "NODE_01";
             node1.speakerId = charl.characterId;
@@ -204,7 +182,6 @@ namespace CaseClosed.Prototype
             node1.defaultNextNodeId = "NODE_01B_PAUL_DEFENDS";
             tree.nodes.Add(node1);
 
-            // Node 1B (Gallery Owner Backing - Paul)
             DialogueNode node1b = new DialogueNode();
             node1b.nodeId = "NODE_01B_PAUL_DEFENDS";
             node1b.speakerId = paul.characterId;
@@ -214,7 +191,6 @@ namespace CaseClosed.Prototype
             node1b.defaultNextNodeId = "NODE_01C_DETECTIVE_INTERVIEW";
             tree.nodes.Add(node1b);
 
-            // Node 1C (Detective Pressing)
             DialogueNode node1c = new DialogueNode();
             node1c.nodeId = "NODE_01C_DETECTIVE_INTERVIEW";
             node1c.speakerName = "Detective";
@@ -222,7 +198,6 @@ namespace CaseClosed.Prototype
             node1c.defaultNextNodeId = "NODE_02_WINDOW_LEAD";
             tree.nodes.Add(node1c);
 
-            // Node 2 (Window Lead - Charl)
             DialogueNode node2 = new DialogueNode();
             node2.nodeId = "NODE_02_WINDOW_LEAD";
             node2.speakerId = charl.characterId;
@@ -233,7 +208,6 @@ namespace CaseClosed.Prototype
             node2.defaultNextNodeId = "NODE_02B_PAUL_DIVERT";
             tree.nodes.Add(node2);
 
-            // Node 2B (Paul Diverting Attention - Paul)
             DialogueNode node2b = new DialogueNode();
             node2b.nodeId = "NODE_02B_PAUL_DIVERT";
             node2b.speakerId = paul.characterId;
@@ -243,14 +217,12 @@ namespace CaseClosed.Prototype
             node2b.defaultNextNodeId = "NODE_02C_DETECTIVE_PHOTO";
             tree.nodes.Add(node2b);
 
-            // Node 2C (Detective Table Direction)
             DialogueNode node2c = new DialogueNode();
             node2c.nodeId = "NODE_02C_DETECTIVE_PHOTO";
             node2c.speakerName = "Detective";
             node2c.statementText = "We follow the physical evidence. The window frame photo and the guard's keycard shift log will reveal who was present at 11:00 PM.";
             tree.nodes.Add(node2c);
 
-            // Node 3 (Shift Lead - Charl)
             DialogueNode node3 = new DialogueNode();
             node3.nodeId = "NODE_03_SHIFT_LEAD";
             node3.speakerId = charl.characterId;
@@ -261,7 +233,6 @@ namespace CaseClosed.Prototype
             node3.defaultNextNodeId = "NODE_03B_CONFIRMATION";
             tree.nodes.Add(node3);
 
-            // Node 3B (Detective Evidence Confrontation)
             DialogueNode node3b = new DialogueNode();
             node3b.nodeId = "NODE_03B_CONFIRMATION";
             node3b.speakerName = "Detective";
@@ -269,7 +240,6 @@ namespace CaseClosed.Prototype
             node3b.defaultNextNodeId = "NODE_03C_PAUL_DEFENSIVE";
             tree.nodes.Add(node3b);
 
-            // Node 3C (Paul Defensive on Motive - Paul)
             DialogueNode node3c = new DialogueNode();
             node3c.nodeId = "NODE_03C_PAUL_DEFENSIVE";
             node3c.speakerId = paul.characterId;
@@ -279,7 +249,6 @@ namespace CaseClosed.Prototype
             node3c.defaultNextNodeId = "NODE_03D_DETECTIVE_POLICY";
             tree.nodes.Add(node3c);
 
-            // Node 3D (Detective Stamping Policy)
             DialogueNode node3d = new DialogueNode();
             node3d.nodeId = "NODE_03D_DETECTIVE_POLICY";
             node3d.speakerName = "Detective";
@@ -287,7 +256,6 @@ namespace CaseClosed.Prototype
             node3d.defaultNextNodeId = "NODE_04_FINAL_STATEMENT";
             tree.nodes.Add(node3d);
 
-            // Node 4 (Final Guard Statement - Charl)
             DialogueNode node4 = new DialogueNode();
             node4.nodeId = "NODE_04_FINAL_STATEMENT";
             node4.speakerId = charl.characterId;
@@ -298,7 +266,6 @@ namespace CaseClosed.Prototype
             node4.targetContradictionRuleId = "RULE_CHARL_LOCATION_LIE";
             tree.nodes.Add(node4);
 
-            // Node 5 (Exposed Guard Confession - Charl)
             DialogueNode node5 = new DialogueNode();
             node5.nodeId = "NODE_05_CONFESSION";
             node5.speakerId = charl.characterId;
@@ -308,7 +275,6 @@ namespace CaseClosed.Prototype
             node5.defaultNextNodeId = "NODE_05B_PAUL_OUTRAGED";
             tree.nodes.Add(node5);
 
-            // Node 5B (Paul Panicking & Furious - Paul)
             DialogueNode node5b = new DialogueNode();
             node5b.nodeId = "NODE_05B_PAUL_OUTRAGED";
             node5b.speakerId = paul.characterId;
@@ -318,7 +284,6 @@ namespace CaseClosed.Prototype
             node5b.defaultNextNodeId = "NODE_05C_CHARL_EVIDENCE";
             tree.nodes.Add(node5b);
 
-            // Node 5C (Charl Countering Paul - Charl)
             DialogueNode node5c = new DialogueNode();
             node5c.nodeId = "NODE_05C_CHARL_EVIDENCE";
             node5c.speakerId = charl.characterId;
@@ -328,7 +293,6 @@ namespace CaseClosed.Prototype
             node5c.defaultNextNodeId = "NODE_05D_DETECTIVE_CLOSE";
             tree.nodes.Add(node5c);
 
-            // Node 5D (Detective Conclusion)
             DialogueNode node5d = new DialogueNode();
             node5d.nodeId = "NODE_05D_DETECTIVE_CLOSE";
             node5d.speakerName = "Detective";
@@ -337,7 +301,6 @@ namespace CaseClosed.Prototype
 
             c.dialogueTrees.Add(tree);
 
-            // Contradiction Rule
             ContradictionRuleSO rule1 = ScriptableObject.CreateInstance<ContradictionRuleSO>();
             rule1.ruleId = "RULE_CHARL_LOCATION_LIE";
             rule1.ruleTitle = "False Guard Location";
@@ -350,7 +313,6 @@ namespace CaseClosed.Prototype
             rule1.unlockedClueText = "Paul Camacho paid Charl to lie and stage the inside window breakage for insurance fraud!";
             c.contradictionRules.Add(rule1);
 
-            // Clue Connection
             ClueConnectionSO conn1 = ScriptableObject.CreateInstance<ClueConnectionSO>();
             conn1.connectionId = "CONN_INSURANCE_FRAUD";
             conn1.connectionTitle = "Outside Glass & Doubled Insurance";
@@ -361,7 +323,6 @@ namespace CaseClosed.Prototype
             conn1.deductionText = "The window broken from the inside combined with Paul doubling insurance 48h earlier confirms staged fraud!";
             c.clueConnections.Add(conn1);
 
-            // Conclusion Questions
             ConclusionQuestion q1 = new ConclusionQuestion();
             q1.questionId = "Q_SUSPECT";
             q1.questionText = "Who organized the staged burglary at the art gallery?";

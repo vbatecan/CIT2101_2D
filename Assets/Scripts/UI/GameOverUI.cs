@@ -6,12 +6,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the Game Over overlay presented when investigation time expires.
-    /// Renders dramatic failure branding, investigation metrics (time lapsed, evidence found, contradictions exposed),
-    /// and binds 'Retry Case' and 'Return to Main Menu' action buttons.
-    /// Can be dragged directly onto the GameOverPanel GameObject in the Unity Inspector.
-    /// </summary>
     public class GameOverUI : MonoBehaviour
     {
         [Header("Text Displays")]
@@ -76,9 +70,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Gathers statistics from CaseManager and formats the failure details card.
-        /// </summary>
         public void PopulateGameOverDetails()
         {
             CaseSO activeCase = CaseManager.Instance?.ActiveCase;

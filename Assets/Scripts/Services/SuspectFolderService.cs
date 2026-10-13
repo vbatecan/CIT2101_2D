@@ -4,10 +4,6 @@ using CaseClosed.Data;
 
 namespace CaseClosed.Services
 {
-    /// <summary>
-    /// Pure C# domain service resolving suspect folder files, case index mappings,
-    /// and dossier metadata without MonoBehaviour dependencies.
-    /// </summary>
     public class SuspectFolderService
     {
         public const string Case1Filename = "Case1. Vince & Jane.png";
@@ -16,9 +12,6 @@ namespace CaseClosed.Services
 
         public const string RelativeFolderPath = "Assets/Assets/SUSPECT FOLDERS";
 
-        /// <summary>
-        /// Determines the case index (1, 2, or 3) from active case data or scene name.
-        /// </summary>
         public int DetermineCaseIndex(CaseSO activeCase, string sceneName = null)
         {
             if (activeCase != null)
@@ -56,9 +49,6 @@ namespace CaseClosed.Services
             return 1;
         }
 
-        /// <summary>
-        /// Returns the expected PNG filename for the given case index.
-        /// </summary>
         public string GetExpectedFilename(int caseIndex)
         {
             switch (caseIndex)
@@ -71,9 +61,6 @@ namespace CaseClosed.Services
             }
         }
 
-        /// <summary>
-        /// Returns human-readable label identifying the dossier suspects.
-        /// </summary>
         public string GetDossierTitle(int caseIndex)
         {
             switch (caseIndex)
@@ -86,19 +73,12 @@ namespace CaseClosed.Services
             }
         }
 
-        /// <summary>
-        /// Calculates new clamped zoom factor given current zoom and scroll delta.
-        /// </summary>
         public float CalculateNewZoom(float currentTargetZoom, float scrollDeltaY, float minZoom = 1.0f, float maxZoom = 3.5f, float scrollSensitivity = 0.15f)
         {
             float deltaZoom = scrollDeltaY * scrollSensitivity;
             return Mathf.Clamp(currentTargetZoom + deltaZoom, minZoom, maxZoom);
         }
 
-        /// <summary>
-        /// Calculates new anchored position when zooming focused towards a cursor local point.
-        /// Keeps the content directly under the focal point stationary relative to the cursor.
-        /// </summary>
         public Vector2 CalculateZoomFocalPosition(Vector2 currentPosition, Vector2 focalPoint, float oldZoom, float newZoom)
         {
             if (oldZoom <= 0.0001f) return currentPosition;
@@ -106,10 +86,6 @@ namespace CaseClosed.Services
             return (currentPosition - focalPoint) * ratio + focalPoint;
         }
 
-        /// <summary>
-        /// Clamps folder anchored position so that at least safetyMargin pixels
-        /// of the scaled folder remain inside the parent/screen boundaries.
-        /// </summary>
         public Vector2 ClampFolderPosition(Vector2 position, Vector2 folderSize, float zoom, Vector2 parentSize, float safetyMargin = 100f)
         {
             if (parentSize.x <= 0.0001f || parentSize.y <= 0.0001f) return position;

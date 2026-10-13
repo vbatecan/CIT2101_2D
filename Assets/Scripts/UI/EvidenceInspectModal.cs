@@ -9,13 +9,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// UI View MonoBehaviour managing the isolated evidence inspection mode:
-    /// - Hides all background, characters, items, arm pointer, and HUD elements so only the inspected evidence is visible.
-    /// - Provides continuous 360-degree rotation controlled via mouse cursor drag.
-    /// - Preserves smooth mouse scroll wheel zoom and pan navigation.
-    /// - Closes when clicking the background outside the evidence, right-clicking, or pressing Esc/Space.
-    /// </summary>
     public class EvidenceInspectModal : MonoBehaviour, IScrollHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
     {
         [Header("Evidence Visuals")]
@@ -73,28 +66,20 @@ namespace CaseClosed.UI
 
         private readonly List<GameObject> hiddenSceneObjects = new List<GameObject>();
 
-        /// <summary>Current rendered zoom magnification factor.</summary>
         public float CurrentZoom => currentZoom;
 
-        /// <summary>Target zoom magnification factor.</summary>
         public float TargetZoom => targetZoom;
 
-        /// <summary>Current rendered rotation angle in degrees.</summary>
         public float CurrentRotationAngle => currentRotationAngle;
 
-        /// <summary>Target rotation angle in degrees.</summary>
         public float TargetRotationAngle => targetRotationAngle;
 
-        /// <summary>Current rendered pan translation offset.</summary>
         public Vector2 CurrentPanPosition => currentPanPosition;
 
-        /// <summary>Target pan translation offset.</summary>
         public Vector2 TargetPanPosition => targetPanPosition;
 
-        /// <summary>Whether evidence inspection mode is currently active.</summary>
         public bool IsInspecting => isInspecting;
 
-        /// <summary>List of GameObjects temporarily hidden for scene isolation.</summary>
         public IReadOnlyList<GameObject> HiddenSceneObjects => hiddenSceneObjects;
 
         private void Awake()
@@ -113,9 +98,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Automatically resolves and configures the background image and TableTOPVIEW sprite.
-        /// </summary>
         public void EnsureBackgroundSetup()
         {
             if (backgroundImage == null)
@@ -165,7 +147,6 @@ namespace CaseClosed.UI
         {
             RegisterManagerEvents();
 
-            // Auto-display currently selected evidence if already set when opening
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.currentlySelectedEvidence != null)
             {
                 DisplayEvidence(EvidenceManager.Instance.currentlySelectedEvidence);
@@ -218,7 +199,6 @@ namespace CaseClosed.UI
         {
             if (!isInspecting) return;
 
-            // Handle Exit Inputs: Right-Click or Escape / Space / Backspace / Enter / E / Q keys
             if (Input.GetMouseButtonDown(1) ||
                 Input.GetKeyDown(KeyCode.Escape) ||
                 Input.GetKeyDown(KeyCode.Space) ||
@@ -233,7 +213,6 @@ namespace CaseClosed.UI
 
             if (evidenceZoomImage == null) return;
 
-            // Smooth Interpolation for Zoom, Pan, and Rotation
             bool needsTransformUpdate = false;
 
             if (Mathf.Abs(currentZoom - targetZoom) > 0.0005f || (currentPanPosition - targetPanPosition).sqrMagnitude > 0.001f)
@@ -281,9 +260,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Applies current zoom scale, rotation angle, and pan translation to the evidence image RectTransform.
-        /// </summary>
         public void ApplyTransform()
         {
             if (evidenceZoomImage != null)
@@ -294,11 +270,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Populates the isolated inspection view with the evidence sprite, resets zoom/rotation,
-        /// and hides all other scene objects so only this evidence is visible.
-        /// </summary>
-        /// <param name="evidence">The evidence item being inspected.</param>
         public void DisplayEvidence(EvidenceSO evidence)
         {
             currentEvidence = evidence;
@@ -307,7 +278,6 @@ namespace CaseClosed.UI
             Debug.Log($"[UI:InspectModal] Entering isolated inspection for evidence '{evidence.evidenceName}' (ID: {evidence.id})");
             isInspecting = true;
 
-            // Ensure cursor is visible and free during inspection
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
@@ -320,12 +290,11 @@ namespace CaseClosed.UI
                 evidenceZoomImage.color = (targetSprite != null) ? Color.white : Color.clear;
             }
 
-            // Configure TopPOV table background behind the evidence
             EnsureBackgroundSetup();
             if (backgroundImage != null)
             {
-                Sprite bgSprite = (evidence.customInspectBackground != null) 
-                    ? evidence.customInspectBackground 
+                Sprite bgSprite = (evidence.customInspectBackground != null)
+                    ? evidence.customInspectBackground
                     : tableTopViewSprite;
 
                 if (bgSprite != null)
@@ -336,10 +305,8 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Reset view state upon opening evidence
             ResetView();
 
-            // Hide background, characters, table items, arm pointer, and header HUD
             HideSceneObjects();
 
             if (clueUnlockedNotificationText != null)
@@ -350,14 +317,10 @@ namespace CaseClosed.UI
             PopulateHotspots(evidence);
         }
 
-        /// <summary>
-        /// Hides background environments, characters, table items, arm pointer, and UI panels.
-        /// </summary>
         public void HideSceneObjects()
         {
-            RestoreSceneObjects(); // Clean any previous cache
+            RestoreSceneObjects();
 
-            // 1. Hide explicit named objects
             if (sceneObjectsToHide != null)
             {
                 foreach (string objName in sceneObjectsToHide)
@@ -372,7 +335,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // 2. Hide other active root scene objects (excluding cameras, managers, and canvas)
             var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             if (activeScene.isLoaded)
             {
@@ -392,9 +354,6 @@ namespace CaseClosed.UI
             Debug.Log($"[UI:InspectModal] Isolated scene: hidden {hiddenSceneObjects.Count} game objects.");
         }
 
-        /// <summary>
-        /// Restores all previously hidden scene objects to their active state.
-        /// </summary>
         public void RestoreSceneObjects()
         {
             if (hiddenSceneObjects.Count > 0)
@@ -410,7 +369,6 @@ namespace CaseClosed.UI
                 hiddenSceneObjects.Clear();
             }
 
-            // Explicit fail-safe: Ensure detective arm pointer is active and tap state is reset
             if (ArmPointerController.Instance != null)
             {
                 if (!ArmPointerController.Instance.gameObject.activeSelf)
@@ -421,10 +379,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Rotates the evidence object using mouse cursor drag delta.
-        /// </summary>
-        /// <param name="deltaAngle">The rotation angle delta in degrees.</param>
         public void RotateWithCursor(float deltaAngle)
         {
             targetRotationAngle += deltaAngle;
@@ -435,10 +389,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Sets the target zoom magnification factor, clamping between <see cref="minZoom"/> and <see cref="maxZoom"/>.
-        /// </summary>
-        /// <param name="zoom">The new target zoom scale factor.</param>
         public void SetTargetZoom(float zoom)
         {
             float oldZoom = targetZoom;
@@ -459,9 +409,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Resets target zoom to <see cref="minZoom"/> (1.0x) and centers pan translation.
-        /// </summary>
         public void ResetZoom()
         {
             targetZoom = minZoom;
@@ -476,9 +423,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Resets target zoom to 1.0x, centers pan offset to (0,0), and resets sprite rotation to 0°.
-        /// </summary>
         public void ResetView()
         {
             ResetZoom();
@@ -494,10 +438,6 @@ namespace CaseClosed.UI
             Debug.Log("[UI:InspectModal] View fully reset (Zoom: 1.0x, Pan: (0,0), Rotation: 0°)");
         }
 
-        /// <summary>
-        /// Handles mouse scroll wheel events over the viewport, smoothly zooming towards cursor position.
-        /// </summary>
-        /// <param name="eventData">Pointer event data from Unity EventSystem.</param>
         public void OnScroll(PointerEventData eventData)
         {
             if (Mathf.Abs(eventData.scrollDelta.y) < 0.001f) return;
@@ -507,7 +447,6 @@ namespace CaseClosed.UI
 
             if (Mathf.Abs(newZoom - targetZoom) < 0.001f) return;
 
-            // Center zoom towards pointer local position
             RectTransform panParent = GetPanParentRect();
             if (panParent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(panParent, eventData.position, eventData.pressEventCamera, out Vector2 cursorLocalPoint))
             {
@@ -519,10 +458,6 @@ namespace CaseClosed.UI
             AudioManager.Instance?.PlayExamineZoom();
         }
 
-        /// <summary>
-        /// Handles begin drag pointer event.
-        /// </summary>
-        /// <param name="eventData">Pointer event data from Unity EventSystem.</param>
         public void OnBeginDrag(PointerEventData eventData)
         {
             RectTransform panParent = GetPanParentRect();
@@ -532,23 +467,15 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles drag pointer event:
-        /// - Left Mouse Button: controls rotation of the evidence via horizontal/tangential cursor movement.
-        /// - Middle Mouse Button or zoomed dragging: translates pan offset.
-        /// </summary>
-        /// <param name="eventData">Pointer event data from Unity EventSystem.</param>
         public void OnDrag(PointerEventData eventData)
         {
             if (!isDragging) return;
 
-            // 1. Left Mouse Button Drag: Rotate Evidence with cursor
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 float deltaAngle = -eventData.delta.x * rotationSensitivity;
                 RotateWithCursor(deltaAngle);
             }
-            // 2. Middle Mouse Button Drag: Pan when zoomed
             else if (eventData.button == PointerEventData.InputButton.Middle && targetZoom > minZoom + 0.001f)
             {
                 RectTransform panParent = GetPanParentRect();
@@ -568,12 +495,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles pointer clicks on the modal viewport / background:
-        /// - Right-Click anywhere closes inspection.
-        /// - Left-Click directly on the transparent background outside the evidence image closes inspection.
-        /// </summary>
-        /// <param name="eventData">Pointer event data from EventSystem.</param>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Right)
@@ -584,9 +505,8 @@ namespace CaseClosed.UI
 
             if (eventData.button == PointerEventData.InputButton.Left && !eventData.dragging)
             {
-                // If the clicked object is this background panel/viewport/backgroundImage (outside the evidence image itself)
                 GameObject clicked = eventData.pointerCurrentRaycast.gameObject;
-                if (clicked == gameObject || 
+                if (clicked == gameObject ||
                     (viewportRectTransform != null && clicked == viewportRectTransform.gameObject) ||
                     (backgroundImage != null && clicked == backgroundImage.gameObject))
                 {
@@ -596,19 +516,11 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Handles end drag pointer event.
-        /// </summary>
-        /// <param name="eventData">Pointer event data from Unity EventSystem.</param>
         public void OnEndDrag(PointerEventData eventData)
         {
             isDragging = false;
         }
 
-        /// <summary>
-        /// Clamps pan position based on current zoom magnification and viewport bounds.
-        /// When zoom is 1.0x, pan is locked to (0,0).
-        /// </summary>
         public void ClampPan()
         {
             if (targetZoom <= minZoom + 0.001f)
@@ -635,10 +547,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Retrieves the parent RectTransform acting as the viewport boundary for panning calculations.
-        /// </summary>
-        /// <returns>The viewport RectTransform or parent RectTransform.</returns>
         private RectTransform GetPanParentRect()
         {
             if (viewportRectTransform != null) return viewportRectTransform;
@@ -649,11 +557,6 @@ namespace CaseClosed.UI
             return transform as RectTransform;
         }
 
-        /// <summary>
-        /// Dynamically creates interactive hotspot buttons positioned over normalized coordinates of the evidence sprite.
-        /// Supports hotspotMarkerPrefab instantiation with zero-GC fallbacks.
-        /// </summary>
-        /// <param name="evidence">The evidence item containing hotspot data.</param>
         private void PopulateHotspots(EvidenceSO evidence)
         {
             if (hotspotsContainer == null) return;
@@ -736,10 +639,6 @@ namespace CaseClosed.UI
             }
         }
 
-        /// <summary>
-        /// Updates the notification banner and re-renders hotspot markers when a hotspot is discovered.
-        /// </summary>
-        /// <param name="hotspot">The hotspot that was discovered.</param>
         private void HandleHotspotDiscovered(EvidenceHotspot hotspot)
         {
             Debug.Log($"[UI:InspectModal] Hotspot discovered notification shown for '{hotspot.hotspotTitle}'");
@@ -770,9 +669,6 @@ namespace CaseClosed.UI
             return caseManager != null && caseManager.IsHotspotDiscovered(evidence, hotspot);
         }
 
-        /// <summary>
-        /// Closes the evidence inspection mode and notifies <see cref="EvidenceManager"/>.
-        /// </summary>
         public void CloseInspect()
         {
             Debug.Log("[UI:InspectModal] Closing isolated evidence inspection mode");
@@ -784,9 +680,6 @@ namespace CaseClosed.UI
             ArmPointerController.Instance?.ForceSyncState();
         }
 
-        /// <summary>
-        /// Handler for external close notifications from <see cref="EvidenceManager"/>.
-        /// </summary>
         private void HandleInspectClosed()
         {
             isInspecting = false;

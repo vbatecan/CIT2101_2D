@@ -8,11 +8,6 @@ using CaseClosed.UI;
 
 namespace CaseClosed.Gameplay
 {
-    /// <summary>
-    /// Gameplay controller managing the detective's mouse-controlled physical arm pointer on the investigation desk.
-    /// Interacts with physical table items at the index fingertip position when in Table Investigation mode.
-    /// Automatically yields control to the OS system cursor when dialogue or UI modals are active.
-    /// </summary>
     public class ArmPointerController : MonoBehaviour
     {
         private static ArmPointerController _instance;
@@ -74,10 +69,6 @@ namespace CaseClosed.Gameplay
         private Sprite _extendedSprite;
         private bool _originalForceRenderingOff;
 
-        /// <summary>
-        /// Resets the tap state and cancels any ongoing tap animation coroutine.
-        /// Ensures the arm does not stay stuck in a non-following state when interrupted.
-        /// </summary>
         public void ResetTapState()
         {
             if (_tapCoroutine != null)
@@ -157,7 +148,6 @@ namespace CaseClosed.Gameplay
             }
             else
             {
-                // Smoothly lower arm to resting position
                 Vector3 restPos = new Vector3(transform.position.x, restingY, transform.position.z);
                 transform.position = Vector3.Lerp(transform.position, restPos, Time.deltaTime * transitionSpeed);
                 ClearHoveredItem();
@@ -189,8 +179,6 @@ namespace CaseClosed.Gameplay
             float pixelsPerTexturePixel = down.magnitude / sprite.rect.height;
             if (pixelsPerTexturePixel <= 0f) return;
 
-            // Preserve the hand, cuff and upper sleeve at their original size. Only the
-            // lowest sleeve section stretches, keeping the cut edge below the viewport.
             float extension = new Vector2(Screen.width, Screen.height).magnitude;
             rect.sizeDelta = new Vector2(right.magnitude, down.magnitude + extension);
             _pointerImage.pixelsPerUnitMultiplier = _pointerCanvas.referencePixelsPerUnit /
@@ -225,31 +213,23 @@ namespace CaseClosed.Gameplay
             _pointerImage.sprite = _extendedSprite;
         }
 
-        /// <summary>
-        /// Evaluates whether the game is currently in a UI/Dialogue/Inspection state.
-        /// When Challenge Mode is active, returns false so the detective's arm pointer remains active over the table.
-        /// </summary>
         public bool DetermineUIMode()
         {
-            // When Challenge Mode is active during dialogue, the arm pointer MUST be active over the desk!
             if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
             {
                 return false;
             }
 
-            // Check if Dialogue is actively displayed
             if (DialogueUI.IsDialogueOpen && DialogueUI.Instance != null && DialogueUI.Instance.gameObject.activeInHierarchy)
             {
                 return true;
             }
 
-            // Check if any modal panel is open in UIManager
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable)
             {
                 return true;
             }
 
-            // Check if Evidence Inspection is open
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen)
             {
                 return true;
@@ -258,9 +238,6 @@ namespace CaseClosed.Gameplay
             return false;
         }
 
-        /// <summary>
-        /// Forces re-evaluation of UI mode and resets cursor and arm active flags.
-        /// </summary>
         public void ForceSyncState()
         {
             ResetTapState();
@@ -295,7 +272,6 @@ namespace CaseClosed.Gameplay
             mouseScreen.z = Mathf.Abs(targetCamera.transform.position.z - transform.position.z);
             Vector3 mouseWorld = targetCamera.ScreenToWorldPoint(mouseScreen);
 
-            // Tilt first, then compensate for the rotated fingertip offset.
             Rect viewport = targetCamera.pixelRect;
             float tiltFactor = Mathf.Clamp((mouseScreen.x - viewport.center.x) / Mathf.Max(1f, viewport.width * 0.5f), -1f, 1f);
             float targetTilt = -tiltFactor * maxTiltAngle;
@@ -361,7 +337,7 @@ namespace CaseClosed.Gameplay
 
         private void HandleMouseClicks()
         {
-            if (Input.GetMouseButtonDown(0)) // Left Click
+            if (Input.GetMouseButtonDown(0))
             {
                 ResetTapState();
                 _tapCoroutine = StartCoroutine(TapAnimation());
@@ -376,9 +352,8 @@ namespace CaseClosed.Gameplay
                     if (item != null) item.TriggerClick(false);
                 }
             }
-            else if (Input.GetMouseButtonDown(1)) // Right Click
+            else if (Input.GetMouseButtonDown(1))
             {
-                // Right-click cancels Challenge Mode
                 if (InterrogationManager.Instance != null && InterrogationManager.Instance.IsChallengeModeActive)
                 {
                     Debug.Log("[ArmPointer] Right-click cancelled challenge mode.");

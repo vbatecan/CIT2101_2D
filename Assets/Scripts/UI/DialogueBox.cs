@@ -11,11 +11,6 @@ using CaseClosed.Managers;
 
 namespace CaseClosed.UI
 {
-    /// <summary>
-    /// Reusable bottom-anchored detective dialogue box with speaker badges,
-    /// active speaker dimming, typewriter text, bouncing arrow, choices, and fade animations.
-    /// Supports both standalone DialogueData and existing InterrogationManager sessions.
-    /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
     public class DialogueBox : MonoBehaviour
     {
@@ -59,14 +54,12 @@ namespace CaseClosed.UI
         [SerializeField] private Transform choiceContainer;
         [SerializeField] private GameObject choiceButtonPrefab;
 
-        // Events
         public event Action OnDialogueStarted;
         public event Action<DialogueLine> OnLineStarted;
         public event Action<DialogueLine> OnLineCompleted;
         public event Action OnDialogueEnded;
         public event Action<int> OnChoiceSelected;
 
-        // State
         private DialogueData _currentData;
         private int _currentLineIndex = -1;
         private bool _isTyping = false;
@@ -89,7 +82,6 @@ namespace CaseClosed.UI
             if (panelRect == null) panelRect = GetComponent<RectTransform>();
             if (panelRect != null)
             {
-                // Ensure dialog box does not extend to the lower-most edge of the screen and limits its height
                 if (panelRect.anchorMin.y < 0.025f && panelRect.anchorMax.y > 0.05f && panelRect.anchorMax.y <= 0.35f)
                 {
                     Vector2 min = panelRect.anchorMin;
@@ -111,7 +103,6 @@ namespace CaseClosed.UI
 
             if (choiceContainer != null) choiceContainer.gameObject.SetActive(false);
 
-            // Initial state: hidden
             if (canvasGroup != null)
             {
                 canvasGroup.alpha = 0f;
@@ -122,7 +113,6 @@ namespace CaseClosed.UI
 
         private void Start()
         {
-            // Auto-detect suspects in scene if unassigned
             if (leftSuspectDisplay == null || rightSuspectDisplay == null)
             {
                 CharacterDisplay[] displays = FindObjectsByType<CharacterDisplay>(FindObjectsSortMode.None);
@@ -136,7 +126,6 @@ namespace CaseClosed.UI
                 }
             }
 
-            // Sync text speed from persistent game settings if available
             if (CaseClosed.Services.GameSettingsService.Instance != null)
             {
                 charactersPerSecond = CaseClosed.Services.GameSettingsService.Instance.TextSpeed;
@@ -170,9 +159,6 @@ namespace CaseClosed.UI
             return false;
         }
 
-        /// <summary>
-        /// Begins presenting a sequential or branching DialogueData ScriptableObject.
-        /// </summary>
         public void StartDialogue(DialogueData data)
         {
             if (data == null || data.LineCount == 0)
@@ -192,9 +178,6 @@ namespace CaseClosed.UI
             Advance();
         }
 
-        /// <summary>
-        /// Displays an authored DialogueLine statement with typewriter text.
-        /// </summary>
         public void ShowLine(DialogueLine line)
         {
             if (line == null) return;
@@ -206,22 +189,16 @@ namespace CaseClosed.UI
                     speakerBadgeObject.SetActive(!string.IsNullOrEmpty(line.speakerName));
             }
 
-            // Update portraits & suspect stage dimming
             UpdateSpeakerVisuals(line);
 
-            // Clear choices
             ClearChoices();
 
-            // Start typewriter
             if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
             _typewriterCoroutine = StartCoroutine(TypeText(line.text));
 
             OnLineStarted?.Invoke(line);
         }
 
-        /// <summary>
-        /// Bridge to display a DialogueNode from InterrogationManager.
-        /// </summary>
         public void DisplayNode(DialogueNode node)
         {
             if (node == null) return;
@@ -268,7 +245,6 @@ namespace CaseClosed.UI
                 DialogueLine currentLine = _currentData.GetLine(_currentLineIndex);
                 if (currentLine != null && currentLine.HasChoices)
                 {
-                    // Wait for player to choose an option
                     return;
                 }
             }
@@ -478,7 +454,6 @@ namespace CaseClosed.UI
             ShowNextArrow(false);
             ClearChoices();
 
-            // Restore suspect lighting
             if (leftSuspectDisplay?.characterSpriteRenderer != null) leftSuspectDisplay.characterSpriteRenderer.color = activeSuspectColor;
             if (rightSuspectDisplay?.characterSpriteRenderer != null) rightSuspectDisplay.characterSpriteRenderer.color = activeSuspectColor;
 
