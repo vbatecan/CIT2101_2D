@@ -1,12 +1,15 @@
 using CaseClosed.Data;
 using CaseClosed.Managers;
+using TMPro;
 using UnityEngine;
 
 namespace CaseClosed.UI
 {
-    [RequireComponent(typeof(SpriteRenderer))]
     public class CaseTitleUI : MonoBehaviour
     {
+        [SerializeField, Tooltip("Scene-authored label displaying the active case title.")]
+        private TMP_Text titleText;
+
         [SerializeField, Tooltip("Title sprites in level order: case 1, case 2, case 3.")]
         private Sprite[] caseTitleSprites;
 
@@ -63,6 +66,24 @@ namespace CaseClosed.UI
 
         private void HandleCaseLoaded(CaseSO caseData)
         {
+            if (titleText != null)
+            {
+                if (caseData == null)
+                {
+                    titleText.text = string.Empty;
+                    return;
+                }
+
+                string title = caseData.caseTitle ?? string.Empty;
+                string legacyPrefix = $"LEVEL {caseData.levelNumber}:";
+                if (title.StartsWith(legacyPrefix, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    title = title.Substring(legacyPrefix.Length).Trim();
+                }
+                titleText.text = $"CASE {caseData.levelNumber:000}: {title}".ToUpperInvariant();
+                return;
+            }
+
             Sprite titleSprite = null;
             if (caseData != null && caseTitleSprites != null)
             {
@@ -73,7 +94,10 @@ namespace CaseClosed.UI
                 }
             }
 
-            titleRenderer.sprite = titleSprite;
+            if (titleRenderer != null)
+            {
+                titleRenderer.sprite = titleSprite;
+            }
         }
     }
 }

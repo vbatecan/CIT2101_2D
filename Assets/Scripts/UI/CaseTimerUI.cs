@@ -27,6 +27,9 @@ namespace CaseClosed.UI
         [Tooltip("Optional background badge/pill behind the timer.")]
         [SerializeField] private Image backgroundBadge;
 
+        [SerializeField, Tooltip("Keep the scene-authored panel, font, spacing, and text effects.")]
+        private bool useScenePresentation;
+
         [Header("Detective Theme & Palette")]
         [Tooltip("When enabled, automatically aligns colors with the detective button and settings theme palette.")]
         [SerializeField] private bool matchThemePalette = true;
@@ -136,6 +139,7 @@ namespace CaseClosed.UI
 
         private void ApplyTypographyStyling()
         {
+            if (useScenePresentation) return;
             if (timerText == null) return;
 
             if (enforceDetectiveTypography)
