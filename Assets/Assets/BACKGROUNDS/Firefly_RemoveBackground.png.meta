@@ -1,0 +1,442 @@
+fileFormatVersion: 2
+guid: 97db05a59a8fdfc4e9beae840576cbd2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6070632272332239154
+    second: Firefly_RemoveBackground_0
+  - first:
+      213: 5686573876849487985
+    second: Firefly_RemoveBackground_1
+  - first:
+      213: -1546344911972848874
+    second: Firefly_RemoveBackground_2
+  - first:
+      213: -6920753083076310941
+    second: Firefly_RemoveBackground_3
+  - first:
+      213: -7999427731294039118
+    second: Firefly_RemoveBackground_4
+  - first:
+      213: -9052915946535188212
+    second: Firefly_RemoveBackground_5
+  - first:
+      213: 7027999580841544315
+    second: Firefly_RemoveBackground_6
+  - first:
+      213: 5494614509169524492
+    second: Firefly_RemoveBackground_7
+  - first:
+      213: -3432655966415168812
+    second: Firefly_RemoveBackground_8
+  - first:
+      213: 8569270838618541525
+    second: Firefly_RemoveBackground_9
+  - first:
+      213: 9005316474877406039
+    second: Firefly_RemoveBackground_10
+  - first:
+      213: 3922076896571302217
+    second: Firefly_RemoveBackground_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 580
+        width: 217
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 231b26a53e73f3450800000000000000
+      internalID: 6070632272332239154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_1
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 580
+        width: 218
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17031aeefc4caee40800000000000000
+      internalID: 5686573876849487985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_2
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 573
+        width: 216
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61b20a5de774a8ae0800000000000000
+      internalID: -1546344911972848874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_3
+      rect:
+        serializedVersion: 2
+        x: 797
+        y: 552
+        width: 212
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3680c091dbb84ff90800000000000000
+      internalID: -6920753083076310941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_4
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 366
+        width: 210
+        height: 125
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b35fc57cd25cf090800000000000000
+      internalID: -7999427731294039118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_5
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 366
+        width: 212
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c090d4939e49d5280800000000000000
+      internalID: -9052915946535188212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_6
+      rect:
+        serializedVersion: 2
+        x: 539
+        y: 366
+        width: 212
+        height: 151
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7a87a10268788160800000000000000
+      internalID: 7027999580841544315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_7
+      rect:
+        serializedVersion: 2
+        x: 797
+        y: 366
+        width: 212
+        height: 169
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0fb1ccc8cac04c40800000000000000
+      internalID: 5494614509169524492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_8
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 184
+        width: 213
+        height: 163
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dad2b5e591cc50d0800000000000000
+      internalID: -3432655966415168812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_9
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 183
+        width: 213
+        height: 171
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ddc8fffc6a2ce670800000000000000
+      internalID: 8569270838618541525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_10
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 628
+        height: 365
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75b6a072f9f49fc70800000000000000
+      internalID: 9005316474877406039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Firefly_RemoveBackground_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 11
+        width: 328
+        height: 168
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94126e948240e6630800000000000000
+      internalID: 3922076896571302217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Firefly_RemoveBackground_0: 6070632272332239154
+      Firefly_RemoveBackground_1: 5686573876849487985
+      Firefly_RemoveBackground_10: 9005316474877406039
+      Firefly_RemoveBackground_11: 3922076896571302217
+      Firefly_RemoveBackground_2: -1546344911972848874
+      Firefly_RemoveBackground_3: -6920753083076310941
+      Firefly_RemoveBackground_4: -7999427731294039118
+      Firefly_RemoveBackground_5: -9052915946535188212
+      Firefly_RemoveBackground_6: 7027999580841544315
+      Firefly_RemoveBackground_7: 5494614509169524492
+      Firefly_RemoveBackground_8: -3432655966415168812
+      Firefly_RemoveBackground_9: 8569270838618541525
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
