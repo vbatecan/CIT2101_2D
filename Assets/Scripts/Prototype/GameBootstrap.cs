@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using CaseClosed.Data;
 using CaseClosed.Enums;
@@ -28,6 +29,10 @@ namespace CaseClosed.Prototype
         private Case03Initializer level3;
 
         private CharacterProfileSO investigatorKyle;
+        private CaseManager caseManager;
+        private InterrogationManager interrogationManager;
+        private DoorEntranceSequence entranceSequence;
+        private Coroutine openingDialogue;
 
         private void Awake()
         {
@@ -35,9 +40,9 @@ namespace CaseClosed.Prototype
 
             SetupFixedCamera();
             EnsureManager<AudioManager>();
-            EnsureManager<CaseManager>();
+            caseManager = EnsureManager<CaseManager>();
             EnsureManager<EvidenceManager>();
-            EnsureManager<InterrogationManager>();
+            interrogationManager = EnsureManager<InterrogationManager>();
             EnsureManager<DeductionBoardController>();
             EnsureManager<CaseConclusionManager>();
             EnsureManager<UIManager>();
@@ -47,8 +52,53 @@ namespace CaseClosed.Prototype
             level1 = gameObject.GetComponent<Case01Initializer>() ?? FindFirstObjectByType<Case01Initializer>();
             level2 = gameObject.GetComponent<Case02Initializer>() ?? FindFirstObjectByType<Case02Initializer>();
             level3 = gameObject.GetComponent<Case03Initializer>() ?? FindFirstObjectByType<Case03Initializer>();
+            entranceSequence = FindFirstObjectByType<DoorEntranceSequence>();
 
             Debug.Log("[Prototype:Bootstrap] All managers and investigators initialized. Ready for level loading.");
+        }
+
+        private void OnEnable()
+        {
+            if (caseManager != null) caseManager.OnCaseLoaded += StartOpeningDialogue;
+        }
+
+        private void OnDisable()
+        {
+            if (caseManager != null) caseManager.OnCaseLoaded -= StartOpeningDialogue;
+            CancelOpeningDialogue();
+        }
+
+        private void CancelOpeningDialogue()
+        {
+            if (openingDialogue == null) return;
+            StopCoroutine(openingDialogue);
+            openingDialogue = null;
+        }
+
+        private void StartOpeningDialogue(CaseSO caseData)
+        {
+            CancelOpeningDialogue();
+            if (interrogationManager == null || caseData == null || caseData.primarySuspect == null
+                || caseData.dialogueTrees == null || caseData.dialogueTrees.Count == 0) return;
+
+            DialogueTreeSO tree = caseData.dialogueTrees[0];
+            bool waitForEntrance = entranceSequence != null && entranceSequence.CanPlayForCase(caseData);
+            interrogationManager.SetInterrogationTarget(caseData.primarySuspect, tree, !waitForEntrance);
+            if (waitForEntrance) openingDialogue = StartCoroutine(WaitForEntrance(caseData, tree));
+        }
+
+        private IEnumerator WaitForEntrance(CaseSO caseData, DialogueTreeSO tree)
+        {
+            // Let all OnCaseLoaded subscribers and Start methods queue the entrance first.
+            yield return null;
+            while (entranceSequence != null && entranceSequence.isActiveAndEnabled && entranceSequence.IsEntrancePending)
+                yield return null;
+
+            openingDialogue = null;
+            if (caseManager == null || caseManager.ActiveCase != caseData || interrogationManager == null
+                || interrogationManager.CurrentDialogueTree != tree || interrogationManager.CurrentNode != null
+                || tree == null || string.IsNullOrEmpty(tree.startNodeId)) yield break;
+            interrogationManager.JumpToNode(tree.startNodeId);
         }
 
         private void SetupInvestigators()
@@ -121,7 +171,7 @@ namespace CaseClosed.Prototype
 
             if (interrogation.CurrentSuspect == null || interrogation.CurrentDialogueTree == null)
             {
-                interrogation.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
+                StartOpeningDialogue(caseData);
             }
         }
 
@@ -226,10 +276,6 @@ namespace CaseClosed.Prototype
             if (caseData != null)
             {
                 CaseManager.Instance?.LoadCase(caseData);
-                if (InterrogationManager.Instance != null && caseData.primarySuspect != null && caseData.dialogueTrees != null && caseData.dialogueTrees.Count > 0)
-                {
-                    InterrogationManager.Instance.SetInterrogationTarget(caseData.primarySuspect, caseData.dialogueTrees[0]);
-                }
                 UIManager.Instance?.ShowPanel(UIPanelType.InvestigationTable);
                 ArmPointerController.Instance?.ForceSyncState();
             }

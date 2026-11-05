@@ -1,0 +1,544 @@
+fileFormatVersion: 2
+guid: f67b0bd25820b9f42a98bd0eb5894de1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3225988131984684806
+    second: ShanWalk_0
+  - first:
+      213: 339452657924644316
+    second: ShanWalk_1
+  - first:
+      213: 2834835391745566947
+    second: ShanWalk_2
+  - first:
+      213: -568585826602332508
+    second: ShanWalk_3
+  - first:
+      213: -2203977325118692206
+    second: ShanWalk_4
+  - first:
+      213: 4758195656043468379
+    second: ShanWalk_5
+  - first:
+      213: 4730272092420764588
+    second: ShanWalk_6
+  - first:
+      213: -1199586502934879655
+    second: ShanWalk_7
+  - first:
+      213: 6553409504932751085
+    second: ShanWalk_8
+  - first:
+      213: 8743694582655165693
+    second: ShanWalk_9
+  - first:
+      213: -364752081199089663
+    second: ShanWalk_10
+  - first:
+      213: -4946113172037493977
+    second: ShanWalk_11
+  - first:
+      213: 3335816029298143418
+    second: ShanWalk_12
+  - first:
+      213: -4738473484578298045
+    second: ShanWalk_13
+  - first:
+      213: 8016589510313434442
+    second: ShanWalk_14
+  - first:
+      213: 8435583769183708088
+    second: ShanWalk_15
+  - first:
+      213: -6367204139022795871
+    second: ShanWalk_16
+  - first:
+      213: 4247487384706420135
+    second: ShanWalk_17
+  - first:
+      213: -3291723007713545865
+    second: ShanWalk_18
+  - first:
+      213: -7426186999257063620
+    second: ShanWalk_19
+  - first:
+      213: -5223165446861779252
+    second: ShanWalk_20
+  - first:
+      213: -2732557759116451380
+    second: ShanWalk_21
+  - first:
+      213: 4998715517009275034
+    second: ShanWalk_22
+  - first:
+      213: 7778528624793289371
+    second: ShanWalk_23
+  - first:
+      213: -9088063616081813122
+    second: ShanWalk_24
+  - first:
+      213: 683533224346040495
+    second: ShanWalk_25
+  - first:
+      213: 421405732475072205
+    second: ShanWalk_26
+  - first:
+      213: -6463518585191566318
+    second: ShanWalk_27
+  - first:
+      213: 6353266258535236465
+    second: ShanWalk_28
+  - first:
+      213: -851112338583140741
+    second: ShanWalk_29
+  - first:
+      213: -8290438575167499690
+    second: ShanWalk_30
+  - first:
+      213: 971892112182228657
+    second: ShanWalk_31
+  - first:
+      213: 5988383987825066918
+    second: ShanWalk_32
+  - first:
+      213: 8389940722005023676
+    second: ShanWalk_33
+  - first:
+      213: 6695203742514132153
+    second: ShanWalk_34
+  - first:
+      213: -8994374793527527467
+    second: ShanWalk_35
+  - first:
+      213: 4463844705605832225
+    second: ShanWalk_36
+  - first:
+      213: 6073088618887092584
+    second: ShanWalk_37
+  - first:
+      213: -8151617484090053849
+    second: ShanWalk_38
+  - first:
+      213: 1441839711285545489
+    second: ShanWalk_39
+  - first:
+      213: -7825418808184439736
+    second: ShanWalk_40
+  - first:
+      213: 9015192641199429563
+    second: ShanWalk_41
+  - first:
+      213: -3928944670369169292
+    second: ShanWalk_42
+  - first:
+      213: -4600390514492867195
+    second: ShanWalk_43
+  - first:
+      213: 8281433412798273245
+    second: ShanWalk_44
+  - first:
+      213: 687402097251773618
+    second: ShanWalk_45
+  - first:
+      213: 1623500867583172248
+    second: ShanWalk_46
+  - first:
+      213: -3020142165255960117
+    second: ShanWalk_47
+  - first:
+      213: 6075560196708923309
+    second: ShanWalk_48
+  - first:
+      213: 7040742726675358362
+    second: ShanWalk_49
+  - first:
+      213: 5912083277814063235
+    second: ShanWalk_50
+  - first:
+      213: 472887657548874882
+    second: ShanWalk_51
+  - first:
+      213: 574780097337002717
+    second: ShanWalk_52
+  - first:
+      213: -882246709504375170
+    second: ShanWalk_53
+  - first:
+      213: -1762725584208385441
+    second: ShanWalk_54
+  - first:
+      213: 1587792139671296691
+    second: ShanWalk_55
+  - first:
+      213: -8745865884186121622
+    second: ShanWalk_56
+  - first:
+      213: -7912679230606440265
+    second: ShanWalk_57
+  - first:
+      213: -1354496340928022192
+    second: ShanWalk_58
+  - first:
+      213: 2696166464044356411
+    second: ShanWalk_59
+  - first:
+      213: 4874646783212306446
+    second: ShanWalk_60
+  - first:
+      213: -7713054415426240784
+    second: ShanWalk_61
+  - first:
+      213: 7249226720130429510
+    second: ShanWalk_62
+  - first:
+      213: 2715800401468204204
+    second: ShanWalk_63
+  - first:
+      213: 3501935371403050898
+    second: ShanWalk_64
+  - first:
+      213: 3450120781509948813
+    second: ShanWalk_65
+  - first:
+      213: -1583631393702228006
+    second: ShanWalk_66
+  - first:
+      213: -7482949500165636869
+    second: ShanWalk_67
+  - first:
+      213: -4813345466401825811
+    second: ShanWalk_68
+  - first:
+      213: 2220962561756956358
+    second: ShanWalk_69
+  - first:
+      213: 7731760906419992319
+    second: ShanWalk_70
+  - first:
+      213: -2237631887631398773
+    second: ShanWalk_71
+  - first:
+      213: -7336209625094534763
+    second: ShanWalk_72
+  - first:
+      213: 7855951809701764918
+    second: ShanWalk_73
+  - first:
+      213: 7817479279412064124
+    second: ShanWalk_74
+  - first:
+      213: 2019522027482614947
+    second: ShanWalk_75
+  - first:
+      213: -1969174833276411730
+    second: ShanWalk_76
+  - first:
+      213: 3017120279336687119
+    second: ShanWalk_77
+  - first:
+      213: -8657609065642728993
+    second: ShanWalk_78
+  - first:
+      213: 8587582854353978110
+    second: ShanWalk_79
+  - first:
+      213: 16459293441958709
+    second: ShanWalk_80
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ShanWalk_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d08ddd2d15b9d244a07fd1425b5480a
+      internalID: 67410229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_01
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee0e68ec78f87034bb9a15c2c73ee013
+      internalID: 1553400402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_02
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eb3a7034dcf6004aa6b3634d94bce00
+      internalID: 22304414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_03
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 085449e0d73648e449a40f6460ba0ad5
+      internalID: -238063377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_04
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 680c138c6a95f56479be0f9e19241e66
+      internalID: 59481922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_05
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06b2d751c02fe364988de6502aed1492
+      internalID: 1297408467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_06
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3c03aa6c6589834c8b40c5b96bdb9e4
+      internalID: -1649344609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShanWalk_07
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11464b3429204e14a92ace3a18913a59
+      internalID: -824059452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: fe7f38def3096ad4b85325cea2e93def
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShanWalk_00: 67410229
+      ShanWalk_01: 1553400402
+      ShanWalk_02: 22304414
+      ShanWalk_03: -238063377
+      ShanWalk_04: 59481922
+      ShanWalk_05: 1297408467
+      ShanWalk_06: -1649344609
+      ShanWalk_07: -824059452
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

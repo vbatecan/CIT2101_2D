@@ -1,0 +1,691 @@
+fileFormatVersion: 2
+guid: 82e1025ff834352418896fb6180d41c3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8060419714569365495
+    second: ShaniaWalk_0
+  - first:
+      213: -7660685860337333945
+    second: ShaniaWalk_1
+  - first:
+      213: -3161466819462939839
+    second: ShaniaWalk_2
+  - first:
+      213: -3346513962589689391
+    second: ShaniaWalk_3
+  - first:
+      213: 5438773637220375990
+    second: ShaniaWalk_4
+  - first:
+      213: 6259243665809146815
+    second: ShaniaWalk_5
+  - first:
+      213: 8199238966883602414
+    second: ShaniaWalk_6
+  - first:
+      213: -9079400268113250527
+    second: ShaniaWalk_7
+  - first:
+      213: 1255286658830966476
+    second: ShaniaWalk_8
+  - first:
+      213: -4194733626159584656
+    second: ShaniaWalk_9
+  - first:
+      213: -5325286861444815551
+    second: ShaniaWalk_10
+  - first:
+      213: 4508839900057097585
+    second: ShaniaWalk_11
+  - first:
+      213: 5403522439890578040
+    second: ShaniaWalk_12
+  - first:
+      213: 3244825684741895010
+    second: ShaniaWalk_13
+  - first:
+      213: -4109266917368661602
+    second: ShaniaWalk_14
+  - first:
+      213: -5242603904429084880
+    second: ShaniaWalk_15
+  - first:
+      213: -8450711041019015025
+    second: ShaniaWalk_16
+  - first:
+      213: 1387466532742086708
+    second: ShaniaWalk_17
+  - first:
+      213: 8427543047815953256
+    second: ShaniaWalk_18
+  - first:
+      213: 6077513052751085398
+    second: ShaniaWalk_19
+  - first:
+      213: 6318549300586989637
+    second: ShaniaWalk_20
+  - first:
+      213: 8428475538079684348
+    second: ShaniaWalk_21
+  - first:
+      213: -5293157925189547835
+    second: ShaniaWalk_22
+  - first:
+      213: 7482064058389329894
+    second: ShaniaWalk_23
+  - first:
+      213: 5153377169693466276
+    second: ShaniaWalk_24
+  - first:
+      213: -2961827891460271400
+    second: ShaniaWalk_25
+  - first:
+      213: 1749261524382512346
+    second: ShaniaWalk_26
+  - first:
+      213: -5913358578813199699
+    second: ShaniaWalk_27
+  - first:
+      213: -2378749594183651178
+    second: ShaniaWalk_28
+  - first:
+      213: -3661496407461403650
+    second: ShaniaWalk_29
+  - first:
+      213: -4971138160903057212
+    second: ShaniaWalk_30
+  - first:
+      213: 2205861979689501808
+    second: ShaniaWalk_31
+  - first:
+      213: -2367875599373812142
+    second: ShaniaWalk_32
+  - first:
+      213: 265222819094842909
+    second: ShaniaWalk_33
+  - first:
+      213: 9035295854162470139
+    second: ShaniaWalk_34
+  - first:
+      213: -7134904062804610812
+    second: ShaniaWalk_35
+  - first:
+      213: 7057881910548699202
+    second: ShaniaWalk_36
+  - first:
+      213: -6052502423114195973
+    second: ShaniaWalk_37
+  - first:
+      213: 1289324364719450598
+    second: ShaniaWalk_38
+  - first:
+      213: 446264113223017308
+    second: ShaniaWalk_39
+  - first:
+      213: 6199430158042119733
+    second: ShaniaWalk_40
+  - first:
+      213: -5686219185379014872
+    second: ShaniaWalk_41
+  - first:
+      213: 2329919404833511773
+    second: ShaniaWalk_42
+  - first:
+      213: 4875112113991414044
+    second: ShaniaWalk_43
+  - first:
+      213: 4683146877800845629
+    second: ShaniaWalk_44
+  - first:
+      213: -5384831727095012414
+    second: ShaniaWalk_45
+  - first:
+      213: 6965389676468484537
+    second: ShaniaWalk_46
+  - first:
+      213: -3881753668122572241
+    second: ShaniaWalk_47
+  - first:
+      213: -6518340714359419082
+    second: ShaniaWalk_48
+  - first:
+      213: 4777253781796424172
+    second: ShaniaWalk_49
+  - first:
+      213: -8072955713444561175
+    second: ShaniaWalk_50
+  - first:
+      213: -6259997334713882554
+    second: ShaniaWalk_51
+  - first:
+      213: -1826387020507478667
+    second: ShaniaWalk_52
+  - first:
+      213: 7915662277214777580
+    second: ShaniaWalk_53
+  - first:
+      213: -1657247789712201972
+    second: ShaniaWalk_54
+  - first:
+      213: -6616707173305178555
+    second: ShaniaWalk_55
+  - first:
+      213: 7118541054141382744
+    second: ShaniaWalk_56
+  - first:
+      213: 5493721827457754911
+    second: ShaniaWalk_57
+  - first:
+      213: -7943579597951515279
+    second: ShaniaWalk_58
+  - first:
+      213: -6960580344749506181
+    second: ShaniaWalk_59
+  - first:
+      213: 7483239305969742493
+    second: ShaniaWalk_60
+  - first:
+      213: 4525052893389929441
+    second: ShaniaWalk_61
+  - first:
+      213: 8039410406171435429
+    second: ShaniaWalk_62
+  - first:
+      213: -7110488918974530805
+    second: ShaniaWalk_63
+  - first:
+      213: -6205082750018887271
+    second: ShaniaWalk_64
+  - first:
+      213: 1144805097154242019
+    second: ShaniaWalk_65
+  - first:
+      213: -5164197467494650494
+    second: ShaniaWalk_66
+  - first:
+      213: 3558915068511845776
+    second: ShaniaWalk_67
+  - first:
+      213: -5038021947310828029
+    second: ShaniaWalk_68
+  - first:
+      213: -5981744758246991747
+    second: ShaniaWalk_69
+  - first:
+      213: 7583824186212958412
+    second: ShaniaWalk_70
+  - first:
+      213: -1372686652856937188
+    second: ShaniaWalk_71
+  - first:
+      213: -6722877131654348340
+    second: ShaniaWalk_72
+  - first:
+      213: 6529509875379950789
+    second: ShaniaWalk_73
+  - first:
+      213: 6958755148028870048
+    second: ShaniaWalk_74
+  - first:
+      213: 6184599655002154348
+    second: ShaniaWalk_75
+  - first:
+      213: 5846071164486722778
+    second: ShaniaWalk_76
+  - first:
+      213: -5732351386935092089
+    second: ShaniaWalk_77
+  - first:
+      213: -905901397284232976
+    second: ShaniaWalk_78
+  - first:
+      213: -3562405819247133711
+    second: ShaniaWalk_79
+  - first:
+      213: -528279737445651818
+    second: ShaniaWalk_80
+  - first:
+      213: -8582307653295368698
+    second: ShaniaWalk_81
+  - first:
+      213: -4279684499080642529
+    second: ShaniaWalk_82
+  - first:
+      213: -2125838455195899600
+    second: ShaniaWalk_83
+  - first:
+      213: 3244240188905760805
+    second: ShaniaWalk_84
+  - first:
+      213: 6662558943405467384
+    second: ShaniaWalk_85
+  - first:
+      213: -1374604459995571018
+    second: ShaniaWalk_86
+  - first:
+      213: -1380588267728734205
+    second: ShaniaWalk_87
+  - first:
+      213: 1836192679370000798
+    second: ShaniaWalk_88
+  - first:
+      213: 8452057111909708073
+    second: ShaniaWalk_89
+  - first:
+      213: -155168605139179074
+    second: ShaniaWalk_90
+  - first:
+      213: 6065966514129966603
+    second: ShaniaWalk_91
+  - first:
+      213: -8606535491909668686
+    second: ShaniaWalk_92
+  - first:
+      213: 1116980489066195108
+    second: ShaniaWalk_93
+  - first:
+      213: -4663911795802664180
+    second: ShaniaWalk_94
+  - first:
+      213: 5276045115217465840
+    second: ShaniaWalk_95
+  - first:
+      213: -8736635570554598486
+    second: ShaniaWalk_96
+  - first:
+      213: -4147223375513593790
+    second: ShaniaWalk_97
+  - first:
+      213: -5437478593666592964
+    second: ShaniaWalk_98
+  - first:
+      213: -3459810667392158068
+    second: ShaniaWalk_99
+  - first:
+      213: 4358926980116405626
+    second: ShaniaWalk_100
+  - first:
+      213: 6030406357449260274
+    second: ShaniaWalk_101
+  - first:
+      213: 7921891106875777722
+    second: ShaniaWalk_102
+  - first:
+      213: 2538166314753703290
+    second: ShaniaWalk_103
+  - first:
+      213: 8077716506032635987
+    second: ShaniaWalk_104
+  - first:
+      213: -8878309055430353256
+    second: ShaniaWalk_105
+  - first:
+      213: -4940964295321140332
+    second: ShaniaWalk_106
+  - first:
+      213: 2967183160777724013
+    second: ShaniaWalk_107
+  - first:
+      213: -7745573044135762518
+    second: ShaniaWalk_108
+  - first:
+      213: 944684482239278920
+    second: ShaniaWalk_109
+  - first:
+      213: -8211223666264162690
+    second: ShaniaWalk_110
+  - first:
+      213: -6519990751867881837
+    second: ShaniaWalk_111
+  - first:
+      213: -3237876387136696409
+    second: ShaniaWalk_112
+  - first:
+      213: -8617581338426448490
+    second: ShaniaWalk_113
+  - first:
+      213: -2189858443641900968
+    second: ShaniaWalk_114
+  - first:
+      213: 6473445478558407142
+    second: ShaniaWalk_115
+  - first:
+      213: -2098357764258949606
+    second: ShaniaWalk_116
+  - first:
+      213: 7158715663656409307
+    second: ShaniaWalk_117
+  - first:
+      213: 4881007659148407407
+    second: ShaniaWalk_118
+  - first:
+      213: -1120719131857667465
+    second: ShaniaWalk_119
+  - first:
+      213: -6810408620546148003
+    second: ShaniaWalk_120
+  - first:
+      213: 433778309216422609
+    second: ShaniaWalk_121
+  - first:
+      213: -6105843616986162805
+    second: ShaniaWalk_122
+  - first:
+      213: 4802792155345484416
+    second: ShaniaWalk_123
+  - first:
+      213: 1719304738199141283
+    second: ShaniaWalk_124
+  - first:
+      213: -7435503406428321889
+    second: ShaniaWalk_125
+  - first:
+      213: 3611191793625182227
+    second: ShaniaWalk_126
+  - first:
+      213: -6078217303952121160
+    second: ShaniaWalk_127
+  - first:
+      213: -8639505327709215041
+    second: ShaniaWalk_128
+  - first:
+      213: -2158736369715466047
+    second: ShaniaWalk_129
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ShaniaWalk_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d1ad9a5d5cb72a4aaf971de0b3f213d
+      internalID: -911444300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_01
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 653456d50c6fdc443b260deafdf41c1d
+      internalID: 634828398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_02
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 563aa9c7d5cc8d243a76a7109b755406
+      internalID: 879539610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_03
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 440ff7d68cd015c45a67d5b31dba804d
+      internalID: 392296260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_04
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be9d8bce6d8ab554db135284a1a95468
+      internalID: -2012616606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_05
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2782f2489e7acdc458e915c12719089d
+      internalID: -859437400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_06
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad7232d63be1ea2499354109708d8424
+      internalID: 280432547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ShaniaWalk_07
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e572145ccde25ae41a973970d30430f5
+      internalID: 136746986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 02950f787236979428def7562cae74bd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ShaniaWalk_00: -911444300
+      ShaniaWalk_01: 634828398
+      ShaniaWalk_02: 879539610
+      ShaniaWalk_03: 392296260
+      ShaniaWalk_04: -2012616606
+      ShaniaWalk_05: -859437400
+      ShaniaWalk_06: 280432547
+      ShaniaWalk_07: 136746986
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,712 @@
+fileFormatVersion: 2
+guid: d5412ad1350d272448863fc6076604ad
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5900530790686856180
+    second: VinceWalk_0
+  - first:
+      213: -9008903930685194317
+    second: VinceWalk_1
+  - first:
+      213: -6261540718029427818
+    second: VinceWalk_2
+  - first:
+      213: 8407109192252984495
+    second: VinceWalk_3
+  - first:
+      213: -7493709755384993836
+    second: VinceWalk_4
+  - first:
+      213: 8085525693899711666
+    second: VinceWalk_5
+  - first:
+      213: -2190027727369663017
+    second: VinceWalk_6
+  - first:
+      213: 5940454077338017372
+    second: VinceWalk_7
+  - first:
+      213: -1347717219225067868
+    second: VinceWalk_8
+  - first:
+      213: 3472537008405674181
+    second: VinceWalk_9
+  - first:
+      213: 4891082043781848199
+    second: VinceWalk_10
+  - first:
+      213: -4543042959415939772
+    second: VinceWalk_11
+  - first:
+      213: -2248842114795091209
+    second: VinceWalk_12
+  - first:
+      213: -4860211134776096422
+    second: VinceWalk_13
+  - first:
+      213: -8278186336527677046
+    second: VinceWalk_14
+  - first:
+      213: 3984375425084770167
+    second: VinceWalk_15
+  - first:
+      213: 5125897838146118625
+    second: VinceWalk_16
+  - first:
+      213: 1661829046203565386
+    second: VinceWalk_17
+  - first:
+      213: -6512338053557509120
+    second: VinceWalk_18
+  - first:
+      213: 7994757777098147886
+    second: VinceWalk_19
+  - first:
+      213: 5315810069023590613
+    second: VinceWalk_20
+  - first:
+      213: 4074742761317653140
+    second: VinceWalk_21
+  - first:
+      213: -7293973338489926527
+    second: VinceWalk_22
+  - first:
+      213: 5595089183357399104
+    second: VinceWalk_23
+  - first:
+      213: 6842850307717475186
+    second: VinceWalk_24
+  - first:
+      213: 6660248196439129079
+    second: VinceWalk_25
+  - first:
+      213: -1732341142901912337
+    second: VinceWalk_26
+  - first:
+      213: 6765766128439322525
+    second: VinceWalk_27
+  - first:
+      213: -514171644293519908
+    second: VinceWalk_28
+  - first:
+      213: 2340333575116495381
+    second: VinceWalk_29
+  - first:
+      213: 4086330339244385499
+    second: VinceWalk_30
+  - first:
+      213: -6130040359295074866
+    second: VinceWalk_31
+  - first:
+      213: -7472269396500793266
+    second: VinceWalk_32
+  - first:
+      213: 8020055006053194396
+    second: VinceWalk_33
+  - first:
+      213: 3396103637580369104
+    second: VinceWalk_34
+  - first:
+      213: -1289682795384634262
+    second: VinceWalk_35
+  - first:
+      213: 7990316248797025574
+    second: VinceWalk_36
+  - first:
+      213: 7277219283070418777
+    second: VinceWalk_37
+  - first:
+      213: -8657255078362623061
+    second: VinceWalk_38
+  - first:
+      213: 3025259800388137339
+    second: VinceWalk_39
+  - first:
+      213: 2796754885938094034
+    second: VinceWalk_40
+  - first:
+      213: -6764424037532862463
+    second: VinceWalk_41
+  - first:
+      213: 8018652013800284737
+    second: VinceWalk_42
+  - first:
+      213: 7318451619119057188
+    second: VinceWalk_43
+  - first:
+      213: -7911766308484972714
+    second: VinceWalk_44
+  - first:
+      213: 5581907012593837201
+    second: VinceWalk_45
+  - first:
+      213: 4235278066627047172
+    second: VinceWalk_46
+  - first:
+      213: 1417404720233686667
+    second: VinceWalk_47
+  - first:
+      213: -2796967655980886189
+    second: VinceWalk_48
+  - first:
+      213: 506919783951568763
+    second: VinceWalk_49
+  - first:
+      213: -1205279942678881409
+    second: VinceWalk_50
+  - first:
+      213: -8820571850618920921
+    second: VinceWalk_51
+  - first:
+      213: 3513080295458217949
+    second: VinceWalk_52
+  - first:
+      213: 3994503977881198045
+    second: VinceWalk_53
+  - first:
+      213: -8322314412927307622
+    second: VinceWalk_54
+  - first:
+      213: 4419482277058697604
+    second: VinceWalk_55
+  - first:
+      213: -7865043308397495900
+    second: VinceWalk_56
+  - first:
+      213: 3035850316757244949
+    second: VinceWalk_57
+  - first:
+      213: 4754458809091847007
+    second: VinceWalk_58
+  - first:
+      213: 4044406811759240178
+    second: VinceWalk_59
+  - first:
+      213: -8475018505699816420
+    second: VinceWalk_60
+  - first:
+      213: 3596369798150158113
+    second: VinceWalk_61
+  - first:
+      213: 3179219216808244620
+    second: VinceWalk_62
+  - first:
+      213: 8321146667686775393
+    second: VinceWalk_63
+  - first:
+      213: 7622963236567746167
+    second: VinceWalk_64
+  - first:
+      213: -5878307371936069593
+    second: VinceWalk_65
+  - first:
+      213: -8020286769267497155
+    second: VinceWalk_66
+  - first:
+      213: -5976237884382416930
+    second: VinceWalk_67
+  - first:
+      213: 8913185108145446751
+    second: VinceWalk_68
+  - first:
+      213: -8490349067816916263
+    second: VinceWalk_69
+  - first:
+      213: -393391896873322904
+    second: VinceWalk_70
+  - first:
+      213: -4099402096106769087
+    second: VinceWalk_71
+  - first:
+      213: -1585594213227306998
+    second: VinceWalk_72
+  - first:
+      213: -7263829537056163648
+    second: VinceWalk_73
+  - first:
+      213: 1333626990925150503
+    second: VinceWalk_74
+  - first:
+      213: -5969843740558101725
+    second: VinceWalk_75
+  - first:
+      213: -2424686308543454430
+    second: VinceWalk_76
+  - first:
+      213: 1498338074062451315
+    second: VinceWalk_77
+  - first:
+      213: 3114830392859407002
+    second: VinceWalk_78
+  - first:
+      213: -4845861815920086967
+    second: VinceWalk_79
+  - first:
+      213: -2832527788493759336
+    second: VinceWalk_80
+  - first:
+      213: -3033701354224920879
+    second: VinceWalk_81
+  - first:
+      213: -3566570459523098132
+    second: VinceWalk_82
+  - first:
+      213: -7556251396211358108
+    second: VinceWalk_83
+  - first:
+      213: -5890946016621199229
+    second: VinceWalk_84
+  - first:
+      213: -1472058044445651496
+    second: VinceWalk_85
+  - first:
+      213: -7796616491919702990
+    second: VinceWalk_86
+  - first:
+      213: 7412099063012352405
+    second: VinceWalk_87
+  - first:
+      213: 650986232010147075
+    second: VinceWalk_88
+  - first:
+      213: 5294646683459860534
+    second: VinceWalk_89
+  - first:
+      213: -3626382400447944319
+    second: VinceWalk_90
+  - first:
+      213: -844704998821220405
+    second: VinceWalk_91
+  - first:
+      213: 4286459744586306361
+    second: VinceWalk_92
+  - first:
+      213: 5763661287947083426
+    second: VinceWalk_93
+  - first:
+      213: -528092543726982063
+    second: VinceWalk_94
+  - first:
+      213: 6151533297003158790
+    second: VinceWalk_95
+  - first:
+      213: -6545683918087433761
+    second: VinceWalk_96
+  - first:
+      213: 2178484139349900429
+    second: VinceWalk_97
+  - first:
+      213: 7107763993701918881
+    second: VinceWalk_98
+  - first:
+      213: -4509864677735445554
+    second: VinceWalk_99
+  - first:
+      213: 7249778347670489491
+    second: VinceWalk_100
+  - first:
+      213: -1206085541433199734
+    second: VinceWalk_101
+  - first:
+      213: -184164839820352578
+    second: VinceWalk_102
+  - first:
+      213: -1468794896964155111
+    second: VinceWalk_103
+  - first:
+      213: 9077505202798974238
+    second: VinceWalk_104
+  - first:
+      213: 4882934970706637423
+    second: VinceWalk_105
+  - first:
+      213: 8432352885083350507
+    second: VinceWalk_106
+  - first:
+      213: 4298001342549660848
+    second: VinceWalk_107
+  - first:
+      213: 8561313670956675669
+    second: VinceWalk_108
+  - first:
+      213: -5111631840473509339
+    second: VinceWalk_109
+  - first:
+      213: 1825137998075825300
+    second: VinceWalk_110
+  - first:
+      213: 8022951566984697951
+    second: VinceWalk_111
+  - first:
+      213: -4048357297955007939
+    second: VinceWalk_112
+  - first:
+      213: 4168920899761305871
+    second: VinceWalk_113
+  - first:
+      213: -8240706071388428636
+    second: VinceWalk_114
+  - first:
+      213: 5084533923690231060
+    second: VinceWalk_115
+  - first:
+      213: 2109682582855726758
+    second: VinceWalk_116
+  - first:
+      213: -9019151122889468710
+    second: VinceWalk_117
+  - first:
+      213: -8314792733971633173
+    second: VinceWalk_118
+  - first:
+      213: -6746866290617655417
+    second: VinceWalk_119
+  - first:
+      213: 642644347918925550
+    second: VinceWalk_120
+  - first:
+      213: -4369365256458183806
+    second: VinceWalk_121
+  - first:
+      213: 1739849029166330674
+    second: VinceWalk_122
+  - first:
+      213: -3524588226371985669
+    second: VinceWalk_123
+  - first:
+      213: -7983344359369759478
+    second: VinceWalk_124
+  - first:
+      213: 7725361401648612773
+    second: VinceWalk_125
+  - first:
+      213: -5516240759043527923
+    second: VinceWalk_126
+  - first:
+      213: 5014509146313964627
+    second: VinceWalk_127
+  - first:
+      213: -3284662434122536995
+    second: VinceWalk_128
+  - first:
+      213: -1611228938973878921
+    second: VinceWalk_129
+  - first:
+      213: -5245530602137133130
+    second: VinceWalk_130
+  - first:
+      213: 2267900311016946830
+    second: VinceWalk_131
+  - first:
+      213: -4385522497950886396
+    second: VinceWalk_132
+  - first:
+      213: -4180665151028562476
+    second: VinceWalk_133
+  - first:
+      213: -6586329861679247542
+    second: VinceWalk_134
+  - first:
+      213: -5659192168525332615
+    second: VinceWalk_135
+  - first:
+      213: -2192736801063123053
+    second: VinceWalk_136
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: VinceWalk_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e29e52e2e46648547bdbbd4e57ce917b
+      internalID: 1774638006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_01
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bb0af77de48d054db3c09685ab91c8e
+      internalID: 929073873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_02
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f820adc5a9a8ff4fa65fed764a9c133
+      internalID: -1738867291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_03
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: faa0f07998a68a44fa4f82e929912f20
+      internalID: 820750843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_04
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca55d82d6c0611e46b28551ab2e3ea4e
+      internalID: 1068616863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_05
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25349adf9c58dd144ad2a785f11e8fd0
+      internalID: 222978008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_06
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 301d10c983789024c8653b874974cc0b
+      internalID: 2018442631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VinceWalk_07
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1166b5f666f29dd479c6fecbe62859e8
+      internalID: -1152902234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5131ce0839608314f9808c970e6a2149
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      VinceWalk_00: 1774638006
+      VinceWalk_01: 929073873
+      VinceWalk_02: -1738867291
+      VinceWalk_03: 820750843
+      VinceWalk_04: 1068616863
+      VinceWalk_05: 222978008
+      VinceWalk_06: 2018442631
+      VinceWalk_07: -1152902234
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

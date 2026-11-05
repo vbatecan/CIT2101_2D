@@ -85,11 +85,24 @@ namespace CaseClosed.Managers
 
         public void SetInterrogationTarget(CharacterProfileSO suspect, DialogueTreeSO dialogueTree)
         {
+            SetInterrogationTarget(suspect, dialogueTree, true);
+        }
+
+        /// <summary>Prepare a target without displaying its first node while the cast enters.</summary>
+        public void SetInterrogationTarget(CharacterProfileSO suspect, DialogueTreeSO dialogueTree, bool displayStartNode)
+        {
             sessionState.Begin(suspect, dialogueTree);
             hasStartedSession = true;
 
             Debug.Log($"[Interrogation] Set interrogation target: '{suspect?.fullName}' (Tree: '{dialogueTree?.treeId}')");
             OnSuspectChanged?.Invoke(CurrentSuspect);
+
+            if (!displayStartNode)
+            {
+                // Hide any previous case's dialogue without completing or advancing its node.
+                OnDialogueClosed?.Invoke();
+                return;
+            }
 
             if (CurrentDialogueTree != null && !string.IsNullOrEmpty(CurrentDialogueTree.startNodeId))
             {

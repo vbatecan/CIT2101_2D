@@ -1,0 +1,715 @@
+fileFormatVersion: 2
+guid: 848fe7b84df3d7d46bceb71a718a3d76
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4346433323376723452
+    second: PaulWalk_0
+  - first:
+      213: -2966632963020646707
+    second: PaulWalk_1
+  - first:
+      213: 4137618651835267330
+    second: PaulWalk_2
+  - first:
+      213: 7615399428032280734
+    second: PaulWalk_3
+  - first:
+      213: 6725514843050749822
+    second: PaulWalk_4
+  - first:
+      213: 7241020743845562057
+    second: PaulWalk_5
+  - first:
+      213: -4161120040748733023
+    second: PaulWalk_6
+  - first:
+      213: -6982948073684251609
+    second: PaulWalk_7
+  - first:
+      213: -4682759172499668550
+    second: PaulWalk_8
+  - first:
+      213: 1426554489565744504
+    second: PaulWalk_9
+  - first:
+      213: 6707817736212410249
+    second: PaulWalk_10
+  - first:
+      213: 74589243887504781
+    second: PaulWalk_11
+  - first:
+      213: -8220009361025912412
+    second: PaulWalk_12
+  - first:
+      213: 4815603014155042564
+    second: PaulWalk_13
+  - first:
+      213: 4395930019877432438
+    second: PaulWalk_14
+  - first:
+      213: -2048573590137504020
+    second: PaulWalk_15
+  - first:
+      213: -3428123520791090136
+    second: PaulWalk_16
+  - first:
+      213: 2741731279172815642
+    second: PaulWalk_17
+  - first:
+      213: -5218568596073619332
+    second: PaulWalk_18
+  - first:
+      213: 8756619560341399823
+    second: PaulWalk_19
+  - first:
+      213: -461790048417745850
+    second: PaulWalk_20
+  - first:
+      213: -2360893649494893482
+    second: PaulWalk_21
+  - first:
+      213: -3123658665275718760
+    second: PaulWalk_22
+  - first:
+      213: 4946002492323224707
+    second: PaulWalk_23
+  - first:
+      213: -7480294132239409812
+    second: PaulWalk_24
+  - first:
+      213: 2305994441462547097
+    second: PaulWalk_25
+  - first:
+      213: 9092410480025218859
+    second: PaulWalk_26
+  - first:
+      213: 7094765018842487196
+    second: PaulWalk_27
+  - first:
+      213: 6300149006600571758
+    second: PaulWalk_28
+  - first:
+      213: 6610095684575517616
+    second: PaulWalk_29
+  - first:
+      213: 4216789693337650786
+    second: PaulWalk_30
+  - first:
+      213: -5910286179144471656
+    second: PaulWalk_31
+  - first:
+      213: 3463472658081342294
+    second: PaulWalk_32
+  - first:
+      213: -6898454102298428140
+    second: PaulWalk_33
+  - first:
+      213: -1540216876831462682
+    second: PaulWalk_34
+  - first:
+      213: 4619987301380643816
+    second: PaulWalk_35
+  - first:
+      213: 7012019379615669995
+    second: PaulWalk_36
+  - first:
+      213: 3502728871803276055
+    second: PaulWalk_37
+  - first:
+      213: 7951217784219731560
+    second: PaulWalk_38
+  - first:
+      213: -370676970118432197
+    second: PaulWalk_39
+  - first:
+      213: -7679671108581739392
+    second: PaulWalk_40
+  - first:
+      213: 4219619774356360638
+    second: PaulWalk_41
+  - first:
+      213: -1501794076504221221
+    second: PaulWalk_42
+  - first:
+      213: 7349711852678901812
+    second: PaulWalk_43
+  - first:
+      213: 5889398680421245461
+    second: PaulWalk_44
+  - first:
+      213: 8458447932323349340
+    second: PaulWalk_45
+  - first:
+      213: -5570722115764705359
+    second: PaulWalk_46
+  - first:
+      213: 9143126410929651510
+    second: PaulWalk_47
+  - first:
+      213: -9207764980249682408
+    second: PaulWalk_48
+  - first:
+      213: 4720907244339210258
+    second: PaulWalk_49
+  - first:
+      213: 4748629493546480571
+    second: PaulWalk_50
+  - first:
+      213: -6948875212974794851
+    second: PaulWalk_51
+  - first:
+      213: -4739172267824058243
+    second: PaulWalk_52
+  - first:
+      213: 8220059743882517244
+    second: PaulWalk_53
+  - first:
+      213: 7648302022042917564
+    second: PaulWalk_54
+  - first:
+      213: 8917812562701798544
+    second: PaulWalk_55
+  - first:
+      213: -3927252581784694440
+    second: PaulWalk_56
+  - first:
+      213: 1335494566214706923
+    second: PaulWalk_57
+  - first:
+      213: 1209495739938596234
+    second: PaulWalk_58
+  - first:
+      213: -5185764365615012897
+    second: PaulWalk_59
+  - first:
+      213: -6849051188012337829
+    second: PaulWalk_60
+  - first:
+      213: -4870510133057851948
+    second: PaulWalk_61
+  - first:
+      213: -5493298029107142176
+    second: PaulWalk_62
+  - first:
+      213: 3098503921511281534
+    second: PaulWalk_63
+  - first:
+      213: 1786144976526568570
+    second: PaulWalk_64
+  - first:
+      213: 2804009707370656019
+    second: PaulWalk_65
+  - first:
+      213: -8633721138615008247
+    second: PaulWalk_66
+  - first:
+      213: -6878977686793161161
+    second: PaulWalk_67
+  - first:
+      213: -9218079193813300355
+    second: PaulWalk_68
+  - first:
+      213: -8612417659197416860
+    second: PaulWalk_69
+  - first:
+      213: 4458998397691825675
+    second: PaulWalk_70
+  - first:
+      213: -8406900830670299553
+    second: PaulWalk_71
+  - first:
+      213: 2862315921341808937
+    second: PaulWalk_72
+  - first:
+      213: -1345109041509671140
+    second: PaulWalk_73
+  - first:
+      213: -5175775703960993582
+    second: PaulWalk_74
+  - first:
+      213: -5027340240337555630
+    second: PaulWalk_75
+  - first:
+      213: 7927867165558746191
+    second: PaulWalk_76
+  - first:
+      213: 5531444204829139511
+    second: PaulWalk_77
+  - first:
+      213: 3087104934222218291
+    second: PaulWalk_78
+  - first:
+      213: 5350737868250896874
+    second: PaulWalk_79
+  - first:
+      213: -2044828768614633276
+    second: PaulWalk_80
+  - first:
+      213: 3574001733674899199
+    second: PaulWalk_81
+  - first:
+      213: 8179008379285048105
+    second: PaulWalk_82
+  - first:
+      213: 6998817629279273649
+    second: PaulWalk_83
+  - first:
+      213: -8666335571721603139
+    second: PaulWalk_84
+  - first:
+      213: -3011763848732432380
+    second: PaulWalk_85
+  - first:
+      213: 3348468818555691549
+    second: PaulWalk_86
+  - first:
+      213: -1550785060092639067
+    second: PaulWalk_87
+  - first:
+      213: -6435702468183647191
+    second: PaulWalk_88
+  - first:
+      213: -3804643860718930498
+    second: PaulWalk_89
+  - first:
+      213: -7940489765456326630
+    second: PaulWalk_90
+  - first:
+      213: -1384731772840829958
+    second: PaulWalk_91
+  - first:
+      213: 5103743366076119344
+    second: PaulWalk_92
+  - first:
+      213: -5166515242029267041
+    second: PaulWalk_93
+  - first:
+      213: 7995649014454012590
+    second: PaulWalk_94
+  - first:
+      213: 4755060839259424527
+    second: PaulWalk_95
+  - first:
+      213: -6693002259820742977
+    second: PaulWalk_96
+  - first:
+      213: 4432324848466068007
+    second: PaulWalk_97
+  - first:
+      213: 8993935243780907324
+    second: PaulWalk_98
+  - first:
+      213: -5315641945777352208
+    second: PaulWalk_99
+  - first:
+      213: -500335033766222065
+    second: PaulWalk_100
+  - first:
+      213: -7171483965448262374
+    second: PaulWalk_101
+  - first:
+      213: -8186903580495352706
+    second: PaulWalk_102
+  - first:
+      213: -2960853412661214603
+    second: PaulWalk_103
+  - first:
+      213: 8627937682304943346
+    second: PaulWalk_104
+  - first:
+      213: -6511987363850237629
+    second: PaulWalk_105
+  - first:
+      213: 1980248059330186662
+    second: PaulWalk_106
+  - first:
+      213: -4026469638385332513
+    second: PaulWalk_107
+  - first:
+      213: 5276240750761913830
+    second: PaulWalk_108
+  - first:
+      213: 7321147383322154293
+    second: PaulWalk_109
+  - first:
+      213: 1642075678961089305
+    second: PaulWalk_110
+  - first:
+      213: 7518732348656499736
+    second: PaulWalk_111
+  - first:
+      213: -1272349412177975024
+    second: PaulWalk_112
+  - first:
+      213: 4779184590175634263
+    second: PaulWalk_113
+  - first:
+      213: 3269341432636021699
+    second: PaulWalk_114
+  - first:
+      213: -1737075620872806355
+    second: PaulWalk_115
+  - first:
+      213: -2411233858362000833
+    second: PaulWalk_116
+  - first:
+      213: -8351892618736736256
+    second: PaulWalk_117
+  - first:
+      213: 5994753824095843493
+    second: PaulWalk_118
+  - first:
+      213: -86604559143494672
+    second: PaulWalk_119
+  - first:
+      213: 8939151772813800638
+    second: PaulWalk_120
+  - first:
+      213: -2305613400017601040
+    second: PaulWalk_121
+  - first:
+      213: 2813750548041747822
+    second: PaulWalk_122
+  - first:
+      213: -4010800325518514530
+    second: PaulWalk_123
+  - first:
+      213: -7087779614846985343
+    second: PaulWalk_124
+  - first:
+      213: 1767037067298064402
+    second: PaulWalk_125
+  - first:
+      213: 3246884204142086387
+    second: PaulWalk_126
+  - first:
+      213: -1488194314960271756
+    second: PaulWalk_127
+  - first:
+      213: 9038941144147755023
+    second: PaulWalk_128
+  - first:
+      213: 3890438461082146048
+    second: PaulWalk_129
+  - first:
+      213: -4263808150355684761
+    second: PaulWalk_130
+  - first:
+      213: 1318549439084147793
+    second: PaulWalk_131
+  - first:
+      213: -505127985201612783
+    second: PaulWalk_132
+  - first:
+      213: -865645514583402770
+    second: PaulWalk_133
+  - first:
+      213: -3566786690988346936
+    second: PaulWalk_134
+  - first:
+      213: -7677026336966155090
+    second: PaulWalk_135
+  - first:
+      213: -3330128729780662696
+    second: PaulWalk_136
+  - first:
+      213: -1980817270723219686
+    second: PaulWalk_137
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PaulWalk_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c573f3185018c0040a7a8cf1aace0b37
+      internalID: 1198682395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_01
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd4db552b8b5641419d57136f1bde074
+      internalID: -1690965379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_02
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b63ed21dc704c94ea5e5fbe7a3404f5
+      internalID: 563270146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_03
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45fcdbbe0ee43c7468346eb67b5c2d92
+      internalID: 1608105501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_04
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a14faacc097687447b7f173e3eaebe67
+      internalID: -533475350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_05
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4546c55b6e3b094288fc5e9b3a585cf
+      internalID: 522800912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_06
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a47d1a5e6eb43a43a4fe545c22cb96d
+      internalID: 168995307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PaulWalk_07
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d4b5992ea86e334f90aa29c8d23cf75
+      internalID: 634806843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4c869e10e27795c43bb58210658493a6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PaulWalk_00: 1198682395
+      PaulWalk_01: -1690965379
+      PaulWalk_02: 563270146
+      PaulWalk_03: 1608105501
+      PaulWalk_04: -533475350
+      PaulWalk_05: 522800912
+      PaulWalk_06: 168995307
+      PaulWalk_07: 634806843
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

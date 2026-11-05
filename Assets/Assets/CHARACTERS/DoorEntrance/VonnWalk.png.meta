@@ -1,0 +1,547 @@
+fileFormatVersion: 2
+guid: 4fc6cb710e6e4014f903a1bdf041de0d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6699564261392064293
+    second: VonnWalk_0
+  - first:
+      213: 4971401929228632661
+    second: VonnWalk_1
+  - first:
+      213: -4872559889416300744
+    second: VonnWalk_2
+  - first:
+      213: 4378854394111354920
+    second: VonnWalk_3
+  - first:
+      213: 7667677943119121229
+    second: VonnWalk_4
+  - first:
+      213: 1878501043337044597
+    second: VonnWalk_5
+  - first:
+      213: 7864267715201207667
+    second: VonnWalk_6
+  - first:
+      213: 4384706891487595092
+    second: VonnWalk_7
+  - first:
+      213: -2498078257249505547
+    second: VonnWalk_8
+  - first:
+      213: 348894769133896092
+    second: VonnWalk_9
+  - first:
+      213: -1593187610612819637
+    second: VonnWalk_10
+  - first:
+      213: -4954328338025490903
+    second: VonnWalk_11
+  - first:
+      213: 4883044019828979137
+    second: VonnWalk_12
+  - first:
+      213: 4033161656728751066
+    second: VonnWalk_13
+  - first:
+      213: -5522106501696837590
+    second: VonnWalk_14
+  - first:
+      213: -5554776292722431146
+    second: VonnWalk_15
+  - first:
+      213: 177271311289940788
+    second: VonnWalk_16
+  - first:
+      213: -3322198115287378961
+    second: VonnWalk_17
+  - first:
+      213: -6173621382806233290
+    second: VonnWalk_18
+  - first:
+      213: -1689075503351086926
+    second: VonnWalk_19
+  - first:
+      213: 566720257362465323
+    second: VonnWalk_20
+  - first:
+      213: 4704622510777862592
+    second: VonnWalk_21
+  - first:
+      213: -1405688964993073880
+    second: VonnWalk_22
+  - first:
+      213: 6827756070432845162
+    second: VonnWalk_23
+  - first:
+      213: 5381209038950867282
+    second: VonnWalk_24
+  - first:
+      213: -3285214148535028333
+    second: VonnWalk_25
+  - first:
+      213: -5654257715478062962
+    second: VonnWalk_26
+  - first:
+      213: -8470940539411638950
+    second: VonnWalk_27
+  - first:
+      213: 8649983467085040914
+    second: VonnWalk_28
+  - first:
+      213: 3934798787644939527
+    second: VonnWalk_29
+  - first:
+      213: -2305915178722300093
+    second: VonnWalk_30
+  - first:
+      213: 4147356939445675441
+    second: VonnWalk_31
+  - first:
+      213: 5162828158047002749
+    second: VonnWalk_32
+  - first:
+      213: 2570707358275415830
+    second: VonnWalk_33
+  - first:
+      213: 5642147477388211954
+    second: VonnWalk_34
+  - first:
+      213: -6600917339644541284
+    second: VonnWalk_35
+  - first:
+      213: 7854706855439514469
+    second: VonnWalk_36
+  - first:
+      213: 4203525612637464428
+    second: VonnWalk_37
+  - first:
+      213: -4820973394817084751
+    second: VonnWalk_38
+  - first:
+      213: 7086009787400510382
+    second: VonnWalk_39
+  - first:
+      213: -8825007249009009060
+    second: VonnWalk_40
+  - first:
+      213: 6992838322670245367
+    second: VonnWalk_41
+  - first:
+      213: -4104345248065180195
+    second: VonnWalk_42
+  - first:
+      213: -7779496779882312658
+    second: VonnWalk_43
+  - first:
+      213: 7445884431570044940
+    second: VonnWalk_44
+  - first:
+      213: -4439183071350779803
+    second: VonnWalk_45
+  - first:
+      213: 4539735349803389253
+    second: VonnWalk_46
+  - first:
+      213: -1996142316223551021
+    second: VonnWalk_47
+  - first:
+      213: -3810342578916285632
+    second: VonnWalk_48
+  - first:
+      213: 9065719152921822362
+    second: VonnWalk_49
+  - first:
+      213: 7049426586732931127
+    second: VonnWalk_50
+  - first:
+      213: 8213430311760831640
+    second: VonnWalk_51
+  - first:
+      213: 1413921991384168342
+    second: VonnWalk_52
+  - first:
+      213: -5670610493468308290
+    second: VonnWalk_53
+  - first:
+      213: -8830025953772058775
+    second: VonnWalk_54
+  - first:
+      213: 2765141330902724412
+    second: VonnWalk_55
+  - first:
+      213: 292805060368685978
+    second: VonnWalk_56
+  - first:
+      213: 1164513097291309283
+    second: VonnWalk_57
+  - first:
+      213: 7177623683407552305
+    second: VonnWalk_58
+  - first:
+      213: -7280471789898660821
+    second: VonnWalk_59
+  - first:
+      213: 7943900160711456076
+    second: VonnWalk_60
+  - first:
+      213: 6192893878429276132
+    second: VonnWalk_61
+  - first:
+      213: 979066144242891617
+    second: VonnWalk_62
+  - first:
+      213: -6962901659110518347
+    second: VonnWalk_63
+  - first:
+      213: -5830251942241931259
+    second: VonnWalk_64
+  - first:
+      213: -1732048941315837462
+    second: VonnWalk_65
+  - first:
+      213: 1868696279440212325
+    second: VonnWalk_66
+  - first:
+      213: 4266988712135444169
+    second: VonnWalk_67
+  - first:
+      213: 9010095162586703564
+    second: VonnWalk_68
+  - first:
+      213: -4527441144709109440
+    second: VonnWalk_69
+  - first:
+      213: 5696640621159696772
+    second: VonnWalk_70
+  - first:
+      213: -3198964981126318728
+    second: VonnWalk_71
+  - first:
+      213: 6993051828957540521
+    second: VonnWalk_72
+  - first:
+      213: 8831132560367098632
+    second: VonnWalk_73
+  - first:
+      213: 7556544458135427140
+    second: VonnWalk_74
+  - first:
+      213: 3883198133428139460
+    second: VonnWalk_75
+  - first:
+      213: -6408501545682861127
+    second: VonnWalk_76
+  - first:
+      213: 5153352741626717462
+    second: VonnWalk_77
+  - first:
+      213: -1634359390748786166
+    second: VonnWalk_78
+  - first:
+      213: 8488778234620255196
+    second: VonnWalk_79
+  - first:
+      213: 1985014189049839942
+    second: VonnWalk_80
+  - first:
+      213: -4444895614119614528
+    second: VonnWalk_81
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: VonnWalk_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 456cd6801866b5e49bb44e91ed6e95dc
+      internalID: 1363348486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_01
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42fa0cf0debd73b488ad56e4e1a56998
+      internalID: 80918679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_02
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c88035f373028de4da8ddbcd16b912f3
+      internalID: -1832249989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_03
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 443.5
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d405806a96745b74d8309b92c09924a2
+      internalID: -966731611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_04
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71535af81f73f1c4a92632be36a65701
+      internalID: 1760286219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_05
+      rect:
+        serializedVersion: 2
+        x: 443.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9967d880b762fa4429a2732e79373cdb
+      internalID: -1755583053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_06
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4666dfd1e99d024988047d6c91998ce
+      internalID: 1609295345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: VonnWalk_07
+      rect:
+        serializedVersion: 2
+        x: 1330.5
+        y: 0
+        width: 443.5
+        height: 443.5
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 449a3880b291a7041b8092bb8c629801
+      internalID: -1691432270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6870b3aadca695b40abeeff38587576d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      VonnWalk_00: 1363348486
+      VonnWalk_01: 80918679
+      VonnWalk_02: -1832249989
+      VonnWalk_03: -966731611
+      VonnWalk_04: 1760286219
+      VonnWalk_05: -1755583053
+      VonnWalk_06: 1609295345
+      VonnWalk_07: -1691432270
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
