@@ -24,5 +24,5 @@ MonoBehaviour:
   possibleMotives: None directly; witnessed back entrance chime and frantic phone
     call.
   alibi: Working at register until 7:30 PM closing.
-  defaultSittingPose: {fileID: -1933522735709877966, guid: 237663ee0c9f8c64ab2ddfb025a39fb0, type: 3}
+  defaultSittingPose: {fileID: -1294194757174978704, guid: 68665981a0bd6d345889948660987631, type: 3}
   expressions: []

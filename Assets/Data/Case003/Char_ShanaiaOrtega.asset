@@ -24,5 +24,5 @@ MonoBehaviour:
   possibleMotives: Steal proprietary code before getting fired.
   alibi: Claims she went straight home at 5:30 PM and never contacted Kurt or returned
     to the cafe.
-  defaultSittingPose: {fileID: -3568694671893061097, guid: ccab0aa9723fee4488a425d18bad2da1, type: 3}
+  defaultSittingPose: {fileID: -6017277344851422587, guid: 9d31abb8c69105e40967decc523a2652, type: 3}
   expressions: []

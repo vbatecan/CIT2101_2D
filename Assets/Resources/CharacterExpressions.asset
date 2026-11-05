@@ -16,7 +16,7 @@ MonoBehaviour:
   - characterId: CHAR_VINCE_BATECAN
     expressions:
     - expression: 0
-      sprite: {fileID: 3412449368690571240, guid: 9bfc40eefa0c76c44adb6a5d7ffba7b2, type: 3}
+      sprite: {fileID: 3098525678322980666, guid: e120a70d275ef9f4d85b9075b45b4bff, type: 3}
     - expression: 6
       sprite: {fileID: -6372029884859345686, guid: 4de2ab4b6a4931f138d1c6ae04b97358, type: 3}
     - expression: 2

@@ -15,10 +15,10 @@ MonoBehaviour:
   id: EVD_WINDOW_PHOTO
   evidenceName: Window Frame Crime Scene Photo
   category: 0
-  normalSprite: {fileID: 3911213246147480790, guid: b136fdbe1a6047752a83b9e04a7bc4b2, type: 3}
+  normalSprite: {fileID: 5176857067740542813, guid: 6a34586c546fc23429353d6f2286b347, type: 3}
   highlightedSprite: {fileID: 0}
-  zoomedSprite: {fileID: 7034101391455836084, guid: d6ecb9b31b68d2cceb9e4ab19fc8b155, type: 3}
-  topPovSprite: {fileID: 7034101391455836084, guid: d6ecb9b31b68d2cceb9e4ab19fc8b155, type: 3}
+  zoomedSprite: {fileID: 5736896213183868101, guid: d6e4c0726a4454d4e9d5d54b1bc5dd36, type: 3}
+  topPovSprite: {fileID: 5736896213183868101, guid: d6e4c0726a4454d4e9d5d54b1bc5dd36, type: 3}
   customInspectBackground: {fileID: 0}
   baseDescription: Photograph of the shattered back office window taken from the
     alley.

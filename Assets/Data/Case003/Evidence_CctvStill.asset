@@ -15,10 +15,10 @@ MonoBehaviour:
   id: EVD_CCTV_STILL
   evidenceName: Coffee Shop CCTV Frame
   category: 0
-  normalSprite: {fileID: 5198689355215951543, guid: 96d81a74e76427a3a8cff07024ca1fc9, type: 3}
+  normalSprite: {fileID: 5845353387545521541, guid: a9d6a3c8e2a50594ca3382c5a97cb472, type: 3}
   highlightedSprite: {fileID: 0}
-  zoomedSprite: {fileID: 8503233421051930630, guid: 070b077d65d599f738718070cd83a861, type: 3}
-  topPovSprite: {fileID: 8503233421051930630, guid: 070b077d65d599f738718070cd83a861, type: 3}
+  zoomedSprite: {fileID: 117836131447332896, guid: 8342b6243e032d0418c01f0ab7135dff, type: 3}
+  topPovSprite: {fileID: 117836131447332896, guid: 8342b6243e032d0418c01f0ab7135dff, type: 3}
   customInspectBackground: {fileID: 0}
   baseDescription: Security footage capture from the back exit camera.
   detailedObservation: Clearly shows Shanaia's distinct jacket entering the back

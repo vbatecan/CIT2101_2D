@@ -22,5 +22,5 @@ MonoBehaviour:
   knownConflicts: Noticed Vince arguing heatedly with Uncle Kirby before dinner.
   possibleMotives: None directly known; witnessed Vince running toward the garden.
   alibi: Sat in the dining room talking with guests until 9:00 PM.
-  defaultSittingPose: {fileID: 762338069729248364, guid: 0ab5235ab3832964ab41f407745817f4, type: 3}
+  defaultSittingPose: {fileID: 3575810180571262660, guid: 4f2acbc6d0f99d64eb2dbe0d652e523a, type: 3}
   expressions: []

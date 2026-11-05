@@ -15,10 +15,10 @@ MonoBehaviour:
   id: EVD_RESIGNATION_LETTER
   evidenceName: Termination Notice Draft
   category: 1
-  normalSprite: {fileID: 4232438111541757452, guid: 3598578ef464dbc61b568395218889e2, type: 3}
+  normalSprite: {fileID: 4094713957771365233, guid: 352bfb6422304ae4fb30207c866c542e, type: 3}
   highlightedSprite: {fileID: 0}
-  zoomedSprite: {fileID: -4506690978093520730, guid: 383a3ea6eaf1aecefaaf56679a4375c9, type: 3}
-  topPovSprite: {fileID: -4506690978093520730, guid: 383a3ea6eaf1aecefaaf56679a4375c9, type: 3}
+  zoomedSprite: {fileID: -6542858104509527922, guid: d91d3629c3256be4a9a2313fa4cdaf41, type: 3}
+  topPovSprite: {fileID: -6542858104509527922, guid: d91d3629c3256be4a9a2313fa4cdaf41, type: 3}
   customInspectBackground: {fileID: 0}
   baseDescription: Drafted letter found inside Kurt's briefcase.
   detailedObservation: Official termination notice drafted by Kurt citing corporate
