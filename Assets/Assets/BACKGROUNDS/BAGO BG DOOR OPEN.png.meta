@@ -1,0 +1,793 @@
+fileFormatVersion: 2
+guid: 42e1830d69b04b043a7443f98c530461
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 731840658933465856
+    second: BAGO BG DOOR OPEN_0
+  - first:
+      213: -1862710091156726009
+    second: BAGO BG DOOR OPEN_1
+  - first:
+      213: -2282507856728694564
+    second: BAGO BG DOOR OPEN_2
+  - first:
+      213: 4744059963114380329
+    second: BAGO BG DOOR OPEN_3
+  - first:
+      213: 6984376988698455422
+    second: BAGO BG DOOR OPEN_4
+  - first:
+      213: 435386633005066128
+    second: BAGO BG DOOR OPEN_5
+  - first:
+      213: -2032051121624581218
+    second: BAGO BG DOOR OPEN_6
+  - first:
+      213: -6364547079817827426
+    second: BAGO BG DOOR OPEN_7
+  - first:
+      213: 8219685538403483268
+    second: BAGO BG DOOR OPEN_8
+  - first:
+      213: -7884754009053712772
+    second: BAGO BG DOOR OPEN_9
+  - first:
+      213: 3247450225190326406
+    second: BAGO BG DOOR OPEN_10
+  - first:
+      213: -342094286438976487
+    second: BAGO BG DOOR OPEN_11
+  - first:
+      213: -1244995720095523253
+    second: BAGO BG DOOR OPEN_12
+  - first:
+      213: -1139085967807843568
+    second: BAGO BG DOOR OPEN_13
+  - first:
+      213: 8084148411625174104
+    second: BAGO BG DOOR OPEN_14
+  - first:
+      213: -3924386328685247475
+    second: BAGO BG DOOR OPEN_15
+  - first:
+      213: 5718152163214542712
+    second: BAGO BG DOOR OPEN_16
+  - first:
+      213: 8815402285404100517
+    second: BAGO BG DOOR OPEN_17
+  - first:
+      213: -4071013862770781265
+    second: BAGO BG DOOR OPEN_18
+  - first:
+      213: -2746898191029629643
+    second: BAGO BG DOOR OPEN_19
+  - first:
+      213: -6178996957531350597
+    second: BAGO BG DOOR OPEN_20
+  - first:
+      213: -6298930669422722723
+    second: BAGO BG DOOR OPEN_21
+  - first:
+      213: 5910296515021705801
+    second: BAGO BG DOOR OPEN_22
+  - first:
+      213: -6415032100342853310
+    second: BAGO BG DOOR OPEN_23
+  - first:
+      213: -6396116567677259994
+    second: BAGO BG DOOR OPEN_24
+  - first:
+      213: -202547770879068010
+    second: BAGO BG DOOR OPEN_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 405
+        width: 3840
+        height: 1755
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 003caeba335082a00800000000000000
+      internalID: 731840658933465856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_1
+      rect:
+        serializedVersion: 2
+        x: 3798
+        y: 384
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70f51198a035626e0800000000000000
+      internalID: -1862710091156726009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_2
+      rect:
+        serializedVersion: 2
+        x: 3815
+        y: 393
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd0e5a29237e250e0800000000000000
+      internalID: -2282507856728694564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_3
+      rect:
+        serializedVersion: 2
+        x: 3815
+        y: 379
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92cd59eb66946d140800000000000000
+      internalID: 4744059963114380329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_4
+      rect:
+        serializedVersion: 2
+        x: 3828
+        y: 391
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7da8cccddd7de060800000000000000
+      internalID: 6984376988698455422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_5
+      rect:
+        serializedVersion: 2
+        x: 3770
+        y: 370
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 097683006ddca0600800000000000000
+      internalID: 435386633005066128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_6
+      rect:
+        serializedVersion: 2
+        x: 3792
+        y: 370
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9bf12a6544bcc3e0800000000000000
+      internalID: -2032051121624581218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_7
+      rect:
+        serializedVersion: 2
+        x: 3803
+        y: 374
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9b6537d6269ca7a0800000000000000
+      internalID: -6364547079817827426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_8
+      rect:
+        serializedVersion: 2
+        x: 3823
+        y: 369
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48e74f98270321270800000000000000
+      internalID: 8219685538403483268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_9
+      rect:
+        serializedVersion: 2
+        x: 3834
+        y: 372
+        width: 6
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7e2405010ab39290800000000000000
+      internalID: -7884754009053712772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_10
+      rect:
+        serializedVersion: 2
+        x: 3781
+        y: 356
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6805b3a26c2411d20800000000000000
+      internalID: 3247450225190326406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_11
+      rect:
+        serializedVersion: 2
+        x: 3804
+        y: 358
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9143d191f03a04bf0800000000000000
+      internalID: -342094286438976487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_12
+      rect:
+        serializedVersion: 2
+        x: 3822
+        y: 356
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4e13d42df2e8bee0800000000000000
+      internalID: -1244995720095523253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_13
+      rect:
+        serializedVersion: 2
+        x: 3828
+        y: 362
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0137e20f8572130f0800000000000000
+      internalID: -1139085967807843568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_14
+      rect:
+        serializedVersion: 2
+        x: 3834
+        y: 360
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 854f472162aa03070800000000000000
+      internalID: 8084148411625174104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_15
+      rect:
+        serializedVersion: 2
+        x: 3769
+        y: 348
+        width: 13
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0401552d67c989c0800000000000000
+      internalID: -3924386328685247475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_16
+      rect:
+        serializedVersion: 2
+        x: 3808
+        y: 350
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 877c80ca815fa5f40800000000000000
+      internalID: 5718152163214542712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_17
+      rect:
+        serializedVersion: 2
+        x: 3835
+        y: 346
+        width: 5
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a79dad2ca9965a70800000000000000
+      internalID: 8815402285404100517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_18
+      rect:
+        serializedVersion: 2
+        x: 3811
+        y: 336
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa35bd1067ad087c0800000000000000
+      internalID: -4071013862770781265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_19
+      rect:
+        serializedVersion: 2
+        x: 3832
+        y: 336
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53d048126ae01e9d0800000000000000
+      internalID: -2746898191029629643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_20
+      rect:
+        serializedVersion: 2
+        x: 3785
+        y: 318
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb9df1e310bcf3aa0800000000000000
+      internalID: -6178996957531350597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_21
+      rect:
+        serializedVersion: 2
+        x: 3820
+        y: 323
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d51ce38ede3b598a0800000000000000
+      internalID: -6298930669422722723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_22
+      rect:
+        serializedVersion: 2
+        x: 3804
+        y: 312
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9421917cd57950250800000000000000
+      internalID: 5910296515021705801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_23
+      rect:
+        serializedVersion: 2
+        x: 3789
+        y: 301
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24116540b4a39f6a0800000000000000
+      internalID: -6415032100342853310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_24
+      rect:
+        serializedVersion: 2
+        x: 3805
+        y: 291
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62f2b99aedd6c37a0800000000000000
+      internalID: -6396116567677259994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BAGO BG DOOR OPEN_25
+      rect:
+        serializedVersion: 2
+        x: 3832
+        y: 280
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 698b4b220e7603df0800000000000000
+      internalID: -202547770879068010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BAGO BG DOOR OPEN_0: 731840658933465856
+      BAGO BG DOOR OPEN_1: -1862710091156726009
+      BAGO BG DOOR OPEN_10: 3247450225190326406
+      BAGO BG DOOR OPEN_11: -342094286438976487
+      BAGO BG DOOR OPEN_12: -1244995720095523253
+      BAGO BG DOOR OPEN_13: -1139085967807843568
+      BAGO BG DOOR OPEN_14: 8084148411625174104
+      BAGO BG DOOR OPEN_15: -3924386328685247475
+      BAGO BG DOOR OPEN_16: 5718152163214542712
+      BAGO BG DOOR OPEN_17: 8815402285404100517
+      BAGO BG DOOR OPEN_18: -4071013862770781265
+      BAGO BG DOOR OPEN_19: -2746898191029629643
+      BAGO BG DOOR OPEN_2: -2282507856728694564
+      BAGO BG DOOR OPEN_20: -6178996957531350597
+      BAGO BG DOOR OPEN_21: -6298930669422722723
+      BAGO BG DOOR OPEN_22: 5910296515021705801
+      BAGO BG DOOR OPEN_23: -6415032100342853310
+      BAGO BG DOOR OPEN_24: -6396116567677259994
+      BAGO BG DOOR OPEN_25: -202547770879068010
+      BAGO BG DOOR OPEN_3: 4744059963114380329
+      BAGO BG DOOR OPEN_4: 6984376988698455422
+      BAGO BG DOOR OPEN_5: 435386633005066128
+      BAGO BG DOOR OPEN_6: -2032051121624581218
+      BAGO BG DOOR OPEN_7: -6364547079817827426
+      BAGO BG DOOR OPEN_8: 8219685538403483268
+      BAGO BG DOOR OPEN_9: -7884754009053712772
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
