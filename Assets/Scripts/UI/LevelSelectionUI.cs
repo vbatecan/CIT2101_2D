@@ -218,6 +218,8 @@ namespace CaseClosed.UI
 
         public void LaunchCase(int levelIndex)
         {
+            var suitcase = GetComponent<SuitcaseSelectionController>();
+            if (suitcase != null && !suitcase.IsReady) return;
             CaseIntroController.Launch(levelIndex, () => LaunchCaseImmediately(levelIndex));
         }
 
@@ -256,6 +258,8 @@ namespace CaseClosed.UI
 
         public void OnBackClicked()
         {
+            var suitcase = GetComponent<SuitcaseSelectionController>();
+            if (suitcase != null) { suitcase.ReturnToMenu(); return; }
             Debug.Log("[UI:LevelSelection] Returning to Main Menu...");
             AudioManager.Instance?.PlayButtonClick();
 

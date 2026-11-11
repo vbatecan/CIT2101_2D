@@ -75,6 +75,8 @@ namespace CaseClosed.UI
         public Button confirmExitNoButton;
 
         private bool _referencesResolved = false;
+        [SerializeField] private CanvasGroup caseSelectFade;
+        private bool openingCases;
 
         private void Awake()
         {
@@ -123,6 +125,7 @@ namespace CaseClosed.UI
 
         private void Update()
         {
+            if (openingCases) return;
             if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -320,6 +323,34 @@ namespace CaseClosed.UI
         }
 
         public void OpenCaseSelect()
+        {
+            if (openingCases) return;
+            if (caseSelectFade != null)
+            {
+                openingCases = true;
+                StartCoroutine(FadeToCases());
+                return;
+            }
+            OpenCaseSelectImmediately();
+        }
+
+        private System.Collections.IEnumerator FadeToCases()
+        {
+            caseSelectFade.blocksRaycasts = true;
+            float elapsed = 0f;
+            while (elapsed < .35f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                caseSelectFade.alpha = Mathf.Clamp01(elapsed / .35f);
+                yield return null;
+            }
+            OpenCaseSelectImmediately();
+            openingCases = false;
+            caseSelectFade.alpha = 0f;
+            caseSelectFade.blocksRaycasts = false;
+        }
+
+        private void OpenCaseSelectImmediately()
         {
             if (UnityEngine.Application.CanStreamedLevelBeLoaded("LevelSelect"))
             {
