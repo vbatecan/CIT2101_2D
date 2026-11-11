@@ -163,7 +163,7 @@ namespace CaseClosed.UI
                     _ => $"CASE {levelIndex:D2}"
                 };
                 titleText.text = canonicalTitle;
-                titleText.color = DetectiveUITheme.Ink;
+                titleText.color = isUnlocked ? DetectiveUITheme.Ink : new Color(0.98f, 0.95f, 0.87f, 1f);
             }
 
             if (statusText != null)
@@ -183,7 +183,7 @@ namespace CaseClosed.UI
                 {
                     int requiredLevel = levelIndex - 1;
                     statusText.text = $"[ LOCKED \uD83D\uDD12 (BEAT CASE 0{requiredLevel}) ]";
-                    statusText.color = DetectiveUITheme.StampRed;
+                    statusText.color = new Color(1f, 0.72f, 0.58f, 1f);
                 }
             }
 
