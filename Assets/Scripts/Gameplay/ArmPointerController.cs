@@ -157,6 +157,12 @@ namespace CaseClosed.Gameplay
 
         private void LateUpdate()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive)
+            {
+                if (_pointerCanvas != null) _pointerCanvas.enabled = false;
+                if (armRenderer != null) armRenderer.forceRenderingOff = true;
+                return;
+            }
             if (armRenderer == null || targetCamera == null || armRenderer.sprite == null) return;
             EnsurePointerOverlay();
             armRenderer.forceRenderingOff = true;

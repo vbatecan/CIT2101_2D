@@ -15,7 +15,8 @@ namespace CaseClosed.UI
         [SerializeField] private TMP_Text narration;
         [SerializeField, Min(0.01f)] private float fadeSeconds = 1f;
         [SerializeField, Min(1f)] private float charactersPerSecond = 30f;
-        [SerializeField, Min(0f)] private float minimumHoldSeconds = 4f;
+        [Tooltip("Seconds to hold the completed narration before fading out.")]
+        [SerializeField, Min(0f)] private float minimumHoldSeconds = 3f;
         private CaseManager targetManager;
         private bool ownsGate;
 
@@ -49,7 +50,9 @@ namespace CaseClosed.UI
         {
             overlay.alpha = 0f;
             overlay.blocksRaycasts = true;
-            heading.text = location.text = narration.text = string.Empty;
+            heading.text = $"CASE {level:00}";
+            location.text = "Preparing case...";
+            narration.text = string.Empty;
             yield return Fade(0f, 1f);
             bool failed = false;
             try { load(); }
@@ -86,11 +89,16 @@ namespace CaseClosed.UI
                 }
                 if (!string.IsNullOrWhiteSpace(text))
                 {
-                    int words = text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries).Length;
-                    yield return new WaitForSecondsRealtime(Mathf.Max(minimumHoldSeconds, words / 3f));
+                    yield return new WaitForSecondsRealtime(minimumHoldSeconds);
                 }
             }
             else Debug.LogError("[CaseIntro] Case launch failed or timed out; restoring controls.");
+            // Capture and hide seated portraits while fully covered. The launch gate keeps
+            // the entrance frozen at its first frame until the reveal has finished.
+            var entrance = FindFirstObjectByType<CaseClosed.Gameplay.DoorEntranceSequence>();
+            if (targetManager != null && entrance != null && entrance.IsEntrancePending
+                && !entrance.IsPlaying && entrance.CanPlayForCase(targetManager.ActiveCase))
+                entrance.PlayEntrance();
             yield return Fade(1f, 0f);
             ReleaseGate();
             Destroy(gameObject);
