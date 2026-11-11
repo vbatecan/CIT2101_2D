@@ -24,6 +24,8 @@ namespace CaseClosed.Data
         public string dateAndLocation;
         [TextArea(3, 5)]
         public string incidentDescription;
+        [TextArea(4, 10)]
+        public string introNarration;
         [TextArea(2, 4)]
         public string objective;
         public string victimInfo;

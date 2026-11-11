@@ -16,6 +16,7 @@ MonoBehaviour:
   caseId: LEVEL_02
   caseTitle: 'LEVEL 2: The Shattered Mirror'
   dateAndLocation: 11:00 PM - Upscale Art Gallery Back Office
+  introNarration: "It is eleven at night. In the back office of an upscale art gallery, a priceless painting is missing.\n\nGallery owner Paul Gabriel Camacho claims an intruder entered through the alley window. Broken glass and conflicting accounts are all you have to begin with.\n\nQuestion Paul and Charl Vonn Pascual. Study the evidence, and discover whether the scene tells the same story as its witnesses."
   incidentDescription: Gallery owner Paul Gabriel Camacho claims an intruder broke
     through the exterior alley window and stole a priceless painting.
   objective: Interrogate Charl Vonn Pascual and Paul Gabriel Camacho, inspect the

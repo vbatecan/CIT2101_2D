@@ -138,6 +138,7 @@ namespace CaseClosed.Gameplay
 
         private void Update()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             CheckUIModeState();
 
             if (isArmActive)

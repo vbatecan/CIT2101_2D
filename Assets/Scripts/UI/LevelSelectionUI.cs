@@ -218,6 +218,11 @@ namespace CaseClosed.UI
 
         public void LaunchCase(int levelIndex)
         {
+            CaseIntroController.Launch(levelIndex, () => LaunchCaseImmediately(levelIndex));
+        }
+
+        private void LaunchCaseImmediately(int levelIndex)
+        {
             Debug.Log($"[UI:LevelSelection] Launching Case {levelIndex}...");
             AudioManager.Instance?.PlayButtonClick();
 

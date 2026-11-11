@@ -123,6 +123,7 @@ namespace CaseClosed.UI
 
         private void Update()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (exitConfirmContainer != null && exitConfirmContainer.activeSelf)
@@ -609,6 +610,11 @@ namespace CaseClosed.UI
         }
 
         public void LaunchCase(int caseIndex)
+        {
+            CaseIntroController.Launch(caseIndex, () => LaunchCaseImmediately(caseIndex));
+        }
+
+        private void LaunchCaseImmediately(int caseIndex)
         {
             Debug.Log($"[UI:MainMenu] Launching Case {caseIndex}...");
             AudioManager.Instance?.PlayButtonClick();

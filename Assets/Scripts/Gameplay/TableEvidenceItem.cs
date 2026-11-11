@@ -183,6 +183,7 @@ namespace CaseClosed.Gameplay
 
         private void Update()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (subscribedCaseManager == null && CaseManager.Instance != null)
             {
                 SubscribeToCaseManager();
@@ -437,12 +438,9 @@ namespace CaseClosed.Gameplay
 
             if (boxCol != null && spriteRenderer != null && spriteRenderer.sprite != null)
             {
-                Vector2 spriteSize = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-                if (boxCol.size.x < spriteSize.x * 0.7f || boxCol.size.y < spriteSize.y * 0.7f)
-                {
-                    boxCol.size = spriteSize;
-                    boxCol.offset = Vector2.zero;
-                }
+                Bounds spriteBounds = spriteRenderer.sprite.bounds;
+                boxCol.size = spriteBounds.size;
+                boxCol.offset = spriteBounds.center;
             }
         }
 
@@ -812,6 +810,7 @@ namespace CaseClosed.Gameplay
 
         public void TriggerClick(bool isInspectOrRightClick = false)
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (UIManager.Instance != null && UIManager.Instance.currentPanel != UIPanelType.InvestigationTable) return;
             if (EvidenceManager.Instance != null && EvidenceManager.Instance.isInspectingModalOpen) return;
 

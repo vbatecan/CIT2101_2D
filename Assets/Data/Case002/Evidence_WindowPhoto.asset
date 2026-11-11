@@ -34,7 +34,7 @@ MonoBehaviour:
   hotspots:
   - hotspotId: SPOT_OUTSIDE_GLASS
     hotspotTitle: Outer Glass Distribution
-    normalizedPosition: {x: 0.5, y: 0.2}
+    normalizedPosition: {x: 0.5, y: 0.23}
     radius: 0.1
     observationText: Glass fragments lay outside on alley cobblestone rather than
       inside office floor.

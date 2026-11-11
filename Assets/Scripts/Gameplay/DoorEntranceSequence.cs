@@ -40,6 +40,10 @@ namespace CaseClosed.Gameplay
         [SerializeField] private UIManager uiManager;
         [SerializeField] private SpriteRenderer background;
         [SerializeField] private Sprite openBackground;
+        [Tooltip("Foreground table whose artwork follows the door's open/closed state.")]
+        [SerializeField] private SpriteRenderer table;
+        [Tooltip("BAGO table artwork used while the entrance door is open.")]
+        [SerializeField] private Sprite openTableSprite;
         [SerializeField] private SpriteRenderer doorLeaf;
         [SerializeField] private SpriteRenderer doorwayInterior;
         [SerializeField] private Walker[] walkers;
@@ -59,6 +63,7 @@ namespace CaseClosed.Gameplay
         private CaseManager publisher;
         private CaseSO pendingCase;
         private Sprite closedBackground;
+        private Sprite closedTableSprite;
         private Vector3 closedDoorScale;
         private bool interiorWasEnabled;
         private bool captured;
@@ -149,6 +154,7 @@ namespace CaseClosed.Gameplay
 
         private void Update()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             // Follow existing panel/time behavior without changing the timer or UI workflow.
             if (uiManager != null && uiManager.currentPanel != UIPanelType.InvestigationTable) return;
             if (!playing && pendingCase != null)
@@ -172,6 +178,7 @@ namespace CaseClosed.Gameplay
             if (!SelectCaseArtwork()) return;
 
             closedBackground = background.sprite;
+            if (table != null) closedTableSprite = table.sprite;
             closedDoorScale = doorLeaf.transform.localScale;
             interiorWasEnabled = doorwayInterior != null && doorwayInterior.enabled;
             closeAt = doorSeconds;
@@ -186,6 +193,7 @@ namespace CaseClosed.Gameplay
             }
             captured = true;
             background.sprite = openBackground;
+            if (table != null && openTableSprite != null) table.sprite = openTableSprite;
             if (doorwayInterior != null) doorwayInterior.enabled = true;
             elapsed = 0f;
             playing = true;
@@ -241,6 +249,7 @@ namespace CaseClosed.Gameplay
             playing = false;
             if (!captured) return;
             if (background != null) background.sprite = closedBackground;
+            if (table != null) table.sprite = closedTableSprite;
             if (doorLeaf != null)
             {
                 doorLeaf.enabled = false;

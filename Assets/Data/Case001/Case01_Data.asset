@@ -16,6 +16,7 @@ MonoBehaviour:
   caseId: LEVEL_01
   caseTitle: 'LEVEL 1: The Missing Necklace'
   dateAndLocation: Stormy Evening - High-Society Manor Study
+  introNarration: "Rain lashes the manor as an evening gathering takes an unsettling turn. A valuable family necklace has vanished from the safe.\n\nIts owner, Kirby Raymundo, demands answers. Vince Angelo Batecan has an account of the evening, but his words are only the beginning.\n\nStep into the study. Examine what remains, listen carefully, and uncover what happened."
   incidentDescription: A valuable family necklace disappeared from the manor safe
     during a stormy evening gathering.
   objective: Interrogate Vince Angelo Batecan, inspect table evidence, disprove his

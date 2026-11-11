@@ -139,6 +139,7 @@ namespace CaseClosed.Managers
             CharacterProfileSO investigator = SelectedInvestigator;
             sessionState.Begin(newCase, investigator, Time.time);
             hasStartedSession = true;
+            if (CaseStartPresentation.IsActive) PauseTimer();
 
             Debug.Log($"[CaseManager] Loading case: '{(newCase != null ? newCase.caseTitle : "NULL")}' (Level: {newCase?.levelNumber}, ID: {newCase?.caseId}, TimeLimit: {(HasActiveTimeLimit ? $"{CaseTimeLimit}s" : "Untimed")}, Investigator: '{EffectiveInvestigator?.fullName ?? "Unassigned"}')");
 
@@ -167,6 +168,7 @@ namespace CaseClosed.Managers
 
         public void ResumeTimer()
         {
+            if (CaseStartPresentation.IsActive) return;
             if (!sessionState.ResumeTimer(Time.time)) return;
 
             Debug.Log($"[CaseManager] Timer resumed. Remaining time: {RemainingTime:F1}s");

@@ -65,6 +65,7 @@ namespace CaseClosed.Gameplay
 
         public void TriggerInterrogation()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             AudioManager.Instance?.PlayButtonClick();
 
             if (customDialogueData != null && DialogueBox.Instance != null)

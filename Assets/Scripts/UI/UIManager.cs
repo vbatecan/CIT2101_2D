@@ -636,6 +636,7 @@ namespace CaseClosed.UI
 
         public void ToggleInGameMenu()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (currentPanel == UIPanelType.InGameMenu)
             {
                 CloseInGameMenu();

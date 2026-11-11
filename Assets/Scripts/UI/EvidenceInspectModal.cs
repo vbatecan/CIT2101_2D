@@ -557,9 +557,41 @@ namespace CaseClosed.UI
             return transform as RectTransform;
         }
 
+        private void OnRectTransformDimensionsChange()
+        {
+            if (isInspecting) AlignHotspotsToImage();
+        }
+
+        private void AlignHotspotsToImage()
+        {
+            if (evidenceZoomImage == null || hotspotsContainer == null ||
+                hotspotsContainer.parent != evidenceZoomImage.rectTransform) return;
+
+            Vector2 fraction = Vector2.one;
+            Sprite sprite = evidenceZoomImage.sprite;
+            Vector2 size = evidenceZoomImage.rectTransform.rect.size;
+            if (evidenceZoomImage.preserveAspect && sprite != null && size.x > 0f && size.y > 0f)
+            {
+                float spriteAspect = sprite.rect.width / sprite.rect.height;
+                float imageAspect = size.x / size.y;
+                if (spriteAspect > imageAspect)
+                    fraction.y = imageAspect / spriteAspect;
+                else
+                    fraction.x = spriteAspect / imageAspect;
+            }
+
+            // Hotspot coordinates describe the visible sprite, excluding aspect-fit margins.
+            Vector2 margin = Vector2.Scale(Vector2.one - fraction, evidenceZoomImage.rectTransform.pivot);
+            hotspotsContainer.anchorMin = margin;
+            hotspotsContainer.anchorMax = margin + fraction;
+            hotspotsContainer.offsetMin = Vector2.zero;
+            hotspotsContainer.offsetMax = Vector2.zero;
+        }
+
         private void PopulateHotspots(EvidenceSO evidence)
         {
             if (hotspotsContainer == null) return;
+            AlignHotspotsToImage();
 
             foreach (Transform child in hotspotsContainer)
             {

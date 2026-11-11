@@ -21,6 +21,7 @@ namespace CaseClosed.Gameplay
 
         public void TriggerDiscovery()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (hotspotData != null)
             {
                 Debug.Log($"[Gameplay:Hotspot] Clicked hotspot '{hotspotData.hotspotTitle}' (ID: {hotspotData.hotspotId})");

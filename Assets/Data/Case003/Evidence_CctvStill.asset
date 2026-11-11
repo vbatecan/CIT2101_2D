@@ -32,7 +32,7 @@ MonoBehaviour:
   hotspots:
   - hotspotId: SPOT_DISTINCT_JACKET
     hotspotTitle: Shanaia's Custom Jacket
-    normalizedPosition: {x: 0.4, y: 0.6}
+    normalizedPosition: {x: 0.57, y: 0.35}
     radius: 0.1
     observationText: Shanaia entering back door of cafe at 7:10 PM, 1.5 hours after
       claiming she left!

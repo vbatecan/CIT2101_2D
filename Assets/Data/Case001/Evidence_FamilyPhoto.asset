@@ -32,7 +32,7 @@ MonoBehaviour:
   hotspots:
   - hotspotId: SPOT_DOORWAY_SILHOUETTE
     hotspotTitle: Study Doorway Silhouette
-    normalizedPosition: {x: 0.3, y: 0.5}
+    normalizedPosition: {x: 0.54, y: 0.54}
     radius: 0.1
     observationText: Silhouette matching Vince standing right outside study room
       at 8:45 PM.

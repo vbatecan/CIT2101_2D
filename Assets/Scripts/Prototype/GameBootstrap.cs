@@ -82,7 +82,8 @@ namespace CaseClosed.Prototype
                 || caseData.dialogueTrees == null || caseData.dialogueTrees.Count == 0) return;
 
             DialogueTreeSO tree = caseData.dialogueTrees[0];
-            bool waitForEntrance = entranceSequence != null && entranceSequence.CanPlayForCase(caseData);
+            bool waitForEntrance = CaseClosed.Services.CaseStartPresentation.IsActive
+                || (entranceSequence != null && entranceSequence.CanPlayForCase(caseData));
             interrogationManager.SetInterrogationTarget(caseData.primarySuspect, tree, !waitForEntrance);
             if (waitForEntrance) openingDialogue = StartCoroutine(WaitForEntrance(caseData, tree));
         }
@@ -91,7 +92,8 @@ namespace CaseClosed.Prototype
         {
             // Let all OnCaseLoaded subscribers and Start methods queue the entrance first.
             yield return null;
-            while (entranceSequence != null && entranceSequence.isActiveAndEnabled && entranceSequence.IsEntrancePending)
+            while (CaseClosed.Services.CaseStartPresentation.IsActive
+                || (entranceSequence != null && entranceSequence.isActiveAndEnabled && entranceSequence.IsEntrancePending))
                 yield return null;
 
             openingDialogue = null;
@@ -177,6 +179,7 @@ namespace CaseClosed.Prototype
 
         private void Update()
         {
+            if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (Input.GetKeyDown(KeyCode.Alpha1)) SwitchToCaseSceneOrLevel(1);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) SwitchToCaseSceneOrLevel(2);
             else if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchToCaseSceneOrLevel(3);
