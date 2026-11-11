@@ -163,7 +163,7 @@ namespace CaseClosed.UI
                     _ => $"CASE {levelIndex:D2}"
                 };
                 titleText.text = canonicalTitle;
-                titleText.color = isUnlocked ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.75f);
+                titleText.color = DetectiveUITheme.Ink;
             }
 
             if (statusText != null)
@@ -172,18 +172,18 @@ namespace CaseClosed.UI
                 if (isCompleted)
                 {
                     statusText.text = "[ COMPLETED \u2605 ]";
-                    statusText.color = new Color(0.25f, 0.85f, 0.45f, 1f);
+                    statusText.color = new Color(0.18f, 0.40f, 0.20f, 1f);
                 }
                 else if (isUnlocked)
                 {
                     statusText.text = "[ AVAILABLE ]";
-                    statusText.color = new Color(1f, 0.85f, 0.45f, 1f);
+                    statusText.color = DetectiveUITheme.Ink;
                 }
                 else
                 {
                     int requiredLevel = levelIndex - 1;
                     statusText.text = $"[ LOCKED \uD83D\uDD12 (BEAT CASE 0{requiredLevel}) ]";
-                    statusText.color = new Color(0.75f, 0.35f, 0.35f, 0.85f);
+                    statusText.color = DetectiveUITheme.StampRed;
                 }
             }
 

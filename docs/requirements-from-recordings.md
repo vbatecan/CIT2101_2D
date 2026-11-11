@@ -1,5 +1,12 @@
 # Requirements from the CIM and CCP Finals recordings
 
+## Current revision: suitcase selection supersedes startup opening
+The subsequent explicit user request supersedes the startup-only and press-any-key requirements documented below. The game now starts on the existing Main Menu. Case Select fades to the closed suitcase on the room table, opens it during a 1.2-second zoom, and blends into a high-resolution generated interior with three real dossier buttons. The user approved matching new artwork, opening during the zoom, and reversing/closing on Back. Case names, unlock/completion rules, and the story intro remain owned by existing code. No prompt or startup continuation flag is used.
+
+Presentation is authored in MainMenu and LevelSelect through Unity MCP. The original sprite sheet supplies opening/closing frames; `SuitcaseSelectionInterior.png` is generated background artwork without baked-in labels or buttons. Folder labels remain native UI. The viewport is aspect-fit and clipped so zooming cannot expose scenery in letterbox margins.
+
+Revision verification: Play Mode confirmed the three dossiers and lock states, reverse transition to MainMenu, and Case 1 reaching its story intro. Earlier startup verification below is historical and does not describe the current entry flow. Desktop input and a standalone build remain outside the completed checks.
+
 ## 1. Product purpose and intended users
 Case Closed is an existing Unity detective game for players investigating cases. This change adds an illustrated startup screen and adjusts ambient gameplay walkers; it does not reconstruct the drawing app or Messenger interface visible in the recordings.
 

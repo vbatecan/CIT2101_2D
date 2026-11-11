@@ -345,6 +345,7 @@ namespace CaseClosed.UI
                 yield return null;
             }
             OpenCaseSelectImmediately();
+            yield return null;
             openingCases = false;
             caseSelectFade.alpha = 0f;
             caseSelectFade.blocksRaycasts = false;
