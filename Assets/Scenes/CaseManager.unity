@@ -7885,6 +7885,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.06
       objectReference: {fileID: 0}
+    - target: {fileID: 900000000000114100, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: af7d661472a249e78e3e332c7a791ae8, type: 3}
+    - target: {fileID: 900000000000114100, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
+      propertyPath: m_FontData.m_FontStyle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 900000000000114101, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_Text
       value: CONCLUDE CASE
@@ -7900,6 +7908,14 @@ PrefabInstance:
     - target: {fileID: 900000000000114101, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_Color.r
       value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 900000000000114101, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: af7d661472a249e78e3e332c7a791ae8, type: 3}
+    - target: {fileID: 900000000000114101, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
+      propertyPath: m_FontData.m_FontStyle
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1385549674181458318, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -8023,7 +8039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4977187049728810785, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6044440373531453997, guid: 007209aa89ccf58c190a679b6d5d7625, type: 3}
       propertyPath: m_IsActive
@@ -12134,6 +12150,14 @@ PrefabInstance:
     - target: {fileID: 114100, guid: edc4714b582e4bf3a5a6a4d842519d6c, type: 3}
       propertyPath: m_Color.r
       value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 114100, guid: edc4714b582e4bf3a5a6a4d842519d6c, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: af7d661472a249e78e3e332c7a791ae8, type: 3}
+    - target: {fileID: 114100, guid: edc4714b582e4bf3a5a6a4d842519d6c, type: 3}
+      propertyPath: m_FontData.m_FontStyle
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224000, guid: edc4714b582e4bf3a5a6a4d842519d6c, type: 3}
       propertyPath: m_Pivot.x
