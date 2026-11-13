@@ -76,7 +76,9 @@ namespace CaseClosed.UI
 
         private bool _referencesResolved = false;
         [SerializeField] private CanvasGroup caseSelectFade;
+        [SerializeField] private OpeningScreenController openingScreen;
         private bool openingCases;
+        private bool CanInteract => openingScreen == null || openingScreen.IsReady;
 
         private void Awake()
         {
@@ -125,7 +127,7 @@ namespace CaseClosed.UI
 
         private void Update()
         {
-            if (openingCases) return;
+            if (!CanInteract || openingCases) return;
             if (CaseClosed.Services.CaseStartPresentation.IsActive) return;
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -312,6 +314,7 @@ namespace CaseClosed.UI
 
         public void OpenSubView(GameObject targetSubView)
         {
+            if (!CanInteract) return;
             SetMainButtonsActive(false);
             if (caseSelectContainer != null) caseSelectContainer.SetActive(targetSubView == caseSelectContainer);
             if (howToPlayContainer != null) howToPlayContainer.SetActive(targetSubView == howToPlayContainer);
@@ -324,7 +327,7 @@ namespace CaseClosed.UI
 
         public void OpenCaseSelect()
         {
-            if (openingCases) return;
+            if (!CanInteract || openingCases) return;
             if (caseSelectFade != null)
             {
                 openingCases = true;
@@ -611,6 +614,7 @@ namespace CaseClosed.UI
 
         public void OpenExitConfirmation()
         {
+            if (!CanInteract) return;
             Debug.Log("[UI:MainMenu] Opening exit confirmation prompt...");
             if (exitConfirmContainer != null)
             {

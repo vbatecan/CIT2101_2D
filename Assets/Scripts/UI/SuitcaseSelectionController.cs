@@ -21,14 +21,13 @@ namespace CaseClosed.UI
 
         private IEnumerator Start()
         {
-            dossiers.alpha = 0f;
+            // The opening now belongs to startup. Enter the archive at its final pose.
+            Sample(1f);
+            dossiers.alpha = 1f;
             dossiers.interactable = dossiers.blocksRaycasts = false;
-            closeup.alpha = 0f;
             black.alpha = 1f;
             yield return Blend(.35f, t => black.alpha = 1f-t);
-            yield return new WaitForSecondsRealtime(.2f);
-            yield return Blend(1.2f, t => Sample(t));
-            yield return Blend(.2f, t => dossiers.alpha = t);
+            black.blocksRaycasts = false;
             ready = true;
             dossiers.interactable = dossiers.blocksRaycasts = true;
             if (firstCase != null && firstCase.interactable && EventSystem.current != null)
@@ -51,11 +50,10 @@ namespace CaseClosed.UI
         {
             ready = false;
             dossiers.interactable = dossiers.blocksRaycasts = false;
-            yield return Blend(.2f, t => dossiers.alpha = 1f-t);
-            yield return Blend(1.2f, t => Sample(1f-t));
+            black.blocksRaycasts = true;
             yield return Blend(.35f, t => black.alpha = t);
             if (Application.CanStreamedLevelBeLoaded("MainMenu")) SceneManager.LoadScene("MainMenu");
-            else { black.alpha = 0f; returning = false; ready = true; dossiers.alpha = 1f; dossiers.interactable = dossiers.blocksRaycasts = true; Debug.LogError("MainMenu is unavailable."); }
+            else { black.alpha = 0f; black.blocksRaycasts = false; returning = false; ready = true; dossiers.alpha = 1f; dossiers.interactable = dossiers.blocksRaycasts = true; Debug.LogError("MainMenu is unavailable."); }
         }
 
         private void Sample(float t)

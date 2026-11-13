@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEditor;
 using TMPro;
-using UnityEngine.TextCore;
 using UnityEngine.TextCore.LowLevel;
 
 namespace CaseClosed.Editor
@@ -46,65 +43,32 @@ namespace CaseClosed.Editor
                 return;
             }
 
-            TMP_FontAsset fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
-            bool isNew = fontAsset == null;
-            if (isNew)
+            // Let TMP initialize its internal atlas/source fields through the supported API.
+            TMP_FontAsset generated = TMP_FontAsset.CreateFontAsset(
+                font, 90, 9, GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
+            if (generated == null)
             {
-                fontAsset = ScriptableObject.CreateInstance<TMP_FontAsset>();
-                AssetDatabase.CreateAsset(fontAsset, FontAssetPath);
+                Debug.LogError($"[PeaceSansFontSetup] Failed to create font asset for {font.name}");
+                return;
             }
 
-            fontAsset.version = "1.1.0";
-            fontAsset.faceInfo = FontEngine.GetFaceInfo();
+            TMP_FontAsset fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
+            if (fontAsset == null)
+            {
+                fontAsset = generated;
+                AssetDatabase.CreateAsset(fontAsset, FontAssetPath);
+            }
+            else
+            {
+                // Retain the existing asset identity and Inspector references.
+                EditorUtility.CopySerialized(generated, fontAsset);
+                Object.DestroyImmediate(generated);
+            }
 
-            fontAsset.sourceFontFile = font;
-            fontAsset.m_SourceFontFileGUID = AssetDatabase.AssetPathToGUID(sourceFontPath);
-            fontAsset.m_SourceFontFile_EditorRef = font;
-
-            fontAsset.atlasPopulationMode = AtlasPopulationMode.Dynamic;
-            fontAsset.clearDynamicDataOnBuild = TMP_Settings.clearDynamicDataOnBuild;
-
-            int atlasWidth = fontAsset.atlasWidth = 1024;
-            int atlasHeight = fontAsset.atlasHeight = 1024;
-            int atlasPadding = fontAsset.atlasPadding = 9;
-
-            Texture2D texture = new Texture2D(1, 1, TextureFormat.Alpha8, false);
-            Shader shader = Shader.Find("TextMeshPro/Distance Field");
-            int packingModifier = 1;
-            Material mat = new Material(shader);
-
-            mat.SetFloat(ShaderUtilities.ID_GradientScale, atlasPadding + packingModifier);
-            mat.SetFloat(ShaderUtilities.ID_WeightNormal, fontAsset.normalStyle);
-            mat.SetFloat(ShaderUtilities.ID_WeightBold, fontAsset.boldStyle);
-
-            texture.name = "PeaceSans Atlas";
-            mat.name = "PeaceSans SDF Material";
-
-            fontAsset.atlasTextures = new Texture2D[] { texture };
-            AssetDatabase.AddObjectToAsset(texture, fontAsset);
-
-            fontAsset.freeGlyphRects = new List<GlyphRect> { new GlyphRect(0, 0, atlasWidth - packingModifier, atlasHeight - packingModifier) };
-            fontAsset.usedGlyphRects = new List<GlyphRect>();
-
-            mat.SetTexture(ShaderUtilities.ID_MainTex, texture);
-            mat.SetFloat(ShaderUtilities.ID_TextureWidth, atlasWidth);
-            mat.SetFloat(ShaderUtilities.ID_TextureHeight, atlasHeight);
-
-            fontAsset.material = mat;
-            AssetDatabase.AddObjectToAsset(mat, fontAsset);
-
-            fontAsset.creationSettings = new FontAssetCreationSettings(
-                fontAsset.m_SourceFontFileGUID,
-                (int)fontAsset.faceInfo.pointSize,
-                0,
-                atlasPadding,
-                0,
-                1024,
-                1024,
-                7,
-                string.Empty,
-                (int)GlyphRenderMode.SDFAA
-            );
+            fontAsset.atlasTexture.name = "PeaceSans Atlas";
+            fontAsset.material.name = "PeaceSans SDF Material";
+            AssetDatabase.AddObjectToAsset(fontAsset.atlasTexture, fontAsset);
+            AssetDatabase.AddObjectToAsset(fontAsset.material, fontAsset);
 
             EditorUtility.SetDirty(fontAsset);
             AssetDatabase.SaveAssets();
