@@ -269,8 +269,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 118.00004, y: 172.00003}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -0.000019073, y: 87.276}
+  m_SizeDelta: {x: 293.7896, y: 73.4474}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &241015974
 PrefabInstance:
@@ -360,6 +360,10 @@ PrefabInstance:
       propertyPath: useScenePresentation
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1671894220502576272, guid: cb2d86069c2590e9dad0a512bd392374, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -8940161822155440226, guid: c72ac1d0f6bc2cd4b9580c5a989ff6dc, type: 3}
     - target: {fileID: 1766578399502454392, guid: cb2d86069c2590e9dad0a512bd392374, type: 3}
       propertyPath: m_Colors.m_PressedColor.b
       value: 0.8
@@ -852,8 +856,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -122, y: 172}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 326, y: 86.365}
+  m_SizeDelta: {x: 299.253, y: 74.8133}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &759103105
 MonoBehaviour:
@@ -1416,8 +1420,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -4.000029, y: 99.00003}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -323, y: 86.479}
+  m_SizeDelta: {x: 298.3424, y: 74.5856}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1990163426
 MonoBehaviour:
