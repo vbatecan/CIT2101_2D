@@ -11,29 +11,36 @@ namespace CaseClosed.Editor
         private const string FontOtfPath = "Assets/Fonts/PeaceSans/PeaceSans.otf";
         private const string FontAssetPath = "Assets/Fonts/PeaceSans/PeaceSans SDF.asset";
 
-        [MenuItem("Tools/CaseClosed/Generate Peace Sans SDF")]
-        public static void GenerateFontAsset()
+        [MenuItem("Tools/CaseClosed/Create Peace Sans Font Asset")]
+        public static void CreateFontAsset()
         {
-            Font font = AssetDatabase.LoadAssetAtPath<Font>(FontTtfPath);
+            Font font = LoadSourceFont();
             if (font == null)
             {
-                font = AssetDatabase.LoadAssetAtPath<Font>(FontOtfPath);
-            }
-
-            if (font == null)
-            {
-                Debug.LogError($"[PeaceSansFontSetup] Could not find font at {FontTtfPath} or {FontOtfPath}");
                 return;
             }
 
-            // Ensure TrueTypeFontImporter has includeFontData enabled
-            string sourceFontPath = AssetDatabase.GetAssetPath(font);
-            TrueTypeFontImporter importer = AssetImporter.GetAtPath(sourceFontPath) as TrueTypeFontImporter;
-            if (importer != null && !importer.includeFontData)
+            Selection.objects = new Object[] { font };
+            Selection.activeObject = font;
+
+            bool success = EditorApplication.ExecuteMenuItem("Assets/Create/TextMeshPro/Font Asset");
+            if (success)
             {
-                importer.includeFontData = true;
-                importer.SaveAndReimport();
-                font = AssetDatabase.LoadAssetAtPath<Font>(sourceFontPath);
+                Debug.Log("[PeaceSansFontSetup] Executed TextMeshPro Font Asset creation for Peace Sans.");
+            }
+            else
+            {
+                Debug.LogWarning("[PeaceSansFontSetup] Failed to execute 'Assets/Create/TextMeshPro/Font Asset' menu item.");
+            }
+        }
+
+        [MenuItem("Tools/CaseClosed/Generate Peace Sans SDF")]
+        public static void GenerateFontAsset()
+        {
+            Font font = LoadSourceFont();
+            if (font == null)
+            {
+                return;
             }
 
             FontEngine.InitializeFontEngine();
@@ -81,6 +88,31 @@ namespace CaseClosed.Editor
         {
             GenerateFontAsset();
         }
+
+        private static Font LoadSourceFont()
+        {
+            Font font = AssetDatabase.LoadAssetAtPath<Font>(FontTtfPath);
+            if (font == null)
+            {
+                font = AssetDatabase.LoadAssetAtPath<Font>(FontOtfPath);
+            }
+
+            if (font == null)
+            {
+                Debug.LogError($"[PeaceSansFontSetup] Could not find font at {FontTtfPath} or {FontOtfPath}");
+                return null;
+            }
+
+            string sourceFontPath = AssetDatabase.GetAssetPath(font);
+            TrueTypeFontImporter importer = AssetImporter.GetAtPath(sourceFontPath) as TrueTypeFontImporter;
+            if (importer != null && !importer.includeFontData)
+            {
+                importer.includeFontData = true;
+                importer.SaveAndReimport();
+                font = AssetDatabase.LoadAssetAtPath<Font>(sourceFontPath);
+            }
+
+            return font;
+        }
     }
 }
-
