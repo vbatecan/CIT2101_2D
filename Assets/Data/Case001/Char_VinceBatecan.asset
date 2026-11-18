@@ -25,8 +25,8 @@ MonoBehaviour:
   defaultSittingPose: {fileID: 3098525678322980666, guid: e120a70d275ef9f4d85b9075b45b4bff, type: 3}
   expressions:
   - expression: 2
-    sprite: {fileID: 2312496710705426280, guid: cb9ce90eda7cba36e9e41a9e1b52570d, type: 3}
+    sprite: {fileID: 21300002, guid: 03e464805b094e29ae6991a9060fd55a, type: 3}
   - expression: 7
-    sprite: {fileID: -5403492796577020502, guid: a25c0b6cef4eb1bfdb69b2814606a016, type: 3}
+    sprite: {fileID: 21300003, guid: 03e464805b094e29ae6991a9060fd55a, type: 3}
   - expression: 6
-    sprite: {fileID: -6372029884859345686, guid: 4de2ab4b6a4931f138d1c6ae04b97358, type: 3}
+    sprite: {fileID: 21300001, guid: 03e464805b094e29ae6991a9060fd55a, type: 3}
