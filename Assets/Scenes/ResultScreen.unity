@@ -269,10 +269,10 @@ RectTransform:
   - {fileID: 808894643}
   m_Father: {fileID: 241015976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -14.000023, y: 332.911}
-  m_SizeDelta: {x: 293.7896, y: 73.4474}
+  m_AnchorMin: {x: 0.5, y: 0.31}
+  m_AnchorMax: {x: 0.5, y: 0.31}
+  m_AnchoredPosition: {x: -212, y: -6}
+  m_SizeDelta: {x: 375.126, y: 93.1521}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &196319858
 MonoBehaviour:
@@ -938,7 +938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95074186b8ea4df8a65b9257e7433387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseClosed.UI.ResultsScreenUI
-  solvedBackgroundSprite: {fileID: -8058373917310724304, guid: 0599ff3432b0be444b512fa10ae013bf, type: 3}
+  solvedBackgroundSprite: {fileID: -8940161822155440226, guid: c72ac1d0f6bc2cd4b9580c5a989ff6dc, type: 3}
   failedBackgroundSprites:
   - {fileID: -2298373832571747663, guid: f45b6046d6f81dd4fb632c286926b6d5, type: 3}
   - {fileID: -8897798795438254569, guid: 850fac8c55181874a95c89a82d82eb74, type: 3}
@@ -986,10 +986,10 @@ RectTransform:
   - {fileID: 999548414}
   m_Father: {fileID: 241015976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 312, y: 332}
-  m_SizeDelta: {x: 299.253, y: 74.8133}
+  m_AnchorMin: {x: 0.5, y: 0.31}
+  m_AnchorMax: {x: 0.5, y: 0.31}
+  m_AnchoredPosition: {x: 241.17232, y: -6}
+  m_SizeDelta: {x: 375.126, y: 93.1521}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &759103105
 MonoBehaviour:
@@ -1200,10 +1200,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 14
   m_fontSizeMax: 18
   m_fontStyle: 1
@@ -1337,10 +1337,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 14
   m_fontSizeMax: 18
   m_fontStyle: 1
@@ -1698,7 +1698,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1990163425
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1715,10 +1715,10 @@ RectTransform:
   - {fileID: 1285589842}
   m_Father: {fileID: 241015976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -337.00003, y: 332.114}
-  m_SizeDelta: {x: 298.3424, y: 74.5856}
+  m_AnchorMin: {x: 0.5, y: 0.31}
+  m_AnchorMax: {x: 0.5, y: 0.31}
+  m_AnchoredPosition: {x: 180, y: 0}
+  m_SizeDelta: {x: 298, y: 74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1990163426
 MonoBehaviour:
